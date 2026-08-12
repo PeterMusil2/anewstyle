@@ -16,17 +16,24 @@ header {
     inline-size: 100lvi;
     background-color: $color-black;
     opacity: var(--video-opacity, 0);
-    transition: opacity 0.5s linear;
+    transition: opacity 0.8s linear;
     z-index: 1;
     pointer-events: none;
 
-    &:has(source) {
+    &.is-playing {
       --video-opacity: 1;
     }
 
     @include res-max-laptop-s {
       inline-size: auto;
       block-size: 100%;
+    }
+
+    @include res-max-mobile-l {
+      inline-size: 100lvi;
+      block-size: 100%;
+      object-fit: cover;
+      object-position: center;
     }
   }
 

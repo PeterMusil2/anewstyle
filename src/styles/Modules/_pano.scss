@@ -21,14 +21,14 @@
     display: grid;
     place-items: center;
     padding: 0;
+    background-color: hsl(0 0% 0% / 55%);
     border: 0;
     border-radius: 50%;
-    background-color: hsl(0 0% 0% / 55%);
     line-height: 1;
     color: $color-white;
-    cursor: pointer;
     transition: background-color var(--trans-time) var(--trans-fnc);
     z-index: 2;
+    cursor: pointer;
 
     &:hover,
     &:focus-visible {
@@ -37,19 +37,19 @@
   }
 
   &__close {
-    inset-block-start: $gap-l;
-    inset-inline-end: $gap-l;
     inline-size: 3rem;
     block-size: 3rem;
     font-size: 2rem;
+    inset-block-start: $gap-l;
+    inset-inline-end: $gap-l;
   }
 
   &__nav {
-    inset-block-start: 50%;
     inline-size: 3.25rem;
     block-size: 3.25rem;
     font-size: 2.5rem;
     translate: 0 -50%;
+    inset-block-start: 50%;
 
     &--prev {
       inset-inline-start: $gap-l;

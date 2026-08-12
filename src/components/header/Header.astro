@@ -15,10 +15,12 @@ const t = useTranslations(lang);
     class="header__video"
     id="headerVideo"
     aria-label={t('header.videoLabel')}
-    preload="metadata"
+    preload="none"
     autoplay
     loop
-    muted></video>
+    muted
+    playsinline
+    disablepictureinpicture></video>
   <div class="header__content">
     <div>
       <h1>Anew style</h1>
@@ -194,21 +196,130 @@ const t = useTranslations(lang);
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    // Video initialization
-    const videoElement = document.querySelector(
-      "#headerVideo"
-    ) as HTMLVideoElement;
-    const screenWidth = window.innerWidth;
+  const MOBILE_BREAKPOINT = 560;
+  const VIDEO_MOBILE = "/videos/main-video-portrait.mp4";
+  const VIDEO_DESKTOP = "/videos/main-video.mp4";
+  const SLOW_CONNECTION = /^(slow-2g|2g)$/;
 
-    if (screenWidth > 560 && videoElement) {
-      const sourceElement = document.createElement("source");
-      sourceElement.src = "/videos/main-video.mp4";
-      sourceElement.type = "video/mp4";
-      videoElement.appendChild(sourceElement);
-    } else if (videoElement) {
-      videoElement.remove();
+  interface NetworkInformation {
+    saveData?: boolean;
+    effectiveType?: string;
+  }
+
+  function getConnection(): NetworkInformation | undefined {
+    return (navigator as Navigator & { connection?: NetworkInformation })
+      .connection;
+  }
+
+  function requestIdle(callback: () => void, timeout: number): void {
+    const idle = (
+      window as Window &
+        typeof globalThis & {
+          requestIdleCallback?: (
+            cb: IdleRequestCallback,
+            options?: IdleRequestOptions
+          ) => number;
+        }
+    ).requestIdleCallback;
+
+    if (idle) {
+      idle(() => callback(), { timeout });
+      return;
     }
+
+    window.setTimeout(callback, 300);
+  }
+
+  function shouldSkipVideo(): boolean {
+    const connection = getConnection();
+
+    if (connection?.saveData) {
+      return true;
+    }
+
+    if (
+      typeof connection?.effectiveType === "string" &&
+      SLOW_CONNECTION.test(connection.effectiveType)
+    ) {
+      return true;
+    }
+
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function attachHeaderVideoSource(video: HTMLVideoElement): void {
+    if (video.querySelector("source")) {
+      return;
+    }
+
+    const isMobile = window.matchMedia(
+      `(max-width: ${MOBILE_BREAKPOINT}px)`
+    ).matches;
+
+    const source = document.createElement("source");
+    source.src = isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP;
+    source.type = "video/mp4";
+
+    // Fade in only once frames are actually rendering, never before
+    const reveal = () => video.classList.add("is-playing");
+    video.addEventListener("playing", reveal, { once: true });
+    video.addEventListener("canplay", reveal, { once: true });
+
+    video.appendChild(source);
+    video.preload = "auto";
+    video.load();
+    video.play().catch(() => {
+      /* autoplay blocked: black hero background stays, no layout impact */
+    });
+  }
+
+  function initHeaderVideo(): void {
+    const video = document.querySelector<HTMLVideoElement>("#headerVideo");
+
+    if (!video) {
+      return;
+    }
+
+    if (shouldSkipVideo()) {
+      video.remove();
+      return;
+    }
+
+    // Never compete with LCP: wait for full load, then for an idle frame
+    const loadWhenIdle = () => {
+      requestIdle(() => attachHeaderVideoSource(video), 3000);
+    };
+
+    const afterPageReady = () => {
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                observer.disconnect();
+                loadWhenIdle();
+              }
+            }
+          },
+          { rootMargin: "200px" }
+        );
+
+        observer.observe(video);
+        return;
+      }
+
+      loadWhenIdle();
+    };
+
+    if (document.readyState === "complete") {
+      afterPageReady();
+    } else {
+      window.addEventListener("load", afterPageReady, { once: true });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initHeaderVideo();
 
     // AR button initialization
     const arButton = document.querySelector(

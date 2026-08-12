@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"astro dev\" \"bun run stylelint:watch\"",
-    "build": "astro check && astro build && node scripts/postbuild-sitemap-alias.mjs",
+    "gallery:build": "node scripts/build-cloudinary-gallery.mjs",
+    "build": "bun run gallery:build && astro check && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "stylelint": "stylelint --fix \"src/**/*.scss\" \"src/**/*.astro\"",
@@ -19,8 +20,10 @@
     "@astrojs/sitemap": "^3.7.3",
     "@fancyapps/ui": "^6.1.14",
     "@google/model-viewer": "^4.3.1",
+    "@photo-sphere-viewer/core": "^5.15.1",
     "astro": "^7.1.1",
-    "three": "^0.183.0",
+    "cloudinary": "^2.10.0",
+    "three": "^0.185.1",
     "typescript": "^6"
   },
   "devDependencies": {

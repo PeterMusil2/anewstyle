@@ -1,0 +1,68 @@
+@import "../Base/global";
+
+// Full-screen overlay hosting the lazy-loaded Photo Sphere Viewer for 360°
+// panoramas. Created dynamically on <body>, so these rules must be global.
+.pano-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: stretch;
+  background-color: $color-black;
+  z-index: 99999;
+
+  &__stage {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  &__close,
+  &__nav {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background-color: hsl(0 0% 0% / 55%);
+    border: 0;
+    border-radius: 50%;
+    line-height: 1;
+    color: $color-white;
+    transition: background-color var(--trans-time) var(--trans-fnc);
+    z-index: 2;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: hsl(0 0% 0% / 85%);
+    }
+  }
+
+  &__close {
+    inline-size: 3rem;
+    block-size: 3rem;
+    font-size: 2rem;
+    inset-block-start: $gap-l;
+    inset-inline-end: $gap-l;
+  }
+
+  &__nav {
+    inline-size: 3.25rem;
+    block-size: 3.25rem;
+    font-size: 2.5rem;
+    translate: 0 -50%;
+    inset-block-start: 50%;
+
+    &--prev {
+      inset-inline-start: $gap-l;
+    }
+
+    &--next {
+      inset-inline-end: $gap-l;
+    }
+
+    @include res-max-mobile-l {
+      inline-size: 2.75rem;
+      block-size: 2.75rem;
+      font-size: 2rem;
+    }
+  }
+}

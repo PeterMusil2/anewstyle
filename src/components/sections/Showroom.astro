@@ -1,6 +1,7 @@
 ---
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
+import { getGalleryItems } from "../../lib/cloudinary-gallery";
 
 interface Props {
   id: string;
@@ -17,6 +18,17 @@ const youtubeVideos = [
   "XTukH1ix6Fo",
   "LJwBvcEK06M",
 ];
+
+// Images and videos loaded from the Cloudinary `AnewStyle/Gallery` folder at
+// build time. Falls back to an empty list when the JSON hasn't been generated.
+const cloudinaryItems = await getGalleryItems();
+
+// 360° panoramas open in a lazy-loaded Photo Sphere Viewer overlay.
+const panoLabels = {
+  close: lang === "en" ? "Close" : "Zavřít",
+  prev: lang === "en" ? "Previous panorama" : "Předchozí panorama",
+  next: lang === "en" ? "Next panorama" : "Další panorama",
+};
 ---
 
 <section id={id} class="light">
@@ -32,7 +44,7 @@ const youtubeVideos = [
   </div>
   <div class="container segment-filter-wrap">
     <div
-      class="segment-filter"
+      class="segment-filter segment-filter--fit"
       role="group"
       aria-label={t("gallery.filterAriaLabel")}
     >
@@ -70,7 +82,12 @@ const youtubeVideos = [
       </button>
     </div>
   </div>
-  <div class="container gallery">
+  <div
+    class="container gallery"
+    data-pano-close={panoLabels.close}
+    data-pano-prev={panoLabels.prev}
+    data-pano-next={panoLabels.next}
+  >
     <a
       href="/assets/ATAK_bazen_2.webm"
       aria-label={t("products.stoneAsLighting")}
@@ -151,6 +168,58 @@ const youtubeVideos = [
           </div>
         </a>
       ))
+    }
+
+    {
+      cloudinaryItems.map((item) =>
+        item.type === "360" ? (
+          <a
+            href={item.full}
+            aria-label={item.alt ?? t("gallery.preview360Day")}
+            data-media="360"
+            data-pano={item.full}
+            class="gitem"
+            rel="noopener"
+          >
+            <div class="gitem__photo">
+              <img
+                src={item.thumb}
+                loading="lazy"
+                width={item.width}
+                height={item.height}
+                alt={item.alt ?? t("gallery.preview360Day")}
+              />
+            </div>
+            <div class="gitem__content">
+              <Icon name="360" />
+            </div>
+          </a>
+        ) : (
+          <a
+            href={item.full}
+            aria-label={item.alt ?? t("products.stoneAsLighting")}
+            data-fancybox="gallery"
+            data-media={item.type}
+            class="gitem"
+            rel="noopener"
+          >
+            <div class="gitem__photo">
+              <img
+                src={item.thumb}
+                loading="lazy"
+                width={item.width}
+                height={item.height}
+                alt={item.alt ?? t("products.stoneAsLighting")}
+              />
+            </div>
+            {item.type === "video" && (
+              <div class="gitem__content">
+                <Icon name="play" />
+              </div>
+            )}
+          </a>
+        )
+      )
     }
 
     <a
@@ -408,4 +477,121 @@ const youtubeVideos = [
 
   initGalleryFilter();
   document.addEventListener("astro:page-load", initGalleryFilter);
+</script>
+
+<script>
+  // Lazy 360° panorama viewer. Photo Sphere Viewer (WebGL/three.js) and its CSS
+  // are only fetched the first time a visitor opens a panorama. Prev/next cycle
+  // through every panorama in the gallery by swapping the source on one viewer.
+  const initPanoViewer = () => {
+    const triggers = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("a[data-pano]")
+    );
+    if (triggers.length === 0) return;
+
+    const urls = triggers
+      .map((trigger) => trigger.dataset.pano ?? "")
+      .filter(Boolean);
+    const gallery = document.querySelector<HTMLElement>(".gallery");
+    const labels = {
+      close: gallery?.dataset.panoClose ?? "Close",
+      prev: gallery?.dataset.panoPrev ?? "Previous",
+      next: gallery?.dataset.panoNext ?? "Next",
+    };
+
+    let closeActive: (() => void) | null = null;
+
+    const button = (
+      className: string,
+      label: string,
+      glyph: string
+    ): HTMLButtonElement => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = className;
+      btn.setAttribute("aria-label", label);
+      btn.innerHTML = glyph;
+      return btn;
+    };
+
+    const open = async (startIndex: number): Promise<void> => {
+      let index = startIndex;
+
+      const modal = document.createElement("div");
+      modal.className = "pano-modal";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+
+      const stage = document.createElement("div");
+      stage.className = "pano-modal__stage";
+
+      const closeBtn = button("pano-modal__close", labels.close, "&times;");
+      modal.append(stage, closeBtn);
+
+      const multiple = urls.length > 1;
+      const prevBtn = multiple
+        ? button("pano-modal__nav pano-modal__nav--prev", labels.prev, "&lsaquo;")
+        : null;
+      const nextBtn = multiple
+        ? button("pano-modal__nav pano-modal__nav--next", labels.next, "&rsaquo;")
+        : null;
+      if (prevBtn && nextBtn) modal.append(prevBtn, nextBtn);
+
+      document.body.append(modal);
+      document.documentElement.style.overflow = "hidden";
+
+      const [{ Viewer }] = await Promise.all([
+        import("@photo-sphere-viewer/core"),
+        import("@photo-sphere-viewer/core/index.css"),
+      ]);
+
+      const viewer = new Viewer({
+        container: stage,
+        panorama: urls[index],
+        navbar: ["zoom", "move", "fullscreen"],
+      });
+
+      const go = (delta: number): void => {
+        index = (index + delta + urls.length) % urls.length;
+        void viewer.setPanorama(urls[index], { showLoader: true });
+      };
+
+      const onKey = (event: KeyboardEvent): void => {
+        if (event.key === "Escape") close();
+        else if (event.key === "ArrowLeft" && multiple) go(-1);
+        else if (event.key === "ArrowRight" && multiple) go(1);
+      };
+
+      const close = (): void => {
+        document.removeEventListener("keydown", onKey);
+        viewer.destroy();
+        modal.remove();
+        document.documentElement.style.overflow = "";
+        closeActive = null;
+      };
+
+      closeBtn.addEventListener("click", close);
+      prevBtn?.addEventListener("click", () => go(-1));
+      nextBtn?.addEventListener("click", () => go(1));
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) close();
+      });
+      document.addEventListener("keydown", onKey);
+      closeActive = close;
+    };
+
+    triggers.forEach((trigger, triggerIndex) => {
+      if (trigger.dataset.panoBound) return;
+      trigger.dataset.panoBound = "1";
+      trigger.addEventListener("click", (event) => {
+        if (!trigger.dataset.pano) return;
+        event.preventDefault();
+        closeActive?.();
+        void open(triggerIndex);
+      });
+    });
+  };
+
+  initPanoViewer();
+  document.addEventListener("astro:page-load", initPanoViewer);
 </script>

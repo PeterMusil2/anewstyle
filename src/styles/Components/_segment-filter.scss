@@ -63,6 +63,29 @@
   }
 }
 
+// Gallery variant: on mobile keep every label fully readable on one row and
+// never overflow the viewport — the group shrinks to fit and scrolls only if
+// the labels genuinely don't fit, instead of stretching buttons and clipping text.
+.segment-filter--fit {
+  @include res-max-mobile-l {
+    justify-content: center;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .segment-filter__btn {
+      flex: 0 0 auto;
+      padding-inline: $gap-m;
+      font-size: 0.9375rem;
+    }
+  }
+}
+
 section.light .segment-filter {
   --segment-filter_bg: #{$color-white};
   --segment-filter_border: hsl(0 0% 0% / 0.08);

@@ -12,13 +12,6 @@
     syntax: "<percentage>";
 }
 
-body {
-    display: grid;
-    place-items: center;
-    min-block-size: 100vh;
-    background-color: hsl(0 0% 10%);
-}
-
 .palette {
     position: relative;
     display: grid;

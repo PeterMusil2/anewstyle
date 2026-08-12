@@ -51,6 +51,8 @@
 
   .icon-ar {
     display: var(--ar-icon-display, none);
+    color: $color-black;
+
     @include res-max-tablet {
       --ar-icon-display: block;
       inset: auto clamp(1.6rem, 4dvi, 1.6rem) 6.5rem auto;

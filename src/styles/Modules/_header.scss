@@ -30,8 +30,13 @@ header {
     }
 
     @include res-max-mobile-l {
+      // The portrait source is letterboxed: only the middle 68.8% of the frame
+      // holds footage, so the box is oversized and centred to crop the bars
+      --letterbox-ratio: 0.688;
+      inset: 50% auto auto 50%;
       inline-size: 100lvi;
-      block-size: 100%;
+      block-size: calc(100% / var(--letterbox-ratio));
+      translate: -50% -50%;
       object-fit: cover;
       object-position: center;
     }

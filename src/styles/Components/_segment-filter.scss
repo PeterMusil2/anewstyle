@@ -25,6 +25,20 @@
   @include res-max-mobile-l {
     justify-content: stretch;
     inline-size: 100%;
+    max-inline-size: 100%;
+    // `overflow-x: auto` also resets the automatic minimum size to zero, so a
+    // long filter row can never widen its grid/flex ancestors past the viewport
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .segment-filter__btn {
+      flex: 0 0 auto;
+    }
   }
 
   &__btn {
@@ -69,17 +83,8 @@
 .segment-filter--fit {
   @include res-max-mobile-l {
     justify-content: center;
-    max-inline-size: 100%;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
 
     .segment-filter__btn {
-      flex: 0 0 auto;
       padding-inline: $gap-m;
       font-size: 0.9375rem;
     }

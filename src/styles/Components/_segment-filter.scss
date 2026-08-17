@@ -35,10 +35,6 @@
     &::-webkit-scrollbar {
       display: none;
     }
-
-    .segment-filter__btn {
-      flex: 0 0 auto;
-    }
   }
 
   &__btn {
@@ -62,6 +58,10 @@
     @include res-max-mobile-l {
       flex: 1;
       padding-inline: $gap-s;
+
+      > .icon {
+        --icon-size: 1.25rem;
+      }
     }
 
     &[aria-pressed="true"] {
@@ -85,6 +85,7 @@
     justify-content: center;
 
     .segment-filter__btn {
+      flex: 0 0 auto;
       padding-inline: $gap-m;
       font-size: 0.9375rem;
     }

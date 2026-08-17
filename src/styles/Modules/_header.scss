@@ -71,6 +71,12 @@ header {
 
     > div:has(> h1) {
       mix-blend-mode: soft-light;
+
+      // soft-light washes the title out over busy imagery on small
+      // screens, so drop back to a normal blend for readable contrast
+      @include res-max-mobile-l {
+        mix-blend-mode: normal;
+      }
     }
 
     h1 {
@@ -101,7 +107,12 @@ header {
       }
 
       @include res-max-mobile-l {
+        filter: none;
         font-size: clamp($gap-xl, 10vh, 4rem);
+        text-shadow:
+          0 0.1em 0.6em var(--color-black),
+          0 0 1.5rem var(--color-black),
+          0 0 0.4em var(--color-black);
       }
     }
 

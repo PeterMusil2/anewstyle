@@ -1,10 +1,24 @@
-# Deployment — Cloudflare Pages
+# Deployment — GitHub Pages (Actions)
 
-The site is a static Astro build deployed on **Cloudflare Pages** using
-Cloudflare's built-in Git integration: every push to `master` triggers a build
-on Cloudflare (no GitHub Actions involved).
+The site is a static Astro build deployed to **GitHub Pages** by the
+`.github/workflows/static.yml` workflow: every push to `master` builds with
+`bun run build` and publishes `dist/`. The custom domain `anewstyle.cz` points
+at GitHub Pages.
 
 - **Build command:** `bun run build`
+- **Build output directory:** `dist`
+- **Optional build secret:** `CLOUDINARY_URL` — set it as a repository secret
+  (Settings → Secrets and variables → Actions). Without it the build still
+  succeeds; the Cloudinary gallery just renders empty.
+
+> **Note:** a migration to Cloudflare Pages was started (see `wrangler.toml` and
+> the Cloudflare section below) but never completed — DNS was never moved, so
+> GitHub Pages remained the live host. The Cloudflare instructions below are
+> kept for whenever that migration is finished; do the DNS cutover and remove
+> the Actions workflow in the same change.
+
+## Cloudflare Pages (not active — for a future migration)
+
 - **Build output directory:** `dist`
 - **Required build env var:** `CLOUDINARY_URL` (secret) — see below
 

@@ -215,7 +215,26 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error("Cloudinary gallery build failed:", err);
-  process.exit(1);
+// The Cloudinary gallery is an enhancement, never a build blocker: if the fetch
+// fails (bad credentials, network, API outage) fall back to whatever
+// public/data/gallery.json already holds, or an empty gallery, and exit 0 so
+// the static site still deploys.
+main().catch(async (err) => {
+  console.warn(
+    "\u26a0 Cloudinary gallery fetch failed \u2014 deploying without fresh gallery data."
+  );
+  console.warn(err?.message ?? err);
+
+  if (await fileExists(OUT_FILE)) {
+    console.warn("  Keeping existing public/data/gallery.json.");
+    return;
+  }
+
+  await mkdir(path.dirname(OUT_FILE), { recursive: true });
+  await writeFile(
+    OUT_FILE,
+    JSON.stringify({ generatedAt: null, items: [] }, null, 2) + "\n",
+    "utf8"
+  );
+  console.warn("  Wrote an empty public/data/gallery.json.");
 });

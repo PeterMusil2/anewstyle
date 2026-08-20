@@ -28,7 +28,19 @@ import { v2 as cloudinary } from "cloudinary";
 import { mkdir, writeFile, readFile, access } from "node:fs/promises";
 import path from "node:path";
 
-const GALLERY_FOLDER = "AnewStyle/Gallery";
+// Where the gallery assets live. Override with CLOUDINARY_GALLERY_FOLDER if the
+// media library is ever restructured, so a folder move needs no code change.
+const GALLERY_FOLDER =
+  process.env.CLOUDINARY_GALLERY_FOLDER || "AnewStyle/Gallery";
+
+// Root of the brand's media library, used as a fallback when GALLERY_FOLDER
+// matches nothing (e.g. the gallery folders still sit directly under the root).
+const ROOT_FOLDER = GALLERY_FOLDER.split("/")[0];
+
+// Subfolders of ROOT_FOLDER that must never appear in the gallery. Only applies
+// to the fallback scan - anything inside GALLERY_FOLDER is always included.
+const EXCLUDED_FOLDERS = ["bonus"];
+
 const OUT_FILE = path.join(process.cwd(), "public", "data", "gallery.json");
 
 // Capped delivery widths (px). Thumbs feed the grid tiles; full feeds the
@@ -55,19 +67,27 @@ async function loadEnv() {
   }
 }
 
+/**
+ * Match the whole subtree of `folder`, in either fixed- or dynamic-folder
+ * accounts. Cloudinary exposes the path as `folder` on legacy accounts and
+ * `asset_folder` on dynamic-folder ones, so both are checked.
+ */
+function subtreeExpression(folder) {
+  return (
+    `(folder="${folder}" OR folder:${folder}/* ` +
+    `OR asset_folder="${folder}" OR asset_folder:${folder}/*)`
+  );
+}
+
 /** Page through the Search API until every matching asset is collected. */
-async function searchAllResources() {
+async function searchAllResources(expression) {
   const all = [];
   let nextCursor;
 
   do {
+    // `tags` is needed for 360 detection via tags.
     const query = cloudinary.search
-      // Whole subtree of the gallery folder, in either fixed- or dynamic-folder
-      // accounts, limited to images and videos. `tags` is needed for 360
-      // detection via tags.
-      .expression(
-        `(folder="${GALLERY_FOLDER}" OR folder:${GALLERY_FOLDER}/* OR asset_folder="${GALLERY_FOLDER}" OR asset_folder:${GALLERY_FOLDER}/*) AND (resource_type:image OR resource_type:video)`
-      )
+      .expression(`${expression} AND (resource_type:image OR resource_type:video)`)
       .with_field("tags")
       .sort_by("public_id", "asc")
       .max_results(500);
@@ -81,6 +101,40 @@ async function searchAllResources() {
   } while (nextCursor);
 
   return all;
+}
+
+/** True when an asset sits inside one of the EXCLUDED_FOLDERS subtrees. */
+function isExcluded(resource) {
+  const folder = String(
+    resource.asset_folder || resource.folder || resource.public_id || ""
+  ).toLowerCase();
+
+  return EXCLUDED_FOLDERS.some((name) => {
+    const prefix = `${ROOT_FOLDER}/${name}`.toLowerCase();
+    return folder === prefix || folder.startsWith(`${prefix}/`);
+  });
+}
+
+/**
+ * Collect the gallery assets.
+ *
+ * Primary source is GALLERY_FOLDER. If that matches nothing - which happens
+ * when the media library keeps the category folders directly under the root
+ * instead of nesting them - fall back to scanning the whole root and drop the
+ * folders that are not part of the gallery. The fallback is announced so the
+ * build log says exactly which layout was used.
+ */
+async function collectResources() {
+  const scoped = await searchAllResources(subtreeExpression(GALLERY_FOLDER));
+  if (scoped.length > 0) return scoped;
+
+  console.warn(
+    `\u26a0 No assets under "${GALLERY_FOLDER}" - falling back to "${ROOT_FOLDER}" ` +
+      `(excluding ${EXCLUDED_FOLDERS.map((f) => `"${f}"`).join(", ")}).`
+  );
+
+  const rooted = await searchAllResources(subtreeExpression(ROOT_FOLDER));
+  return rooted.filter((resource) => !isExcluded(resource));
 }
 
 /**
@@ -196,7 +250,7 @@ async function main() {
 
   cloudinary.config({ secure: true });
 
-  const resources = await searchAllResources();
+  const resources = await collectResources();
   const items = resources.map(buildItem).filter(Boolean);
 
   await mkdir(path.dirname(OUT_FILE), { recursive: true });
@@ -208,6 +262,19 @@ async function main() {
   );
 
   const count = (t) => items.filter((i) => i.type === t).length;
+
+  // An empty result is a successful API call that matched nothing, which is
+  // almost always a folder-path problem rather than something intentional.
+  // Say so loudly: the build stays green either way, so this log line is the
+  // only signal that the gallery silently shipped empty.
+  if (items.length === 0) {
+    console.warn(
+      `\u26a0 Cloudinary gallery is EMPTY - the credentials worked but no assets ` +
+        `matched "${GALLERY_FOLDER}" or "${ROOT_FOLDER}". Check the folder path ` +
+        `and capitalisation in the media library.`
+    );
+  }
+
   console.log(
     `✓ Cloudinary gallery: ${items.length} items ` +
       `(${count("image")} images, ${count("video")} videos, ${count("360")} panoramas) ` +

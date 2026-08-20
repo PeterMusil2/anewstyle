@@ -64,6 +64,16 @@
       }
     }
 
+    // The size label (L, XL, XXL) reads as the button's icon, so it carries the
+    // weight; the millimetre dimensions beside it are supporting detail.
+    > span {
+      font-weight: 700;
+    }
+
+    > small {
+      font-weight: 300;
+    }
+
     &[aria-pressed="true"] {
       --btn-bg: var(--segment-filter_active-bg);
       --btn-color: var(--segment-filter_active-text);

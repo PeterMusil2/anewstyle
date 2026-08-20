@@ -170,7 +170,7 @@ const panoLabels = {
   </div>
   <div class="container">
     <p class="desc desc--mg-s desc--center">
-      <span>{t("gallery.underText")}</span>
+      <span>{t("gallery.underText")}</span>{" "}
       <a
         href="https://www.designatak.cz/"
         aria-label={t("gallery.gotoAtakDesign")}
@@ -236,20 +236,35 @@ const panoLabels = {
       ".segment-filter__btn"
     );
 
+    const activate = (btn: HTMLButtonElement) => {
+      buttons.forEach((b) => b.setAttribute("aria-pressed", "false"));
+      btn.setAttribute("aria-pressed", "true");
+
+      const value = btn.dataset.filter ?? "";
+      if (value) {
+        gallery.setAttribute("data-filter", value);
+      } else {
+        gallery.removeAttribute("data-filter");
+      }
+    };
+
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         if (btn.getAttribute("aria-pressed") === "true") return;
-        buttons.forEach((b) => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-
-        const filter = btn.dataset.filter ?? "";
-        if (filter) {
-          gallery.setAttribute("data-filter", filter);
-        } else {
-          gallery.removeAttribute("data-filter");
-        }
+        activate(btn);
       });
     });
+
+    // ?filter=<value> preselects a segment on arrival - the thank-you modal
+    // links here with ?filter=bonus. A hidden button (bonus while locked) is
+    // ignored, so the URL can never expose gated content.
+    const requested = new URLSearchParams(location.search).get("filter");
+    if (requested) {
+      const target = Array.from(buttons).find(
+        (btn) => btn.dataset.filter === requested && !btn.hidden
+      );
+      if (target) activate(target);
+    }
   };
 
   initGalleryFilter();

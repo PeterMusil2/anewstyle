@@ -11,7 +11,8 @@ const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 // Where the bonus button sends the visitor, honouring the locale prefix.
-const galleryPath = lang === "en" ? "/en/gallery" : "/gallery";
+// ?filter=bonus makes the gallery open with the Bonus segment preselected.
+const galleryPath = `${lang === "en" ? "/en/gallery" : "/gallery"}?filter=bonus`;
 ---
 
 <section id={id} class="dark">
@@ -223,10 +224,10 @@ const galleryPath = lang === "en" ? "/en/gallery" : "/gallery";
       </p>
     </div>
 
-    <div class="cookie-dialog__footer">
+    <div class="cookie-dialog__footer cookie-dialog__footer--end">
       <a
         href={galleryPath}
-        class="button button--xs"
+        class="button"
         id="contact-thanks-bonus"
         hidden
       >

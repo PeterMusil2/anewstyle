@@ -103,7 +103,8 @@ const panoLabels = {
             aria-label={item.alt ?? t("gallery.preview360Day")}
             data-media="360"
             data-bonus={item.bonus ? "true" : undefined}
-            data-pano={item.full}
+            data-pano={item.bonus ? undefined : item.full}
+            data-pano-locked={item.bonus ? item.full : undefined}
             class="gitem"
             rel="noopener"
           >
@@ -133,7 +134,8 @@ const panoLabels = {
           <a
             href={item.full}
             aria-label={item.alt ?? t("products.stoneAsLighting")}
-            data-fancybox="gallery"
+            data-fancybox={item.bonus ? undefined : "gallery"}
+            data-fancybox-locked={item.bonus ? "gallery" : undefined}
             data-media={item.type}
             data-bonus={item.bonus ? "true" : undefined}
             class="gitem"
@@ -230,6 +232,21 @@ const panoLabels = {
       filter
         .querySelectorAll<HTMLButtonElement>(".segment-filter__btn--bonus")
         .forEach((btn) => btn.removeAttribute("hidden"));
+
+      // Bonus tiles ship without the attributes that make them openable, so a
+      // locked visitor cannot reach them by paging through the lightbox or the
+      // panorama viewer. Promote them to the real attributes now.
+      gallery
+        .querySelectorAll<HTMLElement>("[data-fancybox-locked]")
+        .forEach((el) => {
+          el.dataset.fancybox = el.dataset.fancyboxLocked ?? "gallery";
+          delete el.dataset.fancyboxLocked;
+        });
+
+      gallery.querySelectorAll<HTMLElement>("[data-pano-locked]").forEach((el) => {
+        el.dataset.pano = el.dataset.panoLocked ?? "";
+        delete el.dataset.panoLocked;
+      });
     }
 
     const buttons = filter.querySelectorAll<HTMLButtonElement>(

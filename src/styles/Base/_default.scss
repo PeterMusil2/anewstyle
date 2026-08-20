@@ -16,6 +16,13 @@ body {
     background-color: $color-bg;
 }
 
+// Component classes set an explicit display (inline-flex on buttons), and an
+// author rule always beats the user-agent [hidden] rule - so the attribute
+// silently stops working. Restore it globally.
+[hidden] {
+    display: none !important;
+}
+
 table {
     border-collapse: collapse;
     border-spacing: 0;

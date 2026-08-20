@@ -41,6 +41,35 @@ const videos = [
     <h1 class="title text-center title--mg-s">{t("manual.title")}</h1>
     <p class="desc text-center">{t("manual.intro")}</p>
   </div>
+  <div class="container manual-videos">
+    <h3 class="title title--center title--white title--s title--mg-s">
+      {t("manual.videosTitle")}
+    </h3>
+    <div class="manual-video-list">
+      {
+        videos.map((v) => (
+          <div class="manual-video-tile">
+            <div class="manual-video-tile__frame">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${v.id}`}
+                title={v.title}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              />
+            </div>
+            <strong class="manual-video-tile__title">{v.title}</strong>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+  <div class="container">
+    <h3 class="title title--center title--white title--s title--mg-s">
+      {t("manual.pdfTitle")}
+    </h3>
+  </div>
   <div class="container manual-list">
     {
       manuals.map((m) => (
@@ -77,29 +106,5 @@ const videos = [
         </a>
       ))
     }
-  </div>
-  <div class="container manual-videos">
-    <h3 class="title title--center title--white title--s title--mg-s">
-      {t("manual.videosTitle")}
-    </h3>
-    <div class="manual-video-list">
-      {
-        videos.map((v) => (
-          <div class="manual-video-tile">
-            <div class="manual-video-tile__frame">
-              <iframe
-                src={`https://www.youtube-nocookie.com/embed/${v.id}`}
-                title={v.title}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              />
-            </div>
-            <strong class="manual-video-tile__title">{v.title}</strong>
-          </div>
-        ))
-      }
-    </div>
   </div>
 </section>

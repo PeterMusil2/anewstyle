@@ -11,14 +11,6 @@ interface Props {
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
-const youtubeVideos = [
-  "PggSmLChjYw",
-  "GUiX1ZVmJac",
-  "ppa7Y319nE8",
-  "XTukH1ix6Fo",
-  "LJwBvcEK06M",
-];
-
 // Images and videos loaded from the Cloudinary `AnewStyle/Gallery` folder at
 // build time. Falls back to an empty list when the JSON hasn't been generated.
 const cloudinaryItems = await getGalleryItems();
@@ -93,87 +85,6 @@ const panoLabels = {
     data-pano-prev={panoLabels.prev}
     data-pano-next={panoLabels.next}
   >
-    <a
-      href="/assets/ATAK_bazen_2.webm"
-      aria-label={t("products.stoneAsLighting")}
-      data-fancybox="gallery"
-      data-media="video"
-      class="gitem"
-      rel="noopener"
-    >
-      <div class="gitem__photo">
-        <img
-          src="/assets/ATAK_bazen_2.avif"
-          loading="lazy"
-          width="768"
-          height="446"
-          alt={t("gallery.demoVideo")}
-        />
-      </div>
-      <div class="gitem__content">
-        <Icon name="play" />
-      </div>
-    </a>
-
-    <a
-      href="/videos/Rock_sheet_animation_background.mp4"
-      aria-label={t("products.stoneAsLighting")}
-      data-fancybox="gallery"
-      data-media="video"
-      class="gitem"
-      rel="noopener"
-    >
-      <div class="gitem__photo">
-        <picture>
-          <source
-            type="image/webp"
-            sizes="(min-width: 426px)"
-            srcset="/images/gallery/Rockfoil_viz1_video_768.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 425px)"
-            srcset="/images/gallery/Rockfoil_viz1_video_425.webp"
-          />
-          <img
-            src="/images/gallery/Rockfoil_viz1_video_425.webp"
-            loading="lazy"
-            width="768"
-            height="446"
-            alt={t("gallery.demoVideo")}
-          />
-        </picture>
-      </div>
-      <div class="gitem__content">
-        <Icon name="play" />
-      </div>
-    </a>
-
-    {
-      youtubeVideos.map((videoId) => (
-        <a
-          href={`https://youtu.be/${videoId}`}
-          aria-label={t("gallery.youtubeVideo")}
-          data-fancybox="gallery"
-          data-media="video"
-          class="gitem"
-          rel="noopener"
-        >
-          <div class="gitem__photo">
-            <img
-              src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
-              loading="lazy"
-              width="480"
-              height="360"
-              alt={t("gallery.youtubeVideo")}
-            />
-          </div>
-          <div class="gitem__content">
-            <Icon name="play" />
-          </div>
-        </a>
-      ))
-    }
 
     {
       cloudinaryItems.map((item) =>

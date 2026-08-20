@@ -27,22 +27,51 @@ export function useTranslations(lang: Lang) {
 }
 
 /**
+ * Normalize an HTML page pathname to the canonical trailing-slash form.
+ * Static assets keep their file-extension URLs unchanged.
+ */
+export function normalizePagePath(pathname: string): string {
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+
+  if (
+    normalizedPath === "/" ||
+    normalizedPath.endsWith("/") ||
+    /\/[^/]+\.[^/]+$/.test(normalizedPath)
+  ) {
+    return normalizedPath;
+  }
+
+  return `${normalizedPath}/`;
+}
+
+/**
+ * Build a canonical URL without query parameters or fragments.
+ */
+export function getCanonicalUrl(currentUrl: URL, site: URL): URL {
+  return new URL(normalizePagePath(currentUrl.pathname), site);
+}
+
+/**
  * Get localized path for a given path and language
  */
 export function getLocalizedPath(path: string, lang: Lang): string {
+  const suffixIndex = path.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? "" : path.slice(suffixIndex);
+
   // Remove leading slash for processing
-  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  const cleanPath = pathname.startsWith("/") ? pathname.slice(1) : pathname;
 
   // Remove any existing language prefix
-  const pathWithoutLang = cleanPath.replace(/^(cs|en)\//, "");
+  const pathWithoutLang = cleanPath.replace(/^(cs|en)(\/|$)/, "");
 
   // For default language (cs), don't add prefix
   if (lang === defaultLang) {
-    return `/${pathWithoutLang}`;
+    return `${normalizePagePath(`/${pathWithoutLang}`)}${suffix}`;
   }
 
   // For other languages, add prefix
-  return `/${lang}/${pathWithoutLang}`;
+  return `${normalizePagePath(`/${lang}/${pathWithoutLang}`)}${suffix}`;
 }
 
 /**
@@ -59,10 +88,14 @@ export function getLanguageSwitchPath(
 
   // Add new language prefix (or none for default)
   if (targetLang === defaultLang) {
-    return pathWithoutLang || "/";
+    return `${normalizePagePath(pathWithoutLang || "/")}${
+      currentUrl.search
+    }${currentUrl.hash}`;
   }
 
-  return `/${targetLang}${pathWithoutLang}`;
+  return `${normalizePagePath(`/${targetLang}${pathWithoutLang}`)}${
+    currentUrl.search
+  }${currentUrl.hash}`;
 }
 
 /**
@@ -72,14 +105,15 @@ export function getAlternateLinks(
   currentUrl: URL
 ): { lang: Lang; href: string }[] {
   const baseUrl = currentUrl.origin;
-  const pathname = currentUrl.pathname;
+  const pathname = normalizePagePath(currentUrl.pathname);
 
   // Remove current language prefix if exists
   const pathWithoutLang = pathname.replace(/^\/(cs|en)(\/|$)/, "/");
 
   return (Object.keys(languages) as Lang[]).map((lang) => {
-    const localizedPath =
-      lang === defaultLang ? pathWithoutLang : `/${lang}${pathWithoutLang}`;
+    const localizedPath = normalizePagePath(
+      lang === defaultLang ? pathWithoutLang : `/${lang}${pathWithoutLang}`
+    );
 
     return {
       lang,

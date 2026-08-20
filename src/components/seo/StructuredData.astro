@@ -10,9 +10,14 @@ interface Props {
   canonicalUrl: string;
   lang: string;
   metaImageUrl: string;
-  pageType?: "WebPage" | "CollectionPage" | "AboutPage" | "ContactPage";
+  pageType?:
+    | "WebPage"
+    | "CollectionPage"
+    | "ImageGallery"
+    | "AboutPage"
+    | "ContactPage";
   breadcrumbs?: BreadcrumbItem[];
-  additionalGraph?: unknown[];
+  additionalGraph?: Array<Record<string, unknown>>;
 }
 
 const {
@@ -31,8 +36,22 @@ const canonical = new URL(canonicalUrl);
 
 const organizationId = new URL("#organization", baseSite).href;
 const websiteId = new URL("#website", baseSite).href;
+const logoId = new URL("#logo", baseSite).href;
 const webpageId = new URL("#webpage", canonical).href;
 const primaryImageId = new URL("#primaryimage", canonical).href;
+const breadcrumbId = new URL("#breadcrumb", canonical).href;
+
+const logo = {
+  "@type": "ImageObject",
+  "@id": logoId,
+  url: new URL("/images/favicons/android-chrome-512x512.png", baseSite).href,
+  contentUrl: new URL(
+    "/images/favicons/android-chrome-512x512.png",
+    baseSite
+  ).href,
+  width: 512,
+  height: 512,
+};
 
 const organization = {
   "@type": "Organization",
@@ -41,9 +60,19 @@ const organization = {
   alternateName: "Anew Style",
   legalName: "OSM s.r.o.",
   url: new URL("/", baseSite).href,
-  logo: new URL("/images/logos/logo.svg", baseSite).href,
+  logo: {
+    "@id": logoId,
+  },
   image: metaImageUrl,
   email: "info@anewstyle.cz",
+  telephone: "+420601221551",
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    email: "info@anewstyle.cz",
+    telephone: "+420601221551",
+    availableLanguage: ["cs", "en"],
+  },
   sameAs: [
     "https://www.anewstyle-eshop.cz",
     "https://www.facebook.com/profile.php?id=100088855596654",
@@ -76,7 +105,7 @@ const website = {
   "@id": websiteId,
   url: new URL("/", baseSite).href,
   name: "ANEW STYLE",
-  inLanguage: lang,
+  inLanguage: ["cs", "en"],
   publisher: {
     "@id": organizationId,
   },
@@ -87,7 +116,23 @@ const primaryImage = {
   "@id": primaryImageId,
   url: metaImageUrl,
   contentUrl: metaImageUrl,
+  caption: title,
+  inLanguage: lang,
 };
+
+const breadcrumbList =
+  breadcrumbs && breadcrumbs.length >= 2
+    ? {
+        "@type": "BreadcrumbList",
+        "@id": breadcrumbId,
+        itemListElement: breadcrumbs.map((crumb, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: crumb.name,
+          item: new URL(crumb.url, baseSite).href,
+        })),
+      }
+    : undefined;
 
 const webpage = {
   "@type": pageType,
@@ -105,24 +150,19 @@ const webpage = {
   primaryImageOfPage: {
     "@id": primaryImageId,
   },
-};
-
-const breadcrumbList =
-  breadcrumbs && breadcrumbs.length > 0
+  ...(breadcrumbList
     ? {
-        "@type": "BreadcrumbList",
-        itemListElement: breadcrumbs.map((crumb, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: crumb.name,
-          item: new URL(crumb.url, baseSite).href,
-        })),
+        breadcrumb: {
+          "@id": breadcrumbId,
+        },
       }
-    : undefined;
+    : {}),
+};
 
 const graph = [
   organization,
   website,
+  logo,
   primaryImage,
   webpage,
   ...(breadcrumbList ? [breadcrumbList] : []),

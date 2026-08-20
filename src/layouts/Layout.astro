@@ -11,6 +11,7 @@ import StructuredData from "../components/seo/StructuredData.astro";
 import {
   getLangFromUrl,
   getAlternateLinks,
+  getCanonicalUrl,
   defaultLang,
   type Lang,
 } from "../i18n/utils";
@@ -20,8 +21,14 @@ interface Props {
   description: string;
   showNav?: boolean;
   metaImageUrl?: string;
-  pageType?: "WebPage" | "CollectionPage" | "AboutPage" | "ContactPage";
+  pageType?:
+    | "WebPage"
+    | "CollectionPage"
+    | "ImageGallery"
+    | "AboutPage"
+    | "ContactPage";
   breadcrumbs?: Array<{ name: string; url: string }>;
+  additionalStructuredData?: Array<Record<string, unknown>>;
 }
 
 const {
@@ -31,10 +38,11 @@ const {
   metaImageUrl,
   pageType,
   breadcrumbs,
+  additionalStructuredData,
 } = Astro.props;
 const lang = getLangFromUrl(Astro.url) as Lang;
 const baseSite = Astro.site ?? new URL(Astro.url.origin);
-const canonicalUrl = new URL(Astro.url.pathname, baseSite);
+const canonicalUrl = getCanonicalUrl(Astro.url, baseSite);
 const alternateLinks = getAlternateLinks(canonicalUrl);
 const xDefaultHref =
   alternateLinks.find((link) => link.lang === defaultLang)?.href ??
@@ -129,11 +137,11 @@ const ENABLE_GTM = true;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Lukáš Chylík" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <meta name="keywords" content={description} />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -174,15 +182,20 @@ const ENABLE_GTM = true;
     <!-- Open Graph data -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ANEW STYLE" />
     <meta property="og:url" content={canonicalUrl.href} />
     <meta property="og:image" content={resolvedMetaImageUrl} />
+    <meta property="og:image:alt" content={title} />
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:locale:alternate" content={ogLocaleAlternate} />
 
     <!-- Twitter Card data -->
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedMetaImageUrl} />
+    <meta name="twitter:image:alt" content={title} />
 
     <StructuredData
       title={title}
@@ -192,6 +205,7 @@ const ENABLE_GTM = true;
       metaImageUrl={resolvedMetaImageUrl}
       pageType={pageType}
       breadcrumbs={breadcrumbs}
+      additionalGraph={additionalStructuredData}
     />
 
     <meta name="generator" content={Astro.generator} />

@@ -12,7 +12,7 @@ const t = useTranslations(lang);
 
 // Where the bonus button sends the visitor, honouring the locale prefix.
 // ?filter=bonus makes the gallery open with the Bonus segment preselected.
-const galleryPath = `${lang === "en" ? "/en/gallery" : "/gallery"}?filter=bonus`;
+const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonus`;
 ---
 
 <section id={id} class="dark">

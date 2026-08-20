@@ -5,6 +5,12 @@ import { getLangFromUrl, useTranslations } from "../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const baseSite = Astro.site ?? new URL(Astro.url.origin);
+const pageUrl = new URL("/manual/", baseSite).href;
+const manualUrl = new URL(
+  "/downloads/Manual_CZ_AnewStyle_Basic_Deluxe.pdf",
+  baseSite
+).href;
 ---
 
 <Layout
@@ -13,8 +19,19 @@ const t = useTranslations(lang);
   metaImageUrl="/images/meta/meta-facebook.webp"
   pageType="WebPage"
   breadcrumbs={[
-    { name: "Home", url: "/" },
-    { name: "Manual", url: "/manual" },
+    { name: "Domů", url: "/" },
+    { name: "Návody", url: "/manual/" },
+  ]}
+  additionalStructuredData={[
+    {
+      "@type": "DigitalDocument",
+      "@id": `${manualUrl}#document`,
+      name: t("manual.cardTitle"),
+      url: manualUrl,
+      encodingFormat: "application/pdf",
+      inLanguage: lang,
+      mainEntityOfPage: { "@id": `${pageUrl}#webpage` },
+    },
   ]}
 >
   <main>

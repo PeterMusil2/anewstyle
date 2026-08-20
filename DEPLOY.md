@@ -1,32 +1,21 @@
-# Deployment — GitHub Pages (Actions)
+# Deployment — Cloudflare Pages
 
-The site is a static Astro build deployed to **GitHub Pages** by the
-`.github/workflows/static.yml` workflow: every push to `master` builds with
-`bun run build` and publishes `dist/`. The custom domain `anewstyle.cz` points
-at GitHub Pages.
+The site is a static Astro build deployed to **Cloudflare Pages**. Every push to
+`master` triggers a build (`bun run build`) and Cloudflare serves `dist/`. The
+custom domain `anewstyle.cz` points at the Pages project.
 
+- **Repository:** `PeterMusil2/anewstyle`
 - **Build command:** `bun run build`
-- **Build output directory:** `dist`
-- **Optional build secret:** `CLOUDINARY_URL` — set it as a repository secret
-  (Settings → Secrets and variables → Actions). Without it the build still
-  succeeds; the Cloudinary gallery just renders empty.
-
-> **Note:** a migration to Cloudflare Pages was started (see `wrangler.toml` and
-> the Cloudflare section below) but never completed — DNS was never moved, so
-> GitHub Pages remained the live host. The Cloudflare instructions below are
-> kept for whenever that migration is finished; do the DNS cutover and remove
-> the Actions workflow in the same change.
-
-## Cloudflare Pages (not active — for a future migration)
-
-- **Build output directory:** `dist`
-- **Required build env var:** `CLOUDINARY_URL` (secret) — see below
+- **Build output directory:** `dist` (also declared in `wrangler.toml`)
+- **Production branch:** `master`
+- **Required build secret:** `CLOUDINARY_URL` — without it the build still
+  succeeds, the Cloudinary gallery just renders empty.
 
 ## One-time Cloudflare setup
 
 1. Sign in at <https://dash.cloudflare.com> → **Workers & Pages** → **Create** →
    **Pages** → **Connect to Git**.
-2. Authorize GitHub and select the `PeterMusil/anewstyle` repository.
+2. Authorize GitHub and select the `PeterMusil2/anewstyle` repository.
 3. Configure the build:
    - **Production branch:** `master`
    - **Framework preset:** `Astro` (or `None` — the settings below win either way)
@@ -50,7 +39,10 @@ Once a build succeeds on the `*.pages.dev` URL:
    `anewstyle.cz` (and `www.anewstyle.cz` if used).
 2. Update DNS to the records Cloudflare shows. If the domain's DNS is already on
    Cloudflare this is automatic; otherwise point the records as instructed.
-3. Remove the old GitHub Pages DNS/records once Cloudflare is serving.
+3. Remove the old GitHub Pages A/AAAA records once Cloudflare is serving.
+
+`astro.config.mjs` sets `site: "https://anewstyle.cz/"`, which drives the sitemap
+and canonical URLs — it needs no change for Cloudflare.
 
 ## Getting `CLOUDINARY_URL`
 

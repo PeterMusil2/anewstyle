@@ -255,8 +255,14 @@ function buildItem(resource) {
   if (category === "360") {
     return {
       ...base,
-      thumb: cloudinary.url(publicId, { ...imageOpts, width: thumbW }),
-      // Equirectangular panorama, aspect preserved, AVIF where supported.
+      // The grid tile is cropped like any other, so it gets the same AVIF set.
+      width: THUMB_WIDTH,
+      height: Math.round((THUMB_WIDTH * 9) / 16),
+      thumb: cloudinary.url(publicId, { ...tileOpts, fetch_format: "auto", width: THUMB_WIDTH }),
+      thumbAvif: tileSrcSet(publicId, "avif"),
+      thumbWebp: tileSrcSet(publicId, "webp"),
+      // The panorama itself must keep its full 2:1 equirectangular frame -
+      // cropping it would make Photo Sphere Viewer render a distorted sphere.
       full: cloudinary.url(publicId, { ...imageOpts, width: PANO_FULL_WIDTH }),
     };
   }
@@ -308,7 +314,15 @@ async function main() {
   cloudinary.config({ secure: true });
 
   const resources = await collectResources();
-  const items = resources.map(buildItem).filter(Boolean);
+
+  // Display order when no filter is active: videos, then photos, then 360.
+  // Within a category the public_id sort from the search is preserved.
+  const CATEGORY_ORDER = { video: 0, image: 1, "360": 2 };
+
+  const items = resources
+    .map(buildItem)
+    .filter(Boolean)
+    .sort((a, b) => CATEGORY_ORDER[a.type] - CATEGORY_ORDER[b.type]);
 
   await mkdir(path.dirname(OUT_FILE), { recursive: true });
   await writeFile(

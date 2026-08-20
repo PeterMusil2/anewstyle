@@ -293,5 +293,10 @@
   "faq.q7": "Je nutná impregnace panelu po instalaci?",
   "faq.a7": "Panely jsou již z výroby ošetřeny speciální <strong>nano impregnací</strong>, která je chrání proti vlhkosti a usnadňuje čištění.",
   "faq.q8": "Je panel těžký?",
-  "faq.a8": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od <strong>14kg</strong> v nejmenší verzi SLIM rozměr L."
+  "faq.a8": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od <strong>14kg</strong> v nejmenší verzi SLIM rozměr L.",
+  "gallery.filterBonus": "Bonus",
+  "contact.thanksTitle": "Děkujeme za zprávu",
+  "contact.thanksDesc": "Vaši zprávu jsme přijali a ozveme se vám co nejdříve. Jako poděkování jsme pro vás odemkli bonusový obsah v galerii.",
+  "contact.thanksShowBonus": "Zobrazit bonusový obsah",
+  "contact.thanksClose": "Zavřít"
 }

@@ -37,8 +37,14 @@ const GALLERY_FOLDER =
 // matches nothing (e.g. the gallery folders still sit directly under the root).
 const ROOT_FOLDER = GALLERY_FOLDER.split("/")[0];
 
-// Subfolders of ROOT_FOLDER that must never appear in the gallery. Only applies
-// to the fallback scan - anything inside GALLERY_FOLDER is always included.
+// Gated extra content, unlocked once a visitor submits the contact form. Same
+// 360/images/videos layout as the gallery folder; items are flagged so the page
+// can keep them hidden until unlocked.
+const BONUS_FOLDER = process.env.CLOUDINARY_BONUS_FOLDER || `${ROOT_FOLDER}/Bonus`;
+
+// Subfolders of ROOT_FOLDER that must never appear in the main gallery. Only
+// applies to the fallback scan - anything inside GALLERY_FOLDER is always
+// included, and bonus assets are collected separately.
 const EXCLUDED_FOLDERS = ["bonus"];
 
 const OUT_FILE = path.join(process.cwd(), "public", "data", "gallery.json");
@@ -218,7 +224,7 @@ function encodeTransformCommas(url) {
   );
 }
 
-function buildItem(resource) {
+function buildItem(resource, { bonus = false } = {}) {
   const publicId = resource?.public_id;
   if (!publicId) return null;
 
@@ -231,6 +237,7 @@ function buildItem(resource) {
   const thumbH = Math.max(1, Math.round((thumbW * nativeH) / nativeW));
 
   const base = { type: category, width: thumbW, height: thumbH, alt };
+  if (bonus) base.bonus = true;
 
   if (category === "video") {
     return {
@@ -315,14 +322,27 @@ async function main() {
 
   const resources = await collectResources();
 
+  // Bonus assets live outside the gallery folder and are fetched separately so
+  // an empty bonus folder can never trigger the gallery's fallback scan.
+  const bonusResources = await searchAllResources(
+    subtreeExpression(BONUS_FOLDER)
+  ).catch(() => []);
+
   // Display order when no filter is active: videos, then photos, then 360.
-  // Within a category the public_id sort from the search is preserved.
+  // Within a category the public_id sort from the search is preserved, and
+  // bonus items trail the regular ones so the default view stays familiar.
   const CATEGORY_ORDER = { video: 0, image: 1, "360": 2 };
 
-  const items = resources
-    .map(buildItem)
+  const items = [
+    ...resources.map((r) => buildItem(r)),
+    ...bonusResources.map((r) => buildItem(r, { bonus: true })),
+  ]
     .filter(Boolean)
-    .sort((a, b) => CATEGORY_ORDER[a.type] - CATEGORY_ORDER[b.type]);
+    .sort(
+      (a, b) =>
+        CATEGORY_ORDER[a.type] - CATEGORY_ORDER[b.type] ||
+        Number(a.bonus ?? false) - Number(b.bonus ?? false)
+    );
 
   await mkdir(path.dirname(OUT_FILE), { recursive: true });
   await writeFile(
@@ -333,6 +353,7 @@ async function main() {
   );
 
   const count = (t) => items.filter((i) => i.type === t).length;
+  const bonusCount = items.filter((i) => i.bonus).length;
 
   // An empty result is a successful API call that matched nothing, which is
   // almost always a folder-path problem rather than something intentional.
@@ -348,7 +369,8 @@ async function main() {
 
   console.log(
     `✓ Cloudinary gallery: ${items.length} items ` +
-      `(${count("image")} images, ${count("video")} videos, ${count("360")} panoramas) ` +
+      `(${count("image")} images, ${count("video")} videos, ${count("360")} panoramas` +
+      `${bonusCount ? `, ${bonusCount} of them bonus` : ""}) ` +
       `→ public/data/gallery.json`
   );
 }

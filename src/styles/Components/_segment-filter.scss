@@ -64,14 +64,24 @@
       }
     }
 
+    // Buttons that pair a label with a dimension stack it: the size acts as the
+    // title, the aspect ratio sits under it. Scoped with :has() so icon+label
+    // buttons elsewhere (Showcase) keep their inline row.
+    &:has(> small) {
+      flex-direction: column;
+      gap: 4px;
+    }
+
     // The size label (L, XL, XXL) reads as the button's icon, so it carries the
-    // weight; the millimetre dimensions beside it are supporting detail.
+    // weight; the millimetre dimensions under it are supporting detail.
     > span {
       font-weight: 700;
+      text-align: center;
     }
 
     > small {
       font-weight: 300;
+      text-align: center;
     }
 
     &[aria-pressed="true"] {

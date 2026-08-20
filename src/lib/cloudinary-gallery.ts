@@ -8,6 +8,8 @@ export interface CloudinaryGalleryItem {
   /** WebP srcset fallback for browsers without AVIF support. */
   thumbWebp?: string;
   full: string;
+  /** Gated bonus asset: hidden until the visitor unlocks the bonus content. */
+  bonus?: boolean;
   width?: number;
   height?: number;
   alt?: string;

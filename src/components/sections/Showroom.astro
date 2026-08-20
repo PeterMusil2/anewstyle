@@ -77,6 +77,15 @@ const panoLabels = {
       >
         <span>{t("gallery.filter360")}</span>
       </button>
+      <button
+        type="button"
+        class="segment-filter__btn segment-filter__btn--bonus"
+        data-filter="bonus"
+        aria-pressed="false"
+        hidden
+      >
+        <span>{t("gallery.filterBonus")}</span>
+      </button>
     </div>
   </div>
   <div
@@ -93,6 +102,7 @@ const panoLabels = {
             href={item.full}
             aria-label={item.alt ?? t("gallery.preview360Day")}
             data-media="360"
+            data-bonus={item.bonus ? "true" : undefined}
             data-pano={item.full}
             class="gitem"
             rel="noopener"
@@ -125,6 +135,7 @@ const panoLabels = {
             aria-label={item.alt ?? t("products.stoneAsLighting")}
             data-fancybox="gallery"
             data-media={item.type}
+            data-bonus={item.bonus ? "true" : undefined}
             class="gitem"
             rel="noopener"
           >
@@ -193,12 +204,33 @@ const panoLabels = {
 </section>
 
 <script>
+  // Set once the visitor submits the contact form; see Contact.astro.
+  const BONUS_KEY = "bonusContentUnlocked";
+
+  const isBonusUnlocked = (): boolean => {
+    try {
+      return localStorage.getItem(BONUS_KEY) === "true";
+    } catch {
+      // Private mode or blocked storage: stay locked rather than throwing.
+      return false;
+    }
+  };
+
   const initGalleryFilter = () => {
     const gallery = document.querySelector<HTMLElement>(".gallery");
     const filter = gallery
       ?.closest("section")
       ?.querySelector<HTMLElement>(".segment-filter");
     if (!filter || !gallery) return;
+
+    // Reveal the bonus tiles and their filter only for unlocked visitors. The
+    // markup ships locked, so the gated content never flashes before this runs.
+    if (isBonusUnlocked()) {
+      gallery.dataset.bonusUnlocked = "true";
+      filter
+        .querySelectorAll<HTMLButtonElement>(".segment-filter__btn--bonus")
+        .forEach((btn) => btn.removeAttribute("hidden"));
+    }
 
     const buttons = filter.querySelectorAll<HTMLButtonElement>(
       ".segment-filter__btn"

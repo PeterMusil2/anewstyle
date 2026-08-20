@@ -59,9 +59,22 @@ section:has(> .gallery) {
     --gap: #{$gap-xl};
   }
 
+  // Bonus tiles ship hidden and are revealed only for visitors who unlocked
+  // them, so gated content never flashes before the script runs.
+  .gitem[data-bonus] {
+    display: none;
+  }
+
+  &[data-bonus-unlocked] .gitem[data-bonus] {
+    display: block;
+  }
+
+  // Filters come last on purpose: they share specificity with the unlock rule
+  // above, so source order lets an active filter still hide a bonus tile.
   &[data-filter="video"] .gitem:not([data-media="video"]),
   &[data-filter="image"] .gitem:not([data-media="image"]),
-  &[data-filter="360"] .gitem:not([data-media="360"]) {
+  &[data-filter="360"] .gitem:not([data-media="360"]),
+  &[data-filter="bonus"] .gitem:not([data-bonus]) {
     display: none;
   }
 }

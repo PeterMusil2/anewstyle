@@ -9,6 +9,9 @@ interface Props {
 
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+
+// Where the bonus button sends the visitor, honouring the locale prefix.
+const galleryPath = lang === "en" ? "/en/gallery" : "/gallery";
 ---
 
 <section id={id} class="dark">
@@ -185,7 +188,92 @@ const t = useTranslations(lang);
   </div>
 </section>
 
+<!--
+  Reuses the .cookie-dialog styles: the two modals are visually identical and
+  the shared block already covers backdrop, box, header and footer.
+-->
+<dialog
+  id="contact-thanks-dialog"
+  class="cookie-dialog"
+  aria-labelledby="contact-thanks-title"
+  aria-describedby="contact-thanks-desc"
+  aria-modal="true"
+>
+  <div class="cookie-dialog__box">
+    <div class="cookie-dialog__header">
+      <h2 id="contact-thanks-title" class="cookie-dialog__title">
+        <span>{t("contact.thanksTitle")}</span>
+      </h2>
+      <button
+        type="button"
+        class="cookie-dialog__close"
+        id="contact-thanks-close"
+        aria-label={t("contact.thanksClose")}
+        aria-controls="contact-thanks-dialog"
+        aria-keyshortcuts="Escape"
+        title={t("contact.thanksClose")}
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="cookie-dialog__content">
+      <p id="contact-thanks-desc" class="cookie-dialog__desc">
+        <span>{t("contact.thanksDesc")}</span>
+      </p>
+    </div>
+
+    <div class="cookie-dialog__footer">
+      <a
+        href={galleryPath}
+        class="button button--xs"
+        id="contact-thanks-bonus"
+        hidden
+      >
+        <span>{t("contact.thanksShowBonus")}</span>
+      </a>
+    </div>
+  </div>
+</dialog>
+
 <script>
+  // Unlocks the gated bonus tiles in the gallery; read by Showroom.astro.
+  const BONUS_KEY = "bonusContentUnlocked";
+
+  const unlockBonus = (): boolean => {
+    try {
+      localStorage.setItem(BONUS_KEY, "true");
+      return true;
+    } catch {
+      // Private mode or blocked storage: the message still sent, so show the
+      // thank-you without promising bonus content we cannot unlock.
+      return false;
+    }
+  };
+
+  const initThanksDialog = () => {
+    const dialog = document.querySelector<HTMLDialogElement>(
+      "#contact-thanks-dialog"
+    );
+    if (!dialog) return null;
+
+    const close = dialog.querySelector<HTMLButtonElement>(
+      "#contact-thanks-close"
+    );
+    close?.addEventListener("click", () => dialog.close());
+
+    return (unlocked: boolean) => {
+      const bonusLink = dialog.querySelector<HTMLAnchorElement>(
+        "#contact-thanks-bonus"
+      );
+      // The bonus button only appears once the flag is genuinely stored.
+      if (bonusLink) bonusLink.toggleAttribute("hidden", !unlocked);
+      dialog.showModal();
+    };
+  };
+
+  const showThanks = initThanksDialog();
+
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
     const status = form.querySelector<HTMLElement>(".contact-form__status");
@@ -226,6 +314,7 @@ const t = useTranslations(lang);
         if (response.ok && data.success) {
           setStatus("success", successMessage);
           form.reset();
+          showThanks?.(unlockBonus());
         } else {
           setStatus("error", errorMessage);
         }

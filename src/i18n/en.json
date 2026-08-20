@@ -296,7 +296,9 @@
   "faq.a8": "Despite using natural stone, the panels are lightweight because they use ultra-thin veneers. The panels are easy to handle and hang on the wall. Their weight ranges from <strong>14kg</strong> in the smallest SLIM version size L.",
   "gallery.filterBonus": "Bonus",
   "contact.thanksTitle": "Thank you for your interest",
-  "contact.thanksDesc": "As a thank you, we have prepared bonus content in our gallery, which is now unlocked for you. We have received your message and will get back to you shortly.",
+  "contact.thanksDesc": "Thank you for your interest, we will get back to you as soon as possible. As a bonus we have unlocked a section in our gallery where you will find our current selection of stone patterns.",
   "contact.thanksShowBonus": "Show bonus content",
-  "contact.thanksClose": "Close"
+  "contact.thanksClose": "Close",
+  "products.samplesNote": "These products are for illustration only. If you would like to see our current selection of stone patterns, do not hesitate to send us an email.",
+  "products.samplesCta": "Write to us"
 }

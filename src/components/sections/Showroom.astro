@@ -23,6 +23,11 @@ const youtubeVideos = [
 // build time. Falls back to an empty list when the JSON hasn't been generated.
 const cloudinaryItems = await getGalleryItems();
 
+// Tile widths the browser picks from, mirroring the .gallery column counts:
+// 1 column on mobile, 2 on tablet, 3 on small laptops, 4 above that.
+const GALLERY_SIZES =
+  "(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw";
+
 // 360° panoramas open in a lazy-loaded Photo Sphere Viewer overlay.
 const panoLabels = {
   close: lang === "en" ? "Close" : "Zavřít",
@@ -182,13 +187,22 @@ const panoLabels = {
             rel="noopener"
           >
             <div class="gitem__photo">
-              <img
-                src={item.thumb}
-                loading="lazy"
-                width={item.width}
-                height={item.height}
-                alt={item.alt ?? t("gallery.preview360Day")}
-              />
+              <picture>
+                {item.thumbAvif && (
+                  <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />
+                )}
+                {item.thumbWebp && (
+                  <source type="image/webp" srcset={item.thumbWebp} sizes={GALLERY_SIZES} />
+                )}
+                <img
+                  src={item.thumb}
+                  loading="lazy"
+                  decoding="async"
+                  width={item.width}
+                  height={item.height}
+                  alt={item.alt ?? t("gallery.preview360Day")}
+                />
+              </picture>
             </div>
             <div class="gitem__content">
               <Icon name="360" />
@@ -204,13 +218,22 @@ const panoLabels = {
             rel="noopener"
           >
             <div class="gitem__photo">
-              <img
-                src={item.thumb}
-                loading="lazy"
-                width={item.width}
-                height={item.height}
-                alt={item.alt ?? t("products.stoneAsLighting")}
-              />
+              <picture>
+                {item.thumbAvif && (
+                  <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />
+                )}
+                {item.thumbWebp && (
+                  <source type="image/webp" srcset={item.thumbWebp} sizes={GALLERY_SIZES} />
+                )}
+                <img
+                  src={item.thumb}
+                  loading="lazy"
+                  decoding="async"
+                  width={item.width}
+                  height={item.height}
+                  alt={item.alt ?? t("products.stoneAsLighting")}
+                />
+              </picture>
             </div>
             {item.type === "video" && (
               <div class="gitem__content">

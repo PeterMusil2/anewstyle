@@ -3,6 +3,10 @@ export type GalleryItemType = "image" | "video" | "360";
 export interface CloudinaryGalleryItem {
   type: GalleryItemType;
   thumb: string;
+  /** AVIF srcset for the grid tile, widths matching THUMB_WIDTHS. */
+  thumbAvif?: string;
+  /** WebP srcset fallback for browsers without AVIF support. */
+  thumbWebp?: string;
   full: string;
   width?: number;
   height?: number;

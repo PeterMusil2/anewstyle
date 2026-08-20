@@ -50,6 +50,16 @@ const IMAGE_FULL_WIDTH = 1600;
 const PANO_FULL_WIDTH = 4096;
 const VIDEO_FULL_WIDTH = 1280;
 
+// Grid tiles are cropped to 16:9 by CSS (.gitem__photo), so Cloudinary crops to
+// the same ratio and every tile arrives at a uniform, display-sized resolution
+// instead of a full-resolution original the browser then downscales.
+const THUMB_RATIO = "16:9";
+
+// Candidate tile widths for the srcset. The grid runs 4 columns at desktop down
+// to 1 on mobile inside a ~1600px container, so a tile is roughly 400px wide
+// (800px for the double-width first tile); the larger entries cover 2x DPR.
+const THUMB_WIDTHS = [400, 600, 800, 1200, 1600];
+
 /** Load CLOUDINARY_URL from a local .env if it isn't already in the environment. */
 async function loadEnv() {
   if (process.env.CLOUDINARY_URL) return;
@@ -168,6 +178,46 @@ function toAlt(publicId) {
 // aspect preserved (no crop), capped width.
 const imageOpts = { fetch_format: "auto", quality: "auto", crop: "limit" };
 
+// Tile crop: fixed 16:9 at a display-sized width, subject-aware so the crop does
+// not cut through the point of interest.
+const tileOpts = {
+  crop: "fill",
+  gravity: "auto",
+  aspect_ratio: THUMB_RATIO,
+  quality: "auto",
+};
+
+/**
+ * Build a srcset for one explicit format.
+ *
+ * `f_auto` negotiates via the Accept header, but on this account it settles on
+ * WebP even when the browser advertises AVIF. Requesting the format explicitly
+ * and letting <picture> pick the source is both smaller and predictable.
+ */
+function tileSrcSet(publicId, format) {
+  return THUMB_WIDTHS.map((w) => {
+    const url = cloudinary.url(publicId, {
+      ...tileOpts,
+      fetch_format: format,
+      width: w,
+    });
+    // srcset is comma-delimited and Cloudinary joins transformation parameters
+    // with commas ("ar_16:9,c_fill,..."), which a browser would mis-split into
+    // bogus candidates. Percent-encoding those commas keeps one transformation
+    // component and delivers byte-identical output.
+    return `${encodeTransformCommas(url)} ${w}w`;
+  }).join(", ");
+}
+
+/** Percent-encode commas in the transformation segment of a delivery URL. */
+function encodeTransformCommas(url) {
+  return url.replace(
+    /\/(image|video)\/upload\/([^/]+)\//,
+    (_m, kind, transform) =>
+      `/${kind}/upload/${transform.replace(/,/g, "%2C")}/`
+  );
+}
+
 function buildItem(resource) {
   const publicId = resource?.public_id;
   if (!publicId) return null;
@@ -213,7 +263,14 @@ function buildItem(resource) {
 
   return {
     ...base,
-    thumb: cloudinary.url(publicId, { ...imageOpts, width: thumbW }),
+    // Tiles are a fixed 16:9 so the grid reads as one uniform set.
+    width: THUMB_WIDTH,
+    height: Math.round((THUMB_WIDTH * 9) / 16),
+    thumb: cloudinary.url(publicId, { ...tileOpts, fetch_format: "auto", width: THUMB_WIDTH }),
+    thumbAvif: tileSrcSet(publicId, "avif"),
+    thumbWebp: tileSrcSet(publicId, "webp"),
+    // The lightbox keeps the original aspect and negotiates its own format,
+    // so it stays correct on browsers without AVIF support.
     full: cloudinary.url(publicId, { ...imageOpts, width: IMAGE_FULL_WIDTH }),
   };
 }

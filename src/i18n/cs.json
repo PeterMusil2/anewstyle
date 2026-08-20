@@ -292,9 +292,10 @@
   "faq.a8": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od <strong>14kg</strong> v nejmenší verzi SLIM rozměr L.",
   "gallery.filterBonus": "Bonus",
   "contact.thanksTitle": "Děkujeme za váš zájem",
-  "contact.thanksDesc": "Děkujeme za váš zájem, ozveme se vám v co nejkratší možné době. Jako bonus jsme vám odemkli sekci v naší galerii, kde naleznete aktuální nabídku vzorů kamene.",
+  "contact.thanksDesc": "Děkujeme za váš zájem, ozveme se vám v co nejkratší možné době.",
   "contact.thanksShowBonus": "Zobrazit bonusový obsah",
   "contact.thanksClose": "Zavřít",
   "products.samplesNote": "Tyto produkty jsou pouze ilustrační. Pokud chcete vidět nabídku aktuálních vzorů kamene, neváhejte nám napsat e-mail.",
-  "products.samplesCta": "Napište nám"
+  "products.samplesCta": "Napište nám",
+  "contact.thanksBonus": "Jako <strong>BONUS</strong> jsme vám odemkli sekci v naší galerii, kde naleznete aktuální nabídku vzorů kamene."
 }

@@ -222,6 +222,10 @@ const galleryPath = `${lang === "en" ? "/en/gallery" : "/gallery"}?filter=bonus`
       <p id="contact-thanks-desc" class="cookie-dialog__desc">
         <span>{t("contact.thanksDesc")}</span>
       </p>
+      <p
+        class="cookie-dialog__desc"
+        set:html={t("contact.thanksBonus")}
+      />
     </div>
 
     <div class="cookie-dialog__footer cookie-dialog__footer--end">

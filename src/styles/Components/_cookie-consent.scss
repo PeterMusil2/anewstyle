@@ -95,6 +95,12 @@
     opacity: 0.9;
     font-size: 1.5rem;
     line-height: 1.75;
+  
+    // Highlighted words (BONUS) pick up the brand gold, matching .desc strong.
+    strong {
+      font-weight: 700;
+      color: $color-primary;
+    }
   }
 
   &__group {

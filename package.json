@@ -23,7 +23,7 @@
     "@photo-sphere-viewer/core": "^5.15.1",
     "astro": "^7.2.2",
     "cloudinary": "^2.10.0",
-    "three": "^0.185.1",
+    "three": "^0.183.0",
     "typescript": "^6"
   },
   "devDependencies": {

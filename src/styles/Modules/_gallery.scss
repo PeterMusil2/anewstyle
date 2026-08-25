@@ -35,24 +35,59 @@ section:has(> .gallery) {
   }
 }
 
-.gallery {
-  @include grid-columns(
-    grid,
-    repeat(var(--col-count, 4), minmax($gap-m, 1fr)),
-    var(--gap, #{$gap-l}),
-    var(--align-items, flex-start)
-  );
+// The grid queries this wrapper for its width: an element cannot query itself,
+// so `100cqw` inside .gallery would resolve against the viewport instead and
+// the square-cell arithmetic would come out wrong.
+.gallery-wrap {
+  container-type: inline-size;
   inline-size: min(calc(100% - #{$gap-l}), #{$width-laptop-xl});
   margin-block-end: $gap-xxl;
+  margin-inline: auto;
+}
 
-  // Tiles no longer share one height, so a plain grid would leave a gap under
-  // every tile shorter than its row. Grid lanes packs each tile into the
-  // shortest column instead, keeping the video/photo/360 reading order.
-  // Experimental as of 2026-02 (Safari TP, Firefox behind a flag); browsers
-  // without it keep the grid above, which stays correct, just less tightly
-  // packed.
-  @supports (display: grid-lanes) {
-    display: grid-lanes;
+.gallery {
+  // Every tile is snapped to one of two shapes, so the grid is a plain
+  // checkerboard of square cells: a landscape tile takes 2 columns x 1 row, a
+  // portrait tile 1 column x 2 rows. `dense` then backfills the holes those
+  // spans leave, which packs the grid tight while keeping the row-major
+  // video/photo/360 reading order that a column-based masonry would lose.
+  display: grid;
+  grid-template-columns: repeat(var(--col-count, 4), minmax(0, 1fr));
+  inline-size: 100%;
+  gap: var(--gap, #{$gap-l});
+  grid-auto-flow: dense;
+  // A row is exactly as tall as a column is wide, which is what makes the two
+  // tile shapes line up against each other.
+  grid-auto-rows: calc(
+    (100cqw - (var(--col-count, 4) - 1) * var(--gap, #{$gap-l})) /
+      var(--col-count, 4)
+  );
+
+  > .gitem {
+    grid-column: span 2;
+    grid-row: span 1;
+
+    &[data-orientation="portrait"] {
+      grid-column: span 1;
+      grid-row: span 2;
+    }
+  }
+
+  // A single column has nothing to pack around, so the spans give way to plain
+  // ratios - otherwise a landscape tile would inherit the square cell and crop
+  // itself to 1:1.
+  @include res-max-mobile-l {
+    grid-auto-rows: auto;
+
+    > .gitem {
+      aspect-ratio: 16 / 9;
+      grid-column: span 1;
+      grid-row: span 1;
+
+      &[data-orientation="portrait"] {
+        aspect-ratio: 9 / 16;
+      }
+    }
   }
 
   @include res-max-laptop-s {
@@ -100,16 +135,6 @@ section:has(> .gallery) {
   text-decoration: none;
   overflow: hidden;
 
-  &:first-child {
-    @include grid-col-span(var(--gitem_colspan, 2));
-    @include grid-row-span(var(--gitem_rowspan, 2));
-
-    @include res-max-mobile-l {
-      --gitem_colspan: 1;
-      --gitem_rowspan: 1;
-    }
-  }
-
   @include hover {
     --photo_scale: 1.1;
     --icon-scale: 1.1;
@@ -124,17 +149,17 @@ section:has(> .gallery) {
   &__photo {
     position: relative;
     inline-size: 100%;
-    // Photos set --tile-ratio from their Cloudinary dimensions so the grid
-    // shows the whole frame; videos and panoramas keep the 16:9 default.
-    aspect-ratio: var(--tile-ratio, 16 / 9);
+    // The grid area already carries the tile's shape, so the photo just fills it.
+    block-size: 100%;
 
     img {
       @include position;
       display: block;
-      min-inline-size: 100%;
-      min-block-size: 100%;
+      inline-size: 100%;
+      block-size: 100%;
       scale: var(--photo_scale);
       transition: scale 0.5s ease-in-out;
+      object-fit: cover;
     }
   }
 

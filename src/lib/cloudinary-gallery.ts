@@ -8,6 +8,8 @@ export interface CloudinaryGalleryItem {
   /** WebP srcset fallback for browsers without AVIF support. */
   thumbWebp?: string;
   full: string;
+  /** Tile shape the asset is cropped to: a 2x1 or 1x2 cell in the grid. */
+  orientation?: "landscape" | "portrait";
   /** Gated bonus asset: hidden until the visitor unlocks the bonus content. */
   bonus?: boolean;
   width?: number;

@@ -61,6 +61,10 @@ const VIDEO_FULL_WIDTH = 1280;
 // instead of a full-resolution original the browser then downscales.
 const THUMB_RATIO = "16:9";
 
+// Photos are snapped to one of two tile shapes so the grid stays a clean
+// checkerboard: landscape fills a 2x1 cell, portrait a 1x2 one.
+const PORTRAIT_RATIO = "9:16";
+
 // Candidate tile widths for the srcset. The grid runs 4 columns at desktop down
 // to 1 on mobile inside a ~1600px container, so a tile is roughly 400px wide
 // (800px for the double-width first tile); the larger entries cover 2x DPR.
@@ -193,6 +197,13 @@ const tileOpts = {
   quality: "auto",
 };
 
+/** Tile transform for one orientation. */
+function tileOptsFor(orientation) {
+  return orientation === "portrait"
+    ? { ...tileOpts, aspect_ratio: PORTRAIT_RATIO }
+    : tileOpts;
+}
+
 /**
  * Build a srcset for one explicit format.
  *
@@ -200,10 +211,10 @@ const tileOpts = {
  * WebP even when the browser advertises AVIF. Requesting the format explicitly
  * and letting <picture> pick the source is both smaller and predictable.
  */
-function tileSrcSet(publicId, format, { crop = true } = {}) {
+function tileSrcSet(publicId, format, { orientation = "landscape" } = {}) {
   return THUMB_WIDTHS.map((w) => {
     const url = cloudinary.url(publicId, {
-      ...(crop ? tileOpts : imageOpts),
+      ...tileOptsFor(orientation),
       fetch_format: format,
       width: w,
     });
@@ -274,16 +285,27 @@ function buildItem(resource, { bonus = false } = {}) {
     };
   }
 
+  // Snap to the nearest of the two tile shapes rather than cropping every
+  // photo to landscape: a portrait shot keeps its portrait framing.
+  const orientation = nativeH > nativeW ? "portrait" : "landscape";
+  const tileW = THUMB_WIDTH;
+  const tileH =
+    orientation === "portrait"
+      ? Math.round((tileW * 16) / 9)
+      : Math.round((tileW * 9) / 16);
+
   return {
     ...base,
-    // Photos keep their native ratio: the masonry grid sizes each tile from
-    // these dimensions, so nothing is cropped in the grid the way it was when
-    // every tile was forced to 16:9.
-    width: thumbW,
-    height: thumbH,
-    thumb: cloudinary.url(publicId, { ...imageOpts, width: THUMB_WIDTH }),
-    thumbAvif: tileSrcSet(publicId, "avif", { crop: false }),
-    thumbWebp: tileSrcSet(publicId, "webp", { crop: false }),
+    orientation,
+    width: tileW,
+    height: tileH,
+    thumb: cloudinary.url(publicId, {
+      ...tileOptsFor(orientation),
+      fetch_format: "auto",
+      width: tileW,
+    }),
+    thumbAvif: tileSrcSet(publicId, "avif", { orientation }),
+    thumbWebp: tileSrcSet(publicId, "webp", { orientation }),
     // The lightbox keeps the original aspect and negotiates its own format,
     // so it stays correct on browsers without AVIF support.
     full: cloudinary.url(publicId, { ...imageOpts, width: IMAGE_FULL_WIDTH }),

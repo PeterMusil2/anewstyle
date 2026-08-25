@@ -94,12 +94,13 @@ const panoLabels = {
       </button>
     </div>
   </div>
-  <div
-    class="container gallery"
-    data-pano-close={panoLabels.close}
-    data-pano-prev={panoLabels.prev}
-    data-pano-next={panoLabels.next}
-  >
+  <div class="container gallery-wrap">
+    <div
+      class="gallery"
+      data-pano-close={panoLabels.close}
+      data-pano-prev={panoLabels.prev}
+      data-pano-next={panoLabels.next}
+    >
     {
       cloudinaryItems.map((item) =>
         item.type === "360" ? (
@@ -150,18 +151,12 @@ const panoLabels = {
             data-fancybox={item.bonus ? undefined : "gallery"}
             data-fancybox-locked={item.bonus ? "gallery" : undefined}
             data-media={item.type}
+            data-orientation={item.orientation ?? "landscape"}
             data-bonus={item.bonus ? "true" : undefined}
             class="gitem"
             rel="noopener"
           >
-            <div
-              class="gitem__photo"
-              style={
-                item.type === "image" && item.width && item.height
-                  ? `--tile-ratio: ${item.width} / ${item.height}`
-                  : undefined
-              }
-            >
+            <div class="gitem__photo">
               <picture>
                 {item.thumbAvif && (
                   <source
@@ -196,6 +191,7 @@ const panoLabels = {
         ),
       )
     }
+    </div>
   </div>
   <div class="container">
     <p class="desc desc--mg-s desc--center">

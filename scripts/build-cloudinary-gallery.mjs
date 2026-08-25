@@ -200,10 +200,10 @@ const tileOpts = {
  * WebP even when the browser advertises AVIF. Requesting the format explicitly
  * and letting <picture> pick the source is both smaller and predictable.
  */
-function tileSrcSet(publicId, format) {
+function tileSrcSet(publicId, format, { crop = true } = {}) {
   return THUMB_WIDTHS.map((w) => {
     const url = cloudinary.url(publicId, {
-      ...tileOpts,
+      ...(crop ? tileOpts : imageOpts),
       fetch_format: format,
       width: w,
     });
@@ -276,12 +276,14 @@ function buildItem(resource, { bonus = false } = {}) {
 
   return {
     ...base,
-    // Tiles are a fixed 16:9 so the grid reads as one uniform set.
-    width: THUMB_WIDTH,
-    height: Math.round((THUMB_WIDTH * 9) / 16),
-    thumb: cloudinary.url(publicId, { ...tileOpts, fetch_format: "auto", width: THUMB_WIDTH }),
-    thumbAvif: tileSrcSet(publicId, "avif"),
-    thumbWebp: tileSrcSet(publicId, "webp"),
+    // Photos keep their native ratio: the masonry grid sizes each tile from
+    // these dimensions, so nothing is cropped in the grid the way it was when
+    // every tile was forced to 16:9.
+    width: thumbW,
+    height: thumbH,
+    thumb: cloudinary.url(publicId, { ...imageOpts, width: THUMB_WIDTH }),
+    thumbAvif: tileSrcSet(publicId, "avif", { crop: false }),
+    thumbWebp: tileSrcSet(publicId, "webp", { crop: false }),
     // The lightbox keeps the original aspect and negotiates its own format,
     // so it stays correct on browsers without AVIF support.
     full: cloudinary.url(publicId, { ...imageOpts, width: IMAGE_FULL_WIDTH }),

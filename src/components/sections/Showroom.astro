@@ -154,7 +154,14 @@ const panoLabels = {
             class="gitem"
             rel="noopener"
           >
-            <div class="gitem__photo">
+            <div
+              class="gitem__photo"
+              style={
+                item.type === "image" && item.width && item.height
+                  ? `--tile-ratio: ${item.width} / ${item.height}`
+                  : undefined
+              }
+            >
               <picture>
                 {item.thumbAvif && (
                   <source

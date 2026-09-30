@@ -19,6 +19,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   <div class="container">
     <div class="contact">
       <h2 class="title title--white title--center">{t("contact.title")}</h2>
+      <p class="contact__discount" role="note">
+        {t("contact.discountNotice")}
+      </p>
       <div class="contact__grid">
         <div class="contact__intro">
           <p class="desc desc--no-mg contact__intro-text">
@@ -67,6 +70,16 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             value="AnewStyle – nová zpráva z webu"
           />
           <input type="hidden" name="from_name" value="AnewStyle web" />
+          <input type="hidden" name="gclid" data-attribution />
+          <input type="hidden" name="fbclid" data-attribution />
+          <input type="hidden" name="source" data-attribution />
+          <input type="hidden" name="utm_source" data-attribution />
+          <input type="hidden" name="utm_medium" data-attribution />
+          <input type="hidden" name="utm_campaign" data-attribution />
+          <input type="hidden" name="utm_content" data-attribution />
+          <input type="hidden" name="utm_term" data-attribution />
+          <input type="hidden" name="landing_page" data-attribution />
+          <input type="hidden" name="referrer" data-attribution />
           <input
             type="checkbox"
             name="botcheck"
@@ -281,6 +294,22 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
+    const fillAttributionFields = (): void => {
+      try {
+        const attribution = JSON.parse(
+          sessionStorage.getItem("anewstyle-attribution-v1") || "{}",
+        ) as Record<string, string>;
+        form
+          .querySelectorAll<HTMLInputElement>("input[data-attribution]")
+          .forEach((input) => {
+            input.value = attribution[input.name] ?? "";
+          });
+      } catch {
+        // Keep attribution fields empty if browser storage is unavailable.
+      }
+    };
+
+    fillAttributionFields();
     const status = form.querySelector<HTMLElement>(".contact-form__status");
     const submitBtn = form.querySelector<HTMLButtonElement>(
       ".contact-form__submit",
@@ -304,6 +333,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
+      fillAttributionFields();
 
       setStatus("idle", "");
       if (submitBtn) submitBtn.dataset.loading = "true";

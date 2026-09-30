@@ -220,6 +220,70 @@ const ENABLE_GTM = true;
       } catch (_error) {
       }
     </script>
+    <script is:inline>
+      (() => {
+        const storageKey = "anewstyle-attribution-v1";
+        const trackedFields = [
+          "gclid",
+          "fbclid",
+          "utm_source",
+          "utm_medium",
+          "utm_campaign",
+          "utm_content",
+          "utm_term",
+        ];
+        const params = new URLSearchParams(window.location.search);
+        const hasCampaignParams = trackedFields.some((field) =>
+          params.has(field),
+        );
+
+        try {
+          const stored = JSON.parse(
+            sessionStorage.getItem(storageKey) || "{}",
+          );
+          if (!stored.landing_page) {
+            stored.landing_page = window.location.href.split("#")[0];
+          }
+          if (!stored.referrer) stored.referrer = document.referrer;
+
+          if (hasCampaignParams) {
+            trackedFields.forEach((field) => {
+              stored[field] = params.get(field) || "";
+            });
+            const referringHost = stored.referrer
+              ? new URL(stored.referrer).hostname
+              : "";
+            stored.source =
+              stored.utm_source ||
+              (stored.gclid
+                ? "google"
+                : stored.fbclid
+                  ? "facebook"
+                  : referringHost || "direct");
+            stored.medium =
+              stored.utm_medium ||
+              (stored.gclid
+                ? "cpc"
+                : stored.fbclid
+                  ? "paid_social"
+                  : referringHost
+                    ? "referral"
+                    : "direct");
+          } else if (!stored.source) {
+            const referringHost = stored.referrer
+              ? new URL(stored.referrer).hostname
+              : "";
+            stored.source = referringHost || "direct";
+            stored.medium = referringHost ? "referral" : "direct";
+          }
+
+          sessionStorage.setItem(storageKey, JSON.stringify(stored));
+        } catch (_error) {
+          // Attribution is optional; the contact form remains usable if
+          // browser storage is unavailable.
+        }
+      })();
+    </script>
   </head>
   <body data-lang={lang}>
     {ENABLE_GTM && (

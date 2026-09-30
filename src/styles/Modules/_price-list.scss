@@ -19,6 +19,31 @@
     grid-template-columns: 1fr;
   }
 
+  &__contact-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: $gap-l;
+    margin-block: $gap-l $gap-xxl;
+    text-align: center;
+
+    > p {
+      font-size: clamp(#{$gap-l}, 2svb, #{$gap-xl});
+      font-weight: 600;
+    }
+  }
+
+  &__contact-note {
+    margin-block-start: $gap-s;
+
+    > .link {
+      margin-inline-start: 0.35em;
+      color: $color-primary;
+      font-weight: 700;
+    }
+  }
+
   &__scroll-wrapper {
     position: relative;
     margin-block-end: $gap-xxl;

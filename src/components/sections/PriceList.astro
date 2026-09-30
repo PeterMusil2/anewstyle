@@ -40,13 +40,6 @@ const products: (Product & { price: string })[] = (
       <span>{t("price.selectLabel")}</span>
     </p>
 
-    <div class="price-list__contact-cta">
-      <p>{t("price.contactPrompt")}</p>
-      <a class="button button--s" href="#contact">
-        {t("price.contactCta")}
-      </a>
-    </div>
-
     <div class="segment-filter-wrap">
       <div
         id="productButtons"
@@ -140,12 +133,17 @@ const products: (Product & { price: string })[] = (
     <p class="desc text-center desc--no-mg">
       <small>{t("price.vat")}</small>
     </p>
-    <p class="desc text-center desc--no-mg price-list__contact-note">
-      {t("price.offerPrompt")}
-      <a class="link" href="#contact">
+    <div class="price-list__contact-cta">
+      <p class="desc text-center desc--no-mg">
+        <span>{t("price.offerPromptBefore")} </span>
+        <strong class="price-list__discount-emphasis">
+          {t("price.offerDiscount")}
+        </strong>.
+      </p>
+      <a class="button button--s" href="#contact">
         {t("price.offerCta")}
       </a>
-    </p>
+    </div>
   </div>
 </section>
 

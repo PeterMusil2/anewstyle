@@ -5,22 +5,6 @@
   inline-size: min($width-laptop-s, 100%);
   margin-inline: auto;
 
-  &__discount {
-    inline-size: fit-content;
-    max-inline-size: 100%;
-    padding: $gap-s $gap-l;
-    margin: 0 auto $gap-xl;
-    border: 1px solid $color-primary;
-    border-radius: $radius-l;
-    background-color: hsl(from $color-primary h s l / 0.15);
-    color: $color-primary--lighten;
-    font-size: clamp(#{$gap-l}, 2.5svb, #{$gap-xl});
-    font-weight: 600;
-    line-height: 1.5;
-    text-align: center;
-    text-wrap: balance;
-  }
-
   &__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

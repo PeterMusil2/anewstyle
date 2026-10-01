@@ -29,7 +29,12 @@
 
   &__discount-emphasis {
     color: $color-primary--lighten;
-    font-weight: 700;
+    font-size: 1.2em;
+    font-weight: 900;
+  }
+
+  &__vat-note {
+    font-style: italic;
   }
 
   &__scroll-wrapper {

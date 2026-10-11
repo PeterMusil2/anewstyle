@@ -1,7 +1,7 @@
 ---
 /**
- * RAL frame colours. The swatches orbit out of one circle when the button is
- * pressed – the motion lives in effects.css (.palette).
+ * RAL frame colours as four small swatches. Hover, keyboard focus or a tap
+ * shows the shade's name in a tooltip – pure CSS (.swatch in effects.css).
  */
 import { useTranslations, type Lang } from "../../i18n/utils";
 
@@ -13,39 +13,32 @@ const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 const swatches = [
-  { code: "150M", color: "hsl(23.64deg 16.42% 60.59%)" },
-  { code: "140M", color: "hsl(38.4deg 24.04% 59.22%)" },
-  { code: "260M", color: "#a38c52" },
-  { code: "280M", color: "hsl(37.37deg 47.11% 47.45%)" },
+  { code: "RAL 150M", color: "hsl(23.64deg 16.42% 60.59%)" },
+  { code: "RAL 140M", color: "hsl(38.4deg 24.04% 59.22%)" },
+  { code: "RAL 260M", color: "#a38c52" },
+  { code: "RAL 280M", color: "hsl(37.37deg 47.11% 47.45%)" },
 ];
 ---
 
-<button
-  class="palette relative grid size-32 shrink-0 cursor-pointer place-items-center rounded-full"
-  type="button"
-  aria-pressed="false"
-  aria-label={t("features.showColors")}
->
+<ul class="flex h-12 items-center gap-3" aria-label={t("features.showColors")}>
   {
     swatches.map((swatch) => (
-      <span
-        class="palette__swatch absolute inset-0 grid place-items-center rounded-full shadow-lg transition-[translate] duration-300"
-        style={`background-color: ${swatch.color}`}
-      >
-        <span class="palette__code text-[0.6875rem] font-extrabold text-black">{swatch.code}</span>
-      </span>
+      <li class="swatch relative">
+        <button
+          type="button"
+          class="block size-9 cursor-pointer rounded-full shadow-[inset_0_0_0_1px_rgb(0_0_0/0.15)] ring-offset-2 ring-offset-ink-900 transition-transform duration-200 hover:scale-110 focus-visible:scale-110"
+          style={`background-color: ${swatch.color}`}
+          aria-label={swatch.code}
+          aria-describedby={`swatch-${swatch.code.replace(/\s/g, "")}`}
+        />
+        <span
+          id={`swatch-${swatch.code.replace(/\s/g, "")}`}
+          role="tooltip"
+          class="swatch__tip pointer-events-none absolute bottom-full left-1/2 z-10 mb-2.5 -translate-x-1/2 bg-fg px-2.5 py-1.5 text-xs font-bold whitespace-nowrap text-ink shadow-lg"
+        >
+          {swatch.code}
+        </span>
+      </li>
     ))
   }
-  <span class="palette__label relative z-10 max-w-[80%] text-center text-[0.6875rem] leading-tight font-black tracking-[0.06em] text-black uppercase transition-opacity">
-    {t("features.showColors")}
-  </span>
-</button>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>(".palette").forEach((palette) => {
-    palette.addEventListener("click", () => {
-      const pressed = palette.getAttribute("aria-pressed") === "true";
-      palette.setAttribute("aria-pressed", String(!pressed));
-    });
-  });
-</script>
+</ul>

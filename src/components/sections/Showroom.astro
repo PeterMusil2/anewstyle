@@ -100,8 +100,10 @@ const panoLabels = {
                 />
               </picture>
             </div>
-            <div class="absolute inset-0 grid place-items-center bg-ink/30 text-fg transition-colors group-hover:bg-ink/10">
-              <Icon name="360" class="size-16 transition-transform duration-300 group-hover:scale-110 sm:size-20" />
+            <div class="absolute inset-0 grid place-items-center bg-black/10 transition-colors group-hover:bg-black/0">
+              <span class="grid size-18 place-items-center rounded-full bg-black/45 text-white shadow-lg ring-1 ring-white/35 backdrop-blur-md transition-transform duration-300 group-hover:scale-110 sm:size-22">
+                <Icon name="360" class="size-10 sm:size-12" />
+              </span>
             </div>
           </a>
         ) : (
@@ -136,8 +138,10 @@ const panoLabels = {
               </picture>
             </div>
             {item.type === "video" && (
-              <div class="absolute inset-0 grid place-items-center bg-ink/30 text-fg transition-colors group-hover:bg-ink/10">
-                <Icon name="play" class="size-16 transition-transform duration-300 group-hover:scale-110 sm:size-20" />
+              <div class="absolute inset-0 grid place-items-center bg-black/10 transition-colors group-hover:bg-black/0">
+                <span class="grid size-18 place-items-center rounded-full bg-black/45 text-white shadow-lg ring-1 ring-white/35 backdrop-blur-md transition-transform duration-300 group-hover:scale-110 sm:size-22">
+                  <Icon name="play" class="size-9 translate-x-0.5 sm:size-11" />
+                </span>
               </div>
             )}
           </a>

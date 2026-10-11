@@ -24,7 +24,7 @@ const states = [
 <section
   id={id}
   aria-labelledby={`${id}-title`}
-  class="showcase scheme-dark section-y relative isolate overflow-hidden bg-ink text-fg"
+  class="showcase section-y relative isolate overflow-hidden bg-ink text-fg"
 >
   <div
     class="absolute inset-y-0 right-0 -z-10 w-full bg-[radial-gradient(45%_60%_at_70%_50%,rgb(163_140_82/0.14),transparent_70%)]"
@@ -70,7 +70,12 @@ const states = [
       </fieldset>
     </div>
 
-    <div class="reveal relative aspect-[1024/813] w-full">
+    <!--
+      The photos are shot on black, so they sit on a black "stage". In the dark
+      theme it melts into the section; in the light theme it reads as a framed
+      display.
+    -->
+    <div class="reveal relative aspect-[1024/813] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
       {
         states.map((state) => (
           <img

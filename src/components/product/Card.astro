@@ -30,7 +30,7 @@ const t = useTranslations(lang);
 // The CMS stores uploaded files as absolute paths, older entries as bare
 // file names – accept both.
 const asset = (folder: string, value?: string) =>
-  value ? (value.startsWith("/") ? value : `${folder}/${value}`) : undefined;
+  value ? (/^(\/|https?:)/.test(value) ? value : `${folder}/${value}`) : undefined;
 const productImage = (value?: string) => asset("/images/products", value);
 const productModel = (value?: string) => asset("/3d/products", value);
 
@@ -43,14 +43,16 @@ const primaryFancyboxHref = hasHorizontalModel
     ? `#vertical3dModel${id}`
     : productImage(imgLight);
 
-const extraFancyboxHrefs = [
+// Every lightbox slide needs a thumbnail; 3D slides reuse the lit photo.
+const lightPhoto = productImage(imgLight);
+const extraFancyboxItems = [
   hasHorizontalModel && hasVerticalModel ? `#vertical3dModel${id}` : null,
   imgDark ? productImage(imgDark) : null,
   imgFrame ? productImage(imgFrame) : null,
-  hasHorizontalModel || hasVerticalModel
-    ? productImage(imgLight)
-    : null,
-].filter((src): src is string => Boolean(src));
+  hasHorizontalModel || hasVerticalModel ? lightPhoto : null,
+]
+  .filter((src): src is string => Boolean(src))
+  .map((href) => ({ href, thumb: href.startsWith("#") ? lightPhoto : href }));
 ---
 
 <a
@@ -59,6 +61,7 @@ const extraFancyboxHrefs = [
   href={primaryFancyboxHref}
   data-fancybox={groupName}
   data-caption={title}
+  data-thumb={lightPhoto}
 >
   <div class="relative flex aspect-[1024/524] items-center justify-center overflow-hidden bg-[radial-gradient(60%_60%_at_50%_50%,rgb(163_140_82/0.12),transparent_70%)]">
     <img
@@ -95,9 +98,10 @@ const extraFancyboxHrefs = [
   </div>
 </a>
 {
-  extraFancyboxHrefs.map((src) => (
+  extraFancyboxItems.map((item) => (
     <a
-      href={src}
+      href={item.href}
+      data-thumb={item.thumb}
       data-fancybox={groupName}
       data-caption={title}
       aria-hidden="true"
@@ -112,13 +116,32 @@ const extraFancyboxHrefs = [
       <model-viewer
         id={`horizontal3dModel${id}`}
         src={productModel(modelHorizontal3d)}
+        alt={`${title} – ${t("products.showIn3d")}`}
+        poster={lightPhoto}
+        loading="lazy"
+        reveal="auto"
         ar
         ar-scale="auto"
+        ar-placement="wall"
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         touch-action="pan-y"
-        camera-orbit="0deg 90deg 2.5m"
-      />
+        interaction-prompt="auto"
+        camera-orbit="0deg 90deg auto"
+        min-camera-orbit="auto auto auto"
+        camera-target="auto auto auto"
+        field-of-view="22deg"
+        max-field-of-view="45deg"
+        environment-image="neutral"
+        shadow-intensity="0.6"
+        exposure="1.05"
+        class="product-3d"
+      >
+        <span slot="progress-bar" class="product-3d__progress"></span>
+        <button slot="ar-button" type="button" class="product-3d__ar">
+          {t("header.btnAr")}
+        </button>
+      </model-viewer>
     )
   }
   {
@@ -126,13 +149,32 @@ const extraFancyboxHrefs = [
       <model-viewer
         id={`vertical3dModel${id}`}
         src={productModel(modelVertical3d)}
+        alt={`${title} – ${t("products.showIn3d")}`}
+        poster={lightPhoto}
+        loading="lazy"
+        reveal="auto"
         ar
         ar-scale="auto"
+        ar-placement="wall"
         ar-modes="webxr scene-viewer quick-look"
         camera-controls
         touch-action="pan-y"
-        camera-orbit="0deg 90deg 2.5m"
-      />
+        interaction-prompt="auto"
+        camera-orbit="0deg 90deg auto"
+        min-camera-orbit="auto auto auto"
+        camera-target="auto auto auto"
+        field-of-view="22deg"
+        max-field-of-view="45deg"
+        environment-image="neutral"
+        shadow-intensity="0.6"
+        exposure="1.05"
+        class="product-3d"
+      >
+        <span slot="progress-bar" class="product-3d__progress"></span>
+        <button slot="ar-button" type="button" class="product-3d__ar">
+          {t("header.btnAr")}
+        </button>
+      </model-viewer>
     )
   }
 </div>

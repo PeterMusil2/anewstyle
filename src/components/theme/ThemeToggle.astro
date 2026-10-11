@@ -64,6 +64,11 @@ const t = useTranslations(lang);
       /* storage blocked – the choice lasts for this page view only */
     }
     syncLabels();
+    // Keep the browser UI colour in step with the chosen theme.
+    document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+      meta.content = theme === "dark" ? "#000000" : "#faf9f5";
+      meta.removeAttribute("media");
+    });
   };
 
   document.querySelectorAll<HTMLButtonElement>(".theme-toggle").forEach((button) => {

@@ -108,7 +108,7 @@ interface PatternFrontmatter {
 }
 
 const asset = (folder: string, value?: string) =>
-  value ? new URL(value.startsWith("/") ? value : `${folder}/${value}`, SITE_URL).href : undefined;
+  value ? new URL(/^(\/|https?:)/.test(value) ? value : `${folder}/${value}`, SITE_URL).href : undefined;
 
 /** Illustrative stone patterns from src/content/products. */
 export function getPatterns(lang: Lang) {

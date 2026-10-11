@@ -49,6 +49,46 @@ const EXCLUDED_FOLDERS = ["bonus"];
 
 const OUT_FILE = path.join(process.cwd(), "public", "data", "gallery.json");
 
+// Gallery entries managed in Decap CMS (uploads, captions, 360 flag, hiding).
+const CMS_FILE = path.join(process.cwd(), "src", "data", "gallery-cms.json");
+
+/**
+ * Turn a Cloudinary delivery URL into its public_id and resource type:
+ * https://res.cloudinary.com/<cloud>/<image|video>/upload/v123/<public_id>.<ext>
+ */
+function parseCloudinaryUrl(url) {
+  const match = String(url || "").match(
+    /\/(image|video|raw)\/upload\/(?:[^/]*,[^/]*\/)*(?:v\d+\/)?(.+?)(?:\.[a-z0-9]+)?(?:\?.*)?$/i
+  );
+  return match ? { resourceType: match[1], publicId: decodeURIComponent(match[2]) } : null;
+}
+
+/** Load CMS metadata keyed by public_id. Missing file → no overrides. */
+async function loadCmsEntries() {
+  try {
+    const data = JSON.parse(await readFile(CMS_FILE, "utf8"));
+    const entries = [];
+    for (const [list, bonus] of [["items", false], ["bonus", true]]) {
+      (Array.isArray(data?.[list]) ? data[list] : []).forEach((entry, index) => {
+        const parsed = parseCloudinaryUrl(entry?.media);
+        if (!parsed) return;
+        entries.push({
+          ...parsed,
+          bonus,
+          order: index,
+          alt: entry.alt?.cs?.trim() || undefined,
+          altEn: entry.alt?.en?.trim() || undefined,
+          panorama: Boolean(entry.panorama),
+          hidden: Boolean(entry.hidden),
+        });
+      });
+    }
+    return entries;
+  } catch {
+    return [];
+  }
+}
+
 // Capped delivery widths (px). Thumbs feed the grid tiles; full feeds the
 // lightbox. Panoramas need extra resolution to look sharp when zoomed.
 const THUMB_WIDTH = 800;
@@ -162,8 +202,9 @@ async function collectResources() {
  * "360" marker in tags, folder path, or public_id (so the GALERY_360 folder or
  * a `360` tag both work); everything else is a flat image.
  */
-function categoryOf(resource) {
+function categoryOf(resource, override) {
   if (resource.resource_type === "video") return "video";
+  if (override?.panorama) return "360";
 
   const hay = [
     ...(Array.isArray(resource.tags) ? resource.tags : []),
@@ -235,12 +276,12 @@ function encodeTransformCommas(url) {
   );
 }
 
-function buildItem(resource, { bonus = false } = {}) {
+function buildItem(resource, { bonus = false, override } = {}) {
   const publicId = resource?.public_id;
   if (!publicId) return null;
 
-  const category = categoryOf(resource);
-  const alt = toAlt(publicId);
+  const category = categoryOf(resource, override);
+  const alt = override?.alt ?? toAlt(publicId);
 
   const nativeW = typeof resource.width === "number" ? resource.width : 1600;
   const nativeH = typeof resource.height === "number" ? resource.height : 900;
@@ -248,6 +289,7 @@ function buildItem(resource, { bonus = false } = {}) {
   const thumbH = Math.max(1, Math.round((thumbW * nativeH) / nativeW));
 
   const base = { type: category, width: thumbW, height: thumbH, alt };
+  if (override?.altEn) base.altEn = override.altEn;
   if (bonus) base.bonus = true;
 
   if (category === "video") {
@@ -342,6 +384,9 @@ async function main() {
     return;
   }
 
+  // The SDK reads CLOUDINARY_URL when it is imported; re-read it here because
+  // loadEnv() may only just have set it from .env.
+  cloudinary.config(true);
   cloudinary.config({ secure: true });
 
   const resources = await collectResources();
@@ -352,21 +397,50 @@ async function main() {
     subtreeExpression(BONUS_FOLDER)
   ).catch(() => []);
 
+  // CMS metadata: captions, 360 flag, hidden items and order. Entries whose
+  // asset lives outside the scanned folders are fetched individually.
+  const cmsEntries = await loadCmsEntries();
+  const overrides = new Map(cmsEntries.map((entry) => [entry.publicId, entry]));
+  const known = new Set([...resources, ...bonusResources].map((r) => r.public_id));
+  const extra = [];
+  for (const entry of cmsEntries) {
+    if (known.has(entry.publicId) || entry.hidden) continue;
+    try {
+      extra.push({
+        resource: await cloudinary.api.resource(entry.publicId, {
+          resource_type: entry.resourceType,
+        }),
+        bonus: entry.bonus,
+      });
+    } catch {
+      console.warn(`\u26a0 CMS gallery entry not found in Cloudinary: ${entry.publicId}`);
+    }
+  }
+
   // Display order when no filter is active: videos, then photos, then 360.
-  // Within a category the public_id sort from the search is preserved, and
-  // bonus items trail the regular ones so the default view stays familiar.
+  // Within a category CMS-ordered items come first, then the public_id sort
+  // from the search; bonus items trail the regular ones.
   const CATEGORY_ORDER = { video: 0, image: 1, "360": 2 };
+  const orderOf = (item) => overrides.get(item._id)?.order ?? Number.MAX_SAFE_INTEGER;
 
   const items = [
-    ...resources.map((r) => buildItem(r)),
-    ...bonusResources.map((r) => buildItem(r, { bonus: true })),
+    ...resources.map((r) => ({ r, bonus: false })),
+    ...bonusResources.map((r) => ({ r, bonus: true })),
+    ...extra.map(({ resource, bonus }) => ({ r: resource, bonus })),
   ]
+    .filter(({ r }) => !overrides.get(r.public_id)?.hidden)
+    .map(({ r, bonus }) => {
+      const item = buildItem(r, { bonus, override: overrides.get(r.public_id) });
+      return item ? { ...item, _id: r.public_id } : null;
+    })
     .filter(Boolean)
     .sort(
       (a, b) =>
         CATEGORY_ORDER[a.type] - CATEGORY_ORDER[b.type] ||
-        Number(a.bonus ?? false) - Number(b.bonus ?? false)
-    );
+        Number(a.bonus ?? false) - Number(b.bonus ?? false) ||
+        orderOf(a) - orderOf(b)
+    )
+    .map(({ _id, ...item }) => item);
 
   await mkdir(path.dirname(OUT_FILE), { recursive: true });
   await writeFile(

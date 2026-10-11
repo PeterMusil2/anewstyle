@@ -18,6 +18,63 @@
     }
   }
 
+  /* Brand scrollbar (standard properties; WebKit pseudo-elements below). */
+  :root {
+    scrollbar-gutter: stable;
+    scrollbar-color: var(--color-gold) var(--color-ink);
+  }
+
+  @media (width >= 48rem) {
+    ::-webkit-scrollbar {
+      inline-size: 0.8rem;
+      block-size: 0.8rem;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--color-ink);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 0.4rem;
+      background: var(--color-gold);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-gold-light);
+    }
+  }
+
+  /* Lock page scroll while the mobile menu is open – no JavaScript. */
+  html:has(#mobile-menu:popover-open) {
+    overflow: hidden;
+  }
+
+  /* Busy buttons (contact form submit, AR): spinner instead of the label. */
+  :is(button, a)[data-loading="true"] {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+
+    &::after {
+      position: absolute;
+      inset: 50% auto auto 50%;
+      inline-size: 1.1rem;
+      block-size: 1.1rem;
+      border: 2px solid var(--spinner-color, var(--color-ink));
+      border-inline-end-color: transparent;
+      border-radius: 50%;
+      content: "";
+      translate: -50% -50%;
+      animation: spin 0.7s linear infinite;
+    }
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 1turn;
+    }
+  }
+
   /* Allow height: auto transitions (Chrome 129+, ignored elsewhere). */
   :root {
     interpolate-size: allow-keywords;
@@ -60,19 +117,19 @@
   }
 
   .site-nav__bar {
-    background-color: light-dark(rgb(250 249 245 / 0.95), rgb(0 0 0 / 0.72));
+    background-color: light-dark(#faf9f5, rgb(0 0 0 / 0.72));
     backdrop-filter: blur(14px) saturate(140%);
     transition: background-color 0.3s var(--ease-out-soft);
   }
 
   @supports (container-type: scroll-state) {
     .site-nav__bar {
-      background-color: light-dark(rgb(250 249 245 / 0.92), rgb(0 0 0 / 0.35));
+      background-color: light-dark(#faf9f5, rgb(0 0 0 / 0.35));
     }
 
     @container site-nav scroll-state(stuck: top) {
       .site-nav__bar {
-        background-color: light-dark(rgb(250 249 245 / 0.94), rgb(0 0 0 / 0.85));
+        background-color: light-dark(#faf9f5, rgb(0 0 0 / 0.85));
       }
     }
   }
@@ -570,4 +627,71 @@
   &[data-filter="bonus"] .gitem:not([data-bonus]) {
     display: none;
   }
+}
+
+/*
+ * 3D product viewer inside the Fancybox lightbox. Unlayered on purpose:
+ * Fancybox's own stylesheet is unlayered too and must not win.
+ */
+.fancybox__content:has(> model-viewer),
+body .fancybox__content {
+  --fancybox-content-bg: transparent;
+}
+
+.fancybox__content:has(> model-viewer) {
+  padding: 0;
+}
+
+model-viewer.product-3d {
+  --poster-color: transparent;
+  --progress-bar-height: 0;
+  inline-size: min(92vw, 75rem);
+  block-size: min(76svh, 48rem);
+  background:
+    radial-gradient(60% 60% at 50% 45%, rgb(183 163 112 / 0.18), transparent 70%),
+    #0d0d0c;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  color-scheme: dark;
+
+  @media (width < 48rem) {
+    inline-size: 94vw;
+    block-size: 64svh;
+  }
+}
+
+/* Loading bar that follows the model-viewer progress (CSS-only). */
+.product-3d__progress {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 3px;
+  background: linear-gradient(90deg, #a38c52, #e6d3a0);
+  transform-origin: left;
+  animation: model-loading 1.6s ease-in-out infinite;
+}
+
+model-viewer.product-3d[data-loaded] .product-3d__progress {
+  display: none;
+}
+
+@keyframes model-loading {
+  from { scale: 0 1; }
+  to { scale: 1 1; opacity: 0.4; }
+}
+
+/* AR button (shown by model-viewer only on AR-capable phones). */
+.product-3d__ar {
+  position: absolute;
+  inset-block-end: 1rem;
+  inset-inline-start: 50%;
+  min-block-size: 2.75rem;
+  padding-inline: 1.25rem;
+  border: 1px solid #a38c52;
+  background: #a38c52;
+  font: 800 0.75rem / 1 var(--font-sans);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: #000;
+  translate: -50% 0;
+  cursor: pointer;
 }

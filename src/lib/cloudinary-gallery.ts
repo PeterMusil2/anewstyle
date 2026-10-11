@@ -15,6 +15,8 @@ export interface CloudinaryGalleryItem {
   width?: number;
   height?: number;
   alt?: string;
+  /** English caption from the CMS (falls back to `alt`). */
+  altEn?: string;
 }
 
 interface GalleryJson {

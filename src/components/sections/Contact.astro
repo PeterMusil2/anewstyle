@@ -18,8 +18,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
-  <div class="container-page grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-20">
-    <div class="flex flex-col gap-10">
+  <div class="container-page flex flex-col gap-12">
       <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("nav.contact")} title={t("contact.title")}>
         <p>
           <span>{t("contact.descPart1")}</span>
@@ -48,8 +47,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         </div>
       </SectionHeader>
 
+    <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-6">
       <form
-        class="contact-form flex flex-col gap-5 border border-line bg-ink-850 p-6 sm:p-10"
+        class="contact-form flex h-full flex-col gap-5 border border-line bg-ink-850 p-6 sm:p-10"
         action="https://api.web3forms.com/submit"
         method="POST"
         novalidate
@@ -78,7 +78,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
               toolparamdescription="Full name of the person asking"
-              class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
+              class="min-h-13 border border-field bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
           <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
@@ -91,20 +91,20 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               inputmode="email"
               placeholder={t("contact.formEmailPlaceholder")}
               toolparamdescription="E-mail address for the reply"
-              class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
+              class="min-h-13 border border-field bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
         </div>
 
-        <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
+        <label class="flex grow flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
           {t("contact.formMessage")}
           <textarea
             name="message"
             required
-            rows="6"
+            rows="10"
             placeholder={t("contact.formMessagePlaceholder")}
             toolparamdescription="The question or request, e.g. size, version and stone pattern of interest"
-            class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger resize-y py-3.5"></textarea>
+            class="min-h-13 border border-field bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger min-h-60 grow resize-y py-3.5"></textarea>
         </label>
 
         <div class="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
@@ -122,10 +122,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           </p>
         </div>
       </form>
-    </div>
 
-    <div class="flex flex-col gap-5">
-      <article class="flex flex-col border border-line bg-ink-850">
+      <div class="flex flex-col gap-5">
+      <article class="flex grow flex-col border border-line bg-ink-850">
         <img
           src="/images/backgrounds/showroom.webp"
           alt={t("contact.showroomTitle")}
@@ -172,6 +171,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           <div class="flex gap-2"><dt>DIČ</dt><dd class="font-bold text-fg">CZ47903180</dd></div>
         </dl>
       </article>
+      </div>
     </div>
   </div>
 </section>

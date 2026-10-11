@@ -1,5 +1,4 @@
 ---
-import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import "../styles/global.css";
 
 import Footer from "../components/footer/Footer.astro";
@@ -8,6 +7,7 @@ import CookieBar from "../components/cookies/CookieBar.astro";
 import CookieDialog from "../components/cookies/CookieDialog.astro";
 import Nav from "../components/nav/Nav.astro";
 import StructuredData from "../components/seo/StructuredData.astro";
+import WebMcp from "../components/agent/WebMcp.astro";
 import {
   useTranslations,
   getLangFromUrl,
@@ -64,6 +64,11 @@ const ENABLE_GTM = true;
 <!doctype html>
 <html lang={lang}>
   <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     {ENABLE_GTM && (
       // Consent Mode v2 + GTM loader
       <script is:inline>
@@ -134,16 +139,11 @@ const ENABLE_GTM = true;
         })(window,document,'script','dataLayer','GTM-WT79RGCG');
       </script>
     )}
-    <meta charset="utf-8" />
     <link rel="canonical" href={canonicalUrl.href} />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Lukáš Chylík" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    />
     <link
       rel="apple-touch-icon"
       sizes="180x180"
@@ -172,9 +172,23 @@ const ENABLE_GTM = true;
       <link rel="alternate" hreflang={altLang} href={href} />
     ))}
     <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
+    <!-- Machine-readable versions for AI agents -->
+    <link rel="alternate" type="text/markdown" title="llms.txt" href="/llms.txt" />
+    <link rel="alternate" type="application/json" title="Site data for agents" href="/agent/site.json" />
 
     <meta name="msapplication-TileColor" content="#000000" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <!-- Apply a stored theme choice before first paint (no flash). -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem("theme");
+        if (theme === "light" || theme === "dark") {
+          document.documentElement.dataset.theme = theme;
+        }
+      } catch (_error) {}
+    </script>
 
     <!-- Schema.org markup for Google -->
     <meta itemprop="name" content={title} />
@@ -311,13 +325,26 @@ const ENABLE_GTM = true;
     {showNav && <Nav lang={lang} />}
     <slot />
     <Footer lang={lang} />
+    <WebMcp />
     <script>
+      import fancyboxCss from "@fancyapps/ui/dist/fancybox/fancybox.css?url";
+
       document.addEventListener("DOMContentLoaded", () => {
         const elements = document.querySelectorAll("[data-fancybox]");
         if (elements.length === 0) return;
 
         const windowRef = window;
         if (windowRef.__fancyboxBound) return;
+
+        // Lightbox JS + CSS load only on pages that use it. The stylesheet is
+        // imported as a URL so it never ends up inlined in every page.
+        if (!document.querySelector("link[data-fancybox-css]")) {
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = fancyboxCss;
+          link.dataset.fancyboxCss = "";
+          document.head.append(link);
+        }
 
         import("@fancyapps/ui")
           .then(({ Fancybox }) => {

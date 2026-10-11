@@ -60,20 +60,56 @@
   }
 
   .site-nav__bar {
-    background-color: rgb(0 0 0 / 0.72);
+    background-color: light-dark(rgb(250 249 245 / 0.95), rgb(0 0 0 / 0.72));
     backdrop-filter: blur(14px) saturate(140%);
     transition: background-color 0.3s var(--ease-out-soft);
   }
 
   @supports (container-type: scroll-state) {
     .site-nav__bar {
-      background-color: rgb(0 0 0 / 0.35);
+      background-color: light-dark(rgb(250 249 245 / 0.92), rgb(0 0 0 / 0.35));
     }
 
     @container site-nav scroll-state(stuck: top) {
       .site-nav__bar {
-        background-color: rgb(0 0 0 / 0.85);
+        background-color: light-dark(rgb(250 249 245 / 0.94), rgb(0 0 0 / 0.85));
       }
+    }
+  }
+
+  /* Theme toggle: show the icon of the theme you would switch to. */
+  .theme-toggle .theme-toggle__to-light {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .theme-toggle {
+    & .theme-toggle__to-light {
+      display: block;
+    }
+
+    & .theme-toggle__to-dark {
+      display: none;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle {
+      & .theme-toggle__to-light {
+        display: block;
+      }
+
+      & .theme-toggle__to-dark {
+        display: none;
+      }
+    }
+  }
+
+  /* Smooth colour change when the theme flips (View Transitions where
+     available, plain swap otherwise). */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.35s;
     }
   }
 
@@ -155,6 +191,16 @@
   /* image purely with :has().                                          */
   /* ------------------------------------------------------------------ */
 
+
+  /* Version cards scroll sideways on phones – snap, no visible scrollbar. */
+  .tier-track {
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 
   /* The size preview grows from its baseline when the size changes. */
   @media (prefers-reduced-motion: no-preference) {
@@ -414,6 +460,7 @@
   /* ------------------------------------------------------------------ */
 
   .pano-modal {
+    color-scheme: dark;
     position: fixed;
     inset: 0;
     display: grid;
@@ -442,7 +489,7 @@
 
     &:hover,
     &:focus-visible {
-      background-color: rgb(0 0 0 / 0.85);
+      background-color: light-dark(rgb(250 249 245 / 0.94), rgb(0 0 0 / 0.85));
       border-color: var(--color-gold);
     }
   }

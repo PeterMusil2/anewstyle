@@ -6,7 +6,6 @@
  */
 import prices from "../../data/prices.json";
 import type { PricesData, Price } from "./PriceList.types";
-import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import ScaleFigure from "../ui/ScaleFigure.astro";
 import Icon from "../icons/Icon.astro";
@@ -82,8 +81,6 @@ const tiers = products.map((product, index) => {
     tagline: product.tagline?.[lang] ?? "",
     previousTitle: previous?.title,
     highlights,
-    included: Object.entries(product.features).filter(([, has]) => has).map(([key]) => featureLabel(key)),
-    missing: Object.entries(product.features).filter(([, has]) => !has).map(([key]) => featureLabel(key)),
     price: Object.fromEntries(
       sizes.map(({ key }) => {
         const net = toNumber(product.prices[key]);
@@ -97,28 +94,40 @@ const cheapest = (key: SizeKey) =>
   format(Math.min(...products.map((product) => toNumber(product.prices[key]))));
 ---
 
-<section id={id} aria-labelledby={`${id}-title`} class="pricing section-y bg-ink-850">
-  <div class="container-page flex flex-col gap-20">
-    <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("price.eyebrow")} title={t("price.title")}>
-      <p class="text-lg text-fg-soft">{t("price.desc1")}</p>
-      <p class="text-fg-muted">
-        <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
-      </p>
-    </SectionHeader>
+<section id={id} aria-labelledby={`${id}-title`} class="pricing bg-ink-850">
+  <!--
+    The pricing panel is sized to the viewport (minus the fixed nav), so the
+    size picker and all three versions are always visible on one screen.
+  -->
+  <div class="container-page flex min-h-[min(calc(100svh-var(--nav-height)),56rem)] flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4">
+    <header class="reveal grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end lg:gap-x-16">
+      <div class="flex flex-col gap-2">
+        <p class="eyebrow tiny:max-lg:hidden">{t("price.eyebrow")}</p>
+        <h2 id={`${id}-title`} class="font-display text-4xl leading-none font-black tracking-display uppercase lg:text-5xl short:text-4xl">
+          {t("price.title")}
+        </h2>
+      </div>
+      <div class="flex flex-col gap-1 lg:max-w-2xl lg:justify-self-end lg:text-right tiny:hidden">
+        <p class="text-[0.9375rem] text-fg-soft lg:text-base">{t("price.desc1")}</p>
+        <p class="hidden text-sm text-fg-muted sm:block short:hidden">
+          <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
+        </p>
+      </div>
+    </header>
 
     <!-- Step 1: size -->
-    <fieldset class="flex flex-col gap-6" aria-labelledby={`${id}-step1`}>
-      <div class="flex flex-col justify-between gap-3 border-b border-line pb-4 md:flex-row md:items-end md:gap-6">
-        <h3 class="flex items-center gap-4">
-          <span class="grid size-8 place-items-center border border-gold text-sm font-extrabold text-gold">1</span>
-          <span id={`${id}-step1`} class="text-[0.9375rem] font-extrabold tracking-[0.16em] uppercase">{t("price.step1")}</span>
+    <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1`}>
+      <div class="flex items-center justify-between gap-4">
+        <h3 class="flex items-center gap-3">
+          <span class="grid size-6 place-items-center border border-gold text-xs font-extrabold text-gold">1</span>
+          <span id={`${id}-step1`} class="text-xs font-extrabold tracking-[0.16em] uppercase sm:text-[0.8125rem]">{t("price.step1")}</span>
         </h3>
-        <p class="text-sm text-fg-muted">{t("price.underText")}</p>
+        <p class="hidden text-xs text-fg-muted lg:block">{t("price.underText")}</p>
       </div>
-      <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+      <div class="grid grid-cols-4 gap-2 lg:gap-3">
         {
           sizes.map((size, index) => (
-            <label class="group relative flex min-h-24 cursor-pointer items-center gap-3 border border-line bg-ink-900 px-3 py-4 transition-colors duration-200 hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:gap-5 sm:px-6 lg:min-h-31">
+            <label class="group relative flex min-h-14 cursor-pointer items-center justify-center gap-3 border border-line bg-ink-900 px-2 py-2 transition-colors duration-200 hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:justify-start sm:px-4 lg:min-h-16 lg:gap-4">
               <input
                 type="radio"
                 name="size"
@@ -127,21 +136,21 @@ const cheapest = (key: SizeKey) =>
                 aria-label={t(size.aria)}
                 class="sr-only"
               />
-              <span class="flex h-14 w-6 shrink-0 items-end justify-center sm:h-19 sm:w-10" aria-hidden="true">
+              <span class="hidden h-10 w-6 shrink-0 items-end justify-center sm:flex" aria-hidden="true">
                 <span
-                  class="block h-full bg-ink-700 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)] transition-colors group-has-checked:bg-gold-light"
+                  class="block h-full bg-ink-700 shadow-[inset_0_0_0_1px_var(--color-line-strong)] transition-colors group-has-checked:bg-gold"
                   style={`width: ${(size.width / PANEL_HEIGHT) * 100 * 1.9}%`}
                 />
               </span>
-              <span class="flex flex-col gap-1">
-                <span class="text-2xl leading-none font-black tracking-[0.04em] sm:text-3xl">{size.label}</span>
-                <span class="text-[0.6875rem] whitespace-nowrap text-fg-soft sm:text-sm">{dims(size.width)}</span>
-                <span class="text-[0.6875rem] font-bold whitespace-nowrap text-gold sm:text-sm">
-                  {t("price.from")} {cheapest(size.key)} {t("price.currency")}
+              <span class="flex flex-col items-center gap-0.5 sm:items-start">
+                <span class="text-lg leading-none font-black tracking-[0.04em] lg:text-xl">{size.label}</span>
+                <span class="text-[0.625rem] whitespace-nowrap text-fg-muted sm:text-xs">
+                  <span class="sm:hidden">{size.width} mm</span>
+                  <span class="hidden sm:inline">{dims(size.width)}</span>
                 </span>
               </span>
-              <span class="absolute top-3 right-3 hidden size-5 place-items-center bg-gold text-ink group-has-checked:grid" aria-hidden="true">
-                <Icon name="check" class="size-3" />
+              <span class="ml-auto hidden text-xs font-bold whitespace-nowrap text-gold group-has-checked:text-gold-light xl:inline">
+                {t("price.from")} {cheapest(size.key)} {t("price.currency")}
               </span>
             </label>
           ))
@@ -150,23 +159,23 @@ const cheapest = (key: SizeKey) =>
     </fieldset>
 
     <!-- Step 2: version -->
-    <div class="flex flex-col gap-6">
-      <div class="flex flex-col justify-between gap-3 border-b border-line pb-4 md:flex-row md:items-end md:gap-6">
-        <h3 class="flex items-center gap-4">
-          <span class="grid size-8 place-items-center border border-gold text-sm font-extrabold text-gold">2</span>
-          <span class="text-[0.9375rem] font-extrabold tracking-[0.16em] uppercase">
+    <div class="flex flex-col gap-2.5">
+      <div class="flex items-center justify-between gap-4 tiny:max-lg:sr-only">
+        <h3 class="flex items-center gap-3">
+          <span class="grid size-6 place-items-center border border-gold text-xs font-extrabold text-gold">2</span>
+          <span class="text-xs font-extrabold tracking-[0.16em] uppercase sm:text-[0.8125rem]">
             {t("price.step2")}{" "}
-            <span class="text-fg-muted">·</span>{" "}
-            {sizes.map((size) => <span data-size={size.key}>{t("price.sizeLabel")} {size.label}</span>)}
+            <span class="text-fg-subtle">·</span>{" "}
+            {sizes.map((size) => <span data-size={size.key}>{size.label}</span>)}
           </span>
         </h3>
-        <p class="text-sm text-fg-muted">{t("price.vat")}</p>
+        <p class="hidden text-xs text-fg-muted sm:block">{t("price.vat")}</p>
       </div>
 
-      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-[15.5rem_repeat(3,minmax(0,1fr))]">
-        <div class="hidden flex-col items-center justify-between gap-6 border border-line bg-ink-900 px-5 py-7 lg:flex">
-          <p class="text-xs font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
-          <div class="relative aspect-[280/560] w-full max-w-52">
+      <div class="grid items-stretch gap-3 lg:grid-cols-3 lg:gap-4 xl:grid-cols-[12rem_repeat(3,minmax(0,1fr))] xl:short:grid-cols-[10rem_repeat(3,minmax(0,1fr))]">
+        <div class="hidden flex-col items-center justify-between gap-3 border border-line bg-ink-900 px-4 py-5 xl:flex">
+          <p class="text-[0.6875rem] font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
+          <div class="relative aspect-[280/560] w-full max-w-36 short:max-w-28 tiny:max-w-22">
             {
               sizes.map((size) => (
                 <img
@@ -184,168 +193,167 @@ const cheapest = (key: SizeKey) =>
             }
             <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[23.5%]" />
           </div>
-          <p class="flex flex-col items-center gap-1 text-center">
-            {
-              sizes.map((size) => (
-                <span data-size={size.key} class="contents">
-                  <span class="block text-2xl font-black tracking-[0.04em]">{size.label}</span>
-                  <span class="block text-sm text-fg-soft">{dims(size.width)}</span>
-                </span>
-              ))
-            }
+          <p class="text-center text-xs text-fg-soft">
+            {sizes.map((size) => <span data-size={size.key}>{dims(size.width)}</span>)}
           </p>
         </div>
 
-        {
-          tiers.map((tier) => (
-            <article
-              class:list={[
-                "reveal relative flex flex-col gap-6 border px-6 py-8 sm:px-7",
-                tier.featured ? "border-gold bg-ink-750" : "border-line bg-ink-800",
-              ]}
-            >
-              {tier.featured && (
-                <span class="absolute -top-px right-6 bg-gold px-3 py-1.5 text-[0.6875rem] font-extrabold tracking-[0.16em] text-ink uppercase">
-                  {t("price.featured")}
-                </span>
-              )}
-              <div class="flex flex-col gap-2.5">
-                <h4 class="text-base font-black tracking-[0.22em] text-gold">{tier.title}</h4>
-                <p class="text-[0.9375rem] leading-relaxed text-fg-soft lg:min-h-12">{tier.tagline}</p>
-              </div>
-
-              <div class="flex flex-col gap-1.5 border-y border-line py-5">
-                {sizes.map((size) => (
-                  <div data-size={size.key} class="flex flex-col gap-1.5">
-                    <p class="flex flex-wrap items-baseline gap-x-2">
-                      <span class="text-[2.75rem] leading-none font-extrabold tracking-tight tabular-nums">
-                        {tier.price[size.key].net}
-                      </span>
-                      <span class="text-lg font-bold">{t("price.currency")}</span>
-                      <span class="text-sm text-fg-muted">{t("price.withoutVat")}</span>
-                    </p>
-                    <p class="text-sm text-fg-muted tabular-nums">
-                      {tier.price[size.key].gross} {t("price.currency")} {t("price.withVat")}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <ul class="hidden grow flex-col gap-3 md:flex">
-                {tier.previousTitle && (
-                  <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug font-semibold">
-                    <Icon name="check" class="mt-0.5 size-4 text-gold" />
-                    {t("price.everythingFrom")} {tier.previousTitle}
-                  </li>
+        <ul
+          class="tier-track -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-1 lg:col-span-3 lg:mx-0 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0"
+          aria-label={t("price.step2")}
+        >
+          {
+            tiers.map((tier) => (
+              <li
+                class:list={[
+                  "relative flex w-[84%] shrink-0 snap-center flex-col gap-3 border px-5 py-4 sm:w-[60%] lg:w-auto lg:gap-4 lg:px-6 lg:py-5 short:gap-2.5 short:py-4",
+                  tier.featured ? "border-gold bg-ink-750" : "border-line bg-ink-800",
+                ]}
+              >
+                {tier.featured && (
+                  <span class="absolute -top-px right-5 bg-gold px-2.5 py-1 text-[0.625rem] font-extrabold tracking-[0.16em] text-ink uppercase">
+                    {t("price.featured")}
+                  </span>
                 )}
-                {tier.highlights.map((item) => (
-                  <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug">
-                    <Icon name="check" class="mt-0.5 size-4 text-gold" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+                <div class="flex flex-col gap-1.5">
+                  <h4 class="text-[0.9375rem] font-black tracking-[0.22em] text-gold">{tier.title}</h4>
+                  <p class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{tier.tagline}</p>
+                </div>
 
-              <div class="flex grow flex-col gap-4 md:hidden">
-                <ul class="flex flex-col gap-2.5">
-                  {tier.included.map((item) => (
-                    <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug">
-                      <Icon name="check" class="mt-0.5 size-4 text-gold" />
+                <div class="border-y border-line py-2.5 lg:py-3">
+                  {sizes.map((size) => (
+                    <div data-size={size.key} class="flex flex-col gap-1">
+                      <p class="flex flex-wrap items-baseline gap-x-1.5">
+                        <span class="text-4xl leading-none font-extrabold tracking-tight tabular-nums lg:text-[2.5rem] short:text-[2rem] tiny:text-[1.875rem]">
+                          {tier.price[size.key].net}
+                        </span>
+                        <span class="text-base font-bold">{t("price.currency")}</span>
+                        <span class="text-xs text-fg-muted">{t("price.withoutVat")}</span>
+                      </p>
+                      <p class="text-xs text-fg-muted tabular-nums">
+                        {tier.price[size.key].gross} {t("price.currency")} {t("price.withVat")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <ul class="flex grow flex-col gap-1 text-sm leading-snug lg:gap-1.5 short:gap-1">
+                  {tier.previousTitle && (
+                    <li class="flex items-start gap-2 font-semibold">
+                      <Icon name="check" class="mt-px size-4 text-gold" />
+                      {t("price.everythingFrom")} {tier.previousTitle}
+                    </li>
+                  )}
+                  {tier.highlights.map((item) => (
+                    <li class="flex items-start gap-2">
+                      <Icon name="check" class="mt-px size-4 text-gold" />
                       {item}
                     </li>
                   ))}
                 </ul>
-                {tier.missing.length > 0 && (
-                  <p class="text-sm leading-relaxed text-fg-subtle">
-                    <span class="font-bold text-fg-muted">{t("price.notIncluded")}: </span>
-                    {tier.missing.join(", ")}
-                  </p>
-                )}
-              </div>
 
-              <div class="flex flex-col gap-2">
-                <Button href={`${basePath}/#contact`} variant={tier.featured ? "primary" : "outline"} class="px-4!">
-                  {t("price.inquire")}
-                </Button>
-                <Button
-                  href="https://www.anewstyle-eshop.cz/"
-                  variant="link"
-                  rel="external"
-                  target="_blank"
-                  class="font-semibold! tracking-normal! text-fg-soft! normal-case! hover:text-fg!"
-                >
-                  {t("price.eshop")} →
-                </Button>
-              </div>
-            </article>
-          ))
-        }
+                <div class="flex items-center gap-3">
+                  <Button
+                    href={`${basePath}/#contact`}
+                    size="sm"
+                    variant={tier.featured ? "primary" : "outline"}
+                    class="flex-1 px-3!"
+                  >
+                    {t("price.inquire")}
+                  </Button>
+                  <a
+                    href="https://www.anewstyle-eshop.cz/"
+                    rel="external"
+                    target="_blank"
+                    class="grid size-11 shrink-0 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+                    aria-label={`${t("price.eshop")} – ${tier.title}`}
+                    title={t("price.eshop")}
+                  >
+                    <Icon name="eshop" class="size-4" />
+                  </a>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
 
-    <!-- Feature comparison (tablet and up; phones get the full list in each card) -->
-    <div class="hidden flex-col gap-6 md:flex">
-      <div class="flex items-end justify-between gap-6">
-        <h3 class="text-2xl font-black tracking-[0.1em] uppercase lg:text-[1.75rem]">{t("price.compareTitle")}</h3>
-        <p class="text-sm text-fg-muted">{t("price.compareHint")}</p>
-      </div>
-      <table class="w-full border-collapse text-left">
-        <thead>
-          <tr class="border-t border-gold bg-ink-900">
-            <th scope="col" class="px-6 py-5 text-xs font-bold tracking-[0.2em] text-fg-muted uppercase">
-              {sizes.map((size) => <span data-size={size.key}>{t("price.sizeLabel")} {size.label} · {dims(size.width)}</span>)}
-            </th>
-            {
-              tiers.map((tier) => (
-                <th scope="col" class="w-[18%] px-4 py-5 text-center">
-                  <span class="block text-[0.9375rem] font-black tracking-[0.2em] text-gold">{tier.title}</span>
-                  {sizes.map((size) => (
-                    <span data-size={size.key} class="block text-sm font-normal text-fg tabular-nums">
-                      {tier.price[size.key].net} {t("price.currency")}
-                    </span>
+    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-xs">
+            <p class="text-fg-subtle lg:hidden" aria-hidden="true">{t("price.swipeHint")} →</p>
+      <a href={`#${id}-compare`} class="ml-auto inline-flex min-h-11 items-center gap-2 font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light">
+        {t("price.compareCta")} ↓
+      </a>
+    </div>
+  </div>
+
+  <!-- Feature comparison: the header row sticks under the nav while scrolling -->
+  <div id={`${id}-compare`} class="container-page flex scroll-mt-(--nav-height) flex-col gap-5 pt-10 pb-20 lg:pt-14 lg:pb-30">
+    <p class="hidden text-[0.9375rem] text-fg-soft tiny:block">{t("price.desc1")}</p>
+    <p class="text-sm text-fg-muted sm:hidden short:block tiny:block">
+      <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
+    </p>
+    <div class="flex flex-col justify-between gap-2 md:flex-row md:items-end md:gap-6">
+      <h3 class="text-2xl font-black tracking-[0.08em] uppercase lg:text-[1.75rem]">{t("price.compareTitle")}</h3>
+      <p class="text-sm text-fg-muted">{t("price.compareHint")}</p>
+    </div>
+    <table class="w-full border-separate border-spacing-0 text-left">
+      <thead>
+        <tr>
+          <th scope="col" class="sticky top-(--nav-height) z-10 border-t border-b border-t-gold border-b-line bg-ink-900 px-3 py-3 align-bottom text-[0.625rem] font-bold tracking-[0.16em] text-fg-muted uppercase sm:px-6 sm:py-4 sm:text-xs">
+            {t("price.sizeLabel")}{" "}
+            {sizes.map((size) => <span data-size={size.key}>{size.label}<span class="hidden sm:inline"> · {dims(size.width)}</span></span>)}
+          </th>
+          {
+            tiers.map((tier) => (
+              <th scope="col" class="sticky top-(--nav-height) z-10 w-[19%] border-t border-b border-t-gold border-b-line bg-ink-900 px-1 py-3 text-center sm:w-[18%] sm:px-4 sm:py-4">
+                <span class="block text-[0.6875rem] font-black tracking-[0.14em] text-gold sm:text-[0.9375rem] sm:tracking-[0.2em]">{tier.title}</span>
+                {sizes.map((size) => (
+                  <span data-size={size.key} class="block text-[0.6875rem] font-normal whitespace-nowrap text-fg tabular-nums sm:text-sm">
+                    {tier.price[size.key].net} {t("price.currency")}
+                  </span>
+                ))}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      {
+        groups.map((group) => (
+          <tbody>
+            <tr>
+              <th colspan="4" scope="colgroup" class="px-3 pt-6 pb-2 text-[0.6875rem] font-extrabold tracking-[0.2em] text-gold uppercase sm:px-6 sm:text-xs">
+                {t(group.title)}
+              </th>
+            </tr>
+            {group.features.map((key) => {
+              const meta = featureMeta[key];
+              return (
+                <tr class="transition-colors hover:bg-ink-900">
+                  <th scope="row" class="border-b border-line px-3 py-2.5 font-normal sm:px-6 sm:py-3">
+                    <a href={meta.href} class="text-sm font-semibold text-fg no-underline hover:text-gold-light sm:text-[0.9375rem]">
+                      {featureLabel(key)}
+                    </a>
+                    {meta.hint && <span class="block text-xs text-fg-subtle sm:text-[0.8125rem]">{t(meta.hint)}</span>}
+                  </th>
+                  {tiers.map((tier) => (
+                    <td class="border-b border-line px-1 py-2.5 text-center sm:px-4 sm:py-3">
+                      {tier.features[key] ? (
+                        <Icon name="check" class="mx-auto size-5 text-gold" label={t("price.included")} />
+                      ) : (
+                        <span class="mx-auto block h-0.5 w-3.5 bg-fg-disabled" role="img" aria-label={t("price.notIncluded")} />
+                      )}
+                    </td>
                   ))}
-                </th>
-              ))
-            }
-          </tr>
-        </thead>
-        {
-          groups.map((group) => (
-            <tbody>
-              <tr>
-                <th colspan="4" scope="colgroup" class="px-6 pt-6 pb-2.5 text-xs font-extrabold tracking-[0.2em] text-gold uppercase">
-                  {t(group.title)}
-                </th>
-              </tr>
-              {group.features.map((key) => {
-                const meta = featureMeta[key];
-                return (
-                  <tr class="border-b border-line transition-colors hover:bg-white/2">
-                    <th scope="row" class="px-6 py-3 font-normal">
-                      <a href={meta.href} class="text-[0.9375rem] font-semibold text-fg no-underline hover:text-gold-light">
-                        {featureLabel(key)}
-                      </a>
-                      {meta.hint && <span class="block text-[0.8125rem] text-fg-subtle">{t(meta.hint)}</span>}
-                    </th>
-                    {tiers.map((tier) => (
-                      <td class="px-4 py-3 text-center">
-                        {tier.features[key] ? (
-                          <Icon name="check" class="mx-auto size-5 text-gold" label={t("price.included")} />
-                        ) : (
-                          <span class="mx-auto block h-0.5 w-3.5 bg-fg-disabled" role="img" aria-label={t("price.notIncluded")} />
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          ))
-        }
-      </table>
-    </div>
+                </tr>
+              );
+            })}
+          </tbody>
+        ))
+      }
+    </table>
 
-    <div class="grid gap-5 md:grid-cols-2">
+    <div class="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("price.customTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.customDesc")}</p>

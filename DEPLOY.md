@@ -102,3 +102,12 @@ Functions in `functions/api/auth.ts` and `functions/api/callback.ts`.
 Local editing without GitHub: run `bun run dev` and `bun run cms:local` side by
 side and open `http://localhost:4321/admin/` – changes are written straight to
 the working copy.
+
+## Agent endpoints
+
+Nothing to configure – they deploy with the site:
+
+- `/llms.txt` – Markdown summary (prices, FAQ, contact) for LLMs.
+- `/agent/site.json` – the same facts as JSON (cs + en).
+- `/mcp` – read-only MCP server (Cloudflare Pages Function). Test:
+  `curl -s https://anewstyle.cz/mcp -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'`

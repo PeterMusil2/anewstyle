@@ -22,7 +22,7 @@ const currentYear = new Date().getFullYear();
 
 <footer class="border-t border-line bg-ink">
   <div class="container-wide flex flex-col gap-8 py-10 lg:flex-row lg:items-center lg:justify-between">
-    <a href={`${basePath}/`} class="flex items-center gap-3 text-fg no-underline" aria-label={t("common.logoAlt")}>
+    <a href={`${basePath}/`} class="flex items-center gap-3 text-fg no-underline">
       <img src="/images/logos/logo.svg" alt="" width="365" height="850" loading="lazy" class="h-9 w-auto" />
       <span class="text-[0.9375rem] font-black tracking-[0.3em]">ANEW STYLE</span>
     </a>
@@ -47,7 +47,6 @@ const currentYear = new Date().getFullYear();
       <a
         href="#"
         id="footerCookieSettings"
-        aria-label={t("cookie.openPreferences")}
         rel="nofollow noopener"
         class="inline-flex min-h-11 items-center gap-2 text-fg-soft hover:text-gold-light"
       >
@@ -61,7 +60,7 @@ const currentYear = new Date().getFullYear();
           href="https://lukaschylik.dev/"
           target="_blank"
           rel="external"
-          aria-label={t("footer.gotoCreator")}
+          title={t("footer.gotoCreator")}
           class="text-fg-soft hover:text-gold-light">Lukáš Chylík</a>
       </span>
     </small>

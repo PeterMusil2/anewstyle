@@ -53,6 +53,8 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         action="https://api.web3forms.com/submit"
         method="POST"
         novalidate
+        toolname="anewstyle_inquiry"
+        tooldescription="Send an inquiry to ANEW STYLE (illuminated stone panels): name, e-mail and message. The visitor confirms and submits it."
       >
         <input type="hidden" name="access_key" value="f48bcfa0-bfd9-4098-9a68-6116fd0b952f" />
         <input type="hidden" name="subject" value="AnewStyle – nová zpráva z webu" />
@@ -75,6 +77,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               required
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
+              toolparamdescription="Full name of the person asking"
               class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
@@ -87,6 +90,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               autocomplete="email"
               inputmode="email"
               placeholder={t("contact.formEmailPlaceholder")}
+              toolparamdescription="E-mail address for the reply"
               class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
@@ -99,6 +103,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             required
             rows="6"
             placeholder={t("contact.formMessagePlaceholder")}
+            toolparamdescription="The question or request, e.g. size, version and stone pattern of interest"
             class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger resize-y py-3.5"></textarea>
         </label>
 
@@ -138,7 +143,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               href="https://www.google.cz/maps/place/Hybe%C5%A1ova+308%2F61,+602+00+Brno-st%C5%99ed/@49.1887768,16.5968647,17z/data=!3m1!4b1!4m5!3m4!1s0x471294529732ae65:0x75c148bfafac76!8m2!3d49.1887733!4d16.5990534"
               rel="external"
               target="_blank"
-              aria-label={t("contact.showroomAddress")}
+              title={t("contact.showroomAddress")}
               class="flex flex-col gap-1 text-fg no-underline hover:text-gold-light"
             >
               <strong class="text-xl font-black tracking-[0.08em] uppercase">Hybešova 61</strong>

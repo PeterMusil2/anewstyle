@@ -1,0 +1,194 @@
+---
+/**
+ * WebMCP – exposes the site to in-browser AI agents as tools
+ * (https://webmachinelearning.github.io/webmcp/).
+ *
+ * The API is still a draft: the spec puts it on `document.modelContext`
+ * (unregister via AbortSignal), Chrome's early implementation on
+ * `navigator.modelContext`. Both are supported; without either nothing runs.
+ * Data tools are read-only; UI tools only change what is on screen – the
+ * inquiry is always sent by the visitor, never by the agent.
+ */
+---
+
+<script>
+  import type { SiteData } from "../../lib/site-data";
+
+  type JsonSchema = Record<string, unknown>;
+  type ToolResult = { content: { type: "text"; text: string }[] };
+
+  interface Tool {
+    name: string;
+    title?: string;
+    description: string;
+    inputSchema?: JsonSchema;
+    annotations?: { readOnlyHint?: boolean };
+    execute: (input: Record<string, unknown>) => Promise<ToolResult>;
+  }
+
+  interface ModelContext {
+    registerTool: (tool: Tool, options?: { signal?: AbortSignal }) => unknown;
+  }
+
+  const modelContext =
+    (document as Document & { modelContext?: ModelContext }).modelContext ??
+    (navigator as Navigator & { modelContext?: ModelContext }).modelContext;
+
+  const lang: "cs" | "en" = document.documentElement.lang === "en" ? "en" : "cs";
+
+  let siteData: Promise<SiteData> | undefined;
+  const data = () =>
+    (siteData ??= fetch("/agent/site.json")
+      .then((response) => response.json() as Promise<Record<"cs" | "en", SiteData>>)
+      .then((all) => all[lang]));
+
+  const result = (value: unknown): ToolResult => ({
+    content: [
+      { type: "text", text: typeof value === "string" ? value : JSON.stringify(value, null, 2) },
+    ],
+  });
+
+  const SIZES = ["L", "XL", "XXL", "XXXL"];
+  const basePath = lang === "en" ? "/en" : "";
+
+  const tools: Tool[] = [
+    {
+      name: "get_price_list",
+      title: "Price list",
+      description:
+        "Prices (CZK, excluding and including 21% VAT) of the illuminated stone panel versions SLIM, BASIC and DELUXE for every size, plus the feature matrix. Optionally filter by size.",
+      inputSchema: {
+        type: "object",
+        properties: { size: { type: "string", enum: SIZES, description: "Panel size (height 2400 mm)." } },
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ size }) => {
+        const site = await data();
+        const versions = site.versions.map((version) => ({
+          ...version,
+          prices: size ? version.prices.filter((price) => price.size === size) : version.prices,
+        }));
+        return result({ currency: site.currency, note: site.priceNote, customSize: site.customSizeNote, versions });
+      },
+    },
+    {
+      name: "list_stone_patterns",
+      title: "Stone patterns",
+      description: "Illustrative natural-stone patterns (name, description, photo, 3D model). Current stock is confirmed by e-mail.",
+      inputSchema: { type: "object", properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: async () => {
+        const site = await data();
+        return result({ note: site.patternsNote, patterns: site.patterns });
+      },
+    },
+    {
+      name: "search_faq",
+      title: "FAQ",
+      description: "Answers to common questions about installation, cables, humidity, repairs, remote control and weight. Pass a query to filter.",
+      inputSchema: { type: "object", properties: { query: { type: "string" } } },
+      annotations: { readOnlyHint: true },
+      execute: async ({ query }) => {
+        const site = await data();
+        const needle = typeof query === "string" ? query.toLowerCase().trim() : "";
+        const items = needle
+          ? site.faq.filter((item) => `${item.question} ${item.answer}`.toLowerCase().includes(needle))
+          : site.faq;
+        return result(items.length ? items : site.faq);
+      },
+    },
+    {
+      name: "get_contact",
+      title: "Contact & showroom",
+      description: "E-mail, phone, showroom address (visits by appointment), company details and the e-shop link.",
+      inputSchema: { type: "object", properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: async () => result((await data()).contact),
+    },
+  ];
+
+  // UI tools – registered only where the matching UI exists.
+  if (document.querySelector(".pricing input[name=size]")) {
+    tools.push({
+      name: "show_price_for_size",
+      title: "Show prices for a size",
+      description: "Selects a panel size in the on-page price list and scrolls it into view so the visitor sees the prices.",
+      inputSchema: {
+        type: "object",
+        properties: { size: { type: "string", enum: SIZES } },
+        required: ["size"],
+      },
+      execute: async ({ size }) => {
+        const input = document.querySelector<HTMLInputElement>(
+          `.pricing input[name=size][value="${String(size).toLowerCase()}"]`,
+        );
+        if (!input) return result(`Unknown size ${String(size)}. Use one of ${SIZES.join(", ")}.`);
+        input.checked = true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        document.getElementById("price-list")?.scrollIntoView({ behavior: "smooth" });
+        return result(`Price list now shows size ${String(size)}.`);
+      },
+    });
+  }
+
+  const form = document.querySelector<HTMLFormElement>(".contact-form");
+  if (form) {
+    tools.push({
+      name: "prefill_inquiry",
+      title: "Prefill inquiry form",
+      description:
+        "Fills the contact form with the visitor's name, e-mail and message and scrolls to it. It does NOT send anything – the visitor reviews and presses the send button.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          email: { type: "string", format: "email" },
+          message: { type: "string", maxLength: 4000 },
+        },
+        required: ["message"],
+      },
+      execute: async ({ name, email, message }) => {
+        const set = (field: string, value: unknown) => {
+          const element = form.elements.namedItem(field) as HTMLInputElement | HTMLTextAreaElement | null;
+          if (element && typeof value === "string") element.value = value.slice(0, 4000);
+        };
+        set("name", name);
+        set("email", email);
+        set("message", message);
+        form.scrollIntoView({ behavior: "smooth", block: "center" });
+        form.querySelector<HTMLButtonElement>("[type=submit]")?.focus({ preventScroll: true });
+        return result("The form is filled in. Ask the visitor to review it and press the send button.");
+      },
+    });
+  }
+
+  tools.push({
+    name: "open_page",
+    title: "Open a page",
+    description: "Navigates to a section or page of the site.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        page: { type: "string", enum: ["home", "products", "technologies", "faq", "price-list", "contact", "gallery", "manual"] },
+      },
+      required: ["page"],
+    },
+    execute: async ({ page }) => {
+      const target = page === "gallery" || page === "manual" ? `${basePath}/${page}/` : page === "home" ? `${basePath}/` : `${basePath}/#${page}`;
+      window.location.assign(target);
+      return result(`Opening ${target}`);
+    },
+  });
+
+  if (modelContext && window.isSecureContext) {
+    const controller = new AbortController();
+    for (const tool of tools) {
+      try {
+        modelContext.registerTool(tool, { signal: controller.signal });
+      } catch (error) {
+        console.warn(`[WebMCP] ${tool.name} not registered`, error);
+      }
+    }
+    window.addEventListener("pagehide", () => controller.abort(), { once: true });
+  }
+</script>

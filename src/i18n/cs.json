@@ -329,5 +329,10 @@
   "price.showroomDesc": "Jak naše světla vypadají v reálu si můžete prohlédnout po předchozí domluvě v showroomu na adrese Hybešova 61, Brno.",
   "contact.followUs": "Sledujte nás",
   "nav.main": "Hlavní navigace",
-  "nav.footer": "Navigace v patičce"
+  "nav.footer": "Navigace v patičce",
+  "theme.toLight": "Přepnout na světlý režim",
+  "theme.toDark": "Přepnout na tmavý režim",
+  "theme.label": "Barevný režim",
+  "price.compareCta": "Porovnat celou výbavu",
+  "price.swipeHint": "Posuňte pro další provedení"
 }

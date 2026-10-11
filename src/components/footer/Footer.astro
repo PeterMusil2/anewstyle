@@ -8,32 +8,64 @@ interface Props {
 
 const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
-let currentYear = new Date().getFullYear();
+const basePath = lang === "cs" ? "" : "/en";
+const links = [
+  { href: `${basePath}/#products`, text: t("nav.products") },
+  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
+  { href: `${basePath}/#price-list`, text: t("nav.price") },
+  { href: `${basePath}/gallery/`, text: t("nav.gallery") },
+  { href: `${basePath}/manual/`, text: t("nav.manual") },
+  { href: `${basePath}/#contact`, text: t("nav.contact") },
+];
+const currentYear = new Date().getFullYear();
 ---
 
-<footer>
-  <small>
-    ©2022 - {currentYear} anewstyle.cz |
-    <span>{t("footer.rights")}</span>
-    | <a
-      href="#"
-      class="link link--s"
-      id="footerCookieSettings"
-      aria-label={t("cookie.openPreferences")}
-      rel="nofollow noopener"
-    >
-      <Icon name="cookie" iconClass="footer__cookie-icon" size="0.9em" />
-      <span>{t("footer.cookieSettings")}</span>
+<footer class="border-t border-line bg-ink">
+  <div class="container-wide flex flex-col gap-8 py-10 lg:flex-row lg:items-center lg:justify-between">
+    <a href={`${basePath}/`} class="flex items-center gap-3 text-fg no-underline" aria-label={t("common.logoAlt")}>
+      <img src="/images/logos/logo.svg" alt="" width="365" height="850" loading="lazy" class="h-9 w-auto" />
+      <span class="text-[0.9375rem] font-black tracking-[0.3em]">ANEW STYLE</span>
     </a>
-    |
-    <span>{t("footer.creator")}</span>
-    <a
-      href="https://lukaschylik.dev/"
-      target="_blank"
-      rel="external"
-      aria-label={t("footer.gotoCreator")}>Lukáš Chylík</a
-    >
-  </small>
+    <nav aria-label={t("nav.footer")}>
+      <ul class="flex flex-wrap gap-x-6 gap-y-1">
+        {links.map((link) => (
+          <li>
+            <a href={link.href} class="inline-flex min-h-11 items-center text-xs font-bold tracking-[0.12em] text-fg-muted uppercase no-underline hover:text-gold-light">
+              {link.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+  <div class="border-t border-line">
+    <small class="container-wide flex flex-wrap items-center gap-x-4 gap-y-1 py-5 text-[0.8125rem] text-fg-muted">
+      <span>©2022 – {currentYear} anewstyle.cz</span>
+      <span aria-hidden="true" class="text-fg-disabled">|</span>
+      <span>{t("footer.rights")}</span>
+      <span aria-hidden="true" class="text-fg-disabled">|</span>
+      <a
+        href="#"
+        id="footerCookieSettings"
+        aria-label={t("cookie.openPreferences")}
+        rel="nofollow noopener"
+        class="inline-flex min-h-11 items-center gap-2 text-fg-soft hover:text-gold-light"
+      >
+        <Icon name="cookie" class="size-3.5" />
+        {t("footer.cookieSettings")}
+      </a>
+      <span aria-hidden="true" class="text-fg-disabled">|</span>
+      <span>
+        {t("footer.creator")}{" "}
+        <a
+          href="https://lukaschylik.dev/"
+          target="_blank"
+          rel="external"
+          aria-label={t("footer.gotoCreator")}
+          class="text-fg-soft hover:text-gold-light">Lukáš Chylík</a>
+      </span>
+    </small>
+  </div>
 </footer>
 
 <script>

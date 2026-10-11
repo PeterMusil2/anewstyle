@@ -1,4 +1,5 @@
 ---
+import Button from "../ui/Button.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -9,20 +10,25 @@ const { lang = 'cs' } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<div id="cookie-consent-banner" class="cookie-banner" aria-live="polite" role="dialog" aria-modal="false" aria-label={t('cookie.consent')}>
-  <div class="cookie-banner__content">
-    <p class="cookie-banner__text">
-      <span>{t('cookie.bannerText')}</span>
-    </p>
-    <div class="cookie-banner__actions">
-      <button type="button" class="button button--xs" id="cookie-reject-all"><span>{t('cookie.btnRejectAll')}</span></button>
-      <button type="button" class="button button--xs" id="cookie-accept-all"><span>{t('cookie.btnAcceptAll')}</span></button>
-      <button type="button" class="button button--transparent button--xs" id="cookie-customize"><span>{t('cookie.btnCustomize')}</span></button>
+<div
+  id="cookie-consent-banner"
+  class="cookie-banner fixed inset-x-3 bottom-3 z-[70] max-w-md border border-gold/50 bg-ink-850/95 p-6 text-fg shadow-2xl backdrop-blur-md sm:inset-x-auto sm:bottom-6 sm:left-6 sm:p-7"
+  role="region"
+  aria-live="polite"
+  aria-label={t('cookie.consent')}
+  hidden
+>
+  <div class="flex flex-col gap-5">
+    <p class="text-sm leading-relaxed text-fg-soft">{t('cookie.bannerText')}</p>
+    <div class="grid grid-cols-2 gap-2.5">
+      <Button size="sm" variant="ghost" id="cookie-reject-all">{t('cookie.btnRejectAll')}</Button>
+      <Button size="sm" id="cookie-accept-all">{t('cookie.btnAcceptAll')}</Button>
+      <Button size="sm" variant="link" id="cookie-customize" class="col-span-2 font-semibold! tracking-normal! text-fg-soft! normal-case! hover:text-fg!">
+        {t('cookie.btnCustomize')}
+      </Button>
     </div>
   </div>
 </div>
-
-
 
 <script>
   const BANNER_ID = "cookie-consent-banner";
@@ -42,13 +48,11 @@ const t = useTranslations(lang);
   }
 
   function hideBanner() {
-    banner.style.display = "none";
-    banner.setAttribute("aria-hidden", "true");
+    banner.hidden = true;
   }
 
   function showBanner() {
-    banner.style.display = "block";
-    banner.setAttribute("aria-hidden", "false");
+    banner.hidden = false;
   }
 
   // Show banner on load if consent missing

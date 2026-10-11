@@ -1,4 +1,6 @@
 ---
+import SectionHeader from "../ui/SectionHeader.astro";
+import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -9,116 +11,75 @@ const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<section class="no-pt dark">
-  <div id="baSlider" class="ba-slider container container--l">
-    <div class="image-container">
-      <div class="image-before">
-        <picture>
-          <source
-            type="image/webp"
-            sizes="(min-width: 1367px)"
-            srcset="/images/before-after/Rockfoil_viz5_before_1440.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 1366px)"
-            srcset="/images/before-after/Rockfoil_viz5_before_1366.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 1024px)"
-            srcset="/images/before-after/Rockfoil_viz5_before_1024.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 768px)"
-            srcset="/images/before-after/Rockfoil_viz5_before_768.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 425px)"
-            srcset="/images/before-after/Rockfoil_viz5_before_425.webp"
-          />
-          <img
-            src="/images/before-after/Rockfoil_viz5_before_1440.webp"
-            loading="lazy"
-            width="1440"
-            height="1019"
-            class="slider-image"
-            alt={t("slider.titleDay")}
-          />
-        </picture>
-        <strong>{t("slider.titleDay")}</strong>
-      </div>
-      <div class="image-after">
-        <picture>
-          <source
-            type="image/webp"
-            sizes="(min-width: 1367px)"
-            srcset="/images/before-after/Rockfoil_viz5_after_1440.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 1366px)"
-            srcset="/images/before-after/Rockfoil_viz5_after_1366.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 1024px)"
-            srcset="/images/before-after/Rockfoil_viz5_after_1024.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 768px)"
-            srcset="/images/before-after/Rockfoil_viz5_after_768.webp"
-          />
-          <source
-            type="image/webp"
-            sizes="(max-width: 425px)"
-            srcset="/images/before-after/Rockfoil_viz5_after_425.webp"
-          />
-          <img
-            src="/images/before-after/Rockfoil_viz5_after_1440.webp"
-            loading="lazy"
-            width="1440"
-            height="1019"
-            class="slider-image"
-            alt={t("slider.titleNight")}
-          />
-        </picture>
-        <strong>{t("slider.titleNight")}</strong>
-      </div>
-    </div>
-    <span>{t("slider.desc")}</span>
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value="70"
-      step="0.1"
-      aria-label={t("slider.percentage")}
-      class="slider"
+<section aria-labelledby="day-night-title" class="bg-ink-850 pb-20 lg:pb-30">
+  <div class="container-wide flex flex-col gap-12">
+    <SectionHeader
+      id="day-night-title"
+      layout="center"
+      eyebrow={`${t("slider.titleDay")} · ${t("slider.titleNight")}`}
+      title={t("slider.desc")}
     />
-    <div class="slider-line" aria-hidden="true"></div>
-    <div class="slider-button" aria-hidden="true">
-      <svg class="icon icon-move" fill="currentColor" width="30" height="30">
-        <use xlink:href="#icon-move"></use>
-      </svg>
+
+    <div
+      id="baSlider"
+      class="ba-slider reveal relative aspect-[1440/809] max-h-[80svh] w-full overflow-hidden border border-line select-none"
+    >
+      <div class="absolute inset-0">
+        <img
+          src="/images/before-after/Rockfoil_viz5_after_1440.webp"
+          srcset="/images/before-after/Rockfoil_viz5_after_425.webp 425w, /images/before-after/Rockfoil_viz5_after_768.webp 768w, /images/before-after/Rockfoil_viz5_after_1024.webp 1024w, /images/before-after/Rockfoil_viz5_after_1366.webp 1366w, /images/before-after/Rockfoil_viz5_after_1440.webp 1440w"
+          sizes="(min-width: 90rem) 90rem, 100vw"
+          loading="lazy"
+          decoding="async"
+          width="1440"
+          height="809"
+          class="size-full object-cover object-left"
+          alt={t("slider.titleNight")}
+        />
+        <span class="absolute top-5 right-5 bg-gold px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-ink uppercase sm:top-8 sm:right-8">
+          {t("slider.titleNight")}
+        </span>
+      </div>
+      <div class="ba-slider__before absolute inset-0">
+        <img
+          src="/images/before-after/Rockfoil_viz5_before_1440.webp"
+          srcset="/images/before-after/Rockfoil_viz5_before_425.webp 425w, /images/before-after/Rockfoil_viz5_before_768.webp 768w, /images/before-after/Rockfoil_viz5_before_1024.webp 1024w, /images/before-after/Rockfoil_viz5_before_1366.webp 1366w, /images/before-after/Rockfoil_viz5_before_1440.webp 1440w"
+          sizes="(min-width: 90rem) 90rem, 100vw"
+          loading="lazy"
+          decoding="async"
+          width="1440"
+          height="809"
+          class="size-full object-cover object-left"
+          alt={t("slider.titleDay")}
+        />
+        <span class="absolute top-5 left-5 bg-ink/80 px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-fg uppercase sm:top-8 sm:left-8">
+          {t("slider.titleDay")}
+        </span>
+      </div>
+      <input
+        type="range"
+        min="0"
+        max="100"
+        value="70"
+        step="0.1"
+        aria-label={t("slider.percentage")}
+        class="absolute inset-0 z-20 size-full cursor-ew-resize opacity-0"
+      />
+      <div class="ba-slider__handle pointer-events-none absolute inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-white" aria-hidden="true">
+        <span class="ba-slider__knob absolute top-1/2 left-1/2 grid size-12 -translate-1/2 place-items-center rounded-full bg-white text-ink shadow-lg sm:size-14">
+          <Icon name="move" class="size-6" />
+        </span>
+      </div>
     </div>
   </div>
 </section>
 
 <script>
-  const baSlider = document.querySelector("#baSlider") as HTMLDivElement;
-  const baSliderInput = document.querySelector(
-    "input[type=range]"
-  ) as HTMLInputElement;
-  baSlider.style.setProperty("--ba-position", `${baSliderInput.value}%`);
-  baSlider.style.setProperty("--ba-inline-size", `${baSlider.clientWidth}px`);
-
-  baSliderInput.addEventListener("input", (e) => {
-    let input = e.target as HTMLInputElement;
-    baSlider.style.setProperty("--ba-position", `${input.value}%`);
-    baSlider.style.setProperty("--ba-inline-size", `${baSlider.clientWidth}px`);
+  document.querySelectorAll<HTMLElement>(".ba-slider").forEach((slider) => {
+    const input = slider.querySelector<HTMLInputElement>("input[type=range]");
+    if (!input) return;
+    const update = () => slider.style.setProperty("--ba-position", `${input.value}%`);
+    input.addEventListener("input", update);
+    update();
   });
 </script>

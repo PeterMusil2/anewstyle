@@ -78,3 +78,27 @@ bun run preview      # serve dist/ locally
 
 Without `CLOUDINARY_URL` the build still succeeds — the Cloudinary gallery just
 renders empty (the loader fails soft), so previews and PRs don't need the secret.
+
+## Decap CMS (`/admin/`)
+
+The CMS edits products, the price list and the FAQ and commits to this
+repository (editorial workflow: every change is a pull request, so Cloudflare
+builds a preview before it is published).
+
+GitHub sign-in needs a small OAuth server – it runs as Cloudflare Pages
+Functions in `functions/api/auth.ts` and `functions/api/callback.ts`.
+
+1. GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App**
+   - Homepage URL: `https://anewstyle.cz`
+   - Authorization callback URL: `https://anewstyle.cz/api/callback`
+2. Copy the **Client ID** and generate a **Client secret**.
+3. Cloudflare Pages project → **Settings → Variables and Secrets**
+   (Production):
+   - `GITHUB_CLIENT_ID` = client ID
+   - `GITHUB_CLIENT_SECRET` = client secret (**Encrypt**)
+4. Redeploy. Editors with write access to `PeterMusil2/anewstyle` can now sign
+   in at `https://anewstyle.cz/admin/`.
+
+Local editing without GitHub: run `bun run dev` and `bun run cms:local` side by
+side and open `http://localhost:4321/admin/` – changes are written straight to
+the working copy.

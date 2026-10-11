@@ -4,25 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ANEW STYLE is a Czech product showcase website for illuminated stone panels (Rockfoil). Built with Astro 5, it features internationalization support (CS/EN) and 3D product visualization.
+ANEW STYLE is a Czech product showcase website for illuminated stone panels (Rockfoil). Built with Astro 7 and Tailwind CSS 4, it features internationalization support (CS/EN) and 3D product visualization.
 
 ## Commands
 
 ```bash
-# Development - runs Astro dev server, stylelint, and SCSS watcher concurrently
-bun start
-
-# Production build - runs type checking then builds
-bun run build
-
-# Preview production build
-bun run preview
-
-# SCSS compilation (manual)
-bun run scss:build
-
-# Lint SCSS files
-bun run stylelint
+bun run dev          # Astro dev server (http://localhost:4321)
+bun run build        # gallery:build → typecheck → astro build → sitemap alias
+bun run typecheck    # astro check (TypeScript 6 API) + tsc from TypeScript 7
+bun run preview      # serve the production build
+bun run cms:local    # local Decap CMS backend, then open /admin/ on the dev server
+bun run stylelint    # lint + order CSS in src/**/*.css and <style> in .astro
 ```
 
 ## Architecture
@@ -63,41 +55,43 @@ const t = useTranslations(lang);
 
 **hreflang Tags**: Automatically generated in `Layout.astro` for SEO.
 
-**Components Using i18n** (migrated to `t()` function):
-- Layout, Nav, NavItem, LangSwitch, Footer, CookieBar, CookieDialog
+All components receive `lang` and translate through `t()`.
 
-**Components Still Using `data-localize`** (need migration):
-- Header, Showcase, Products, Technologies, Features, BeforeAfter, Showroom, Contact, PriceList, Card, DetailDialog, Palette, PriceItem, PriceListFeatures
+### Styling – Tailwind CSS 4 + CSS-first effects
 
-To migrate a component: Accept `lang` prop, import `useTranslations`, replace `data-localize="key"` with `{t('key')}`.
+- `src/styles/global.css` is the single entry (imported in `Layout.astro`). It
+  loads Tailwind through `@tailwindcss/vite` and defines the design system in
+  `@theme`: brand colours (`gold`, `ink-*`, `fg-*`, `line*`), fonts, tracking
+  and layout utilities (`container-page`, `container-wide`, `section-y`,
+  `eyebrow`). The default Tailwind palette is disabled – use brand tokens only.
+- `src/styles/effects.css` holds what utilities cannot express, written
+  CSS-first (see the `css-first` skill): scroll-driven reveals, anchor-positioned
+  popovers, `::details-content` accordion motion, `:has()`-driven state for the
+  showcase and price list, gallery grid math, dialog `@starting-style`. State
+  rules at the bottom are unlayered on purpose so they beat utilities.
+- Shared UI lives in `src/components/ui/` (`Button`, `SectionHeader`,
+  `ScaleFigure`). Use them instead of re-styling buttons or headings, so every
+  section stays consistent.
+- Interactive state prefers native HTML: radios + `:has()` (showcase, price
+  sizes), `<details name>` (FAQ), `popover` (menu, language, tooltips),
+  `<dialog>` (cookies, contact thanks).
 
-### Styling Pipeline (Hybrid)
+### TypeScript
 
-Two SCSS processing methods are used:
+- `typescript-7` (npm alias of `typescript@7`) is the compiler used by
+  `bun run typecheck` for `.ts` files.
+- `typescript@6` stays installed for tooling that still needs the JS API
+  (`@astrojs/check`, the Astro language server) until TypeScript 7.1 ships a
+  stable API.
 
-**1. Global styles** - External SCSS pipeline outputs to `public/css/style.css`:
-- `src/styles/style.scss` → Sass CLI → PostCSS (autoprefixer, cssnano, postcss-preset-env) → `public/css/style.css`
-- Linked from `Layout.astro` via `<link rel="stylesheet" href="/css/style.css">`
-- The `bun start` command runs Astro, stylelint, and SCSS watch concurrently
+### Content & CMS
 
-**2. Component-scoped styles** - Astro processes `<style lang="scss">` in components:
-- Used in `Technologies.astro` for component-specific styles
-- Imports from `src/styles/Base/global` for access to variables and mixins
-
-### SCSS Organization
-
-`src/styles/style.scss` is the main entry point, importing:
-- **Base/**: Variables, mixins, typography, global defaults, layout utilities
-- **Components/**: Reusable UI elements (buttons, cards, dialogs, icons)
-- **Modules/**: Page-specific sections (header, nav, footer, gallery, price-list)
-
-### Stylelint
-
-Uses `stylelint-order` plugin with comprehensive CSS property ordering. Run `bun run stylelint` to auto-fix.
-
-### Content
-
-Product data lives in `src/content/products/` as Markdown files. Price data is in `src/data/prices.json`.
+- Products: `src/content/products/*.md` (front matter).
+- Price list: `src/data/prices.json` (prices per size, taglines, feature matrix).
+- FAQ: `src/data/faq.json` (cs/en, `**bold**` rendered by `src/lib/inline-markdown.ts`).
+- All three are editable in **Decap CMS** at `/admin/` (`public/admin/config.yml`).
+  GitHub OAuth runs through Cloudflare Pages Functions in `functions/api/`
+  (see DEPLOY.md).
 
 ### Static Assets
 

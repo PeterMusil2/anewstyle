@@ -1,10 +1,18 @@
 ---
+/**
+ * FAQ – native exclusive accordion (<details name="faq">); the opening motion
+ * is pure CSS (.faq-item in effects.css).
+ */
+import SectionHeader from "../ui/SectionHeader.astro";
+import Button from "../ui/Button.astro";
+import Icon from "../icons/Icon.astro";
+import faq from "../../data/faq.json";
+import { inlineMarkdown } from "../../lib/inline-markdown";
 import {
   useTranslations,
   type Lang,
   type TranslationKey,
 } from "../../i18n/utils";
-import Icon from "../icons/Icon.astro";
 
 interface Props {
   id: string;
@@ -13,136 +21,44 @@ interface Props {
 
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+const basePath = lang === "cs" ? "" : "/en";
 
-const questions = [1, 2, 3, 4, 5, 6, 7, 8];
+const questions = faq.items.map((item) => ({
+  question: item.question[lang],
+  answer: inlineMarkdown(item.answer[lang]),
+}));
 ---
 
-<section id={id} class="dark">
-  <div class="container container--s">
-    <h2 class="title title--white title--mg-s text-center">{t("faq.title")}</h2>
-    <p class="desc desc--mg-s text-center">
-      {t("faq.desc" as TranslationKey)}
-    </p>
+<section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
+  <div class="container-page grid gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-24">
+    <div class="flex flex-col gap-8 lg:sticky lg:top-[calc(var(--nav-height)+2rem)] lg:self-start">
+      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("faq.title")} title={t("faq.heading")}>
+        <p class="text-fg-muted">{t("faq.desc" as TranslationKey)}</p>
+      </SectionHeader>
+      <Button href={`${basePath}/#contact`} variant="outline" class="self-start">
+        {t("contact.title")}
+      </Button>
+    </div>
 
-    <div class="faq-list">
+    <div class="border-t border-line-strong">
       {
-        questions.map((q) => (
-          <details name="faq">
-            <summary>
-              <h3 class="desc">{t(`faq.q${q}` as TranslationKey)}</h3>
-              <span class="icon-state">
-                <Icon name="plus" />
+        questions.map((item, index) => (
+          <details name="faq" class="faq-item group border-b border-line-strong" open={index === 0}>
+            <summary class="flex min-h-19 cursor-pointer items-center justify-between gap-6 py-5 text-left">
+              <h3 class="text-lg leading-snug font-bold text-fg transition-colors group-open:text-gold">
+                {item.question}
+              </h3>
+              <span class="grid size-9 shrink-0 place-items-center border border-line-strong text-gold transition-colors group-open:border-gold">
+                <Icon name="plus" class="faq-icon size-4" />
               </span>
             </summary>
-            <div class="content">
-              <p
-                class="desc desc--s"
-                set:html={t(`faq.a${q}` as TranslationKey)}
-              />
-            </div>
+            <p
+              class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16"
+              set:html={item.answer}
+            />
           </details>
         ))
       }
     </div>
   </div>
 </section>
-
-<style is:global>
-  :root {
-    interpolate-size: allow-keywords;
-  }
-</style>
-
-<style lang="scss">
-  @import "../../styles/Base/global";
-
-  .faq-list {
-    display: grid;
-    gap: $gap-l;
-  }
-
-  details {
-    --icon-rotation: 0deg;
-    background-color: transparent;
-    border: $border-1 solid $color-border;
-
-    border-radius: $radius-m;
-    overflow: clip;
-
-    &[open] {
-      --icon-rotation: 45deg;
-      --details-content-block-size: max-content;
-      --details-content-pad-block: #{$gap-xl};
-
-      @include res-max-tablet {
-        --details-content-pad-block: #{$gap-l};
-      }
-    }
-
-    &::details-content {
-      block-size: var(--details-content-block-size, 0);
-      padding-block: var(--details-content-pad-block, 0);
-      padding-inline: $gap-xl;
-      transition: block-size, padding-block, content-visibility;
-      transition-duration: 0.3s;
-      transition-timing-function: linear;
-      transition-behavior: allow-discrete;
-
-      @include res-max-tablet {
-        padding-inline: $gap-l;
-      }
-    }
-  }
-
-  summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $gap-m;
-    padding: $gap-xl;
-    background-color: transparent;
-    list-style: none;
-    transition: background-color $trans-time;
-    cursor: pointer;
-
-    @include res-max-tablet {
-      padding: $gap-l;
-    }
-
-    &:hover {
-      background-color: $color-bg--light;
-    }
-
-    &::marker {
-      display: none;
-      content: "";
-    }
-
-    h3 {
-      margin: 0;
-      font-weight: 500;
-    }
-
-    .icon-state {
-      display: flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      color: $color-primary;
-      transform: rotate(var(--icon-rotation));
-      transition: transform 0.3s ease;
-
-      :global(svg) {
-        width: 24px;
-        height: 24px;
-      }
-    }
-  }
-
-  .content {
-    .desc {
-      margin: 0;
-      color: $color-font;
-    }
-  }
-</style>

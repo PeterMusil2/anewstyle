@@ -1,6 +1,11 @@
 ---
 import Palette from "../palette/Palette.astro";
-import { useTranslations, type Lang } from "../../i18n/utils";
+import SectionHeader from "../ui/SectionHeader.astro";
+import {
+  useTranslations,
+  type Lang,
+  type TranslationKey,
+} from "../../i18n/utils";
 
 interface Props {
   id: string;
@@ -10,393 +15,74 @@ interface Props {
 const { id, lang = "cs" } = Astro.props as Props;
 const t = useTranslations(lang);
 
-const toHtmlBreaks = (value: string): string =>
-  value.replaceAll("\n", "<br />");
-const toAltText = (value: string): string => value.replaceAll("\n", " ");
+/** A description is a list of [translation key, emphasised?] parts. */
+type Part = [TranslationKey, boolean?];
+
+interface Feature {
+  id?: string;
+  icon?: string;
+  label: TranslationKey;
+  desc: Part[];
+  palette?: boolean;
+  note?: TranslationKey;
+}
+
+const features: Feature[] = [
+  { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [["features.item1Desc1"], ["features.item1Desc2", true], ["features.item1Desc3"], ["features.item1Desc4", true]] },
+  { id: "quick-mounting", icon: "Mounting.svg", label: "features.iconMounting", desc: [["features.item2Desc1"], ["features.item2Desc2", true], ["features.item2Desc3"]] },
+  { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]] },
+  { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]] },
+  { id: "smartphone-control", icon: "MobileControl.svg", label: "features.iconSmartphone", desc: [["features.item5Desc1"], ["features.item5Desc2", true], ["features.item5Desc3"]] },
+  { id: "touch-control", icon: "touch.svg", label: "features.iconTouch", desc: [["features.item15Desc1"], ["features.item15Desc2", true]] },
+  { id: "temperature", icon: "temperature.png", label: "features.iconTemperature", desc: [["features.item16Desc1"], ["features.item16Desc2", true], ["features.item16Desc3"]] },
+  { id: "thickness-16mm", icon: "16mm.svg", label: "features.iconThickness16", desc: [["features.item6Desc1"], ["features.item6Desc2", true], ["features.item6Desc3"]] },
+  { id: "thickness-34mm", icon: "34mm.svg", label: "features.iconThickness34", desc: [["features.item7Desc1"], ["features.item7Desc2", true], ["features.item7Desc3"]] },
+  { id: "laminated", icon: "laminated.svg", label: "features.iconLaminated", desc: [["features.item8Desc1"], ["features.item8Desc2", true], ["features.item8Desc3"]] },
+  { id: "custom-size", icon: "CustomSize.svg", label: "features.iconCustomSize", desc: [["features.item9Desc1"], ["features.item9Desc2", true], ["features.item9Desc3"]] },
+  { id: "led", icon: "LED.svg", label: "features.iconLed", desc: [["features.item10Desc1"], ["features.item10Desc2", true], ["features.item10Desc3"]] },
+  { id: "dimmable", icon: "Dimmable.svg", label: "features.iconDimmable", desc: [["features.item11Desc1", true], ["features.item11Desc2"]] },
+  { id: "nano-impregnation", icon: "Waterproof.svg", label: "features.iconWaterResistant", desc: [["features.item12Desc1"], ["features.item12Desc2", true], ["features.item12Desc3"]], note: "features.item12Desc4" },
+  { id: "easy-repair", icon: "Repair.svg", label: "features.iconEasyRepair", desc: [["features.item13Desc1"], ["features.item13Desc2", true], ["features.item13Desc3"]] },
+  { id: "color-palette", label: "price.feature13", desc: [["features.item14Desc1"], ["features.item14Desc2", true], ["features.item14Desc3"]], palette: true },
+];
+
+const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
 ---
 
-<section id={id} class="dark">
-  <div class="container container--s">
-    <h2 class="title title--white text-center">{t("features.title")}</h2>
-    <div class="piktogram">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Ligthweight.svg"
-            alt={toAltText(t("features.iconLightweight"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconLightweight"))} />
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item1Desc1")}</span>
-          <strong>{t("features.item1Desc2")}</strong>
-          <span>{t("features.item1Desc3")}</span>
-          <strong>{t("features.item1Desc4")}</strong>
-        </p>
-      </div>
-    </div>
-    <div class="piktogram piktogram--invert" id="quick-mounting">
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item2Desc1")}</span>
-          <strong>{t("features.item2Desc2")}</strong>
-          <span>{t("features.item2Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Mounting.svg"
-            alt={toAltText(t("features.iconMounting"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconMounting"))} />
-        </div>
-      </div>
-    </div>
-    <div class="piktogram" id="backlight">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Backlight.svg"
-            alt={toAltText(t("features.iconBacklight"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconBacklight"))} />
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item3Desc1")}</span>
-          <strong>{t("features.item3Desc2")}</strong>
-          <span>{t("features.item3Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div class="piktogram piktogram--invert piktogram--hidden" id="rf-control">
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item4Desc1")}</span>
-          <strong>{t("features.item4Desc2")}</strong>
-          <span>{t("features.item4Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/RF_control.svg"
-            alt={toAltText(t("features.iconRfWireless"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconRfWireless"))} />
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="smartphone-control">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/MobileControl.svg"
-            alt={toAltText(t("features.iconSmartphone"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconSmartphone"))} />
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item5Desc1")}</span>
-          <strong>{t("features.item5Desc2")}</strong>
-          <span>{t("features.item5Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div
-      class="piktogram piktogram--invert piktogram--hidden"
-      id="touch-control"
-    >
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item15Desc1")}</span>
-          <strong>{t("features.item15Desc2")}</strong>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/touch.svg"
-            alt={toAltText(t("features.iconTouch"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconTouch"))} />
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="temperature">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/temperature.png"
-            alt={t("features.iconTemperature")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconTemperature")}</small>
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item16Desc1")}</span>
-          <strong>{t("features.item16Desc2")}</strong>
-          <span>{t("features.item16Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div
-      class="piktogram piktogram--invert piktogram--hidden"
-      id="thickness-16mm"
-    >
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item6Desc1")}</span>
-          <strong>{t("features.item6Desc2")}</strong>
-          <span>{t("features.item6Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/16mm.svg"
-            alt={t("features.iconThickness16")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconThickness16")}</small>
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="thickness-34mm">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/34mm.svg"
-            alt={t("features.iconThickness34")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconThickness34")}</small>
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item7Desc1")}</span>
-          <strong>{t("features.item7Desc2")}</strong>
-          <span>{t("features.item7Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div class="piktogram piktogram--invert piktogram--hidden" id="laminated">
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item8Desc1")}</span>
-          <strong>{t("features.item8Desc2")}</strong>
-          <span>{t("features.item8Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/laminated.svg"
-            alt={t("features.iconLaminated")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconLaminated")}</small>
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="custom-size">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/CustomSize.svg"
-            alt={toAltText(t("features.iconCustomSize"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconCustomSize"))} />
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item9Desc1")}</span>
-          <strong>{t("features.item9Desc2")}</strong>
-          <span>{t("features.item9Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div class="piktogram piktogram--invert piktogram--hidden">
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item10Desc1")}</span>
-          <strong>{t("features.item10Desc2")}</strong>
-          <span>{t("features.item10Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/LED.svg"
-            alt={t("features.iconLed")}
-            height="75px"
-            loading="lazy"
-          />
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="dimmable">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Dimmable.svg"
-            alt={t("features.iconDimmable")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconDimmable")}</small>
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <strong>{t("features.item11Desc1")}</strong>
-          <span>{t("features.item11Desc2")}</span>
-        </p>
-      </div>
-    </div>
-    <div
-      class="piktogram piktogram--invert piktogram--hidden"
-      id="nano-impregnation"
-    >
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item12Desc1")}</span>
-          <strong>{t("features.item12Desc2")}</strong>
-          <span>{t("features.item12Desc3")}</span><b></b>
-          <i>{t("features.item12Desc4")}</i>
-        </p>
-      </div>
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Waterproof.svg"
-            alt={toAltText(t("features.iconWaterResistant"))}
-            height="75px"
-            loading="lazy"
-          />
-          <small set:html={toHtmlBreaks(t("features.iconWaterResistant"))} />
-        </div>
-      </div>
-    </div>
-    <div class="piktogram piktogram--hidden" id="easy-repair">
-      <div class="piktogram__box">
-        <div class="piktogram__circle">
-          <img
-            src="/images/symbols/Repair.svg"
-            alt={t("features.iconEasyRepair")}
-            height="75px"
-            loading="lazy"
-          />
-          <small>{t("features.iconEasyRepair")}</small>
-        </div>
-      </div>
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item13Desc1")}</span>
-          <strong>{t("features.item13Desc2")}</strong>
-          <span>{t("features.item13Desc3")}</span>
-        </p>
-      </div>
-    </div>
-    <div
-      class="piktogram piktogram--invert piktogram--hidden"
-      id="color-palette"
-    >
-      <div class="piktogram__desc">
-        <p class="desc">
-          <span>{t("features.item14Desc1")}</span>
-          <strong>{t("features.item14Desc2")}</strong>
-          <span>{t("features.item14Desc3")}</span>
-        </p>
-      </div>
-      <div class="piktogram__box"><Palette lang={lang} /></div>
-    </div>
-    <div class="text-center">
-      <button class="button" id="piktogramsBtn" type="button">
-        <span data-variant="more">{t("features.btnMore")}</span>
-        <span data-variant="less">{t("features.btnLess")}</span>
-      </button>
-    </div>
+<section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink-850">
+  <div class="container-page flex flex-col gap-14">
+    <SectionHeader id={`${id}-title`} eyebrow={t("features.title")} title={t("features.heading")}>
+      <p class="text-fg-muted">{t("features.intro")}</p>
+    </SectionHeader>
+
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {
+        features.map((feature) => (
+          <li
+            id={feature.id}
+            class="reveal flex scroll-mt-[calc(var(--nav-height)+1.5rem)] flex-col gap-5 border border-line bg-ink-900 p-7 transition-colors duration-300 target:border-gold hover:border-line-strong"
+          >
+            {feature.palette ? (
+              <Palette lang={lang} />
+            ) : feature.icon?.endsWith(".png") ? (
+              <img src={`/images/symbols/${feature.icon}`} alt="" width="48" height="48" loading="lazy" class="size-12 object-contain" />
+            ) : (
+              <span
+                class="block size-12 bg-gold mask-contain mask-center mask-no-repeat"
+                style={`mask-image: url(/images/symbols/${feature.icon}); -webkit-mask-image: url(/images/symbols/${feature.icon});`}
+                aria-hidden="true"
+              />
+            )}
+            <h3 class="text-base font-black tracking-[0.1em] uppercase">{label(feature.label)}</h3>
+            <p class="text-[0.9375rem] leading-relaxed text-fg-muted">
+              {feature.desc.map(([key, strong]) =>
+                strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
+              )}
+              {feature.note && <em class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
-
-<style>
-  #piktogramsBtn span[data-variant="less"] {
-    display: none;
-  }
-
-  #piktogramsBtn.show-less span[data-variant="more"] {
-    display: none;
-  }
-
-  #piktogramsBtn.show-less span[data-variant="less"] {
-    display: inline;
-  }
-</style>
-
-<script>
-  const piktogramsBtn = document.getElementById(
-    "piktogramsBtn"
-  ) as HTMLButtonElement;
-  const hiddenPiktogtams = document.querySelectorAll(
-    ".piktogram--hidden"
-  ) as NodeListOf<HTMLDivElement>;
-  const productFeatures = document.querySelectorAll(
-    ".price-list__features > li > a"
-  ) as NodeListOf<HTMLAnchorElement>;
-
-  const handlePictogramsVisbility = (init: boolean) => {
-    piktogramsBtn &&
-      hiddenPiktogtams.forEach((piktogtam) => {
-        !init && piktogtam.classList.toggle("visible");
-        piktogtam.classList.contains("visible")
-          ? piktogramsBtn.classList.add("show-less")
-          : piktogramsBtn.classList.remove("show-less");
-      });
-  };
-
-  handlePictogramsVisbility(true);
-
-  piktogramsBtn &&
-    hiddenPiktogtams &&
-    piktogramsBtn.addEventListener("click", () => {
-      handlePictogramsVisbility(false);
-    });
-
-  productFeatures.forEach((feature) => {
-    feature.addEventListener("click", () => {
-      hiddenPiktogtams.forEach((piktogtam) => {
-        piktogtam.classList.add("visible");
-      });
-      piktogramsBtn.classList.add("show-less");
-    });
-  });
-</script>

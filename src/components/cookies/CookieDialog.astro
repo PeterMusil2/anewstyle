@@ -1,4 +1,6 @@
 ---
+import Button from "../ui/Button.astro";
+import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -11,94 +13,61 @@ const t = useTranslations(lang);
 
 <dialog
   id="cookie-preferences-dialog"
-  class="cookie-dialog"
+  class="dialog m-auto w-[min(40rem,calc(100vw-2rem))] border border-gold/50 bg-ink-850 p-0 text-fg"
   aria-labelledby="cookie-dialog-title"
   aria-describedby="cookie-dialog-desc"
-  aria-modal="true"
 >
-  <form method="dialog" class="cookie-dialog__box">
-    <div
-      class="cookie-dialog__header"
-      role="group"
-      aria-label={t('cookie.dialogHeader')}
-    >
-      <h2 id="cookie-dialog-title" class="cookie-dialog__title">
-        <span>{t('cookie.dialogTitle')}</span>
+  <form method="dialog" class="flex max-h-[calc(100dvh-2rem)] flex-col">
+    <div class="flex items-start justify-between gap-6 border-b border-line p-6 sm:px-8">
+      <h2 id="cookie-dialog-title" class="text-xl font-black tracking-[0.06em] uppercase">
+        {t('cookie.dialogTitle')}
       </h2>
       <button
         type="button"
-        class="cookie-dialog__close"
         id="cookie-dialog-close"
+        class="grid size-11 shrink-0 cursor-pointer place-items-center border border-line-strong text-fg hover:border-gold hover:text-gold"
         aria-label={t('cookie.close')}
-        aria-controls="cookie-preferences-dialog"
-        aria-keyshortcuts="Escape"
         title={t('cookie.close')}
       >
-        ✕
+        <Icon name="close" class="size-4" />
       </button>
     </div>
 
-    <div class="cookie-dialog__content">
-      <p id="cookie-dialog-desc" class="cookie-dialog__desc">
-        <span>{t('cookie.dialogDesc')}</span>
-      </p>
+    <div class="flex flex-col gap-6 overflow-y-auto p-6 sm:px-8">
+      <p id="cookie-dialog-desc" class="text-[0.9375rem] leading-relaxed text-fg-soft">{t('cookie.dialogDesc')}</p>
 
-      <fieldset class="cookie-dialog__group">
-        <legend class="cookie-dialog__legend">{t('cookie.categoriesLegend')}</legend>
-
-        <label class="cookie-option">
-          <input type="checkbox" id="consent-analytics" />
-          <span>
-            <strong>{t('cookie.categoryAnalytics')}</strong>
-            <small>{t('cookie.categoryAnalyticsDesc')}</small>
+      <fieldset class="flex flex-col gap-3">
+        <legend class="mb-3 text-xs font-extrabold tracking-[0.18em] text-gold uppercase">{t('cookie.categoriesLegend')}</legend>
+        <label class="flex cursor-pointer items-start gap-4 border border-line bg-ink-900 p-4 transition-colors hover:border-line-strong has-checked:border-gold/60">
+          <input type="checkbox" id="consent-analytics" class="mt-0.5 size-5 shrink-0 cursor-pointer accent-gold" />
+          <span class="flex flex-col gap-1">
+            <strong class="text-[0.9375rem] font-bold">{t('cookie.categoryAnalytics')}</strong>
+            <small class="text-sm text-fg-muted">{t('cookie.categoryAnalyticsDesc')}</small>
           </span>
         </label>
-
-        <label class="cookie-option">
-          <input type="checkbox" id="consent-marketing" />
-          <span>
-            <strong>{t('cookie.categoryMarketing')}</strong>
-            <small>{t('cookie.categoryMarketingDesc')}</small>
+        <label class="flex cursor-pointer items-start gap-4 border border-line bg-ink-900 p-4 transition-colors hover:border-line-strong has-checked:border-gold/60">
+          <input type="checkbox" id="consent-marketing" class="mt-0.5 size-5 shrink-0 cursor-pointer accent-gold" />
+          <span class="flex flex-col gap-1">
+            <strong class="text-[0.9375rem] font-bold">{t('cookie.categoryMarketing')}</strong>
+            <small class="text-sm text-fg-muted">{t('cookie.categoryMarketingDesc')}</small>
           </span>
         </label>
-
-        <div class="cookie-option cookie-option--disabled" aria-disabled="true">
-          <input type="checkbox" checked disabled />
-          <span>
-            <strong>{t('cookie.categoryNecessary')}</strong>
-            <small>{t('cookie.categoryNecessaryDesc')}</small>
+        <label class="flex items-start gap-4 border border-line bg-ink-900 p-4 opacity-80">
+          <input type="checkbox" checked disabled class="mt-0.5 size-5 shrink-0 cursor-pointer accent-gold cursor-not-allowed" />
+          <span class="flex flex-col gap-1">
+            <strong class="text-[0.9375rem] font-bold">{t('cookie.categoryNecessary')}</strong>
+            <small class="text-sm text-fg-muted">{t('cookie.categoryNecessaryDesc')}</small>
           </span>
-        </div>
+        </label>
       </fieldset>
 
-      <div class="cookie-dialog__legal">
-        <p>
-          <span>{t('cookie.dialogLegal')}</span>
-        </p>
-      </div>
+      <p class="text-sm leading-relaxed text-fg-subtle">{t('cookie.dialogLegal')}</p>
     </div>
 
-    <div
-      class="cookie-dialog__footer"
-      role="group"
-      aria-label={t('cookie.dialogHeader')}
-    >
-      <button
-        type="button"
-        class="button button--secondary button--xs"
-        id="cookie-save-prefs"
-        ><span>{t('cookie.btnSavePrefs')}</span></button
-      >
-      <div class="cookie-dialog__spacer"></div>
-      <button
-        type="button"
-        class="button button--xs"
-        id="cookie-reject-all-dlg"
-        ><span>{t('cookie.btnRejectAll')}</span></button
-      >
-      <button type="button" class="button button--xs" id="cookie-accept-all-dlg"
-        ><span>{t('cookie.btnAcceptAll')}</span></button
-      >
+    <div class="flex flex-col-reverse gap-2.5 border-t border-line p-6 sm:flex-row sm:items-center sm:px-8">
+      <Button size="sm" variant="link" id="cookie-save-prefs" class="sm:mr-auto">{t('cookie.btnSavePrefs')}</Button>
+      <Button size="sm" variant="ghost" id="cookie-reject-all-dlg">{t('cookie.btnRejectAll')}</Button>
+      <Button size="sm" id="cookie-accept-all-dlg">{t('cookie.btnAcceptAll')}</Button>
     </div>
   </form>
 </dialog>

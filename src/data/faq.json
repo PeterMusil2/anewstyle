@@ -1,0 +1,84 @@
+{
+  "items": [
+    {
+      "question": {
+        "cs": "Mám designovou lampu, ale vadí mi viditelný napájecí kabel. Jak to řešíte u panelů?",
+        "en": "I have a designer lamp, but the visible power cord bothers me. How do you solve this with your panels?"
+      },
+      "answer": {
+        "cs": "Panely **BASIC** a **DELUXE** jsou navrženy pro maximální čistotu designu. Jejich **hloubka skryje zásuvku i přívodní kabel** za panel. Jednoduše jej pověsíte jako obraz a zapojíte – bez viditelných kabelů.",
+        "en": "**BASIC** and **DELUXE** panels are designed for maximum design purity. Their **depth hides the socket and power cord** behind the panel. You simply hang it like a picture and plug it in – no visible cables."
+      }
+    },
+    {
+      "question": {
+        "cs": "Je nutné řešit umístění zdroje a kabelů při instalaci?",
+        "en": "Do I need to worry about the placement of the power source and cables during installation?"
+      },
+      "answer": {
+        "cs": "Panely **BASIC** a **DELUXE** jsou navrženy pro maximální jednoduchost. Stačí je **zavěsit na zeď** jako obraz a zapojit do zásuvky. Všechny komponenty (včetně zásuvky) se skrývají za panelem.",
+        "en": "**BASIC** and **DELUXE** panels are designed for maximum simplicity. Just **hang them on the wall** like a picture and plug them into a socket. All components (including the socket) are hidden behind the panel."
+      }
+    },
+    {
+      "question": {
+        "cs": "Uvádí se životnost ledek 30-50.000 hodin. No co se stane, když se LED osvětlení po letech vysvítí?",
+        "en": "LED lifespan is stated as 30-50,000 hours. But what happens when the LED lighting fades after years?"
+      },
+      "answer": {
+        "cs": "Naše panely lze snadno **rozebrat a opravit**. V případě vysvícení LED diod je možné komponenty jednoduše **vyměnit**. To je velká výhoda oproti běžným, neopravitelným LED světlům.",
+        "en": "Our panels can be easily **disassembled and repaired**. In case of LED diode fading, components can be simply **replaced**. This is a major advantage over common, non-repairable LED lights."
+      }
+    },
+    {
+      "question": {
+        "cs": "Je možné objednat panely v individuálních rozměrech?",
+        "en": "Is it possible to order panels in custom sizes?"
+      },
+      "answer": {
+        "cs": "Rozhodně! Nabízíme **zákaznickou výrobu** na míru. Kontaktujte nás s Vašimi **požadavky na rozměry** a my Vám připravíme nezávaznou cenovou nabídku.",
+        "en": "Definitely! We offer **custom manufacturing**. Contact us with your **size requirements** and we will prepare a non-binding price offer."
+      }
+    },
+    {
+      "question": {
+        "cs": "Jsou panely vhodné i do vlhkého prostředí (např. koupelna)?",
+        "en": "Are the panels suitable for humid environments (e.g., bathrooms)?"
+      },
+      "answer": {
+        "cs": "Naše panely jsou **odolné proti vlhkosti** díky nano impregnaci a je možno je instalovat také do wellness nebo do koupelny, no ale **nedoporučujeme** je pro **přímý kontakt** s tekoucí vodou.",
+        "en": "Our panels are **moisture-resistant** thanks to nano impregnation and can be installed in wellness areas or bathrooms, but we do not **recommend** them for **direct contact** with running water."
+      }
+    },
+    {
+      "question": {
+        "cs": "Lze panely ovládat dálkově?",
+        "en": "Can the panels be controlled remotely?"
+      },
+      "answer": {
+        "cs": "Ano, verze **Deluxe** je stmívatelná a lze je ovládat pomocí přiloženého **dálkového RF ovladače nebo mobilní aplikace** (dle zvolené verze). Verze **Slim** je na **klasický vypínač** a **Basic** je ovládaná **dotykovým spínačem**.",
+        "en": "Yes, the **Deluxe** version is dimmable and can be controlled using the included **RF remote control or mobile app** (depending on the chosen version). The **Slim** version uses a **classic switch** and **Basic** is controlled by a **touch switch**."
+      }
+    },
+    {
+      "question": {
+        "cs": "Je nutná impregnace panelu po instalaci?",
+        "en": "Is panel impregnation necessary after installation?"
+      },
+      "answer": {
+        "cs": "Panely jsou již z výroby ošetřeny speciální **nano impregnací**, která je chrání proti vlhkosti a usnadňuje čištění.",
+        "en": "The panels are treated with special **nano impregnation** from the factory, which protects them against moisture and facilitates cleaning."
+      }
+    },
+    {
+      "question": {
+        "cs": "Je panel těžký?",
+        "en": "Is the panel heavy?"
+      },
+      "answer": {
+        "cs": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od **14kg** v nejmenší verzi SLIM rozměr L.",
+        "en": "Despite using natural stone, the panels are lightweight because they use ultra-thin veneers. The panels are easy to handle and hang on the wall. Their weight ranges from **14kg** in the smallest SLIM version size L."
+      }
+    }
+  ]
+}

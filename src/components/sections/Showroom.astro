@@ -1,5 +1,6 @@
 ---
 import Icon from "../icons/Icon.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 import { getGalleryItems } from "../../lib/cloudinary-gallery";
 
@@ -26,6 +27,10 @@ const cloudinaryItems = [...rawGalleryItems].sort(
 const GALLERY_SIZES =
   "(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw";
 
+// One look for every segment of the filter.
+const segmentButton =
+  "segment-filter__btn inline-flex min-h-11 cursor-pointer items-center justify-center px-5 text-xs font-extrabold tracking-caps text-fg-soft uppercase transition-colors not-last:border-r not-last:border-line-strong hover:text-fg aria-pressed:bg-gold aria-pressed:text-ink [&[hidden]]:hidden!";
+
 // 360° panoramas open in a lazy-loaded Photo Sphere Viewer overlay.
 const panoLabels = {
   close: lang === "en" ? "Close" : "Zavřít",
@@ -34,67 +39,27 @@ const panoLabels = {
 };
 ---
 
-<section id={id}>
-  <div class="container">
-    <h2 class="title text-center title--mg-s">{t("gallery.title")}</h2>
-    <p class="desc text-center">
-      <span>{t("gallery.descPart1")}</span>
-      <strong>{t("gallery.descPart2")}</strong>
-      <span>{t("gallery.descPart3")}</span>
-      <strong>{t("gallery.descPart4")}</strong>
-      <span>{t("gallery.descPart5")}</span>
-    </p>
-  </div>
-  <div class="container segment-filter-wrap">
+<section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
+  <div class="container-page flex flex-col gap-10">
+    <SectionHeader id={`${id}-title`} as="h1" layout="split" eyebrow="Anew Style" title={t("gallery.title")}>
+      <p>
+        <span>{t("gallery.descPart1")}</span><strong class="font-bold text-gold">{t("gallery.descPart2")}</strong><span>{t("gallery.descPart3")}</span><strong class="font-bold text-fg">{t("gallery.descPart4")}</strong><span>{t("gallery.descPart5")}</span>
+      </p>
+    </SectionHeader>
     <div
-      class="segment-filter segment-filter--fit"
+      class="segment-filter inline-flex flex-wrap self-start border border-line-strong"
       role="group"
       aria-label={t("gallery.filterAriaLabel")}
     >
-      <button
-        type="button"
-        class="segment-filter__btn"
-        data-filter=""
-        aria-pressed="true"
-      >
-        <span>{t("gallery.filterAll")}</span>
-      </button>
-      <button
-        type="button"
-        class="segment-filter__btn"
-        data-filter="video"
-        aria-pressed="false"
-      >
-        <span>{t("gallery.filterVideos")}</span>
-      </button>
-      <button
-        type="button"
-        class="segment-filter__btn"
-        data-filter="360"
-        aria-pressed="false"
-      >
-        <span>{t("gallery.filter360")}</span>
-      </button>
-      <button
-        type="button"
-        class="segment-filter__btn"
-        data-filter="image"
-        aria-pressed="false"
-      >
-        <span>{t("gallery.filterImages")}</span>
-      </button>
-      <button
-        type="button"
-        class="segment-filter__btn segment-filter__btn--bonus"
-        data-filter="bonus"
-        aria-pressed="false"
-        hidden
-      >
-        <span>{t("gallery.filterBonus")}</span>
-      </button>
+      <button type="button" class={segmentButton} data-filter="" aria-pressed="true">{t("gallery.filterAll")}</button>
+      <button type="button" class={segmentButton} data-filter="video" aria-pressed="false">{t("gallery.filterVideos")}</button>
+      <button type="button" class={segmentButton} data-filter="360" aria-pressed="false">{t("gallery.filter360")}</button>
+      <button type="button" class={segmentButton} data-filter="image" aria-pressed="false">{t("gallery.filterImages")}</button>
+      <button type="button" class={`${segmentButton} segment-filter__btn--bonus`} data-filter="bonus" aria-pressed="false" hidden>{t("gallery.filterBonus")}</button>
     </div>
   </div>
-  <div class="container gallery-wrap">
+
+  <div class="gallery-wrap container-wide mt-10">
     <div
       class="gallery"
       data-pano-close={panoLabels.close}
@@ -111,24 +76,16 @@ const panoLabels = {
             data-bonus={item.bonus ? "true" : undefined}
             data-pano={item.bonus ? undefined : item.full}
             data-pano-locked={item.bonus ? item.full : undefined}
-            class="gitem"
+            class="gitem group relative overflow-hidden border border-line bg-ink-900 no-underline"
             rel="noopener"
           >
-            <div class="gitem__photo">
+            <div class="gitem__photo size-full">
               <picture>
                 {item.thumbAvif && (
-                  <source
-                    type="image/avif"
-                    srcset={item.thumbAvif}
-                    sizes={GALLERY_SIZES}
-                  />
+                  <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />
                 )}
                 {item.thumbWebp && (
-                  <source
-                    type="image/webp"
-                    srcset={item.thumbWebp}
-                    sizes={GALLERY_SIZES}
-                  />
+                  <source type="image/webp" srcset={item.thumbWebp} sizes={GALLERY_SIZES} />
                 )}
                 <img
                   src={item.thumb}
@@ -137,11 +94,12 @@ const panoLabels = {
                   width={item.width}
                   height={item.height}
                   alt={item.alt ?? t("gallery.preview360Day")}
+                  class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
                 />
               </picture>
             </div>
-            <div class="gitem__content">
-              <Icon name="360" />
+            <div class="absolute inset-0 grid place-items-center bg-ink/30 text-fg transition-colors group-hover:bg-ink/10">
+              <Icon name="360" class="size-16 transition-transform duration-300 group-hover:scale-110 sm:size-20" />
             </div>
           </a>
         ) : (
@@ -153,24 +111,16 @@ const panoLabels = {
             data-media={item.type}
             data-orientation={item.orientation ?? "landscape"}
             data-bonus={item.bonus ? "true" : undefined}
-            class="gitem"
+            class="gitem group relative overflow-hidden border border-line bg-ink-900 no-underline"
             rel="noopener"
           >
-            <div class="gitem__photo">
+            <div class="gitem__photo size-full">
               <picture>
                 {item.thumbAvif && (
-                  <source
-                    type="image/avif"
-                    srcset={item.thumbAvif}
-                    sizes={GALLERY_SIZES}
-                  />
+                  <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />
                 )}
                 {item.thumbWebp && (
-                  <source
-                    type="image/webp"
-                    srcset={item.thumbWebp}
-                    sizes={GALLERY_SIZES}
-                  />
+                  <source type="image/webp" srcset={item.thumbWebp} sizes={GALLERY_SIZES} />
                 )}
                 <img
                   src={item.thumb}
@@ -179,12 +129,13 @@ const panoLabels = {
                   width={item.width}
                   height={item.height}
                   alt={item.alt ?? t("products.stoneAsLighting")}
+                  class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
                 />
               </picture>
             </div>
             {item.type === "video" && (
-              <div class="gitem__content">
-                <Icon name="play" />
+              <div class="absolute inset-0 grid place-items-center bg-ink/30 text-fg transition-colors group-hover:bg-ink/10">
+                <Icon name="play" class="size-16 transition-transform duration-300 group-hover:scale-110 sm:size-20" />
               </div>
             )}
           </a>
@@ -193,38 +144,28 @@ const panoLabels = {
     }
     </div>
   </div>
-  <div class="container">
-    <p class="desc desc--mg-s desc--center">
+
+  <div class="container-page mt-14 flex flex-col items-center gap-6 text-center">
+    <p class="text-[0.9375rem] text-fg-muted">
       <span>{t("gallery.underText")}</span>{" "}
       <a
         href="https://www.designatak.cz/"
         aria-label={t("gallery.gotoAtakDesign")}
-        class="link"
-        style="text-decoration: underline;"
+        class="font-semibold text-gold underline underline-offset-4 hover:text-gold-light"
         rel="external"
-      >
-        ATAK Design
-      </a>.
-      <br /><br />
-      <picture class="atak-logo">
-        <source
-          type="image/avif"
-          sizes="(min-width: 100px)"
-          srcset="/images/logos/atak-logo.avif"
-        />
-        <source
-          type="image/webp"
-          sizes="(min-width: 100px)"
-          srcset="/images/logos/atak-logo.webp"
-        />
-        <img
-          src="/images/logos/atak-logo.webp"
-          loading="lazy"
-          width="250"
-          alt={t("common.atakLogoAlt")}
-        />
-      </picture>
+      >ATAK Design</a>.
     </p>
+    <picture>
+      <source type="image/avif" srcset="/images/logos/atak-logo.avif" />
+      <source type="image/webp" srcset="/images/logos/atak-logo.webp" />
+      <img
+        src="/images/logos/atak-logo.webp"
+        loading="lazy"
+        width="250"
+        alt={t("common.atakLogoAlt")}
+        class="h-auto w-40 sm:w-[15.625rem]"
+      />
+    </picture>
   </div>
 </section>
 

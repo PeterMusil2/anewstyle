@@ -1,0 +1,526 @@
+/*
+ * ANEW STYLE – effects that Tailwind utilities cannot express.
+ *
+ * Written CSS-first (see the css-first skill): native HTML state (:checked,
+ * [open], :popover-open, :has()) drives the UI instead of JavaScript, logical
+ * properties are used throughout and every newer feature is layered on top of
+ * a working baseline with @supports / prefers-reduced-motion.
+ */
+
+@layer components {
+  /* ------------------------------------------------------------------ */
+  /* Motion preferences                                                  */
+  /* ------------------------------------------------------------------ */
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  /* Allow height: auto transitions (Chrome 129+, ignored elsewhere). */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Scroll-driven reveal – 🔵 Newly available in Chromium + Safari 26.  */
+  /* Without support (or with reduced motion) content is simply visible. */
+  /* ------------------------------------------------------------------ */
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: reveal-up linear both;
+        animation-range: entry 0% entry 40%;
+        animation-timeline: view();
+      }
+    }
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      translate: 0 2rem;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Navigation – frosted bar once the page scrolls (scroll-state query  */
+  /* where supported, a permanent subtle background otherwise).         */
+  /* ------------------------------------------------------------------ */
+
+  .site-nav {
+    container-type: scroll-state;
+    container-name: site-nav;
+  }
+
+  .site-nav__bar {
+    background-color: rgb(0 0 0 / 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    transition: background-color 0.3s var(--ease-out-soft);
+  }
+
+  @supports (container-type: scroll-state) {
+    .site-nav__bar {
+      background-color: rgb(0 0 0 / 0.35);
+    }
+
+    @container site-nav scroll-state(stuck: top) {
+      .site-nav__bar {
+        background-color: rgb(0 0 0 / 0.85);
+      }
+    }
+  }
+
+  /* Popover panels (mobile menu, language menu) fade in from the top. */
+  .pop-panel {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    transition:
+      opacity 0.2s var(--ease-out-soft),
+      translate 0.2s var(--ease-out-soft),
+      overlay 0.2s allow-discrete,
+      display 0.2s allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+      translate: 0 0;
+
+      @starting-style {
+        opacity: 0;
+        translate: 0 -0.5rem;
+      }
+    }
+  }
+
+  /* Language menu – anchored under its button when anchor positioning is
+     available, otherwise pinned to the top-right corner. */
+  .lang-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    inset-block-start: calc(var(--nav-height) - 0.25rem);
+    inset-inline-end: 1.25rem;
+  }
+
+  @supports (position-anchor: --a) and (top: anchor(bottom)) {
+    .lang-trigger {
+      anchor-name: --lang-trigger;
+    }
+
+    .lang-menu {
+      position-anchor: --lang-trigger;
+      inset: auto;
+      position-try-fallbacks: flip-block;
+      margin-block-start: 0.5rem;
+      inset-block-start: anchor(bottom);
+      inset-inline-end: anchor(right);
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Hero video                                                         */
+  /* ------------------------------------------------------------------ */
+
+  .hero-video {
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-out-soft);
+
+    &.is-playing {
+      opacity: 1;
+    }
+  }
+
+  /* model-viewer used for the AR quick action stays off-screen. */
+  model-viewer[style*="position: fixed"] {
+    z-index: -9999 !important;
+    visibility: hidden !important;
+    user-select: none !important;
+    pointer-events: none !important;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Showcase – the three panel states are radio inputs, :has() picks   */
+  /* the matching photo. No JavaScript involved.                        */
+  /* ------------------------------------------------------------------ */
+
+
+  /* ------------------------------------------------------------------ */
+  /* Price list – size radios switch every price, VAT price and preview */
+  /* image purely with :has().                                          */
+  /* ------------------------------------------------------------------ */
+
+
+  /* The size preview grows from its baseline when the size changes. */
+  @media (prefers-reduced-motion: no-preference) {
+    .pricing [data-size-preview] {
+      animation: preview-in 0.45s var(--ease-out-soft);
+    }
+  }
+
+  @keyframes preview-in {
+    from {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* FAQ – native <details name="faq"> accordion with an animated body. */
+  /* ------------------------------------------------------------------ */
+
+  .faq-item {
+    &::details-content {
+      block-size: 0;
+      transition:
+        block-size 0.35s var(--ease-out-soft),
+        content-visibility 0.35s allow-discrete;
+      overflow: clip;
+    }
+
+    &[open]::details-content {
+      block-size: auto;
+    }
+
+    & > summary {
+      list-style: none;
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+    }
+
+    & .faq-icon {
+      transition: rotate 0.3s var(--ease-out-soft);
+    }
+
+    &[open] .faq-icon {
+      rotate: 45deg;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Tooltip – native popover, anchored to its trigger when supported.  */
+  /* ------------------------------------------------------------------ */
+
+  .tooltip {
+    anchor-scope: --tooltip-anchor;
+  }
+
+  .tooltip__trigger {
+    anchor-name: --tooltip-anchor;
+  }
+
+  .tooltip__popover[popover] {
+    max-inline-size: min(22rem, calc(100vi - 2.5rem));
+    margin: auto;
+  }
+
+  @supports (anchor-scope: --a) and (top: anchor(bottom)) {
+    .tooltip__popover[popover] {
+      position: fixed;
+      position-anchor: --tooltip-anchor;
+      position-area: block-start;
+      position-try-fallbacks: flip-block;
+      margin: 0 0 0.75rem;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* RAL palette – four swatches orbit out of one circle (trig + @property). */
+  /* ------------------------------------------------------------------ */
+
+  @property --orbit-radius {
+    inherits: true;
+    initial-value: 0%;
+    syntax: "<percentage>";
+  }
+
+  .palette {
+    --orbit-radius: 0%;
+    transition: --orbit-radius 0.3s var(--ease-out-soft);
+
+    &[aria-pressed="true"] {
+      --orbit-radius: 28%;
+    }
+
+    & .palette__swatch {
+      translate: calc(cos(var(--angle)) * var(--orbit-radius))
+        calc(sin(var(--angle) * -1) * var(--orbit-radius));
+    }
+
+    & .palette__swatch:nth-of-type(1) { --angle: 0deg; }
+    & .palette__swatch:nth-of-type(2) { --angle: 90deg; }
+    & .palette__swatch:nth-of-type(3) { --angle: 180deg; }
+    & .palette__swatch:nth-of-type(4) { --angle: 270deg; }
+
+    & .palette__code {
+      opacity: 0;
+      transition: opacity 0.25s linear;
+    }
+
+    &[aria-pressed="true"] .palette__code {
+      opacity: 1;
+    }
+
+    &[aria-pressed="true"] .palette__label {
+      opacity: 0;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Before / after slider – the range input writes --ba-position.      */
+  /* ------------------------------------------------------------------ */
+
+  .ba-slider {
+    --ba-position: 70%;
+
+    & .ba-slider__before {
+      clip-path: inset(0 calc(100% - var(--ba-position)) 0 0);
+    }
+
+    & .ba-slider__handle {
+      inset-inline-start: var(--ba-position);
+    }
+
+    & input[type="range"]:focus-visible ~ .ba-slider__handle .ba-slider__knob {
+      outline: 2px solid var(--color-gold);
+      outline-offset: 4px;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Gallery – square-cell checkerboard packed with grid-auto-flow:dense. */
+  /* The wrapper is the query container (an element cannot query itself). */
+  /* ------------------------------------------------------------------ */
+
+  .gallery-wrap {
+    container-type: inline-size;
+  }
+
+  .gallery {
+    --col-count: 4;
+    --gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(var(--col-count), minmax(0, 1fr));
+    gap: var(--gap);
+    grid-auto-flow: dense;
+    grid-auto-rows: calc(
+      (100cqi - (var(--col-count) - 1) * var(--gap)) / var(--col-count)
+    );
+
+    & > .gitem {
+      grid-column: span 2;
+      grid-row: span 1;
+
+      &[data-orientation="portrait"] {
+        grid-column: span 1;
+        grid-row: span 2;
+      }
+    }
+
+    @container (width < 64rem) {
+      --col-count: 3;
+    }
+
+    @container (width < 48rem) {
+      --col-count: 2;
+    }
+
+    @container (width < 35rem) {
+      --col-count: 1;
+      --gap: 1.25rem;
+      grid-auto-rows: auto;
+
+      & > .gitem {
+        aspect-ratio: 16 / 9;
+        grid-column: span 1;
+        grid-row: span 1;
+
+        &[data-orientation="portrait"] {
+          aspect-ratio: 9 / 16;
+        }
+      }
+    }
+
+
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Dialogs – fade/scale in with @starting-style, animated backdrop.    */
+  /* ------------------------------------------------------------------ */
+
+  .dialog {
+    opacity: 0;
+    scale: 0.97;
+    transition:
+      opacity 0.25s var(--ease-out-soft),
+      scale 0.25s var(--ease-out-soft),
+      overlay 0.25s allow-discrete,
+      display 0.25s allow-discrete;
+
+    &[open] {
+      opacity: 1;
+      scale: 1;
+
+      @starting-style {
+        opacity: 0;
+        scale: 0.97;
+      }
+    }
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0);
+      backdrop-filter: blur(0);
+      transition:
+        background-color 0.25s,
+        backdrop-filter 0.25s,
+        overlay 0.25s allow-discrete,
+        display 0.25s allow-discrete;
+    }
+
+    &[open]::backdrop {
+      background-color: rgb(0 0 0 / 0.7);
+      backdrop-filter: blur(6px);
+
+      @starting-style {
+        background-color: rgb(0 0 0 / 0);
+        backdrop-filter: blur(0);
+      }
+    }
+  }
+
+  /* Cookie banner slides in from the bottom edge. */
+  .cookie-banner:not([hidden]) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: slide-up 0.4s var(--ease-out-soft) both;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      translate: 0 1.5rem;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 360° panorama overlay – created at runtime on <body>.               */
+  /* ------------------------------------------------------------------ */
+
+  .pano-modal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    background-color: var(--color-ink);
+    z-index: 100;
+  }
+
+  .pano-modal__stage {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .pano-modal__close,
+  .pano-modal__nav {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background-color: rgb(0 0 0 / 0.6);
+    border: 1px solid var(--color-line-strong);
+    line-height: 1;
+    color: var(--color-fg);
+    transition: background-color 0.2s, border-color 0.2s;
+    z-index: 2;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgb(0 0 0 / 0.85);
+      border-color: var(--color-gold);
+    }
+  }
+
+  .pano-modal__close {
+    inline-size: 3rem;
+    block-size: 3rem;
+    font-size: 2rem;
+    inset-block-start: 1rem;
+    inset-inline-end: 1rem;
+  }
+
+  .pano-modal__nav {
+    inline-size: 3rem;
+    block-size: 3rem;
+    font-size: 2.25rem;
+    translate: 0 -50%;
+    inset-block-start: 50%;
+  }
+
+  .pano-modal__nav--prev {
+    inset-inline-start: 1rem;
+  }
+
+  .pano-modal__nav--next {
+    inset-inline-end: 1rem;
+  }
+
+  /* Fancybox: keep the 3D model viewer on a transparent stage. */
+  body .fancybox__content {
+    --fancybox-content-bg: transparent;
+  }
+
+  @media (width < 48rem) {
+    .is-compact .fancybox__footer {
+      display: none !important;
+    }
+  }
+}
+
+/*
+ * State rules – deliberately unlayered so they win over Tailwind utilities
+ * (an element hidden by state must stay hidden whatever display utility it
+ * carries, e.g. `flex` or `block`).
+ */
+.showcase [data-state] {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-soft);
+}
+
+.showcase:has(input[value="off"]:checked) [data-state="off"],
+.showcase:has(input[value="frame"]:checked) [data-state="frame"],
+.showcase:has(input[value="panel"]:checked) [data-state="panel"] {
+  opacity: 1;
+}
+
+.pricing:has(input[name="size"][value="l"]:checked) [data-size]:not([data-size="l"]),
+.pricing:has(input[name="size"][value="xl"]:checked) [data-size]:not([data-size="xl"]),
+.pricing:has(input[name="size"][value="xxl"]:checked) [data-size]:not([data-size="xxl"]),
+.pricing:has(input[name="size"][value="xxxl"]:checked) [data-size]:not([data-size="xxxl"]) {
+  display: none;
+}
+
+.gallery {
+  /* Bonus tiles stay hidden until the visitor unlocks them. */
+  & .gitem[data-bonus] {
+    display: none;
+  }
+
+  &[data-bonus-unlocked] .gitem[data-bonus] {
+    display: block;
+  }
+
+  /* Filters come last: same specificity as the unlock rule above. */
+  &[data-filter="video"] .gitem:not([data-media="video"]),
+  &[data-filter="image"] .gitem:not([data-media="image"]),
+  &[data-filter="360"] .gitem:not([data-media="360"]),
+  &[data-filter="bonus"] .gitem:not([data-bonus]) {
+    display: none;
+  }
+}

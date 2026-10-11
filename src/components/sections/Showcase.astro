@@ -1,4 +1,8 @@
 ---
+/**
+ * "Rozsviť mě" – the three panel states are native radio inputs; the matching
+ * photo is shown purely with :has() (see .showcase in effects.css).
+ */
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
@@ -9,104 +13,78 @@ interface Props {
 
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+
+const states = [
+  { value: "off", icon: "turn-off", label: t("showcase.btn1"), src: "/images/showcase/rockfoil_pink_dark_mirror.webp" },
+  { value: "frame", icon: "frame", label: t("showcase.btn2"), src: "/images/showcase/rockfoil_pink_dark_frame_mirror.webp" },
+  { value: "panel", icon: "bulp", label: t("showcase.btn3"), src: "/images/showcase/rockfoil_pink_light_frame_mirror.webp" },
+];
 ---
 
-<section id={id} class="dark inline-container h-100">
-  <div class="showcase">
-    <div class="tablet-content">
-      <h2>
-        <span>{t("showcase.titlePart1")}</span>
-        <small>{t("showcase.titlePart2")}</small>
+<section
+  id={id}
+  aria-labelledby={`${id}-title`}
+  class="showcase section-y relative isolate overflow-hidden bg-ink"
+>
+  <div
+    class="absolute inset-y-0 right-0 -z-10 w-full bg-[radial-gradient(45%_60%_at_70%_50%,rgb(163_140_82/0.14),transparent_70%)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div class="container-page grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-20">
+    <div class="reveal flex flex-col gap-7">
+      <p class="eyebrow">{t("nav.light")}</p>
+      <h2 id={`${id}-title`} class="flex flex-col gap-2">
+        <span class="font-display text-5xl leading-none font-black tracking-display uppercase sm:text-6xl lg:text-7xl">
+          {t("showcase.titlePart1").trim()}
+        </span>
+        <span class="text-2xl font-light text-fg-soft sm:text-3xl lg:text-4xl">
+          {t("showcase.titlePart2")}
+        </span>
       </h2>
-      <p class="desc m-0">
-        <span>{t("showcase.descPart1")}</span>
-        <strong>{t("showcase.descPart2")}</strong>
-        <span>{t("showcase.descPart3")}</span>
+      <p class="max-w-xl text-lg leading-relaxed text-fg-muted">
+        <span>{t("showcase.descPart1")}</span><strong class="font-bold text-fg">{t("showcase.descPart2")}</strong><span>{t("showcase.descPart3")}</span>
       </p>
+
+      <fieldset class="mt-2 flex flex-col gap-3">
+        <legend class="mb-3 text-xs font-bold tracking-eyebrow text-fg-muted uppercase">
+          {t("showcase.stateLabel")}
+        </legend>
+        <div class="grid grid-cols-3 border border-line-strong">
+          {
+            states.map((state) => (
+              <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center gap-1.5 px-2 py-3 text-center text-[0.8125rem] font-bold text-fg-soft transition-colors duration-200 not-last:border-r not-last:border-line-strong hover:text-fg has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:-outline-offset-4 has-focus-visible:outline-ink sm:flex-row sm:gap-2.5">
+                <input
+                  type="radio"
+                  name="showcase-state"
+                  value={state.value}
+                  checked={state.value === "panel"}
+                  class="sr-only"
+                />
+                <Icon name={state.icon} class="size-5" />
+                <span>{state.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
     </div>
-    <div class="showcase__img">
-      <img
-        src="/images/showcase/rockfoil_pink_dark_mirror.webp"
-        alt={t("products.stoneAsLighting")}
-        width="1200"
-      />
-      <img
-        src="/images/showcase/rockfoil_pink_dark_frame_mirror.webp"
-        alt={t("products.stoneAsLighting")}
-        width="1200"
-      />
-      <img
-        src="/images/showcase/rockfoil_pink_light_frame_mirror.webp"
-        alt={t("products.stoneAsLighting")}
-        class="active"
-        width="1200"
-      />
-    </div>
-    <div class="showcase__content">
-      <div class="not-tablet-content">
-        <h2>
-          <span>{t("showcase.titlePart1")}</span>
-          <small>{t("showcase.titlePart2")}</small>
-        </h2>
-        <p class="desc m-0">
-          <span>{t("showcase.descPart1")}</span>
-          <strong>{t("showcase.descPart2")}</strong>
-          <span>{t("showcase.descPart3")}</span>
-        </p>
-      </div>
-      <div
-        class="segment-filter showcase__buttons"
-        role="group"
-        aria-label={t("showcase.titlePart1")}
-      >
-        <button
-          class="segment-filter__btn"
-          type="button"
-          aria-pressed="false"
-          aria-label={t("showcase.btn1")}
-        >
-          <Icon name="turn-off" />
-          <span>{t("showcase.btn1")}</span>
-        </button>
-        <button
-          class="segment-filter__btn"
-          type="button"
-          aria-pressed="false"
-          aria-label={t("showcase.btn2")}
-        >
-          <Icon name="frame" />
-          <span>{t("showcase.btn2")}</span>
-        </button>
-        <button
-          class="segment-filter__btn"
-          type="button"
-          aria-pressed="true"
-          aria-label={t("showcase.btn3")}
-        >
-          <Icon name="bulp" />
-          <span>{t("showcase.btn3")}</span>
-        </button>
-      </div>
+
+    <div class="reveal relative aspect-[1024/813] w-full">
+      {
+        states.map((state) => (
+          <img
+            src={state.src}
+            alt={`${t("products.stoneAsLighting")} – ${state.label}`}
+            width="1024"
+            height="813"
+            loading="lazy"
+            decoding="async"
+            data-state={state.value}
+            class="absolute inset-0 size-full object-contain"
+          />
+        ))
+      }
     </div>
   </div>
 </section>
-
-<script>
-  const buttons = document.querySelectorAll(
-    ".showcase__buttons > .segment-filter__btn"
-  ) as NodeListOf<HTMLButtonElement>;
-  const images = document.querySelectorAll(
-    ".showcase__img > img"
-  ) as NodeListOf<HTMLImageElement>;
-
-  buttons.forEach((button, index) => {
-    button.addEventListener("click", () => {
-      if (button.getAttribute("aria-pressed") === "true") return;
-      buttons.forEach((btn) => btn.setAttribute("aria-pressed", "false"));
-      button.setAttribute("aria-pressed", "true");
-
-      images.forEach((image) => image.classList.remove("active"));
-      images[index].classList.add("active");
-    });
-  });
-</script>

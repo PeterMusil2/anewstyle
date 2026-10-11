@@ -1,0 +1,59 @@
+---
+/**
+ * The one button/link-button of the site. Every call-to-action goes through
+ * here so sizes, colours and states stay identical across sections.
+ */
+import type { HTMLAttributes } from "astro/types";
+
+type Variant = "primary" | "outline" | "ghost" | "link";
+type Size = "md" | "sm";
+
+interface Props extends Omit<HTMLAttributes<"a"> & HTMLAttributes<"button">, "type"> {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  type?: "button" | "submit" | "reset";
+  class?: string;
+}
+
+const {
+  href,
+  variant = "primary",
+  size = "md",
+  type = "button",
+  class: className,
+  ...attrs
+} = Astro.props;
+
+const base =
+  "group/btn inline-flex items-center justify-center gap-2.5 whitespace-nowrap text-center font-extrabold uppercase tracking-caps no-underline transition-colors duration-200 ease-out-soft cursor-pointer disabled:cursor-wait disabled:opacity-60";
+
+const sizes: Record<Size, string> = {
+  md: "min-h-13 px-7 text-sm",
+  sm: "min-h-11 px-5 text-xs",
+};
+
+const variants: Record<Variant, string> = {
+  primary:
+    "border border-gold bg-gold text-ink hover:border-gold-light hover:bg-gold-light",
+  outline:
+    "border border-gold text-gold hover:bg-gold hover:text-ink",
+  ghost:
+    "border border-line-bold text-fg hover:border-fg",
+  link: "min-h-11 px-0! text-gold hover:text-gold-light",
+};
+
+const classes = [base, sizes[size], variants[variant], className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...attrs}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...attrs}>
+      <slot />
+    </button>
+  )
+}

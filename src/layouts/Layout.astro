@@ -1,6 +1,6 @@
 ---
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
-import "../styles/style.scss";
+import "../styles/global.css";
 
 import Footer from "../components/footer/Footer.astro";
 import IconSet from "../components/icons/IconSet.astro";
@@ -9,6 +9,7 @@ import CookieDialog from "../components/cookies/CookieDialog.astro";
 import Nav from "../components/nav/Nav.astro";
 import StructuredData from "../components/seo/StructuredData.astro";
 import {
+  useTranslations,
   getLangFromUrl,
   getAlternateLinks,
   getCanonicalUrl,
@@ -41,6 +42,7 @@ const {
   additionalStructuredData,
 } = Astro.props;
 const lang = getLangFromUrl(Astro.url) as Lang;
+const t = useTranslations(lang);
 const baseSite = Astro.site ?? new URL(Astro.url.origin);
 const canonicalUrl = getCanonicalUrl(Astro.url, baseSite);
 const alternateLinks = getAlternateLinks(canonicalUrl);
@@ -171,8 +173,8 @@ const ENABLE_GTM = true;
     ))}
     <link rel="alternate" hreflang="x-default" href={xDefaultHref} />
 
-    <meta name="msapplication-TileColor" content="#111618" />
-    <meta name="theme-color" content="#111618" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="theme-color" content="#000000" />
 
     <!-- Schema.org markup for Google -->
     <meta itemprop="name" content={title} />
@@ -285,7 +287,13 @@ const ENABLE_GTM = true;
       })();
     </script>
   </head>
-  <body data-lang={lang}>
+  <body data-lang={lang} class="bg-ink text-fg antialiased">
+    <a
+      href="#main"
+      class="sr-only z-[60] bg-gold px-5 py-3 text-sm font-extrabold tracking-caps text-ink uppercase focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+    >
+      {t("common.skipToContent")}
+    </a>
     {ENABLE_GTM && (
       // Google Tag Manager (noscript)
       <noscript>

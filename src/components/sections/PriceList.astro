@@ -101,9 +101,10 @@ const cheapest = (key: SizeKey) =>
   -->
   <div class="container-page flex min-h-[min(calc(100svh-var(--nav-height)),56rem)] flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4">
     <header class="reveal grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end lg:gap-x-16">
-      <div class="flex flex-col gap-2">
-        <p class="eyebrow tiny:max-lg:hidden">{t("price.eyebrow")}</p>
-        <h2 id={`${id}-title`} class="font-display text-4xl leading-none font-black tracking-display uppercase lg:text-5xl short:text-4xl">
+      <div class="flex flex-col gap-3 sm:gap-4 short:gap-2.5">
+        <p class="eyebrow">{t("price.eyebrow")}</p>
+        <!-- Same title style as every SectionHeader on the site. -->
+        <h2 id={`${id}-title`} class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]">
           {t("price.title")}
         </h2>
       </div>
@@ -116,13 +117,13 @@ const cheapest = (key: SizeKey) =>
     </header>
 
     <!-- Step 1: size -->
-    <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1`}>
-      <div class="flex items-center justify-between gap-4">
+    <fieldset class="grid gap-2.5 xl:grid-cols-[12rem_minmax(0,1fr)] xl:items-center xl:gap-4 xl:short:grid-cols-[10rem_minmax(0,1fr)]" aria-labelledby={`${id}-step1`}>
+      <div class="flex items-center justify-between gap-4 xl:flex-col xl:items-start">
         <h3 class="flex items-center gap-3">
           <span class="grid size-6 place-items-center border border-gold text-xs font-extrabold text-gold">1</span>
           <span id={`${id}-step1`} class="text-xs font-extrabold tracking-[0.16em] uppercase sm:text-[0.8125rem]">{t("price.step1")}</span>
         </h3>
-        <p class="hidden text-xs text-fg-muted lg:block">{t("price.underText")}</p>
+        <p class="hidden text-xs text-fg-muted lg:block xl:hidden">{t("price.underText")}</p>
       </div>
       <div class="grid grid-cols-4 gap-2 lg:gap-3">
         {
@@ -191,7 +192,8 @@ const cheapest = (key: SizeKey) =>
                 />
               ))
             }
-            <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[23.5%]" />
+            <!-- Same proportion as the original site: 33 % of the preview width, bottom-left aligned. -->
+            <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[33%]" />
           </div>
           <p class="text-center text-xs text-fg-soft">
             {sizes.map((size) => <span data-size={size.key}>{dims(size.width)}</span>)}

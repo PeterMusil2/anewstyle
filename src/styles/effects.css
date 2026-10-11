@@ -237,6 +237,11 @@
     pointer-events: none !important;
   }
 
+  /* Showcase photo stage: lifted off the page in the light theme only. */
+  .showcase__stage {
+    box-shadow: 0 30px 80px -30px light-dark(rgb(0 0 0 / 0.4), transparent);
+  }
+
   /* ------------------------------------------------------------------ */
   /* Showcase – the three panel states are radio inputs, :has() picks   */
   /* the matching photo. No JavaScript involved.                        */
@@ -335,45 +340,36 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* RAL palette – four swatches orbit out of one circle (trig + @property). */
+  /* RAL swatches – tooltip on hover, keyboard focus or tap (focus).     */
   /* ------------------------------------------------------------------ */
 
-  @property --orbit-radius {
-    inherits: true;
-    initial-value: 0%;
-    syntax: "<percentage>";
+  .swatch__tip {
+    opacity: 0;
+    translate: 0 0.25rem;
+    transition:
+      opacity 0.15s ease-out,
+      translate 0.15s ease-out;
+
+    /* small arrow */
+    &::after {
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline-start: 50%;
+      border: 5px solid transparent;
+      border-block-start-color: var(--color-fg);
+      content: "";
+      translate: -50% 0;
+    }
   }
 
-  .palette {
-    --orbit-radius: 0%;
-    transition: --orbit-radius 0.3s var(--ease-out-soft);
+  .swatch:is(:hover, :focus-within) .swatch__tip {
+    opacity: 1;
+    translate: 0 0;
+  }
 
-    &[aria-pressed="true"] {
-      --orbit-radius: 28%;
-    }
-
-    & .palette__swatch {
-      translate: calc(cos(var(--angle)) * var(--orbit-radius))
-        calc(sin(var(--angle) * -1) * var(--orbit-radius));
-    }
-
-    & .palette__swatch:nth-of-type(1) { --angle: 0deg; }
-    & .palette__swatch:nth-of-type(2) { --angle: 90deg; }
-    & .palette__swatch:nth-of-type(3) { --angle: 180deg; }
-    & .palette__swatch:nth-of-type(4) { --angle: 270deg; }
-
-    & .palette__code {
-      opacity: 0;
-      transition: opacity 0.25s linear;
-    }
-
-    &[aria-pressed="true"] .palette__code {
-      opacity: 1;
-    }
-
-    &[aria-pressed="true"] .palette__label {
-      opacity: 0;
-    }
+  .swatch button:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
   }
 
   /* ------------------------------------------------------------------ */

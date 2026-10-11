@@ -76,6 +76,33 @@ All components receive `lang` and translate through `t()`.
   sizes), `<details name>` (FAQ), `popover` (menu, language, tooltips),
   `<dialog>` (cookies, contact thanks).
 
+### Themes
+
+- Every colour token in `global.css` is a `light-dark()` pair; `color-scheme`
+  picks the theme (system by default, `data-theme="light|dark"` on `<html>`
+  when the visitor uses the toggle – stored in localStorage, applied before
+  first paint). `scheme-dark` keeps the hero and showcase dark in both themes.
+- Never hard-code colours in components; use the tokens.
+
+### Price list layout
+
+- The pricing panel is sized to the viewport (`min-h` = 100svh − nav), with
+  `short:` / `tiny:` custom variants (global.css) tightening it on short
+  screens. Phones get a scroll-snap carousel of the versions.
+- The comparison table header is `position: sticky` under the nav.
+
+### Agents, SEO, structured data
+
+- `src/lib/site-data.ts` is the single source of machine-readable facts.
+  It feeds JSON-LD (`lib/structured-data.ts` → Product/AggregateOffer,
+  FAQPage, Store, ItemList), `/llms.txt`, `/agent/site.json`, the WebMCP
+  tools (`components/agent/WebMcp.astro`) and the MCP server (`functions/mcp.ts`).
+- WebMCP tools: get_price_list, list_stone_patterns, search_faq, get_contact
+  (read-only) and show_price_for_size, prefill_inquiry, open_page (UI only –
+  agents never send the form). The contact form also carries declarative
+  `toolname` attributes.
+- `/mcp` is a stateless, read-only MCP server (Streamable HTTP, JSON-RPC).
+
 ### TypeScript
 
 - `typescript-7` (npm alias of `typescript@7`) is the compiler used by

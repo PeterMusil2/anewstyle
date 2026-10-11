@@ -66,6 +66,10 @@ export default defineConfig({
       },
     }),
   ],
+  // One small stylesheet: inline it to save a render-blocking request (FCP).
+  build: {
+    inlineStylesheets: "always",
+  },
   vite: {
     plugins: [tailwindcss()],
   },

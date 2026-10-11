@@ -22,34 +22,42 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
-  /* Gold – the brand accent (#A38C52 = hsl(43 33% 48%)). */
-  --color-gold: #a38c52;
-  --color-gold-light: #b7a370;
-  --color-gold-pale: #e6d3a0;
+  /*
+   * Every colour is a light-dark() pair, so the active `color-scheme`
+   * decides the theme – per element. `scheme-dark` on a subtree (hero,
+   * showcase) keeps it dark even when the page is light.
+   * Light values are checked for WCAG AA on the light grounds.
+   */
 
-  /* Ink – the dark grounds, from pure black up to raised surfaces. */
-  --color-ink: #000000;
-  --color-ink-950: #050505;
-  --color-ink-900: #0a0a0a;
-  --color-ink-850: #121212;
-  --color-ink-800: #171717;
-  --color-ink-750: #1c1a15; /* warm raised surface for highlighted cards */
-  --color-ink-700: #1e1e1e;
+  /* Gold – the brand accent (#A38C52). Light mode uses a deeper shade of the
+     same hue so gold text keeps 4.5:1 on ivory. */
+  --color-gold: light-dark(#7d6a3a, #a38c52);
+  --color-gold-light: light-dark(#5f5029, #b7a370);
+  --color-gold-pale: light-dark(#efe4c8, #e6d3a0);
 
-  /* Text on dark – every step passes WCAG AA on ink-850 and darker. */
-  --color-fg: #ffffff;
-  --color-fg-soft: #d1d1d1;
-  --color-fg-muted: #b3b3b3;
-  --color-fg-subtle: #8f8f8f;
-  --color-fg-disabled: #6e6e6e;
+  /* Ink – the surface scale: page ground first, raised surfaces after. */
+  --color-ink: light-dark(#faf9f5, #000000);
+  --color-ink-950: light-dark(#f5f3ee, #050505);
+  --color-ink-900: light-dark(#ffffff, #0a0a0a);
+  --color-ink-850: light-dark(#f1eee6, #121212);
+  --color-ink-800: light-dark(#ffffff, #171717);
+  --color-ink-750: light-dark(#f8f1df, #1c1a15); /* warm surface for highlighted cards */
+  --color-ink-700: light-dark(#e4e0d6, #1e1e1e);
+
+  /* Text – every step passes WCAG AA on its theme's grounds. */
+  --color-fg: light-dark(#141413, #ffffff);
+  --color-fg-soft: light-dark(#34332f, #d1d1d1);
+  --color-fg-muted: light-dark(#504e48, #b3b3b3);
+  --color-fg-subtle: light-dark(#66635c, #8f8f8f);
+  --color-fg-disabled: light-dark(#a19d93, #6e6e6e);
 
   /* Hairlines */
-  --color-line: rgb(255 255 255 / 0.08);
-  --color-line-strong: rgb(255 255 255 / 0.16);
-  --color-line-bold: rgb(255 255 255 / 0.3);
+  --color-line: light-dark(rgb(20 20 19 / 0.1), rgb(255 255 255 / 0.08));
+  --color-line-strong: light-dark(rgb(20 20 19 / 0.18), rgb(255 255 255 / 0.16));
+  --color-line-bold: light-dark(rgb(20 20 19 / 0.34), rgb(255 255 255 / 0.3));
 
-  --color-danger: #e5484d;
-  --color-success: #46a758;
+  --color-danger: light-dark(#c4252b, #e5484d);
+  --color-success: light-dark(#2f7d3c, #46a758);
 
   --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
   --font-display: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
@@ -69,6 +77,12 @@
   --shadow-glow: 0 0 60px rgb(183 163 112 / 0.3);
   --shadow-glow-strong: 0 0 110px 30px rgb(224 181 168 / 0.4);
 }
+
+/* Short viewports (laptops at 768–830 px tall): used to keep the whole price
+   list on one screen. */
+@custom-variant short (@media (width >= 64rem) and (height < 52rem));
+/* Very short viewports (small phones, 720 px laptops). */
+@custom-variant tiny (@media (height < 46rem));
 
 /* Layout primitives shared by every section. */
 @utility container-page {
@@ -117,9 +131,19 @@
 }
 
 @layer base {
+  /* Theme: follow the system unless the visitor picked one (data-theme is
+     set before first paint by the inline script in Layout.astro). */
   :root {
     --nav-height: 4.5rem;
-    color-scheme: dark;
+    color-scheme: light dark;
+
+    &[data-theme="light"] {
+      color-scheme: light;
+    }
+
+    &[data-theme="dark"] {
+      color-scheme: dark;
+    }
 
     @media (width >= 64rem) {
       --nav-height: 5.5rem;

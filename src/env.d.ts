@@ -25,6 +25,20 @@ declare namespace astroHTML.JSX {
     popovertargetaction?: string;
   }
 
+  /** WebMCP declarative tools (experimental, Chrome). */
+  interface FormHTMLAttributes {
+    toolname?: string;
+    tooldescription?: string;
+  }
+
+  interface InputHTMLAttributes {
+    toolparamdescription?: string;
+  }
+
+  interface TextareaHTMLAttributes {
+    toolparamdescription?: string;
+  }
+
   interface ButtonHTMLAttributes {
     command?: string;
     commandfor?: string;

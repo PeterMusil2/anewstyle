@@ -10,9 +10,11 @@ import Products from "../../components/sections/Products.astro";
 import PriceList from "../../components/sections/PriceList.astro";
 import Technologies from "../../components/sections/Technologies.astro";
 import { getLangFromUrl, useTranslations } from "../../i18n/utils";
+import { homeStructuredData } from "../../lib/structured-data";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const pageUrl = new URL(lang === "en" ? "/en/" : "/", Astro.site ?? Astro.url.origin).href;
 ---
 
 <Layout
@@ -20,6 +22,7 @@ const t = useTranslations(lang);
   description={t("meta.description")}
   metaImageUrl="/images/meta/meta-facebook.webp"
   pageType="WebPage"
+  additionalStructuredData={homeStructuredData(lang, pageUrl)}
 >
   <Header lang={lang} />
   <main id="main">

@@ -1,7 +1,12 @@
+# ANEW STYLE – search engines and AI agents are welcome.
+# Content signals (https://contentsignals.org): search=yes, ai-input=yes
 User-agent: *
-
 Allow: /
 Disallow: /admin/
 Disallow: /api/
+
+# Machine-readable summary for LLMs: https://anewstyle.cz/llms.txt
+# Structured data for agents:        https://anewstyle.cz/agent/site.json
+# MCP server (read-only):            https://anewstyle.cz/mcp
 
 Sitemap: https://anewstyle.cz/sitemap-index.xml

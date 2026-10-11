@@ -27,7 +27,7 @@ const options: { code: Lang; href: string; label: string }[] = [
   type="button"
   popovertarget="lang-menu"
   class="lang-trigger inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1.5 border border-line-bold px-3 text-xs font-extrabold tracking-caps text-fg transition-colors hover:border-gold hover:text-gold"
-  aria-label={t("lang.select")}
+  aria-label={`${getLangShortLabel(lang)} – ${t("lang.select")}`}
   title={t("lang.select")}
 >
   <span>{getLangShortLabel(lang)}</span>

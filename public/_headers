@@ -5,3 +5,22 @@
 /downloads/Manual_EN_AnewStyle_Basic_Deluxe.pdf
   Link: <https://anewstyle.cz/downloads/Manual_EN_AnewStyle_Basic_Deluxe.pdf>; rel="canonical", <https://anewstyle.cz/downloads/Manual_CZ_AnewStyle_Basic_Deluxe.pdf>; rel="alternate"; hreflang="cs", <https://anewstyle.cz/downloads/Manual_EN_AnewStyle_Basic_Deluxe.pdf>; rel="alternate"; hreflang="en", <https://anewstyle.cz/downloads/Manual_CZ_AnewStyle_Basic_Deluxe.pdf>; rel="alternate"; hreflang="x-default"
   X-Robots-Tag: index, follow
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(), geolocation=()
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/llms.txt
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/agent/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/admin/*
+  X-Robots-Tag: noindex, nofollow

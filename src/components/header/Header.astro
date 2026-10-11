@@ -11,7 +11,7 @@ const { lang = 'cs' } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<header class="relative isolate flex min-h-svh items-end overflow-hidden bg-ink">
+<header class="scheme-dark relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
   <video
     class="hero-video absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
@@ -36,7 +36,7 @@ const t = useTranslations(lang);
       {t('header.title')}
     </p>
     <div class="flex flex-wrap items-center gap-4 pt-2">
-      <Button href="#about" id="headerMoreButton" aria-label={t('header.gotoAbout')}>
+      <Button href="#about" id="headerMoreButton">
         {t('header.btnMore')}
       </Button>
       <Button
@@ -44,7 +44,7 @@ const t = useTranslations(lang);
         variant="ghost"
         rel="external"
         target="_blank"
-        aria-label={t('header.gotoEshop')}
+        title={t('header.gotoEshop')}
         class="max-lg:hidden!"
       >
         {t('header.btnEshop')}
@@ -53,7 +53,6 @@ const t = useTranslations(lang);
       <Button
         variant="ghost"
         id="headerArButton"
-        aria-label={t('header.btnAr')}
         data-loading="false"
         data-error="false"
         class="lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
@@ -72,11 +71,13 @@ const t = useTranslations(lang);
 </header>
 
 <script>
-  import "@google/model-viewer";
 
   // AR functionality with proper Android support
   async function activateARForModel(modelPath: string): Promise<void> {
     try {
+      // model-viewer (three.js) is ~1 MB – load it only when AR is requested.
+      await import("@google/model-viewer");
+
       // Create model-viewer element
       const modelViewer = document.createElement("model-viewer") as any;
 

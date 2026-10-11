@@ -111,3 +111,20 @@ Nothing to configure – they deploy with the site:
 - `/agent/site.json` – the same facts as JSON (cs + en).
 - `/mcp` – read-only MCP server (Cloudflare Pages Function). Test:
   `curl -s https://anewstyle.cz/mcp -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'`
+
+## Photos & videos from the CMS (Cloudinary)
+
+The CMS uploads media straight to Cloudinary (cloud `lukaschylik`) through the
+Cloudinary Media Library widget – editors sign in with a Cloudinary account
+that has access to the `AnewStyle` folders.
+
+- **Settings → Galerie (Cloudinary)**: upload or pick photos, videos and 360°
+  panoramas, add Czech/English captions, mark panoramas, hide items, or add
+  bonus content (shown after the contact form is sent). New uploads land in
+  `AnewStyle/Gallery/cms` (bonus: `AnewStyle/Bonus/cms`).
+- Saving commits `src/data/gallery-cms.json`, which triggers a Cloudflare
+  build; `scripts/build-cloudinary-gallery.mjs` merges that metadata with
+  everything in the Cloudinary folders.
+- Product photos and 3D files picked in the CMS are stored in
+  `AnewStyle/Products/…`; the site accepts both Cloudinary URLs and the older
+  file names in `public/`.

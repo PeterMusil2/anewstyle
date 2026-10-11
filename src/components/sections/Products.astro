@@ -98,6 +98,19 @@ const products = Object.values(
     void import("@google/model-viewer");
   };
 
+  // Hide the loading bar once a model has rendered (model-viewer's `load`
+  // event does not bubble, so listen in the capture phase).
+  document.addEventListener(
+    "load",
+    (event) => {
+      const target = event.target;
+      if (target instanceof HTMLElement && target.localName === "model-viewer") {
+        target.dataset.loaded = "";
+      }
+    },
+    true,
+  );
+
   const productCards = document.querySelectorAll<HTMLAnchorElement>(
     ".product-list .card",
   );

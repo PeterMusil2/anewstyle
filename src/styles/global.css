@@ -54,7 +54,10 @@
   /* Hairlines */
   --color-line: light-dark(rgb(20 20 19 / 0.1), rgb(255 255 255 / 0.08));
   --color-line-strong: light-dark(rgb(20 20 19 / 0.18), rgb(255 255 255 / 0.16));
-  --color-line-bold: light-dark(rgb(20 20 19 / 0.34), rgb(255 255 255 / 0.3));
+  --color-line-bold: light-dark(rgb(20 20 19 / 0.45), rgb(255 255 255 / 0.36));
+
+  /* Boundaries of form controls and state indicators – ≥ 3:1 (WCAG 1.4.11). */
+  --color-field: light-dark(#7a766d, #767676);
 
   --color-danger: light-dark(#c4252b, #e5484d);
   --color-success: light-dark(#2f7d3c, #46a758);

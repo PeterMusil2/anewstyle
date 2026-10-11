@@ -18,7 +18,9 @@ const rawGalleryItems = await getGalleryItems();
 
 // Display order mirrors the segment control: videos first, then 360, then photos.
 const GALLERY_ORDER: Record<string, number> = { video: 0, "360": 1, image: 2 };
-const cloudinaryItems = [...rawGalleryItems].sort(
+const cloudinaryItems = [...rawGalleryItems]
+  .map((item) => ({ ...item, alt: lang === "en" ? (item.altEn ?? item.alt) : item.alt }))
+  .sort(
   (a, b) => (GALLERY_ORDER[a.type] ?? 99) - (GALLERY_ORDER[b.type] ?? 99),
 );
 

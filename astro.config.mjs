@@ -1,5 +1,6 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import tailwindcss from "@tailwindcss/vite";
 
 const site = "https://anewstyle.cz/";
 const manualPdfUrls = {
@@ -66,12 +67,6 @@ export default defineConfig({
     }),
   ],
   vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          silenceDeprecations: ["import", "legacy-js-api"],
-        },
-      },
-    },
+    plugins: [tailwindcss()],
   },
 });

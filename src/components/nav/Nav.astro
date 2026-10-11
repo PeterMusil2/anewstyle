@@ -1,6 +1,7 @@
 ---
 import NavItem from "./NavItem.astro";
 import LangSwitch from "../langSwitch/LangSwitch.astro";
+import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
@@ -12,77 +13,104 @@ const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
+const eshopUrl = "https://www.anewstyle-eshop.cz/";
+
+const links = [
+  { href: `${basePath}/#about`, text: t("nav.light"), accent: true },
+  { href: `${basePath}/#products`, text: t("nav.products") },
+  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
+  { href: `${basePath}/#faq`, text: t("nav.faq") },
+  { href: `${basePath}/gallery/`, text: t("nav.gallery") },
+  { href: `${basePath}/#price-list`, text: t("nav.price") },
+  { href: `${basePath}/manual/`, text: t("nav.manual") },
+  { href: `${basePath}/#contact`, text: t("nav.contact") },
+];
 ---
 
-<nav>
-  <div class="nav__container">
-    <a href={`${basePath}/`} class="logo" rel="noopener">
-      <img src="/images/logos/logo.svg" alt={t("common.logoAlt")} height="96" />
-    </a>
-    <ul class="menu">
-      <NavItem href={`${basePath}/#about`} text={t("nav.light")} icon="bulp" />
-      <NavItem
-        href={`${basePath}/#products`}
-        text={t("nav.products")}
-        icon="ar"
-        iconClass="icon-nav"
-      />
-      <NavItem
-        href={`${basePath}/#technologies`}
-        text={t("nav.technologies")}
-      />
-      <NavItem href={`${basePath}/#faq`} text={t("nav.faq")} />
-      <NavItem href={`${basePath}/gallery/`} text={t("nav.gallery")} />
-      <NavItem href={`${basePath}/#price-list`} text={t("nav.price")} />
-      <NavItem href={`${basePath}/manual/`} text={t("nav.manual")} />
-      <NavItem href={`${basePath}/#contact`} text={t("nav.contact")} />
-    </ul>
-    <ul class="nav__right">
-      <li>
-        <a
-          href="http://www.anewstyle-eshop.cz/"
-          target="_blank"
+<div class="site-nav fixed inset-x-0 top-0 z-50">
+  <nav aria-label={t("nav.main")} class="site-nav__bar border-b border-line">
+    <div class="container-wide flex h-(--nav-height) items-center justify-between gap-6">
+      <a
+        href={`${basePath}/`}
+        class="flex shrink-0 items-center gap-3.5 text-fg no-underline"
+        aria-label={t("common.logoAlt")}
+      >
+        <img
+          src="/images/logos/logo.svg"
+          alt=""
+          width="365"
+          height="850"
+          class="h-11 w-auto lg:h-13"
+        />
+        <span class="flex flex-col gap-0.5">
+          <span class="text-base font-black tracking-[0.3em] lg:text-lg">ANEW STYLE</span>
+          <span class="hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block">
+            {t("header.title")}
+          </span>
+        </span>
+      </a>
+
+      <ul class="hidden items-center gap-5 xl:flex 2xl:gap-8">
+        {links.map((link) => <NavItem {...link} />)}
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <Button
+          href={eshopUrl}
+          variant="outline"
+          size="sm"
           rel="external"
-          class="button button--s button--white"
+          target="_blank"
+          class="max-md:hidden!"
         >
-          <span>{t("nav.eshop")}</span>
-          <Icon name="eshop" iconClass="icon-nav" />
-        </a>
-      </li>
-      <LangSwitch lang={lang} />
-      <li>
-        <button aria-label={t("nav.mobileMenu")} class="burger" id="menuBtn">
-          <Icon name="menu" />
+          {t("nav.eshop")}
+          <Icon name="eshop" class="size-4" />
+        </Button>
+        <LangSwitch lang={lang} />
+        <button
+          type="button"
+          popovertarget="mobile-menu"
+          class="inline-flex size-11 cursor-pointer items-center justify-center border border-line-bold text-fg transition-colors hover:border-gold hover:text-gold xl:hidden"
+          aria-label={t("nav.openMenu")}
+        >
+          <Icon name="menu" class="size-5" />
         </button>
-      </li>
-    </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    popover
+    class="pop-panel fixed inset-x-0 top-(--nav-height) bottom-auto m-0 max-h-[calc(100dvh-var(--nav-height))] w-full overflow-y-auto border-b border-line-strong bg-ink-900 text-fg xl:hidden"
+  >
+    <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
+      <ul class="flex flex-col">
+        {links.map((link) => <NavItem {...link} variant="panel" />)}
+      </ul>
+      <div class="flex items-center justify-between gap-4">
+        <Button href={eshopUrl} variant="outline" rel="external" target="_blank" class="flex-1">
+          {t("nav.eshop")}
+          <Icon name="eshop" class="size-4" />
+        </Button>
+        <button
+          type="button"
+          popovertarget="mobile-menu"
+          popovertargetaction="hide"
+          class="inline-flex size-13 cursor-pointer items-center justify-center border border-line-bold text-fg hover:border-gold hover:text-gold"
+          aria-label={t("nav.closeMenu")}
+        >
+          <Icon name="close" class="size-5" />
+        </button>
+      </div>
+    </div>
   </div>
-</nav>
+</div>
 
 <script>
-  const initNav = () => {
-    const menu = document.querySelector("nav .menu");
-    const burger = document.getElementById("menuBtn");
-    const navItems = document.querySelectorAll("nav .menu > li > a");
-
-    if (!menu || !burger) return;
-
-    const toggleMenu = () => {
-      const isOpen = menu.getAttribute("data-open") === "true";
-      menu.setAttribute("data-open", String(!isOpen));
-      document.body.classList.toggle("overflow-hidden", !isOpen);
-    };
-
-    burger.onclick = toggleMenu;
-
-    navItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        menu.setAttribute("data-open", "false");
-        document.body.classList.remove("overflow-hidden");
-      });
-    });
-  };
-
-  initNav();
-  document.addEventListener("astro:page-load", initNav);
+  // Following an in-page link should also close the mobile menu popover.
+  const menu = document.getElementById("mobile-menu");
+  menu?.querySelectorAll("[data-nav-link]").forEach((link) => {
+    link.addEventListener("click", () => menu.hidePopover());
+  });
 </script>

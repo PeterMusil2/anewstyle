@@ -1,0 +1,191 @@
+# Decap CMS – https://decapcms.org/docs/configuration-options/
+#
+# Content is committed straight to the GitHub repository. Authentication runs
+# through the Cloudflare Pages Functions in /functions/api (GitHub OAuth app,
+# see DEPLOY.md). For local editing run `bun run cms:local` next to
+# `bun run dev` and open http://localhost:4321/admin/.
+
+backend:
+  name: github
+  repo: PeterMusil2/anewstyle
+  branch: master
+  base_url: https://anewstyle.cz
+  auth_endpoint: api/auth
+  commit_messages:
+    create: "content({{collection}}): create {{slug}}"
+    update: "content({{collection}}): update {{slug}}"
+    delete: "content({{collection}}): delete {{slug}}"
+    uploadMedia: "content(media): upload {{path}}"
+    deleteMedia: "content(media): delete {{path}}"
+
+# Changes go through draft → review → ready; publishing merges a pull
+# request, so Cloudflare builds a preview of every draft first.
+publish_mode: editorial_workflow
+local_backend: true
+
+locale: cs
+site_url: https://anewstyle.cz
+display_url: https://anewstyle.cz
+logo_url: /images/logos/logo.svg
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: products
+    label: Produkty
+    label_singular: Produkt
+    description: Ilustrační vzory kamenných dekorů v sekci Produkty.
+    folder: src/content/products
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{fields.title}}"
+    identifier_field: title
+    summary: "{{id}} · {{title}}"
+    sortable_fields: [id, title]
+    fields:
+      - { name: id, label: Pořadí, widget: number, value_type: int, min: 1 }
+      - { name: title, label: Název vzoru, widget: string }
+      - { name: description, label: Popis (CZ), widget: text, required: false }
+      - { name: descriptionEn, label: Popis (EN), widget: text, required: false }
+      - { name: price, label: Cena (Kč bez DPH), widget: number, value_type: int, required: false }
+      - name: imgLight
+        label: Foto – svítící panel
+        widget: image
+        media_folder: /public/images/products
+        public_folder: /images/products
+        choose_url: false
+      - name: imgDark
+        label: Foto – zhaslý panel
+        widget: image
+        required: false
+        media_folder: /public/images/products
+        public_folder: /images/products
+        choose_url: false
+      - name: imgFrame
+        label: Foto – svítící rám
+        widget: image
+        required: false
+        media_folder: /public/images/products
+        public_folder: /images/products
+        choose_url: false
+      - name: modelHorizontal3d
+        label: 3D model na šířku (.glb)
+        widget: file
+        required: false
+        media_folder: /public/3d/products
+        public_folder: /3d/products
+        choose_url: false
+      - name: modelVertical3d
+        label: 3D model na výšku (.glb)
+        widget: file
+        required: false
+        media_folder: /public/3d/products
+        public_folder: /3d/products
+        choose_url: false
+      - name: daeFile
+        label: 3D podklad ke stažení (.zip)
+        widget: file
+        required: false
+        media_folder: /public/downloads/dae
+        public_folder: /downloads/dae
+        choose_url: false
+      - name: tags
+        label: Technické parametry
+        widget: object
+        collapsed: true
+        fields:
+          - { name: dimension, label: Rozměr, widget: string }
+          - { name: weight, label: Hmotnost, widget: string }
+          - { name: maxConsumption, label: Max. spotřeba, widget: string }
+          - { name: standbyConsumption, label: Standby spotřeba, widget: string }
+          - { name: brightness, label: Jas, widget: string }
+          - { name: backlightTempereture, label: Teplota podsvětlení, widget: string }
+          - { name: powerVoltage, label: Napájecí napětí, widget: string }
+          - { name: frameColor, label: Barva rámu, widget: string }
+          - { name: hangingBrackets, label: Držáky pro zavěšení, widget: boolean, default: true }
+          - { name: dimmableStoneIllumination, label: Stmívatelné prosvětlení kamene, widget: boolean, default: true }
+          - { name: dimmableIllumination, label: Stmívatelné podsvětlení, widget: boolean, default: true }
+          - { name: phoneControl, label: Ovládání telefonem, widget: boolean, default: true }
+          - { name: LEDSource, label: Zabudovaný LED zdroj, widget: boolean, default: true }
+          - { name: RFIDController, label: Zabudovaný RF/WiFi kontroler, widget: boolean, default: true }
+          - { name: RFRemoteControl, label: RF dálkový ovladač, widget: boolean, default: true }
+          - { name: nanoImpregnation, label: Nano impregnace, widget: boolean, default: true }
+          - { name: divisibleInto2, label: Dělitelné na 2 ks, widget: boolean, default: false }
+          - { name: divisibleInto3, label: Dělitelné na 3 ks, widget: boolean, default: false }
+
+  - name: settings
+    label: Nastavení webu
+    editor:
+      preview: false
+    files:
+      - name: prices
+        label: Ceník
+        file: src/data/prices.json
+        description: Ceny jsou v Kč bez DPH, např. „18 600“. Pořadí verzí odpovídá pořadí v ceníku.
+        fields:
+          - name: products
+            label: Provedení
+            label_singular: Provedení
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: id, label: ID, widget: string, hint: "Jedinečné číslo verze (1, 2, 3 …)." }
+              - { name: title, label: Název, widget: string }
+              - name: tagline
+                label: Krátký popis
+                widget: object
+                fields:
+                  - { name: cs, label: Česky, widget: string }
+                  - { name: en, label: English, widget: string }
+              - name: prices
+                label: Ceny podle velikosti
+                widget: object
+                fields:
+                  - { name: l, label: "L – 2400 × 400 mm", widget: string }
+                  - { name: xl, label: "XL – 2400 × 600 mm", widget: string }
+                  - { name: xxl, label: "XXL – 2400 × 800 mm", widget: string }
+                  - { name: xxxl, label: "XXXL – 2400 × 1200 mm", widget: string }
+              - name: features
+                label: Výbava
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: "1", label: Tloušťka 16 mm, widget: boolean }
+                  - { name: "2", label: Tloušťka 34 mm, widget: boolean }
+                  - { name: "3", label: Laminováno, widget: boolean }
+                  - { name: "4", label: Impregnováno, widget: boolean }
+                  - { name: "5", label: Dotykové ovládání, widget: boolean }
+                  - { name: "6", label: Zadní podsvícení, widget: boolean }
+                  - { name: "7", label: Rychlá montáž, widget: boolean }
+                  - { name: "8", label: Vyměnitelné LED, widget: boolean }
+                  - { name: "9", label: Zabudovaný zdroj, widget: boolean }
+                  - { name: "10", label: Teplota podsvícení, widget: boolean }
+                  - { name: "11", label: Dálkové ovládání, widget: boolean }
+                  - { name: "12", label: Ovládání telefonem, widget: boolean }
+                  - { name: "13", label: Barva rámu RAL, widget: boolean }
+
+      - name: faq
+        label: Časté dotazy (FAQ)
+        file: src/data/faq.json
+        description: "Tučný text napíšete jako **text**."
+        fields:
+          - name: items
+            label: Otázky
+            label_singular: Otázka
+            widget: list
+            summary: "{{fields.question.cs}}"
+            fields:
+              - name: question
+                label: Otázka
+                widget: object
+                fields:
+                  - { name: cs, label: Česky, widget: string }
+                  - { name: en, label: English, widget: string }
+              - name: answer
+                label: Odpověď
+                widget: object
+                fields:
+                  - { name: cs, label: Česky, widget: text }
+                  - { name: en, label: English, widget: text }

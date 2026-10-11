@@ -1,5 +1,6 @@
 ---
 import Icon from "../icons/Icon.astro";
+import Button from "../ui/Button.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -10,9 +11,9 @@ const { lang = 'cs' } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<header>
+<header class="relative isolate flex min-h-svh items-end overflow-hidden bg-ink">
   <video
-    class="header__video"
+    class="hero-video absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
     aria-label={t('header.videoLabel')}
     preload="none"
@@ -21,88 +22,54 @@ const t = useTranslations(lang);
     muted
     playsinline
     disablepictureinpicture></video>
-  <div class="header__content">
-    <div>
-      <h1>Anew style</h1>
-    </div>
-    <strong>{t('header.title')}</strong>
-    <div class="header__buttons">
-      <a
-        class="button"
-        href="#about"
-        id="headerMoreButton"
-        aria-label={t('header.gotoAbout')}
-        rel="noopener"
-      >
-        <span>{t('header.btnMore')}</span>
-      </a>
-      <!-- E-shop button - visible on desktop only -->
-      <a
-        class="button button--secondary header__eshop-btn"
+  <div
+    class="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_75%_40%,rgb(163_140_82/0.18),transparent_70%),linear-gradient(to_top,var(--color-ink)_0%,rgb(0_0_0/0.55)_45%,rgb(0_0_0/0.25)_100%)]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
+    <h1 class="max-w-4xl font-display text-6xl leading-[0.92] font-black tracking-[0.08em] uppercase sm:text-7xl lg:text-[7.5rem]">
+      Anew style
+    </h1>
+    <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
+      {t('header.title')}
+    </p>
+    <div class="flex flex-wrap items-center gap-4 pt-2">
+      <Button href="#about" id="headerMoreButton" aria-label={t('header.gotoAbout')}>
+        {t('header.btnMore')}
+      </Button>
+      <Button
         href="https://www.anewstyle-eshop.cz"
+        variant="ghost"
         rel="external"
         target="_blank"
         aria-label={t('header.gotoEshop')}
+        class="max-lg:hidden!"
       >
-        <span>{t('header.btnEshop')}</span>
-        <Icon name="eshop" iconClass="icon-header" />
-      </a>
-      <!-- AR button - visible on tablet and mobile only -->
-      <button
-        class="button button--secondary header__ar-btn"
+        {t('header.btnEshop')}
+        <Icon name="eshop" class="size-4" />
+      </Button>
+      <Button
+        variant="ghost"
         id="headerArButton"
-        type="button"
         aria-label={t('header.btnAr')}
         data-loading="false"
         data-error="false"
+        class="lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
       >
-        <span>{t('header.btnAr')}</span>
-        <Icon name="ar" iconClass="icon-header" />
-      </button>
+        {t('header.btnAr')}
+        <Icon name="ar" class="size-5" />
+      </Button>
     </div>
   </div>
+
+  <div
+    class="absolute bottom-8 left-1/2 hidden h-10 w-px -translate-x-1/2 bg-linear-to-b from-transparent to-gold md:block"
+    aria-hidden="true"
+  >
+  </div>
 </header>
-
-<style>
-  /* Desktop: Show e-shop button, hide AR button */
-  @media (min-width: 1024px) {
-    .header__eshop-btn {
-      display: flex;
-    }
-    .header__ar-btn {
-      display: none;
-    }
-  }
-
-  /* Tablet and mobile: Hide e-shop button, show AR button */
-  @media (max-width: 1023px) {
-    .header__eshop-btn {
-      display: none;
-    }
-    .header__ar-btn {
-      display: flex;
-    }
-  }
-
-  /* AR button states */
-  .header__ar-btn[data-loading="true"] {
-    opacity: 0.7;
-    cursor: wait;
-  }
-
-  .header__ar-btn[data-error="true"] {
-    background-color: #ff4444;
-    color: white;
-  }
-
-  /* Ensure AR model-viewer doesn't interfere with page */
-  model-viewer[style*="position: fixed"] {
-    z-index: -9999 !important;
-    visibility: hidden !important;
-    user-select: none !important;
-    pointer-events: none !important;
-  }
-</style>
 
 <script>
   import "@google/model-viewer";

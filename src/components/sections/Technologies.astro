@@ -1,5 +1,6 @@
 ---
 import Tooltip from "../tooltip/Tooltip.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -9,173 +10,75 @@ interface Props {
 
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+
+type Layer = { label: string; tooltip?: string };
+
+const blocks: { title: string; img: string; layers: Layer[] }[] = [
+  {
+    title: t("tech.subtitle1"),
+    img: "/images/technologies/skladba_kamenne_dyhy.avif",
+    layers: [
+      { label: t("tech.stone1") },
+      { label: t("tech.stone2") },
+      { label: t("tech.stone3") },
+      { label: t("tech.stone4") },
+    ],
+  },
+  {
+    title: t("tech.subtitle2"),
+    img: "/images/technologies/konstrukce_sviticiho_panelu.avif",
+    layers: [
+      { label: t("tech.panel1Label"), tooltip: t("tech.panel1Tooltip") },
+      { label: t("tech.panel2") },
+      { label: t("tech.panel3") },
+      { label: t("tech.panel4") },
+      { label: t("tech.panel5") },
+      { label: t("tech.panel6Label"), tooltip: t("tech.panel6Tooltip") },
+    ],
+  },
+];
 ---
 
-<section id={id} class="dark">
-  <div class="container">
-    <h2 class="title title--white title--center">{t("tech.title")}</h2>
+<section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
+  <div class="container-page flex flex-col gap-14">
+    <SectionHeader id={`${id}-title`} eyebrow={t("tech.title")} title={t("tech.heading")}>
+      <p>{t("tech.desc")}</p>
+    </SectionHeader>
 
-    <p class="desc desc--center">
-      {t("tech.desc")}
-    </p>
-
-    <div class="tech-grid">
-      <!-- Composition Block -->
-      <div class="tech-card">
-        <img
-          src="/images/technologies/skladba_kamenne_dyhy.avif"
-          alt={t("tech.subtitle1")}
-          loading="lazy"
-          width="600"
-          height="400"
-        />
-        <h3 class="tech-card__title">{t("tech.subtitle1")}</h3>
-        <ul class="tech-card__list">
-          <li>{t("tech.stone1")}</li>
-          <li>{t("tech.stone2")}</li>
-          <li>{t("tech.stone3")}</li>
-          <li>{t("tech.stone4")}</li>
-        </ul>
-      </div>
-
-      <!-- Construction Block -->
-      <div class="tech-card">
-        <img
-          src="/images/technologies/konstrukce_sviticiho_panelu.avif"
-          alt={t("tech.subtitle2")}
-          loading="lazy"
-          width="600"
-          height="400"
-        />
-        <h3 class="tech-card__title">{t("tech.subtitle2")}</h3>
-        <ul class="tech-card__list">
-          <li>
-            {t("tech.panel1Label")}
-            <Tooltip
-              label={`${t("tech.tooltipAria")}: ${t("tech.panel1Label")}`}
-            >
-              {t("tech.panel1Tooltip")}
-            </Tooltip>
-          </li>
-          <li>{t("tech.panel2")}</li>
-          <li>{t("tech.panel3")}</li>
-          <li>{t("tech.panel4")}</li>
-          <li>{t("tech.panel5")}</li>
-          <li>
-            {t("tech.panel6Label")}
-            <Tooltip
-              label={`${t("tech.tooltipAria")}: ${t("tech.panel6Label")}`}
-            >
-              {t("tech.panel6Tooltip")}
-            </Tooltip>
-          </li>
-        </ul>
-      </div>
+    <div class="grid gap-6 lg:grid-cols-2">
+      {
+        blocks.map((block) => (
+          <article class="reveal flex flex-col gap-8 border border-line bg-ink-900 p-6 sm:p-10">
+            <img
+              src={block.img}
+              alt={block.title}
+              loading="lazy"
+              decoding="async"
+              width="600"
+              height="400"
+              class="mx-auto h-auto max-h-72 w-full object-contain"
+            />
+            <h3 class="text-lg font-black tracking-[0.12em] text-gold uppercase">{block.title}</h3>
+            <ol class="flex flex-col gap-3.5">
+              {block.layers.map((layer, index) => (
+                <li class="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-4">
+                  <span class="inline-grid size-7 place-items-center border border-gold text-xs font-extrabold text-gold">
+                    {index + 1}
+                  </span>
+                  <span class="flex flex-wrap items-center gap-2.5 text-base text-fg-soft">
+                    {layer.label}
+                    {layer.tooltip && (
+                      <Tooltip label={`${t("tech.tooltipAria")}: ${layer.label}`}>
+                        {layer.tooltip}
+                      </Tooltip>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </article>
+        ))
+      }
     </div>
   </div>
 </section>
-
-<style lang="scss">
-  @import "../../styles/Base/global";
-
-  .tech-grid {
-    display: grid;
-    @include grid-columns(
-      grid,
-      repeat(2, minmax($size-tech-min-column, 1fr)),
-      calc($gap-xl * 2),
-      stretch
-    );
-    grid-template-rows: auto min-content 1fr;
-
-    @include res-max-tablet {
-      grid-template-columns: minmax($size-tech-min-column, 1fr);
-      grid-template-rows: initial;
-      row-gap: $gap-xl;
-    }
-  }
-
-  .tech-card {
-    @include grid-row-span(3);
-    display: grid;
-    grid-template-rows: subgrid;
-    gap: $gap-xl;
-    padding-block: calc(2 * $gap-xl);
-    background-color: $color-bg;
-    border: $border-2r solid var(--card-border-color, $color-border);
-    border-radius: $radius-l;
-    text-align: center;
-    translate: 0 0;
-    scale: 1;
-    transition:
-      border-color $trans-time ease-in-out,
-      scale $trans-time ease-in-out;
-
-    @include hover {
-      --card-border-color: #{$color-primary};
-      scale: 1.025;
-    }
-
-    > img {
-      display: block;
-      inline-size: 100%;
-      block-size: auto;
-      max-block-size: $size-tech-image-max-block;
-      margin-block-end: $gap-xl;
-      margin-inline: auto;
-      object-fit: contain;
-
-      @include res-max-tablet {
-        max-block-size: 15rem;
-      }
-    }
-
-    &__title {
-      display: block;
-      inline-size: max(
-        $size-tech-title-inline-percent,
-        $size-tech-title-min-inline
-      );
-      margin-inline: auto;
-      font-family: $font-title;
-      font-size: clamp($gap-l, $fluid-tech-title, $gap-xl);
-      font-weight: 700;
-      line-height: 1.3;
-      line-height: 1.5;
-      letter-spacing: $letter-spacing-s;
-      color: $color-primary;
-      text-align: center;
-      text-wrap: balance;
-      text-transform: uppercase;
-    }
-
-    &__list {
-      display: inline-flex;
-      flex-direction: column;
-      gap: $gap-l;
-      padding: 0;
-      margin: 0;
-      margin-inline: auto;
-      list-style: none;
-      text-align: left;
-
-      li {
-        position: relative;
-        display: flex;
-        align-items: baseline;
-        gap: $gap-l;
-        font-family: $font-text;
-        font-size: clamp($gap-l, $fluid-tech-list, $gap-xl);
-        font-weight: 300;
-        line-height: 1.5;
-        color: $color-font;
-        text-align: left;
-      }
-
-      li::before {
-        content: "•";
-        color: $color-primary;
-      }
-    }
-  }
-</style>

@@ -1,19 +1,20 @@
 {
   "name": "anew-style",
   "version": "3.0.0",
-  "description": "Updated on 19.7.2026",
+  "description": "Updated on 11.10.2026",
   "private": true,
   "license": "ISC",
   "author": "Lukáš Chylík",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"astro dev\" \"bun run stylelint:watch\"",
+    "dev": "astro dev",
     "gallery:build": "node scripts/build-cloudinary-gallery.mjs",
-    "build": "bun run gallery:build && astro check && astro build && node scripts/postbuild-sitemap-alias.mjs",
+    "typecheck": "astro check && node node_modules/typescript-7/bin/tsc --noEmit",
+    "build": "bun run gallery:build && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",
     "astro": "astro",
-    "stylelint": "stylelint --fix \"src/**/*.scss\" \"src/**/*.astro\"",
-    "stylelint:watch": "nodemon -e scss,astro --watch src -x \"bun run stylelint\""
+    "cms:local": "decap-server",
+    "stylelint": "stylelint --fix \"src/**/*.css\" \"src/**/*.astro\""
   },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
@@ -24,19 +25,16 @@
     "astro": "^7.2.2",
     "cloudinary": "^2.10.0",
     "three": "^0.183.0",
-    "typescript": "^6"
+    "typescript": "^6.0.3",
+    "typescript-7": "npm:typescript@^7.0.2"
   },
   "devDependencies": {
-    "autoprefixer": "^10.5.4",
-    "concurrently": "^10.0.3",
-    "cssnano": "^8.0.2",
-    "nodemon": "^3.1.14",
-    "postcss": "^8.5.20",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "decap-server": "^3.5.0",
     "postcss-html": "^1.8.1",
-    "postcss-preset-env": "^11.3.2",
-    "postcss-scss": "^4.0.9",
-    "sass": "^1.101.0",
     "stylelint": "^17.14.0",
-    "stylelint-order": "^8.1.1"
+    "stylelint-order": "^8.1.1",
+    "tailwindcss": "^4.3.3"
   }
 }

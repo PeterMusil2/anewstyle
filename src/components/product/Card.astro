@@ -27,6 +27,13 @@ const {
 } = Astro.props;
 const t = useTranslations(lang);
 
+// The CMS stores uploaded files as absolute paths, older entries as bare
+// file names – accept both.
+const asset = (folder: string, value?: string) =>
+  value ? (value.startsWith("/") ? value : `${folder}/${value}`) : undefined;
+const productImage = (value?: string) => asset("/images/products", value);
+const productModel = (value?: string) => asset("/3d/products", value);
+
 const groupName = `product-${id}`;
 const hasHorizontalModel = Boolean(modelHorizontal3d);
 const hasVerticalModel = Boolean(modelVertical3d);
@@ -34,40 +41,58 @@ const primaryFancyboxHref = hasHorizontalModel
   ? `#horizontal3dModel${id}`
   : hasVerticalModel
     ? `#vertical3dModel${id}`
-    : `/images/products/${imgLight}`;
+    : productImage(imgLight);
 
 const extraFancyboxHrefs = [
   hasHorizontalModel && hasVerticalModel ? `#vertical3dModel${id}` : null,
-  imgDark ? `/images/products/${imgDark}` : null,
-  imgFrame ? `/images/products/${imgFrame}` : null,
+  imgDark ? productImage(imgDark) : null,
+  imgFrame ? productImage(imgFrame) : null,
   hasHorizontalModel || hasVerticalModel
-    ? `/images/products/${imgLight}`
+    ? productImage(imgLight)
     : null,
 ].filter((src): src is string => Boolean(src));
 ---
 
 <a
   id={`productCard${id}`}
-  class="card"
+  class="card group flex h-full flex-col border border-line bg-ink-900 text-fg no-underline transition-colors duration-300 hover:border-gold/50"
   href={primaryFancyboxHref}
   data-fancybox={groupName}
   data-caption={title}
-  aria-label={t("products.showProductDetail")}
+  aria-label={`${t("products.showProductDetail")}: ${title}`}
 >
-  <strong>
-    {title}
-  </strong>
-  <img
-    src={`/images/products/${imgLight}`}
-    alt={title}
-    loading="lazy"
-    width="304"
-    height="165"
-  />
-  <div class="text-center">
-    <div class="button button--s">{t("products.btnShowDetail")}</div>
+  <div class="relative flex aspect-[1024/524] items-center justify-center overflow-hidden bg-[radial-gradient(60%_60%_at_50%_50%,rgb(163_140_82/0.12),transparent_70%)]">
+    <img
+      src={productImage(imgLight)}
+      alt={title}
+      loading="lazy"
+      decoding="async"
+      width="1024"
+      height="524"
+      class="size-full object-contain transition-transform duration-500 ease-out-soft group-hover:scale-105"
+    />
+    {
+      has3D && (
+        <span
+          class="absolute top-3 right-3 inline-flex items-center gap-1.5 border border-line-strong bg-ink/70 px-2 py-1 text-[0.6875rem] font-extrabold tracking-caps text-gold uppercase backdrop-blur-sm"
+          title={t("products.showIn3d")}
+        >
+          <Icon name="ar" class="size-4" />
+          3D · AR
+        </span>
+      )
+    }
   </div>
-  {has3D && <Icon name="ar" />}
+  <div class="flex items-center justify-between gap-4 border-t border-line px-5 py-4">
+    <strong class="truncate text-[0.9375rem] font-black tracking-[0.18em] uppercase">{title}</strong>
+    <span
+      class="grid size-11 shrink-0 place-items-center border border-line-strong text-gold transition-colors group-hover:border-gold group-hover:bg-gold group-hover:text-ink"
+      title={t("products.btnShowDetail")}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 16 16" class="size-4 fill-none stroke-current stroke-[1.75]"><path d="M3 8h10M9 4l4 4-4 4"></path></svg>
+    </span>
+  </div>
 </a>
 {
   extraFancyboxHrefs.map((src) => (
@@ -86,7 +111,7 @@ const extraFancyboxHrefs = [
     hasHorizontalModel && (
       <model-viewer
         id={`horizontal3dModel${id}`}
-        src={`/3d/products/${modelHorizontal3d}`}
+        src={productModel(modelHorizontal3d)}
         ar
         ar-scale="auto"
         ar-modes="webxr scene-viewer quick-look"
@@ -100,7 +125,7 @@ const extraFancyboxHrefs = [
     hasVerticalModel && (
       <model-viewer
         id={`vertical3dModel${id}`}
-        src={`/3d/products/${modelVertical3d}`}
+        src={productModel(modelVertical3d)}
         ar
         ar-scale="auto"
         ar-modes="webxr scene-viewer quick-look"

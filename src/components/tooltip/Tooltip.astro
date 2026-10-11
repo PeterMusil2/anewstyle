@@ -2,15 +2,13 @@
 import type { TooltipProps } from "./types";
 
 /**
- * Tooltip component using native HTML popover.
+ * Info tooltip built on the native popover API; effects.css anchors it to the
+ * trigger where CSS anchor positioning is supported.
  */
 interface Props extends TooltipProps {}
 
 const { label = "Info" } = Astro.props as Props;
 
-/**
- * Unique id for linking trigger to popover.
- */
 const tooltipId = `tooltip-${
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -18,9 +16,9 @@ const tooltipId = `tooltip-${
 }`;
 ---
 
-<span class="tooltip">
+<span class="tooltip inline-flex align-middle">
   <button
-    class="tooltip__trigger"
+    class="tooltip__trigger inline-grid size-6 cursor-pointer place-items-center rounded-full border border-gold bg-gold text-xs leading-none font-bold text-ink transition-colors hover:bg-gold-light"
     type="button"
     commandfor={tooltipId}
     command="toggle-popover"
@@ -30,69 +28,12 @@ const tooltipId = `tooltip-${
   >
     <span aria-hidden="true">i</span>
   </button>
-  <div class="tooltip__popover" id={tooltipId} popover="auto" role="tooltip">
+  <span
+    class="tooltip__popover pop-panel border border-gold-light bg-gold p-4 text-sm leading-relaxed font-normal text-ink shadow-2xl"
+    id={tooltipId}
+    popover="auto"
+    role="tooltip"
+  >
     <slot />
-  </div>
+  </span>
 </span>
-
-<style lang="scss">
-  @import "../../styles/Base/global";
-
-  .tooltip {
-    anchor-scope: --tooltip-anchor;
-    display: inline-block;
-  }
-
-  .tooltip__trigger {
-    anchor-name: --tooltip-anchor;
-    display: inline-grid;
-    place-items: center;
-    inline-size: $size-tooltip-trigger;
-    block-size: $size-tooltip-trigger;
-    padding: 0;
-    background-color: $color-primary;
-    border: $border-1r solid $color-primary;
-    border-radius: $radius-full;
-    font-family: $font-text;
-    font-size: $font-size-tooltip-trigger;
-    line-height: 1;
-    color: $color-black;
-    transition:
-      border-color $trans-time ease-in-out,
-      background-color $trans-time ease-in-out,
-      color $trans-time ease-in-out;
-    cursor: pointer;
-
-    > span {
-      font-weight: 700;
-    }
-  }
-
-  .tooltip__trigger:focus-visible {
-    outline: $border-2r solid $color-primary;
-    outline-offset: $gap-s;
-  }
-
-  .tooltip__popover[popover] {
-    max-inline-size: min(
-      $size-tooltip-max-inline,
-      calc(100svi - (2 * $gap-xl))
-    );
-    padding: $gap-l;
-    background-color: $color-primary;
-    border: $border-1r solid $color-primary--hover;
-    border-radius: $radius-m;
-    font-weight: 400;
-    color: $color-black;
-    box-shadow: $shadow-tooltip;
-  }
-
-  @supports (anchor-scope: --tooltip-anchor) and (top: anchor(bottom)) {
-    .tooltip__popover[popover] {
-      position: fixed;
-      position-anchor: --tooltip-anchor;
-      position-area: top;
-      margin-top: $gap-m;
-    }
-  }
-</style>

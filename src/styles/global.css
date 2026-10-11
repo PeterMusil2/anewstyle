@@ -1,0 +1,167 @@
+/*
+ * ANEW STYLE – design system (Tailwind CSS 4)
+ *
+ * Brand colours, type and spacing live here as theme tokens, so every utility
+ * the components use (bg-ink-850, text-gold, tracking-caps …) comes from one
+ * place. The default Tailwind palette is switched off on purpose: only brand
+ * tokens exist, which keeps the whole site visually consistent.
+ *
+ * Effects Tailwind cannot express (scroll-driven reveals, anchor positioning,
+ * ::details-content transitions, :has() driven state …) live in effects.css as
+ * plain, progressively enhanced CSS.
+ */
+@import "tailwindcss";
+@import "./effects.css";
+
+@theme {
+  /* Reset the default palette – brand tokens only. */
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Gold – the brand accent (#A38C52 = hsl(43 33% 48%)). */
+  --color-gold: #a38c52;
+  --color-gold-light: #b7a370;
+  --color-gold-pale: #e6d3a0;
+
+  /* Ink – the dark grounds, from pure black up to raised surfaces. */
+  --color-ink: #000000;
+  --color-ink-950: #050505;
+  --color-ink-900: #0a0a0a;
+  --color-ink-850: #121212;
+  --color-ink-800: #171717;
+  --color-ink-750: #1c1a15; /* warm raised surface for highlighted cards */
+  --color-ink-700: #1e1e1e;
+
+  /* Text on dark – every step passes WCAG AA on ink-850 and darker. */
+  --color-fg: #ffffff;
+  --color-fg-soft: #d1d1d1;
+  --color-fg-muted: #b3b3b3;
+  --color-fg-subtle: #8f8f8f;
+  --color-fg-disabled: #6e6e6e;
+
+  /* Hairlines */
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.16);
+  --color-line-bold: rgb(255 255 255 / 0.3);
+
+  --color-danger: #e5484d;
+  --color-success: #46a758;
+
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+  --font-display: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+
+  --tracking-caps: 0.14em;
+  --tracking-eyebrow: 0.26em;
+  --tracking-display: 0.03em;
+
+  --text-eyebrow: 0.8125rem;
+  --text-eyebrow--line-height: 1.4;
+
+  --container-page: 75rem; /* 1200px content width */
+  --container-wide: 90rem;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --shadow-glow: 0 0 60px rgb(183 163 112 / 0.3);
+  --shadow-glow-strong: 0 0 110px 30px rgb(224 181 168 / 0.4);
+}
+
+/* Layout primitives shared by every section. */
+@utility container-page {
+  inline-size: 100%;
+  max-inline-size: calc(var(--container-page) + 2 * var(--gutter, 1.25rem));
+  padding-inline: var(--gutter, 1.25rem);
+  margin-inline: auto;
+
+  @media (width >= 48rem) {
+    --gutter: 2.5rem;
+  }
+}
+
+@utility container-wide {
+  inline-size: 100%;
+  max-inline-size: calc(var(--container-wide) + 2 * var(--gutter, 1.25rem));
+  padding-inline: var(--gutter, 1.25rem);
+  margin-inline: auto;
+
+  @media (width >= 48rem) {
+    --gutter: 2.5rem;
+  }
+}
+
+/* Section rhythm: one vertical spacing scale for the whole site. */
+@utility section-y {
+  padding-block: 5rem;
+
+  @media (width >= 64rem) {
+    padding-block: 7.5rem;
+  }
+}
+
+@utility eyebrow {
+  font-size: var(--text-eyebrow);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-gold);
+  text-transform: uppercase;
+}
+
+@utility caps {
+  font-weight: 800;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+@layer base {
+  :root {
+    --nav-height: 4.5rem;
+    color-scheme: dark;
+
+    @media (width >= 64rem) {
+      --nav-height: 5.5rem;
+    }
+  }
+
+  html {
+    scroll-padding-block-start: var(--nav-height);
+    background-color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-block-size: 100dvh;
+    background-color: var(--color-ink);
+    font-family: var(--font-sans);
+    color: var(--color-fg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :where(h1, h2, h3, h4) {
+    text-wrap: balance;
+  }
+
+  :where(p) {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  /* Rich text coming from translations (FAQ answers, bonus copy). */
+  :where(.prose-inline) strong {
+    font-weight: 700;
+    color: var(--color-gold);
+  }
+}

@@ -2,7 +2,6 @@
 /// <reference types="astro/client" />
 
 declare module "*.css";
-declare module "*.scss";
 
 declare module "@fancyapps/ui" {
   export const Fancybox: {

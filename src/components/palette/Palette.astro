@@ -1,4 +1,8 @@
 ---
+/**
+ * RAL frame colours. The swatches orbit out of one circle when the button is
+ * pressed – the motion lives in effects.css (.palette).
+ */
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -7,28 +11,41 @@ interface Props {
 
 const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+
+const swatches = [
+  { code: "150M", color: "hsl(23.64deg 16.42% 60.59%)" },
+  { code: "140M", color: "hsl(38.4deg 24.04% 59.22%)" },
+  { code: "260M", color: "var(--color-gold)" },
+  { code: "280M", color: "hsl(37.37deg 47.11% 47.45%)" },
+];
 ---
 
-<button class="palette" type="button" aria-label={t("features.showColors")}>
-  <span>{t("features.showColors")}</span>
-  <div class="palette__color" data-text="150M"></div>
-  <div class="palette__color" data-text="140M"></div>
-  <div class="palette__color" data-text="260M"></div>
-  <div class="palette__color" data-text="280M"></div>
+<button
+  class="palette relative grid size-32 shrink-0 cursor-pointer place-items-center rounded-full"
+  type="button"
+  aria-pressed="false"
+  aria-label={t("features.showColors")}
+>
+  {
+    swatches.map((swatch) => (
+      <span
+        class="palette__swatch absolute inset-0 grid place-items-center rounded-full shadow-lg transition-[translate] duration-300"
+        style={`background-color: ${swatch.color}`}
+      >
+        <span class="palette__code text-[0.6875rem] font-extrabold text-ink">{swatch.code}</span>
+      </span>
+    ))
+  }
+  <span class="palette__label relative z-10 max-w-[80%] text-center text-[0.6875rem] leading-tight font-black tracking-[0.06em] text-ink uppercase transition-opacity">
+    {t("features.showColors")}
+  </span>
 </button>
 
 <script>
-  const palette = document.querySelector(".palette") as HTMLButtonElement;
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (!palette.contains(event.target as Node)) {
-      palette.classList.remove("palette--active");
-    }
-  };
-
-  palette.addEventListener("click", () => {
-    palette.classList.toggle("palette--active");
+  document.querySelectorAll<HTMLButtonElement>(".palette").forEach((palette) => {
+    palette.addEventListener("click", () => {
+      const pressed = palette.getAttribute("aria-pressed") === "true";
+      palette.setAttribute("aria-pressed", String(!pressed));
+    });
   });
-
-  document.addEventListener("click", handleClickOutside);
 </script>

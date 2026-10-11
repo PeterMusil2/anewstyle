@@ -1,7 +1,0 @@
-@import "mixins";
-
-@include font-face('segoe-ui', '../fonts/segoe-ui/regular/segoe-ui');
-@include font-face('segoe-ui-bold', '../fonts/segoe-ui/bold/segoe-ui-bold', 700);
-@include font-face('segoe-ui-light', '../fonts/segoe-ui/light/segoe-ui-light', 100);
-@include font-face('times-new-roman', '../fonts/times-new-roman/regular/times-new-roman');
-@include font-face('times-new-roman-bold', '../fonts/times-new-roman/bold/times-new-roman-bold', 700);

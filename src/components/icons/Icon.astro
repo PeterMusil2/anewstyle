@@ -1,14 +1,23 @@
 ---
+/**
+ * Inline SVG icon from the sprite in IconSet.astro.
+ * Decorative by default; pass `label` when the icon carries meaning on its own.
+ */
 interface Props {
   name: string;
-  iconClass?: string;
-  size?: string; // e.g., "1em", "16px"; when omitted, uses CSS default
+  class?: string;
+  label?: string;
 }
 
-const { name, iconClass, size } = Astro.props;
+const { name, class: className, label } = Astro.props;
 ---
 
-<svg class={`icon icon-${name} ${iconClass ?? ''}`}
-     style={size ? `--icon-size: ${size};` : undefined}>
-  <use xlink:href={`#icon-${name}`}></use>
+<svg
+  class:list={["size-5 shrink-0 fill-current", className]}
+  aria-hidden={label ? undefined : "true"}
+  role={label ? "img" : undefined}
+  aria-label={label}
+  focusable="false"
+>
+  <use href={`#icon-${name}`}></use>
 </svg>

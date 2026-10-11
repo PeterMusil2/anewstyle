@@ -1,21 +1,26 @@
 ---
-import Icon from "../icons/Icon.astro";
-
 interface Props {
   href: string;
   text: string;
-  icon?: string;
-  iconClass?: string;
-  target?: string;
-  rel?: string;
+  accent?: boolean;
+  variant?: "bar" | "panel";
 }
 
-const { href, text, icon, iconClass, target, rel } = Astro.props;
+const { href, text, accent = false, variant = "bar" } = Astro.props;
 ---
 
 <li>
-  <a href={href} rel={rel} target={target}>
-    {icon && <Icon name={icon} iconClass={iconClass} />}
-    <span>{text}</span>
+  <a
+    href={href}
+    data-nav-link
+    class:list={[
+      "flex items-center whitespace-nowrap text-[0.8125rem] font-bold tracking-[0.12em] uppercase no-underline transition-colors duration-200 hover:text-gold-light",
+      variant === "bar" && "min-h-11",
+      variant === "panel" &&
+        "min-h-14 border-b border-line text-base tracking-caps",
+      accent ? "text-gold" : "text-fg-soft",
+    ]}
+  >
+    {text}
   </a>
 </li>

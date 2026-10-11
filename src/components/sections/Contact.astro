@@ -1,5 +1,7 @@
 ---
 import Icon from "../icons/Icon.astro";
+import Button from "../ui/Button.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
@@ -15,228 +17,187 @@ const t = useTranslations(lang);
 const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonus`;
 ---
 
-<section id={id} class="dark">
-  <div class="container">
-    <div class="contact">
-      <h2 class="title title--white title--center">{t("contact.title")}</h2>
-      <div class="contact__grid">
-        <div class="contact__intro">
-          <p class="desc desc--no-mg contact__intro-text">
-            <span>{t("contact.descPart1")}</span>
-            <strong>
-              <a href="mailto:info@anewstyle.cz" class="link"
-                >info@anewstyle.cz</a
-              >
-            </strong>
-            <span>{t("contact.descPart2")}</span>
-          </p>
-          <div class="social">
-            <a
-              href="https://www.facebook.com/profile.php?id=100088855596654"
-              rel="external"
-              aria-label={t("contact.gotoFacebook")}
-              target="_blank"
-            >
-              <Icon name="facebook" />
-            </a>
-            <a
-              href="https://www.instagram.com/anewstyle.cz/"
-              rel="external"
-              aria-label={t("contact.gotoInstagram")}
-              target="_blank"
-            >
-              <Icon name="instagram" />
-            </a>
-          </div>
+<section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
+  <div class="container-page grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-20">
+    <div class="flex flex-col gap-10">
+      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("nav.contact")} title={t("contact.title")}>
+        <p>
+          <span>{t("contact.descPart1")}</span>
+          <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
+        </p>
+        <div class="flex items-center gap-3 pt-2">
+          <span class="text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("contact.followUs")}</span>
+          <a
+            href="https://www.facebook.com/profile.php?id=100088855596654"
+            rel="external"
+            aria-label={t("contact.gotoFacebook")}
+            target="_blank"
+            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+          >
+            <Icon name="facebook" class="size-5" />
+          </a>
+          <a
+            href="https://www.instagram.com/anewstyle.cz/"
+            rel="external"
+            aria-label={t("contact.gotoInstagram")}
+            target="_blank"
+            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+          >
+            <Icon name="instagram" class="size-5" />
+          </a>
         </div>
+      </SectionHeader>
 
-        <form
-          class="contact-form"
-          action="https://api.web3forms.com/submit"
-          method="POST"
-          novalidate
-        >
-          <input
-            type="hidden"
-            name="access_key"
-            value="f48bcfa0-bfd9-4098-9a68-6116fd0b952f"
-          />
-          <input
-            type="hidden"
-            name="subject"
-            value="AnewStyle – nová zpráva z webu"
-          />
-          <input type="hidden" name="from_name" value="AnewStyle web" />
-          <input
-            type="checkbox"
-            name="botcheck"
-            class="contact-form__honeypot"
-            tabindex="-1"
-            autocomplete="off"
-            aria-hidden="true"
-          />
+      <form
+        class="contact-form flex flex-col gap-5 border border-line bg-ink-850 p-6 sm:p-10"
+        action="https://api.web3forms.com/submit"
+        method="POST"
+        novalidate
+      >
+        <input type="hidden" name="access_key" value="f48bcfa0-bfd9-4098-9a68-6116fd0b952f" />
+        <input type="hidden" name="subject" value="AnewStyle – nová zpráva z webu" />
+        <input type="hidden" name="from_name" value="AnewStyle web" />
+        <input
+          type="checkbox"
+          name="botcheck"
+          class="hidden"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
 
-          <label class="contact-form__field">
-            <span class="contact-form__label">
-              {t("contact.formName")}
-            </span>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
+            {t("contact.formName")}
             <input
               type="text"
               name="name"
               required
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
+              class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
-
-          <label class="contact-form__field">
-            <span class="contact-form__label">
-              {t("contact.formEmail")}
-            </span>
+          <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
+            {t("contact.formEmail")}
             <input
               type="email"
               name="email"
               required
               autocomplete="email"
+              inputmode="email"
               placeholder={t("contact.formEmailPlaceholder")}
+              class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"
             />
           </label>
+        </div>
 
-          <label class="contact-form__field">
-            <span class="contact-form__label">
-              {t("contact.formMessage")}
-            </span>
-            <textarea
-              name="message"
-              required
-              rows="5"
-              placeholder={t("contact.formMessagePlaceholder")}></textarea>
-          </label>
+        <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
+          {t("contact.formMessage")}
+          <textarea
+            name="message"
+            required
+            rows="6"
+            placeholder={t("contact.formMessagePlaceholder")}
+            class="min-h-13 border border-line-strong bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger resize-y py-3.5"></textarea>
+        </label>
 
-          <button type="submit" class="button contact-form__submit">
-            <span>{t("contact.formSubmit")}</span>
-            <Icon name="email" />
-          </button>
-
+        <div class="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
+          <Button type="submit" class="contact-form__submit self-start data-[loading=true]:cursor-wait data-[loading=true]:opacity-70">
+            {t("contact.formSubmit")}
+            <Icon name="email" class="size-4" />
+          </Button>
           <p
-            class="contact-form__status"
+            class="contact-form__status text-sm font-semibold data-[state=error]:text-danger data-[state=success]:text-success"
             role="status"
             aria-live="polite"
             data-status-success={t("contact.formSuccess")}
             data-status-error={t("contact.formError")}
           >
           </p>
-        </form>
+        </div>
+      </form>
+    </div>
 
-        <article class="contact-tile contact-tile--showroom">
-          <div class="contact-tile__cover">
-            <img
-              src="/images/backgrounds/showroom.webp"
-              alt={t("contact.showroomTitle")}
-              loading="lazy"
-            />
-            <span class="contact-tile__badge">
-              {t("contact.showroomTitle")}
-            </span>
-          </div>
-          <div class="contact-tile__body">
-            <h3 class="contact-tile__title">{t("contact.showroomTitle")}</h3>
-            <p class="contact-tile__text">{t("contact.showroomDesc")}</p>
-            <address class="contact-tile__address">
-              <a
-                href="https://www.google.cz/maps/place/Hybe%C5%A1ova+308%2F61,+602+00+Brno-st%C5%99ed/@49.1887768,16.5968647,17z/data=!3m1!4b1!4m5!3m4!1s0x471294529732ae65:0x75c148bfafac76!8m2!3d49.1887733!4d16.5990534"
-                rel="external"
-                aria-label={t("contact.showroomAddress")}
-                target="_blank"
-                class="contact-tile__link"
-              >
-                <strong>Hybešova 61</strong>
-                <span>602 00 Brno, {t("contact.czechia")}</span>
-              </a>
-              <a
-                href="tel:+420601221551"
-                class="contact-tile__link contact-tile__link--phone"
-              >
-                <Icon name="phone" />
-                <span>+420 601 221 551</span>
-              </a>
-            </address>
-          </div>
-        </article>
+    <div class="flex flex-col gap-5">
+      <article class="flex flex-col border border-line bg-ink-850">
+        <img
+          src="/images/backgrounds/showroom.webp"
+          alt={t("contact.showroomTitle")}
+          loading="lazy"
+          decoding="async"
+          width="425"
+          height="293"
+          class="aspect-[425/293] w-full object-cover"
+        />
+        <div class="flex flex-col gap-4 p-7 sm:p-8">
+          <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
+          <p class="text-[0.9375rem] leading-relaxed text-fg-muted">{t("contact.showroomDesc")}</p>
+          <address class="flex flex-col gap-3 not-italic">
+            <a
+              href="https://www.google.cz/maps/place/Hybe%C5%A1ova+308%2F61,+602+00+Brno-st%C5%99ed/@49.1887768,16.5968647,17z/data=!3m1!4b1!4m5!3m4!1s0x471294529732ae65:0x75c148bfafac76!8m2!3d49.1887733!4d16.5990534"
+              rel="external"
+              target="_blank"
+              aria-label={t("contact.showroomAddress")}
+              class="flex flex-col gap-1 text-fg no-underline hover:text-gold-light"
+            >
+              <strong class="text-xl font-black tracking-[0.08em] uppercase">Hybešova 61</strong>
+              <span class="text-[0.9375rem] text-fg-soft">602 00 Brno, {t("contact.czechia")}</span>
+            </a>
+            <a
+              href="tel:+420601221551"
+              class="inline-flex min-h-11 items-center gap-3 self-start text-lg font-extrabold tracking-[0.04em] text-gold no-underline hover:text-gold-light"
+            >
+              <Icon name="phone" class="size-5" />
+              +420 601 221 551
+            </a>
+          </address>
+        </div>
+      </article>
 
-        <article class="contact-tile contact-tile--billing">
-          <div class="contact-tile__body">
-            <h3 class="contact-tile__title">{t("contact.addressTitle")}</h3>
-            <address class="contact-tile__address">
-              <strong>OSM s.r.o.</strong>
-              <span>Hudcova 86/54</span>
-              <span>621 00 Brno, {t("contact.czechia")}</span>
-            </address>
-            <dl class="contact-tile__meta">
-              <div>
-                <dt>IČ</dt>
-                <dd>47903180</dd>
-              </div>
-              <div>
-                <dt>DIČ</dt>
-                <dd>CZ47903180</dd>
-              </div>
-            </dl>
-          </div>
-        </article>
-      </div>
+      <article class="flex flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8">
+        <h3 class="text-xs font-extrabold tracking-[0.18em] text-fg-muted uppercase">{t("contact.addressTitle")}</h3>
+        <address class="flex flex-col gap-1 text-[0.9375rem] leading-relaxed text-fg-soft not-italic">
+          <strong class="font-extrabold text-fg">OSM s.r.o.</strong>
+          <span>Hudcova 86/54</span>
+          <span>621 00 Brno, {t("contact.czechia")}</span>
+        </address>
+        <dl class="flex gap-8 text-sm text-fg-muted">
+          <div class="flex gap-2"><dt>IČ</dt><dd class="font-bold text-fg">47903180</dd></div>
+          <div class="flex gap-2"><dt>DIČ</dt><dd class="font-bold text-fg">CZ47903180</dd></div>
+        </dl>
+      </article>
     </div>
   </div>
 </section>
 
-<!--
-  Reuses the .cookie-dialog styles: the two modals are visually identical and
-  the shared block already covers backdrop, box, header and footer.
--->
 <dialog
   id="contact-thanks-dialog"
-  class="cookie-dialog"
+  class="dialog m-auto w-[min(36rem,calc(100vw-2.5rem))] border border-gold/50 bg-ink-850 p-0 text-fg"
   aria-labelledby="contact-thanks-title"
   aria-describedby="contact-thanks-desc"
-  aria-modal="true"
 >
-  <div class="cookie-dialog__box">
-    <div class="cookie-dialog__header">
-      <h2 id="contact-thanks-title" class="cookie-dialog__title">
-        <span>{t("contact.thanksTitle")}</span>
+  <div class="flex flex-col gap-6 p-7 sm:p-9">
+    <div class="flex items-start justify-between gap-6">
+      <h2 id="contact-thanks-title" class="text-2xl font-black tracking-[0.06em] uppercase">
+        {t("contact.thanksTitle")}
       </h2>
       <button
         type="button"
-        class="cookie-dialog__close"
         id="contact-thanks-close"
+        class="grid size-11 shrink-0 cursor-pointer place-items-center border border-line-strong text-fg hover:border-gold hover:text-gold"
         aria-label={t("contact.thanksClose")}
-        aria-controls="contact-thanks-dialog"
-        aria-keyshortcuts="Escape"
         title={t("contact.thanksClose")}
       >
-        ✕
+        <Icon name="close" class="size-4" />
       </button>
     </div>
-
-    <div class="cookie-dialog__content">
-      <p id="contact-thanks-desc" class="cookie-dialog__desc">
-        <span>{t("contact.thanksDesc")}</span>
-      </p>
-      <p
-        class="cookie-dialog__desc"
-        set:html={t("contact.thanksBonus")}
-      />
-    </div>
-
-    <div class="cookie-dialog__footer cookie-dialog__footer--end">
-      <a
-        href={galleryPath}
-        class="button"
-        id="contact-thanks-bonus"
-        hidden
-      >
-        <span>{t("contact.thanksShowBonus")}</span>
-      </a>
+    <p id="contact-thanks-desc" class="text-base leading-relaxed text-fg-soft">{t("contact.thanksDesc")}</p>
+    <p class="prose-inline text-base leading-relaxed text-fg-soft" set:html={t("contact.thanksBonus")} />
+    <div class="flex justify-end">
+      <Button href={galleryPath} id="contact-thanks-bonus" hidden class="[&[hidden]]:hidden!">
+        {t("contact.thanksShowBonus")}
+      </Button>
     </div>
   </div>
 </dialog>

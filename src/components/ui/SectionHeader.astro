@@ -1,0 +1,47 @@
+---
+/**
+ * Section heading block: gold eyebrow, uppercase display title and optional
+ * intro copy (default slot). `layout="split"` puts the intro beside the title
+ * on large screens, `center` stacks everything centred.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  as?: "h1" | "h2";
+  layout?: "center" | "split" | "left";
+  id?: string;
+  class?: string;
+}
+
+const { eyebrow, title, as: Tag = "h2", layout = "split", id, class: className } =
+  Astro.props as Props;
+const hasIntro = Astro.slots.has("default");
+---
+
+<header
+  class:list={[
+    "reveal",
+    layout === "center" && "mx-auto flex max-w-3xl flex-col items-center gap-5 text-center",
+    layout === "left" && "flex max-w-3xl flex-col gap-5",
+    layout === "split" &&
+      "grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-end lg:gap-16",
+    className,
+  ]}
+>
+  <div class="flex flex-col gap-4">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <Tag
+      id={id}
+      class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]"
+    >
+      {title}
+    </Tag>
+  </div>
+  {
+    hasIntro && (
+      <div class="flex flex-col gap-4 text-base leading-relaxed text-fg-soft lg:text-[1.0625rem]">
+        <slot />
+      </div>
+    )
+  }
+</header>

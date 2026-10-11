@@ -1,9 +1,20 @@
 ---
-import PriceItem from "../priceItem/PriceItem.astro";
+/**
+ * Price list. The size picker is a native radio group; every price, VAT
+ * price and preview image is rendered for all four sizes and effects.css shows
+ * the ones matching the checked radio with :has() – no JavaScript needed.
+ */
 import prices from "../../data/prices.json";
-import type { PricesData, Product, Price } from "../priceItem/PriceItem.types";
-import PriceListFeatures from "../priceListFeatures/PriceListFeatures.astro";
-import { useTranslations, type Lang } from "../../i18n/utils";
+import type { PricesData, Price } from "./PriceList.types";
+import SectionHeader from "../ui/SectionHeader.astro";
+import Button from "../ui/Button.astro";
+import ScaleFigure from "../ui/ScaleFigure.astro";
+import Icon from "../icons/Icon.astro";
+import {
+  useTranslations,
+  type Lang,
+  type TranslationKey,
+} from "../../i18n/utils";
 
 interface Props {
   id: string;
@@ -12,176 +23,339 @@ interface Props {
 
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
-const selectedSize: keyof Price = "l";
-const products: (Product & { price: string })[] = (
-  prices as PricesData
-).products.map((product) => ({
-  ...product,
-  price: product.prices[selectedSize],
-}));
+const basePath = lang === "cs" ? "" : "/en";
+
+type SizeKey = keyof Price;
+
+const sizes: { key: SizeKey; label: string; width: number; aria: TranslationKey }[] = [
+  { key: "l", label: "L", width: 400, aria: "price.showL" },
+  { key: "xl", label: "XL", width: 600, aria: "price.showXL" },
+  { key: "xxl", label: "XXL", width: 800, aria: "price.showXXL" },
+  { key: "xxxl", label: "XXXL", width: 1200, aria: "price.showXXXL" },
+];
+
+const PANEL_HEIGHT = 2400;
+const dims = (width: number) => `${PANEL_HEIGHT} × ${width} mm`;
+
+/** Features in the order of prices.json, with their anchor in the Features section. */
+const featureMeta: Record<string, { href: string; hint?: TranslationKey }> = {
+  "1": { href: "#thickness-16mm", hint: "price.hint1" },
+  "2": { href: "#thickness-34mm", hint: "price.hint2" },
+  "3": { href: "#laminated" },
+  "4": { href: "#nano-impregnation", hint: "price.hint4" },
+  "5": { href: "#touch-control" },
+  "6": { href: "#backlight", hint: "price.hint6" },
+  "7": { href: "#quick-mounting", hint: "price.hint7" },
+  "8": { href: "#easy-repair", hint: "price.hint8" },
+  "9": { href: "#thickness-34mm", hint: "price.hint9" },
+  "10": { href: "#temperature", hint: "price.hint10" },
+  "11": { href: "#rf-control", hint: "price.hint11" },
+  "12": { href: "#smartphone-control", hint: "price.hint12" },
+  "13": { href: "#color-palette", hint: "price.hint13" },
+};
+
+const groups: { title: TranslationKey; features: string[] }[] = [
+  { title: "price.groupConstruction", features: ["1", "2", "3", "4", "9"] },
+  { title: "price.groupMounting", features: ["7", "8"] },
+  { title: "price.groupLight", features: ["5", "6", "10", "11", "12"] },
+  { title: "price.groupDesign", features: ["13"] },
+];
+
+const featureLabel = (key: string) => t(`price.feature${key}` as TranslationKey);
+
+const number = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
+const format = (value: number) => number.format(value);
+
+const products = (prices as PricesData).products;
+const tiers = products.map((product, index) => {
+  const previous = products[index - 1];
+  // Highlights: the first tier lists what it has, every next tier lists only
+  // what it adds on top of the previous one.
+  const highlights = Object.entries(product.features)
+    .filter(([key, has]) => has && !(previous?.features[key] ?? false))
+    .map(([key]) => featureLabel(key));
+
+  return {
+    ...product,
+    featured: index === products.length - 1,
+    tagline: product.tagline?.[lang] ?? "",
+    previousTitle: previous?.title,
+    highlights,
+    included: Object.entries(product.features).filter(([, has]) => has).map(([key]) => featureLabel(key)),
+    missing: Object.entries(product.features).filter(([, has]) => !has).map(([key]) => featureLabel(key)),
+    price: Object.fromEntries(
+      sizes.map(({ key }) => {
+        const net = toNumber(product.prices[key]);
+        return [key, { net: format(net), gross: format(Math.round(net * 1.21)) }];
+      }),
+    ) as Record<SizeKey, { net: string; gross: string }>,
+  };
+});
+
+const cheapest = (key: SizeKey) =>
+  format(Math.min(...products.map((product) => toNumber(product.prices[key]))));
 ---
 
-<section id={id} class="price-list">
-  <div class="container">
-    <h2 class="title title--white title--mg-s text-center">
-      {t("price.title")}
-    </h2>
-    <p class="desc desc--mg-s text-center">{t("price.desc1")}</p>
-    <p class="desc desc--mg-s text-center">
-      <span>{t("price.desc2")}</span>
-      <strong>{t("price.desc3")}</strong>
-      <br />
-      <span>{t("price.desc4")}</span>
-    </p>
+<section id={id} aria-labelledby={`${id}-title`} class="pricing section-y bg-ink-850">
+  <div class="container-page flex flex-col gap-20">
+    <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("price.eyebrow")} title={t("price.title")}>
+      <p class="text-lg text-fg-soft">{t("price.desc1")}</p>
+      <p class="text-fg-muted">
+        <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
+      </p>
+    </SectionHeader>
 
-    <p class="desc text-center">
-      <span>{t("price.underText")}</span>
-      <br />
-      <span>{t("price.selectLabel")}</span>
-    </p>
-
-    <div class="segment-filter-wrap">
-      <div
-        id="productButtons"
-        class="segment-filter"
-        role="group"
-        aria-label={t("price.selectLabel")}
-      >
-        <button
-          value="l"
-          aria-pressed="true"
-          class="segment-filter__btn"
-          type="button"
-          aria-label={t("price.showL")}
-        >
-          <span>L</span>
-          <small>2400 x 400 mm</small>
-        </button>
-        <button
-          value="xl"
-          aria-pressed="false"
-          class="segment-filter__btn"
-          type="button"
-          aria-label={t("price.showXL")}
-        >
-          <span>XL</span>
-          <small>2400 x 600 mm</small>
-        </button>
-        <button
-          value="xxl"
-          aria-pressed="false"
-          class="segment-filter__btn"
-          type="button"
-          aria-label={t("price.showXXL")}
-        >
-          <span>XXL</span>
-          <small>2400 x 800 mm</small>
-        </button>
-        <button
-          value="xxxl"
-          aria-pressed="false"
-          class="segment-filter__btn"
-          type="button"
-          aria-label={t("price.showXXXL")}
-        >
-          <span>XXXL</span>
-          <small>2400 x 1200 mm</small>
-        </button>
+    <!-- Step 1: size -->
+    <fieldset class="flex flex-col gap-6" aria-labelledby={`${id}-step1`}>
+      <div class="flex flex-col justify-between gap-3 border-b border-line pb-4 md:flex-row md:items-end md:gap-6">
+        <h3 class="flex items-center gap-4">
+          <span class="grid size-8 place-items-center border border-gold text-sm font-extrabold text-gold">1</span>
+          <span id={`${id}-step1`} class="text-[0.9375rem] font-extrabold tracking-[0.16em] uppercase">{t("price.step1")}</span>
+        </h3>
+        <p class="text-sm text-fg-muted">{t("price.underText")}</p>
       </div>
-    </div>
-  </div>
-
-  <div class="container container--l">
-    <div class="price-list__scroll-wrapper">
-      <div class="price-list__container">
-        <PriceListFeatures lang={lang} />
-        <div id="priceItems" class="price-list__items">
-          {
-            products.map((product) => (
-              <PriceItem
-                id={product.id}
-                title={product.title}
-                price={product.price}
-                features={product.features}
-                lang={lang}
+      <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {
+          sizes.map((size, index) => (
+            <label class="group relative flex min-h-24 cursor-pointer items-center gap-3 border border-line bg-ink-900 px-3 py-4 transition-colors duration-200 hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:gap-5 sm:px-6 lg:min-h-31">
+              <input
+                type="radio"
+                name="size"
+                value={size.key}
+                checked={index === 0}
+                aria-label={t(size.aria)}
+                class="sr-only"
               />
-            ))
-          }
+              <span class="flex h-14 w-6 shrink-0 items-end justify-center sm:h-19 sm:w-10" aria-hidden="true">
+                <span
+                  class="block h-full bg-ink-700 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)] transition-colors group-has-checked:bg-gold-light"
+                  style={`width: ${(size.width / PANEL_HEIGHT) * 100 * 1.9}%`}
+                />
+              </span>
+              <span class="flex flex-col gap-1">
+                <span class="text-2xl leading-none font-black tracking-[0.04em] sm:text-3xl">{size.label}</span>
+                <span class="text-[0.6875rem] whitespace-nowrap text-fg-soft sm:text-sm">{dims(size.width)}</span>
+                <span class="text-[0.6875rem] font-bold whitespace-nowrap text-gold sm:text-sm">
+                  {t("price.from")} {cheapest(size.key)} {t("price.currency")}
+                </span>
+              </span>
+              <span class="absolute top-3 right-3 hidden size-5 place-items-center bg-gold text-ink group-has-checked:grid" aria-hidden="true">
+                <Icon name="check" class="size-3" />
+              </span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <!-- Step 2: version -->
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col justify-between gap-3 border-b border-line pb-4 md:flex-row md:items-end md:gap-6">
+        <h3 class="flex items-center gap-4">
+          <span class="grid size-8 place-items-center border border-gold text-sm font-extrabold text-gold">2</span>
+          <span class="text-[0.9375rem] font-extrabold tracking-[0.16em] uppercase">
+            {t("price.step2")}{" "}
+            <span class="text-fg-muted">·</span>{" "}
+            {sizes.map((size) => <span data-size={size.key}>{t("price.sizeLabel")} {size.label}</span>)}
+          </span>
+        </h3>
+        <p class="text-sm text-fg-muted">{t("price.vat")}</p>
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-[15.5rem_repeat(3,minmax(0,1fr))]">
+        <div class="hidden flex-col items-center justify-between gap-6 border border-line bg-ink-900 px-5 py-7 lg:flex">
+          <p class="text-xs font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
+          <div class="relative aspect-[280/560] w-full max-w-52">
+            {
+              sizes.map((size) => (
+                <img
+                  src={`/images/priceList/${size.key}.avif`}
+                  width="280"
+                  height="560"
+                  loading="lazy"
+                  decoding="async"
+                  alt={`${t("price.previewAlt")} ${size.label}`}
+                  data-size={size.key}
+                  data-size-preview
+                  class="absolute inset-0 size-full -scale-x-100 object-contain object-bottom"
+                />
+              ))
+            }
+            <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[23.5%]" />
+          </div>
+          <p class="flex flex-col items-center gap-1 text-center">
+            {
+              sizes.map((size) => (
+                <span data-size={size.key} class="contents">
+                  <span class="block text-2xl font-black tracking-[0.04em]">{size.label}</span>
+                  <span class="block text-sm text-fg-soft">{dims(size.width)}</span>
+                </span>
+              ))
+            }
+          </p>
         </div>
-        <div class="price-list__preview">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 318.617 1274.705"
-          >
-            <path
-              fill="#040404"
-              d="M158.823 1265.674c0-6.348.371-9.15 1.25-9.427.687-.218 9.863-.588 20.39-.824 19.274-.431 20.1-.292 18.023 3.032-.582.93.369 1.25 3.719 1.25 2.475 0 4.689-.338 4.92-.75.232-.412.118-3.372-.252-6.576-.37-3.205-.212-8.072.35-10.817.84-4.106.704-5.886-.773-10.044-1.917-5.398-3.05-16.434-1.767-17.227 1.57-.97 4.08 5.304 6.111 15.274 5.178 25.408 6.876 26.555 36.697 24.797l14.169-.835 5.034-3.66c4.379-3.186 5.124-4.243 5.726-8.123.787-5.067.56-5.56-9.235-19.954-6.818-10.02-14.157-28.226-16.36-40.585-.685-3.85-1.92-9.475-2.745-12.5-.824-3.025-1.431-7.3-1.35-9.5.082-2.2.267-13.45.41-25l.261-21 4.197-15.621c6.008-22.363 15.74-71.998 18.702-95.379 1.394-11 3.432-25.457 4.53-32.126 3.083-18.723 3.455-28.198 1.683-42.874-.864-7.15-1.848-15.7-2.187-19-.339-3.3-1.266-9.537-2.06-13.86-1.896-10.328-1.864-28.28.057-31.64.786-1.375 1.445-3.76 1.464-5.3.02-1.54.754-4.188 1.632-5.886 1.29-2.496 1.367-3.515.398-5.325-.932-1.74-.93-2.74.004-4.486.661-1.236.957-3.477.656-4.98-.331-1.656.067-3.608 1.01-4.954.925-1.32 1.34-3.304 1.022-4.895-.306-1.537.073-3.5.89-4.615.784-1.068 1.424-2.974 1.424-4.236 0-1.262.436-4.213.97-6.559.533-2.345 1.673-8.539 2.533-13.764 2.627-15.966 4.653-26.37 5.673-29.136 1.047-2.84 1.785-7.716 2.247-14.864.16-2.475.872-5.724 1.581-7.22 1.025-2.162 1.036-3.026.056-4.207-.99-1.193-.92-1.935.356-3.757 1.074-1.534 1.39-3.333.973-5.553-.339-1.807-.168-3.842.38-4.524.548-.681.988-3.1.977-5.375-.01-2.275.717-5.188 1.617-6.473.9-1.285 1.637-3.713 1.637-5.396 0-3.177.467-5.046 6.253-24.995 3.79-13.07 6.27-28.56 6.082-38-.065-3.3-1.292-11.03-2.727-17.178-3.007-12.886-3.145-16.636-1.042-28.322.842-4.675 1.93-14.575 2.418-22 .489-7.425 2.92-27.675 5.405-45 6.844-47.733 7.09-51.258 5.78-82.5-.953-22.744-1.535-28.734-3.69-38-1.406-6.05-3-16.4-3.543-23-1.89-23.013-4.032-47.103-5.468-61.5-.796-7.975-1.564-24.234-1.708-36.13l-.26-21.63 3.335-2.185c4.24-2.778 8.501-11.745 8.411-17.703-.041-2.767-.866-5.413-2.323-7.46-2.994-4.204-6.425-11.236-8.488-17.392-.922-2.75-2.871-6.575-4.333-8.5-1.461-1.925-3.406-5.147-4.32-7.16-.987-2.171-4.58-6.037-8.827-9.5-9.967-8.126-11.702-9.146-17.671-10.385-2.887-.6-5.476-1.457-5.754-1.905-.277-.45-3.097-1.107-6.267-1.462-18.77-2.104-36.489-5.9-40.34-8.643-1.576-1.122-5.307-2.438-8.291-2.924-5.749-.935-15.632-5.385-15.632-7.038 0-1.323 1.026-1.25 8.385.599 10.718 2.692 17.789-.795 19.128-9.433.311-2.007 1.967-7.225 3.68-11.595 8.424-21.487 9.785-28.402 9.805-49.804.001-1.065.761-1.75 1.942-1.75 1.802 0 1.837-.197.493-2.75-1.325-2.515-1.278-2.89.546-4.4 3.017-2.495 4.254-6.593 3.093-10.244-1.497-4.706-5.072-23.448-5.072-26.592 0-1.523.691-3.343 1.536-4.044 1.482-1.23 1.574-6.198.186-9.97-2.211-6.01-3.722-11.798-3.722-14.258 0-2.21-1.414-4.315-5.92-8.822-3.256-3.256-6.433-5.92-7.06-5.92-.626 0-.838.485-.472 1.078.367.593-2.194-.885-5.69-3.284-6.01-4.123-13.979-7.157-18.312-6.971-1.075.046-2.577-.434-3.339-1.066C191.268.83 188.773.19 186.484.04c-4.991-.327-18.027 1.437-21.602 2.924-1.408.585-2.91.987-3.34.892-1.47-.323-6.785 2.934-6.236 3.822.302.49.023 1.214-.621 1.612-.732.452-.903.29-.458-.43 1.27-2.055-1.244-1.232-6.635 2.173-2.898 1.83-7.294 4.301-9.77 5.492-2.474 1.19-6.791 4.356-9.592 7.035-2.802 2.679-5.743 5.27-6.536 5.758-1.915 1.177-5.871 6.379-5.871 7.719 0 .584 1.404-.847 3.12-3.181 1.717-2.334 3.306-4.058 3.532-3.832.916.916-6.51 10.7-11.774 15.51-3.092 2.825-6.154 6.382-6.805 7.904-.651 1.522-2.971 4.009-5.156 5.527-2.623 1.823-4.174 3.774-4.57 5.75-.328 1.644-.956 2.99-1.395 2.99-.44 0-2.247 1.219-4.018 2.709-3.542 2.98-6.878 9.396-6.911 13.291-.031 3.648 5.306 14.327 8.36 16.73 1.446 1.137 2.555 2.9 2.465 3.919-.353 3.966.214 7.05 1.638 8.91 1.356 1.77 1.389 1.65.376-1.385-.812-2.432-.813-3.623-.003-4.433.609-.61 1.246-.913 1.414-.674.17.238 1.55 2.12 3.068 4.183 2.799 3.802 2.731 4.106-.841 3.82-1.663-.133-1.747.014-.5.87.825.566 2.33 1.036 3.345 1.045 1.015.008 3.265 1.028 5 2.265 2.59 1.847 4.497 2.253 10.655 2.269 4.125.01 7.66.357 7.857.77 1.582 3.323-8.735 39.593-14.505 50.995-3.266 6.455-12.23 15.063-17.251 16.568-2.561.767-5.345 2.758-7.793 5.573-2.094 2.41-7.408 6.655-11.808 9.435-4.4 2.78-10.25 6.66-13 8.624-2.75 1.963-9.024 6.247-13.943 9.518-17.285 11.498-23.525 18.305-28.204 30.764a6340.604 6340.604 0 0 1-5.561 14.734c-3.245 8.561-4.73 19.666-2.92 21.845.746.9.787 3.105.132 7.13-.526 3.233-.677 14.11-.338 24.427.568 17.274.43 19.524-1.932 31.598-3.417 17.46-6.34 48.374-7.424 78.5-.821 22.85 2.01 31.723 12.556 39.363 3.887 2.816 5.188 3.127 17.913 4.281 7.546.685 18.896 1.999 25.22 2.92 6.326.92 15.858 1.67 21.184 1.667l9.684-.007-2.847 7.638c-1.566 4.201-3.815 9.795-4.999 12.43-4.85 10.801-14.146 46.639-16.007 61.708-.644 5.225-1.65 12.875-2.234 17-1.563 11.05-2.447 28.995-1.622 32.945.395 1.895.41 3.92.03 4.5-.727 1.115-.794 2.674-1.201 28.055-.142 8.8-.648 16.76-1.125 17.69-.492.957-.49 1.923.005 2.228 1.097.678 1.153 29.452.058 30.129-.443.274-.339 1.838.232 3.476.73 2.091.712 3.914-.059 6.125-.76 2.182-.778 3.533-.06 4.4.572.687.944 3.433.827 6.101-.273 6.27.885 25.138 1.616 26.321.31.5.352 4.81.094 9.576-.257 4.766-.052 10.98.458 13.81.509 2.83 1.183 17.07 1.498 31.644.72 33.243 1.097 42.59 1.765 43.67.29.47.551 5.76.58 11.756.027 5.995.404 11.228.837 11.63.433.4 6.637 1.528 13.787 2.505 7.15.977 13.645 2.362 14.434 3.078 1.244 1.129 1.178 3.725-.5 19.581-2.274 21.495-2.563 52.192-.637 67.78 6.59 53.348 10.104 71.725 18.631 97.448a2285.122 2285.122 0 0 1 6.993 21.552c2.012 6.325 5.389 16.225 7.503 22 4.258 11.63 10.625 37.19 11.583 46.5 1.309 12.721.817 34.76-.922 41.32-.921 3.476-1.405 7.3-1.074 8.5.33 1.2 1.663 5.78 2.962 10.18 6.17 20.899 7.492 26.679 8.122 35.5.751 10.518 2.276 14.62 5.954 16.019 2.366.9 2.452 1.267 2.452 10.457 0 9.493.008 9.524 2.5 9.524 2.482 0 2.5-.065 2.5-9.031zm17.266-129.469c-8.174-16.24-9.366-21.573-10.51-47-.543-12.1-1.11-35.725-1.257-52.5-.31-35.022-1.627-60.234-4.6-88-2.576-24.057-2.044-43.873 1.683-62.734 1.33-6.728 2.418-12.537 2.418-12.908 0-.712 37.01.319 37.743 1.051.235.235.925 5.231 1.534 11.102 1.141 11.003.928 14.211-3.855 57.989-1.811 16.585-1.792 29.515.061 41.5.809 5.225 1.938 22.325 2.51 38 .57 15.675 1.553 37.05 2.182 47.5.629 10.45 1.336 22.375 1.573 26.5.236 4.125.133 10.268-.229 13.651-.527 4.931-1.042 6.253-2.598 6.66-1.881.491-9.368 14.962-14.067 27.189-1.056 2.75-2.694 6.49-3.638 8.31l-1.716 3.31-1.1-4.81c-.605-2.646-3.365-9.31-6.134-14.81zm91.805-663.246c-.039-1.235-.988-4.897-2.11-8.138-1.12-3.24-1.991-7.404-1.935-9.254.057-1.849-.131-12.587-.419-23.862l-.522-20.5 1.438 16c.79 8.8 2.112 20.05 2.935 25 1.886 11.343 2.96 27.808 1.63 25-.52-1.1-.978-3.01-1.017-4.246zm-202.857-40.85c-6.442-1.428-12.262-3.118-12.934-3.756-.939-.893-1.004-4.852-.284-17.154 1.385-23.665 5.934-51.977 10.75-66.914l2.606-8.08 1.246 5c1.56 6.259 6.057 17.149 8.53 20.654 1.03 1.46 1.873 3.273 1.873 4.028 0 .755.61 2.26 1.358 3.345.747 1.085 1.685 3.773 2.085 5.973.4 2.2 1.553 5.575 2.561 7.5 1.009 1.925 2.06 4.4 2.338 5.5.277 1.1 1.671 5.15 3.098 9 1.427 3.85 4.344 12.263 6.483 18.696 2.138 6.433 4.605 12.72 5.482 13.973 3.169 4.523 2.47 4.831-10.942 4.831-9.821 0-15.074-.562-24.25-2.596zm238.489-172.404c1.415-1.343 1.513-1.308.939.332-.353 1.007-.688 3.257-.745 5l-.102 3.168-.836-3.5c-.643-2.691-.47-3.847.744-5zm2.297 3.8c0-1.615.296-1.904 1.113-1.087.612.612.81 1.602.44 2.2-1.034 1.674-1.553 1.302-1.553-1.113zm2.618-3.352c-.341-.89-.174-1.291.393-.94.544.335.989 1.033.989 1.551 0 1.438-.717 1.121-1.382-.61zm-7.618-5.948c0-.825.675-1.5 1.5-1.5 1.561 0 1.984 1.183.833 2.333-1.15 1.151-2.333.729-2.333-.833zM219.75 24.978c-2.243-2.388-8.097-6.45-13.45-9.336-5.212-2.81-9.477-5.287-9.477-5.504 0-.558 5.158.195 7.25 1.059.962.397 1.75 1.073 1.75 1.501 0 .429 1.687 1.566 3.75 2.529 5.192 2.422 13.25 8.401 13.25 9.831 0 .65 1.155 2.975 2.568 5.165 1.781 2.763 1.92 3.216.45 1.482-1.165-1.375-3.906-4.402-6.09-6.727zm-89.927-1.759c0-.895 8.033-5.814 8.589-5.258.302.302-1.395 1.713-3.77 3.137-4.639 2.78-4.82 2.86-4.82 2.121zm30-16.514c0-.55.476-1 1.059-1 .582 0 .78.45.44 1s-.816 1-1.058 1c-.243 0-.441-.45-.441-1zm20.27-2.604c.333-.332 1.195-.368 1.917-.08.798.32.561.557-.604.605-1.054.043-1.645-.193-1.312-.525z"
-              stroke="#b28840"
-              stroke-width="6"></path>
-          </svg>
-          <img
-            id="productImage"
-            src="/images/priceList/l.avif"
-            width="280"
-            height="560"
-            alt={t("price.previewAlt")}
-          />
-        </div>
+
+        {
+          tiers.map((tier) => (
+            <article
+              class:list={[
+                "reveal relative flex flex-col gap-6 border px-6 py-8 sm:px-7",
+                tier.featured ? "border-gold bg-ink-750" : "border-line bg-ink-800",
+              ]}
+            >
+              {tier.featured && (
+                <span class="absolute -top-px right-6 bg-gold px-3 py-1.5 text-[0.6875rem] font-extrabold tracking-[0.16em] text-ink uppercase">
+                  {t("price.featured")}
+                </span>
+              )}
+              <div class="flex flex-col gap-2.5">
+                <h4 class="text-base font-black tracking-[0.22em] text-gold">{tier.title}</h4>
+                <p class="text-[0.9375rem] leading-relaxed text-fg-soft lg:min-h-12">{tier.tagline}</p>
+              </div>
+
+              <div class="flex flex-col gap-1.5 border-y border-line py-5">
+                {sizes.map((size) => (
+                  <div data-size={size.key} class="flex flex-col gap-1.5">
+                    <p class="flex flex-wrap items-baseline gap-x-2">
+                      <span class="text-[2.75rem] leading-none font-extrabold tracking-tight tabular-nums">
+                        {tier.price[size.key].net}
+                      </span>
+                      <span class="text-lg font-bold">{t("price.currency")}</span>
+                      <span class="text-sm text-fg-muted">{t("price.withoutVat")}</span>
+                    </p>
+                    <p class="text-sm text-fg-muted tabular-nums">
+                      {tier.price[size.key].gross} {t("price.currency")} {t("price.withVat")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <ul class="hidden grow flex-col gap-3 md:flex">
+                {tier.previousTitle && (
+                  <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug font-semibold">
+                    <Icon name="check" class="mt-0.5 size-4 text-gold" />
+                    {t("price.everythingFrom")} {tier.previousTitle}
+                  </li>
+                )}
+                {tier.highlights.map((item) => (
+                  <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug">
+                    <Icon name="check" class="mt-0.5 size-4 text-gold" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              <div class="flex grow flex-col gap-4 md:hidden">
+                <ul class="flex flex-col gap-2.5">
+                  {tier.included.map((item) => (
+                    <li class="flex items-start gap-2.5 text-[0.9375rem] leading-snug">
+                      <Icon name="check" class="mt-0.5 size-4 text-gold" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                {tier.missing.length > 0 && (
+                  <p class="text-sm leading-relaxed text-fg-subtle">
+                    <span class="font-bold text-fg-muted">{t("price.notIncluded")}: </span>
+                    {tier.missing.join(", ")}
+                  </p>
+                )}
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <Button href={`${basePath}/#contact`} variant={tier.featured ? "primary" : "outline"} class="px-4!">
+                  {t("price.inquire")}
+                </Button>
+                <Button
+                  href="https://www.anewstyle-eshop.cz/"
+                  variant="link"
+                  rel="external"
+                  target="_blank"
+                  class="font-semibold! tracking-normal! text-fg-soft! normal-case! hover:text-fg!"
+                >
+                  {t("price.eshop")} →
+                </Button>
+              </div>
+            </article>
+          ))
+        }
       </div>
     </div>
 
-    <p class="desc text-center desc--no-mg">
-      <small>{t("price.vat")}</small>
-    </p>
+    <!-- Feature comparison (tablet and up; phones get the full list in each card) -->
+    <div class="hidden flex-col gap-6 md:flex">
+      <div class="flex items-end justify-between gap-6">
+        <h3 class="text-2xl font-black tracking-[0.1em] uppercase lg:text-[1.75rem]">{t("price.compareTitle")}</h3>
+        <p class="text-sm text-fg-muted">{t("price.compareHint")}</p>
+      </div>
+      <table class="w-full border-collapse text-left">
+        <thead>
+          <tr class="border-t border-gold bg-ink-900">
+            <th scope="col" class="px-6 py-5 text-xs font-bold tracking-[0.2em] text-fg-muted uppercase">
+              {sizes.map((size) => <span data-size={size.key}>{t("price.sizeLabel")} {size.label} · {dims(size.width)}</span>)}
+            </th>
+            {
+              tiers.map((tier) => (
+                <th scope="col" class="w-[18%] px-4 py-5 text-center">
+                  <span class="block text-[0.9375rem] font-black tracking-[0.2em] text-gold">{tier.title}</span>
+                  {sizes.map((size) => (
+                    <span data-size={size.key} class="block text-sm font-normal text-fg tabular-nums">
+                      {tier.price[size.key].net} {t("price.currency")}
+                    </span>
+                  ))}
+                </th>
+              ))
+            }
+          </tr>
+        </thead>
+        {
+          groups.map((group) => (
+            <tbody>
+              <tr>
+                <th colspan="4" scope="colgroup" class="px-6 pt-6 pb-2.5 text-xs font-extrabold tracking-[0.2em] text-gold uppercase">
+                  {t(group.title)}
+                </th>
+              </tr>
+              {group.features.map((key) => {
+                const meta = featureMeta[key];
+                return (
+                  <tr class="border-b border-line transition-colors hover:bg-white/2">
+                    <th scope="row" class="px-6 py-3 font-normal">
+                      <a href={meta.href} class="text-[0.9375rem] font-semibold text-fg no-underline hover:text-gold-light">
+                        {featureLabel(key)}
+                      </a>
+                      {meta.hint && <span class="block text-[0.8125rem] text-fg-subtle">{t(meta.hint)}</span>}
+                    </th>
+                    {tiers.map((tier) => (
+                      <td class="px-4 py-3 text-center">
+                        {tier.features[key] ? (
+                          <Icon name="check" class="mx-auto size-5 text-gold" label={t("price.included")} />
+                        ) : (
+                          <span class="mx-auto block h-0.5 w-3.5 bg-fg-disabled" role="img" aria-label={t("price.notIncluded")} />
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          ))
+        }
+      </table>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2">
+      <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
+        <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("price.customTitle")}</h3>
+        <p class="text-base leading-relaxed text-fg-soft">{t("price.customDesc")}</p>
+        <Button href={`${basePath}/#contact`} variant="link" class="self-start">{t("price.customCta")} →</Button>
+      </div>
+      <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
+        <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
+        <p class="text-base leading-relaxed text-fg-soft">{t("price.showroomDesc")}</p>
+        <Button href="tel:+420601221551" variant="link" class="self-start tracking-[0.06em]!">+420 601 221 551 →</Button>
+      </div>
+    </div>
   </div>
 </section>
-
-<script>
-  import prices from "../../data/prices.json";
-  import type {
-    PricesData,
-    Product,
-    Price,
-  } from "../priceItem/PriceItem.types";
-
-  const productButtons = document.getElementById(
-    "productButtons",
-  ) as HTMLDivElement;
-  const productImage = document.getElementById(
-    "productImage",
-  ) as HTMLImageElement;
-
-  if (productButtons) {
-    const buttons = productButtons.querySelectorAll("button");
-    buttons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        const target = event.currentTarget as HTMLButtonElement;
-        const selectedSize: keyof Price = target.value as keyof Price;
-
-        buttons.forEach((btn) => {
-          btn.setAttribute("aria-pressed", "false");
-        });
-
-        target.setAttribute("aria-pressed", "true");
-
-        const updatedProducts: (Product & { price: string })[] = (
-          prices as PricesData
-        ).products.map((product) => ({
-          ...product,
-          price: product.prices[selectedSize],
-        }));
-
-        updatedProducts.forEach((product) => {
-          const priceElement = document.querySelector(`#price-${product.id}`);
-          if (priceElement) {
-            priceElement.textContent = product.price;
-          }
-        });
-
-        if (productImage) {
-          productImage.src = `/images/priceList/${selectedSize}.avif`;
-        }
-      });
-    });
-  }
-</script>

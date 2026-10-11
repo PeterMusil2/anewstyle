@@ -1,4 +1,8 @@
 ---
+/**
+ * Language menu: a native popover anchored to its button (see effects.css),
+ * so opening, closing, Esc and light-dismiss need no JavaScript.
+ */
 import {
   useTranslations,
   getLanguageSwitchPath,
@@ -13,61 +17,50 @@ interface Props {
 const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
-// Get switch paths for each language
-const csPath = getLanguageSwitchPath(Astro.url, "cs");
-const enPath = getLanguageSwitchPath(Astro.url, "en");
+const options: { code: Lang; href: string; label: string }[] = [
+  { code: "cs", href: getLanguageSwitchPath(Astro.url, "cs"), label: t("lang.cs") },
+  { code: "en", href: getLanguageSwitchPath(Astro.url, "en"), label: t("lang.en") },
+];
 ---
 
-<li>
-  <div id="langSwitch" class="lang-switch">
-    <button
-      type="button"
-      title={t("lang.select")}
-      aria-label={t("lang.select")}
-      class="button button--s button--white"
-      id="langSwitchBtn"
-    >
-      <span>{getLangShortLabel(lang)}</span>
-    </button>
-    <div class="lang-switch__pop-up">
-      <a
-        href={csPath}
-        class={`lang-switch__item ${lang === "cs" ? "active" : ""}`}
-      >
-        {t("lang.cs")}
-      </a>
-      <a
-        href={enPath}
-        class={`lang-switch__item ${lang === "en" ? "active" : ""}`}
-      >
-        {t("lang.en")}
-      </a>
-    </div>
-  </div>
-</li>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const langSwitchElem = document.querySelector(
-      ".lang-switch__pop-up"
-    ) as HTMLDivElement;
-    const langSwitchBtn = document.getElementById(
-      "langSwitchBtn"
-    ) as HTMLButtonElement;
-
-    if (langSwitchBtn && langSwitchElem) {
-      langSwitchBtn.addEventListener("click", () => {
-        langSwitchElem.classList.toggle("open");
-      });
-
-      document.addEventListener("click", (e) => {
-        if (
-          e.target !== langSwitchBtn &&
-          !langSwitchBtn.contains(e.target as Node)
-        ) {
-          langSwitchElem.classList.remove("open");
-        }
-      });
+<button
+  type="button"
+  popovertarget="lang-menu"
+  class="lang-trigger inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center gap-1.5 border border-line-bold px-3 text-xs font-extrabold tracking-caps text-fg transition-colors hover:border-gold hover:text-gold"
+  aria-label={t("lang.select")}
+  title={t("lang.select")}
+>
+  <span>{getLangShortLabel(lang)}</span>
+  <svg viewBox="0 0 12 12" class="size-2.5 fill-none stroke-current stroke-2" aria-hidden="true">
+    <path d="M2 4l4 4 4-4"></path>
+  </svg>
+</button>
+<div
+  id="lang-menu"
+  popover
+  class="lang-menu pop-panel min-w-40 border border-line-strong bg-ink-850 p-1.5 text-fg shadow-2xl"
+>
+  <ul class="flex flex-col">
+    {
+      options.map((option) => (
+        <li>
+          <a
+            href={option.href}
+            hreflang={option.code}
+            lang={option.code}
+            aria-current={option.code === lang ? "true" : undefined}
+            class:list={[
+              "flex min-h-11 items-center justify-between gap-4 px-3 text-sm font-semibold no-underline transition-colors hover:bg-ink-700",
+              option.code === lang ? "text-gold" : "text-fg-soft",
+            ]}
+          >
+            {option.label}
+            <span class="text-xs font-extrabold tracking-caps text-fg-subtle">
+              {getLangShortLabel(option.code)}
+            </span>
+          </a>
+        </li>
+      ))
     }
-  });
-</script>
+  </ul>
+</div>

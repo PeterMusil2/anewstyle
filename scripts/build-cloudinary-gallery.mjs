@@ -246,34 +246,21 @@ function tileOptsFor(orientation) {
 }
 
 /**
- * Build a srcset for one explicit format.
- *
- * `f_auto` negotiates via the Accept header, but on this account it settles on
- * WebP even when the browser advertises AVIF. Requesting the format explicitly
- * and letting <picture> pick the source is both smaller and predictable.
+ * Build the tile srcset. One <img srcset> with f_auto: Cloudinary picks
+ * AVIF/WebP/JPEG from the Accept header, and if anything fails the browser
+ * still has the plain `src` to fall back to. (Explicit <source> elements give
+ * no fallback when their URLs fail, which blanked photos and 360 tiles.)
+ * Commas inside a srcset URL are valid - only ", " separates candidates.
  */
-function tileSrcSet(publicId, format, { orientation = "landscape" } = {}) {
+function tileSrcSet(publicId, { orientation = "landscape" } = {}) {
   return THUMB_WIDTHS.map((w) => {
     const url = cloudinary.url(publicId, {
       ...tileOptsFor(orientation),
-      fetch_format: format,
+      fetch_format: "auto",
       width: w,
     });
-    // srcset is comma-delimited and Cloudinary joins transformation parameters
-    // with commas ("ar_16:9,c_fill,..."), which a browser would mis-split into
-    // bogus candidates. Percent-encoding those commas keeps one transformation
-    // component and delivers byte-identical output.
-    return `${encodeTransformCommas(url)} ${w}w`;
+    return `${url} ${w}w`;
   }).join(", ");
-}
-
-/** Percent-encode commas in the transformation segment of a delivery URL. */
-function encodeTransformCommas(url) {
-  return url.replace(
-    /\/(image|video)\/upload\/([^/]+)\//,
-    (_m, kind, transform) =>
-      `/${kind}/upload/${transform.replace(/,/g, "%2C")}/`
-  );
 }
 
 function buildItem(resource, { bonus = false, override } = {}) {
@@ -315,12 +302,11 @@ function buildItem(resource, { bonus = false, override } = {}) {
   if (category === "360") {
     return {
       ...base,
-      // The grid tile is cropped like any other, so it gets the same AVIF set.
+      // The grid tile is cropped like any other, so it gets the same srcset.
       width: THUMB_WIDTH,
       height: Math.round((THUMB_WIDTH * 9) / 16),
       thumb: cloudinary.url(publicId, { ...tileOpts, fetch_format: "auto", width: THUMB_WIDTH }),
-      thumbAvif: tileSrcSet(publicId, "avif"),
-      thumbWebp: tileSrcSet(publicId, "webp"),
+      thumbSrcset: tileSrcSet(publicId),
       // The panorama itself must keep its full 2:1 equirectangular frame -
       // cropping it would make Photo Sphere Viewer render a distorted sphere.
       full: cloudinary.url(publicId, { ...imageOpts, width: PANO_FULL_WIDTH }),
@@ -346,8 +332,7 @@ function buildItem(resource, { bonus = false, override } = {}) {
       fetch_format: "auto",
       width: tileW,
     }),
-    thumbAvif: tileSrcSet(publicId, "avif", { orientation }),
-    thumbWebp: tileSrcSet(publicId, "webp", { orientation }),
+    thumbSrcset: tileSrcSet(publicId, { orientation }),
     // The lightbox keeps the original aspect and negotiates its own format,
     // so it stays correct on browsers without AVIF support.
     full: cloudinary.url(publicId, { ...imageOpts, width: IMAGE_FULL_WIDTH }),

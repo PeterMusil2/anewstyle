@@ -28,7 +28,8 @@ custom domain `anewstyle.cz` points at the Pages project.
      — click **Encrypt** so it's stored as a secret.
    - Optional pins if a build ever picks the wrong runtime:
      - `BUN_VERSION` = `1.3.1`
-     - `NODE_VERSION` = `22`
+     - `NODE_VERSION` = `24.15.0` (also pinned in `.node-version`, which
+       Cloudflare reads automatically)
 5. **Save and Deploy.** The first build runs immediately.
 
 ## Custom domain (anewstyle.cz)

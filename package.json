@@ -36,5 +36,8 @@
     "stylelint": "^17.14.0",
     "stylelint-order": "^8.1.1",
     "tailwindcss": "^4.3.3"
+  },
+  "engines": {
+    "node": ">=24.15.0"
   }
 }

@@ -287,5 +287,7 @@
   "theme.toDark": "Přepnout na tmavý režim",
   "theme.label": "Barevný režim",
   "price.compareCta": "Porovnat celou výbavu",
-  "price.swipeHint": "Posuňte pro další provedení"
+  "price.swipeHint": "Posuňte pro další provedení",
+  "header.videoPause": "Pozastavit video",
+  "header.videoPlay": "Přehrát video"
 }

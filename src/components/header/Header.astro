@@ -43,6 +43,20 @@ const t = useTranslations(lang);
   >
   </div>
 
+  <button
+    type="button"
+    id="headerVideoToggle"
+    hidden
+    aria-pressed="false"
+    aria-label={t('header.videoPause')}
+    data-label-pause={t('header.videoPause')}
+    data-label-play={t('header.videoPlay')}
+    class="absolute right-5 bottom-5 z-10 grid size-11 place-items-center rounded-full bg-black/45 text-white backdrop-blur-md transition-colors hover:bg-black/65 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 sm:bottom-8 [&[hidden]]:hidden!"
+  >
+    <svg class="video-toggle__pause size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+    <svg class="video-toggle__play hidden size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+  </button>
+
   <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
     <h1 class="max-w-4xl font-display text-6xl leading-[0.92] font-black tracking-[0.08em] uppercase sm:text-7xl lg:text-[7.5rem]">
       Anew style
@@ -228,7 +242,9 @@ const t = useTranslations(lang);
       return true;
     }
 
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Reduced motion no longer removes the video (it is a slow, muted
+    // ambience); the pause button below keeps it compliant (WCAG 2.2.2).
+    return false;
   }
 
   function attachHeaderVideoSource(video: HTMLVideoElement): void {
@@ -249,11 +265,30 @@ const t = useTranslations(lang);
     video.addEventListener("playing", reveal, { once: true });
     video.addEventListener("canplay", reveal, { once: true });
 
+    // Pause / play control (WCAG 2.2.2) appears with the video.
+    const toggle = document.querySelector<HTMLButtonElement>("#headerVideoToggle");
+    if (toggle) {
+      const sync = () => {
+        const paused = video.paused;
+        toggle.setAttribute("aria-pressed", String(paused));
+        toggle.setAttribute("aria-label", (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? "");
+        toggle.querySelector(".video-toggle__pause")?.classList.toggle("hidden", paused);
+        toggle.querySelector(".video-toggle__play")?.classList.toggle("hidden", !paused);
+      };
+      toggle.addEventListener("click", () => (video.paused ? video.play().catch(() => {}) : video.pause()));
+      video.addEventListener("play", sync);
+      video.addEventListener("pause", sync);
+      video.addEventListener("playing", () => { toggle.hidden = false; sync(); }, { once: true });
+    }
+
     video.appendChild(source);
     video.preload = "auto";
     video.load();
     video.play().catch(() => {
-      /* autoplay blocked: black hero background stays, no layout impact */
+      // Autoplay refused (e.g. iOS Low Power Mode): start on the first touch.
+      const retry = () => video.play().catch(() => {});
+      window.addEventListener("touchstart", retry, { once: true, passive: true });
+      window.addEventListener("pointerdown", retry, { once: true });
     });
   }
 
@@ -275,22 +310,6 @@ const t = useTranslations(lang);
     };
 
     const afterPageReady = () => {
-      // Phones: the poster is shown until the visitor interacts (or 6 s
-      // pass), so the video never competes with first paint and input.
-      if (window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px), (pointer: coarse)`).matches) {
-        const events = ["pointerdown", "touchstart", "scroll", "keydown"] as const;
-        let started = false;
-        const start = () => {
-          if (started) return;
-          started = true;
-          events.forEach((e) => window.removeEventListener(e, start));
-          loadWhenIdle();
-        };
-        events.forEach((e) => window.addEventListener(e, start, { once: true, passive: true }));
-        window.setTimeout(start, 6000);
-        return;
-      }
-
       if ("IntersectionObserver" in window) {
         const observer = new IntersectionObserver(
           (entries) => {

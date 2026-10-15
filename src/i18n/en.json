@@ -287,5 +287,7 @@
   "theme.toDark": "Switch to dark mode",
   "theme.label": "Colour mode",
   "price.compareCta": "Compare all features",
-  "price.swipeHint": "Swipe for more versions"
+  "price.swipeHint": "Swipe for more versions",
+  "header.videoPause": "Pause video",
+  "header.videoPlay": "Play video"
 }

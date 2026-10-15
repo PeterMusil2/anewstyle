@@ -103,8 +103,10 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   if (!creds) return json({ error: "CLOUDINARY_URL is not configured." }, 500);
 
   // Cloudinary signs the alphabetically sorted params followed by the secret.
+  // use_filename keeps a readable public_id ("living-room_x7k2"), which the
+  // gallery build also turns into the default caption.
   const timestamp = Math.floor(Date.now() / 1000);
-  const params = `folder=${folder}&timestamp=${timestamp}`;
+  const params = `folder=${folder}&timestamp=${timestamp}&unique_filename=true&use_filename=true`;
   const signature = await sha1Hex(params + creds.apiSecret);
 
   return json({

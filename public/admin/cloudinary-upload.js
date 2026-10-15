@@ -12,8 +12,8 @@
  *   folder: { path: "…" }       fixed folder, no choice shown (products)
  */
 (() => {
-  const TARGETS = { gallery: "Galerie (veřejná)", bonus: "Bonus (po odeslání formuláře)" };
-  const KINDS = { images: "Fotka", videos: "Video", 360: "360° panorama" };
+  const TARGETS = [["gallery", "Galerie (veřejná)"], ["bonus", "Bonus (po odeslání formuláře)"]];
+  const KINDS = [["images", "Fotka"], ["videos", "Video"], ["360", "360° panorama"]];
 
   const token = () => {
     for (const key of ["decap-cms-user", "netlify-cms-user"]) {
@@ -44,6 +44,8 @@
       form.append("timestamp", String(sig.timestamp));
       form.append("signature", sig.signature);
       form.append("folder", sig.folder);
+      form.append("use_filename", "true");
+      form.append("unique_filename", "true");
       const xhr = new XMLHttpRequest();
       xhr.open("POST", `https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`);
       xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
@@ -74,14 +76,14 @@
     .acu button:disabled{opacity:.6;cursor:wait}`;
 
   const radios = (name, options, selected) =>
-    Object.entries(options)
+    options
       .map(([value, label]) =>
         `<label class="opt"><input type="radio" name="${name}" value="${value}"${value === selected ? " checked" : ""} required>${label}</label>`)
       .join("");
 
   function openDialog({ config = {}, handleInsert }) {
     const fixedFolder = config.folder?.path || config.folder || "";
-    const target = TARGETS[config.target] ? config.target : "gallery";
+    const target = config.target === "bonus" ? "bonus" : "gallery";
 
     const dialog = document.createElement("dialog");
     dialog.className = "acu";

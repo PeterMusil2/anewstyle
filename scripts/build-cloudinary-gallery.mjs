@@ -68,13 +68,18 @@ async function loadCmsEntries() {
   try {
     const data = JSON.parse(await readFile(CMS_FILE, "utf8"));
     const entries = [];
-    for (const [list, bonus] of [["items", false], ["bonus", true]]) {
-      (Array.isArray(data?.[list]) ? data[list] : []).forEach((entry, index) => {
+    // Current shape: one "media" list with a bonus flag per entry (the
+    // gallery-manager widget). Legacy "items"/"bonus" lists still work.
+    const lists = Array.isArray(data?.media)
+      ? [[data.media, null]]
+      : [[data?.items, false], [data?.bonus, true]];
+    for (const [list, listBonus] of lists) {
+      (Array.isArray(list) ? list : []).forEach((entry, index) => {
         const parsed = parseCloudinaryUrl(entry?.media);
         if (!parsed) return;
         entries.push({
           ...parsed,
-          bonus,
+          bonus: listBonus ?? Boolean(entry.bonus),
           order: index,
           alt: entry.alt?.cs?.trim() || undefined,
           altEn: entry.alt?.en?.trim() || undefined,

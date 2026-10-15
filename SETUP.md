@@ -104,16 +104,21 @@ tomu, kto je v CMS prihlásený GitHub účtom s právom zápisu do repozitára.
    URL*, netreba.
 3. Cloudinary → *Settings → Security* → *Strict transformations* **vypnuté**.
 
-### 4.2 Ako nahrať médium (pre editora)
+### 4.2 Galéria v CMS (pre editora)
 
-1. `https://anewstyle.cz/admin/` → **Nastavení webu → Galerie (Cloudinary)**.
-2. V zozname **Galerie** alebo **Bonusový obsah** → *Add* → pole
-   **Fotka / video** → výber súboru.
-3. V okne zvoľ **Kam** (Galerie / Bonus) a **Typ** (Fotka / Video / 360°),
-   vyber súbor → **Nahrát**. Súbor ide do `AnewStyle/<Gallery|Bonus>/<images|videos|360>`.
-4. Vyplň **Popisek** (CZ/EN) → **Uložiť** → **Ready** → **Publish**.
-5. Web sa znovu postaví (1–3 minúty) a médium sa objaví v galérii.
-6. Skryť médium bez zmazania: zapni **Skrýt na webu** a publikuj.
+`https://anewstyle.cz/admin/` → **Galerie → Galerie webu**. Na jednej obrazovke
+sú všetky fotky, videá a 360° z webu ako karty s náhľadom.
+
+- **Filtre** hore: Vše / Veřejné / Bonus / Fotky / Videa / 360° / Skryté.
+- **Nahrát fotky / videa** – vyberieš, či ide do verejnej galérie alebo do
+  bonusu a čo nahrávaš (fotka, video, 360°); dá sa vybrať viac súborov naraz.
+- Na karte: popisok CZ/EN, prepínač **Veřejné / Bonus**, **Skrýt**, **360°**,
+  šípky na poradie a kôš (**Odebrat z webu**, s potvrdením).
+- Hotovo → **Uložit** → **Publikovat**. Web sa aktualizuje do 3 minút.
+
+Zoznam v CMS je presne to, čo je na webe. Odobratím položky zmizne z webu,
+súbor v Cloudinary ostane (dá sa vrátiť). Súbory nahrané priamo v Cloudinary
+konzole sa na web dostanú až po pridaní do CMS.
 
 ### 4.3 Ako sa médiá zobrazia (formát a veľkosť rieši web sám)
 

@@ -408,11 +408,31 @@ async function main() {
   const CATEGORY_ORDER = { video: 0, image: 1, "360": 2 };
   const orderOf = (item) => overrides.get(item._id)?.order ?? Number.MAX_SAFE_INTEGER;
 
-  const items = [
+  let pool = [
     ...resources.map((r) => ({ r, bonus: false })),
     ...bonusResources.map((r) => ({ r, bonus: true })),
     ...extra.map(({ resource, bonus }) => ({ r: resource, bonus })),
-  ]
+  ];
+
+  // Once the CMS lists anything, it is the source of truth: the web shows
+  // exactly the CMS entries (deleting one there removes it from the site),
+  // and the list it sits in decides gallery vs bonus. Assets that are only in
+  // Cloudinary are reported so they can be added in the CMS.
+  if (cmsEntries.length > 0) {
+    const byId = new Map(pool.map(({ r }) => [r.public_id, r]));
+    const unlisted = [...byId.keys()].filter((id) => !overrides.has(id));
+    if (unlisted.length) {
+      console.warn(
+        `\u2139 ${unlisted.length} Cloudinary asset(s) are not in the CMS gallery and stay hidden: ` +
+          unlisted.join(", ")
+      );
+    }
+    pool = cmsEntries
+      .filter((entry) => !entry.hidden && byId.has(entry.publicId))
+      .map((entry) => ({ r: byId.get(entry.publicId), bonus: entry.bonus }));
+  }
+
+  const items = pool
     .filter(({ r }) => !overrides.get(r.public_id)?.hidden)
     .map(({ r, bonus }) => {
       const item = buildItem(r, { bonus, override: overrides.get(r.public_id) });

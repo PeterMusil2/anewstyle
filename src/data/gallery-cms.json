@@ -1,4 +1,843 @@
 {
-  "items": [],
-  "bonus": []
+  "items": [
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_1_v3ngmg",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_2_ibalhw",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_3_cz5b1e",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_4_oirotg",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_6_zfuhhp",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_1_j9wipy",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_2_xq3zkj",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_3_gqcn4w",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_4_et7cqw",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_5_kd7i3l",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_6_ws3im4",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_01_txb4fs",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": true,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_02_smijsc",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": true,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_03_mmpyp2",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": true,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_05_t52e4a",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": true,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_06_ry0ur9",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": true,
+      "hidden": false
+    }
+  ],
+  "bonus": [
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/19_sumawi",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/19b_li6e8l",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/20_omoqra",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2100x400_2100x800_dfi4pd",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2100x600_2100x400_a66emc",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/21_utrk5o",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/22_yl12yy",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x1200_2400x600_1on_d4wmxh",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x1200_2400x600_2on_pkp36t",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_2400x800_hqebe1",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_off_kw8npo",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_on_gwmubq",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/24_unrdpn",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/24b_xtod1h",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/25_n2nib6",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/27_bdix3s",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/27b_dlnjuz",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/28_raqzws",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/29_jhzlxi",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/3005x600_2on_z6uafb",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/32_d0ewwj",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/34_tqemj6",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/34b_bqbwbh",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/36b_zbhxs9",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/36c_anugai",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/37_clq3pk",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/38_vnkdx8",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/39_nw45e7",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/41_qd7ibu",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42b_xjkoml",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42c_eja9kz",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42d_cirn6p",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/50_s6htem",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/51_kvxefu",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55b_ajmt4n",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55c_uqcwzi",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55d_a5e2rs",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/56_vkofl7",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/57b_280_jgct8o",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58a_280_uwi6fv",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58b_280_hnnygu",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58c_280_qknm1x",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58d_280_lfwipb",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/59a_280_rs4u0g",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/59b_280_u1jurx",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/61a_280_t5lop9",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/61b_280_ato0n0",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63b_300_aooltk",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63c_300_memxrm",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63d_300_k5nmmv",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63e_300_ybpy3d",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/65_myej1l",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/66_e6fucd",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/67_hfuzke",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/68_ux4sxp",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69a_oqze9a",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69b_bjavjy",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69c_cykuc8",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69d_ujhmks",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/70a_d5isv7",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/70b_q8ezbc",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/71a_pdgz5u",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/71b_qn8luo",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/72_qsqiqp",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/73_z7rtss",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74a_i1n9wb",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74b_rnwx1t",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74c_kzenc1",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/75a_300_kzzlw3",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/75b_300_jbujaj",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76a_300_icnrb8",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76b_300_rpconh",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76c_300_jr2evo",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/77a_300_acl6dg",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/77b_300_tjdcvv",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/78_280_icekck",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    },
+    {
+      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/7_g8xl2o",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "panorama": false,
+      "hidden": false
+    }
+  ]
 }

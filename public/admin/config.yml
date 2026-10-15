@@ -178,20 +178,22 @@ collections:
         label: Galerie (Cloudinary)
         file: src/data/gallery-cms.json
         description: >-
-          Nahrajte fotky, videa nebo 360° panoramata – v okně nahrávání vyberete,
-          zda jde do galerie nebo bonusu a o jaký typ jde. Soubor se uloží do
-          Cloudinary a web se za 1–3 minuty sám aktualizuje. Pomocí výběru existujícího souboru
+          Seznamy níže jsou přesně to, co je na webu – pořadí, popisky, skrytí.
+          Smazáním položky ji odeberete z webu (soubor v Cloudinary zůstane).
+          Přesunem mezi Galerií a Bonusem změníte, zda je médium veřejné.
+          Nové médium: Přidat → Nahrát soubor → vyberte Kam a Typ → Publikovat. Pomocí výběru existujícího souboru
           lze upravit i média, která už v Cloudinary jsou (popisek, skrytí).
         fields:
           - name: items
             label: Galerie
             label_singular: Médium
             widget: list
+            collapsed: false
             summary: "{{fields.alt.cs}}"
             fields:
               - name: media
                 label: Fotka / video
-                widget: file
+                widget: cloudinary-media
                 media_library:
                   config:
                     target: gallery
@@ -207,11 +209,12 @@ collections:
             label: Bonusový obsah (po odeslání formuláře)
             label_singular: Bonusové médium
             widget: list
+            collapsed: false
             summary: "{{fields.alt.cs}}"
             fields:
               - name: media
                 label: Fotka / video
-                widget: file
+                widget: cloudinary-media
                 media_library:
                   config:
                     target: bonus

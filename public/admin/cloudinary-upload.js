@@ -138,8 +138,7 @@
           msg.textContent = `Nahrávám… ${Math.round(p * 100)} %`;
         });
         handleInsert(result.secure_url);
-        msg.textContent = "Hotovo. Web se aktualizuje za 1–3 minuty.";
-        api({ action: "rebuild" }).catch(() => {});
+        msg.textContent = "Nahráno. Uložte a publikujte položku – web se pak aktualizuje.";
         setTimeout(close, 900);
       } catch (error) {
         msg.className = "msg err";
@@ -150,6 +149,50 @@
 
     dialog.showModal();
   }
+
+  // ---- Gallery widget: thumbnail of the Cloudinary asset + upload button ----
+  // Thumbnails reuse the exact transformations the website already serves, so
+  // opening the CMS creates no new Cloudinary derivatives (no extra credits).
+  const parse = (url) => {
+    const m = /res\.cloudinary\.com\/([^/]+)\/(image|video)\/upload\/(?:[^/]*,[^/]*\/)*(?:v\d+\/)?(.+?)(?:\.[a-z0-9]+)?(?:\?.*)?$/i.exec(url || "");
+    return m ? { cloud: m[1], kind: m[2], id: m[3] } : null;
+  };
+  const thumbOf = (url) => {
+    const p = parse(url);
+    if (!p) return "";
+    return p.kind === "video"
+      ? `https://res.cloudinary.com/${p.cloud}/video/upload/c_limit,q_auto,w_800/v1/${p.id}.jpg`
+      : `https://res.cloudinary.com/${p.cloud}/image/upload/ar_16:9,c_fill,f_auto,g_auto,q_auto,w_400/v1/${p.id}`;
+  };
+
+  const { h, createClass } = window;
+  const MediaControl = createClass({
+    open() {
+      const cfg = this.props.field.get("media_library")?.get("config")?.toJS?.() || {};
+      openDialog({ config: cfg, handleInsert: (url) => this.props.onChange(url) });
+    },
+    render() {
+      const { value, forID, classNameWrapper } = this.props;
+      const p = parse(value);
+      const btn = { type: "button", style: { font: "inherit", padding: "6px 12px", borderRadius: "5px", border: "1px solid #d0d7de", background: "#fff", cursor: "pointer" } };
+      return h("div", { id: forID, className: classNameWrapper, style: { display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap" } },
+        value
+          ? h("a", { href: value, target: "_blank", rel: "noopener", style: { position: "relative", display: "block", width: "200px", aspectRatio: p?.kind === "video" ? "auto" : "16/9", background: "#111", borderRadius: "6px", overflow: "hidden" } },
+              h("img", { src: thumbOf(value), loading: "lazy", alt: "", style: { width: "100%", height: "100%", objectFit: "cover", display: "block" } }),
+              p?.kind === "video" && h("span", { style: { position: "absolute", inset: "auto 8px 8px auto", padding: "2px 8px", borderRadius: "999px", background: "rgb(0 0 0/.6)", color: "#fff", fontSize: "12px" } }, "▶ video"))
+          : h("span", { style: { color: "#57606a" } }, "Zatím bez souboru"),
+        h("div", { style: { display: "flex", flexDirection: "column", gap: "6px", minWidth: 0 } },
+          p && h("code", { style: { fontSize: "12px", color: "#57606a", wordBreak: "break-all" } }, p.id),
+          h("button", { ...btn, onClick: () => this.open() }, value ? "Nahradit souborem…" : "Nahrát soubor…")));
+    },
+  });
+  const MediaPreview = createClass({
+    render() {
+      const src = thumbOf(this.props.value);
+      return src ? h("img", { src, style: { maxWidth: "200px" } }) : null;
+    },
+  });
+  window.CMS.registerWidget("cloudinary-media", MediaControl, MediaPreview);
 
   window.CMS.registerMediaLibrary({
     name: "anewstyle-cloudinary",

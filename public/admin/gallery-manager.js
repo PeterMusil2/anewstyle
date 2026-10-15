@@ -9,7 +9,9 @@
  */
 (() => {
   const { h, createClass } = window;
-  const AC = window.AnewCloudinary;
+  // Resolved on use: cloudinary-upload.js defines it, and a stale cached copy
+  // of that file must not crash the whole editor.
+  const AC = new Proxy({}, { get: (_, key) => window.AnewCloudinary?.[key] ?? (() => "") });
 
   const toArray = (value) => {
     const plain = value?.toJS ? value.toJS() : value;

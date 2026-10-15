@@ -106,7 +106,7 @@ koncept (pull request), Cloudflare k nej postaví preview, a až po
    - `AnewStyle/Products`, `AnewStyle/Products/3D`, `AnewStyle/Products/Downloads`
 4. **Transformácie musia byť povolené.** Cloudinary → *Settings → Security* →
    *Strict transformations* nechaj **vypnuté** (web si generuje rôzne veľkosti
-   a formáty AVIF/WebP za behu).
+   a formáty (f_auto) za behu).
 5. *(Voliteľné)* **Automatický rebuild aj pri nahratí mimo CMS:**
    Cloudflare → projekt → *Settings → Builds → Deploy hooks* → vytvor hook
    (vetva `master`) a jeho URL vlož do Cloudinary → *Settings → Upload →
@@ -130,7 +130,7 @@ koncept (pull request), Cloudflare k nej postaví preview, a až po
 
 | Typ | Čo nahrať | Čo z toho web spraví |
 | --- | --- | --- |
-| Fotka | JPG/PNG/WebP, ideálne ≥ 2000 px na dlhšej strane | Dlaždica orezaná na 16:9 (na šírku) alebo 9:16 (na výšku) s inteligentným výrezom, AVIF + WebP v šírkach 400–1600 px; v lightboxe celá fotka do 1600 px |
+| Fotka | JPG/PNG/WebP, ideálne ≥ 2000 px na dlhšej strane | Dlaždica orezaná na 16:9 (na šírku) alebo 9:16 (na výšku) s inteligentným výrezom, formát (AVIF/WebP/JPG) volí Cloudinary podľa prehliadača, šírky 400–1600 px; v lightboxe celá fotka do 1600 px |
 | Video | MP4 (H.264), 1080p, rozumne krátke | MP4 do šírky 1280 px, náhľad (JPG) sa vytvorí z videa automaticky |
 | 360° | rovnobežková panoráma 2:1 (napr. 8192 × 4096), zapnúť „360°“ | Náhľad 16:9, prehliadač panorámy v rozlíšení 4096 px |
 | Bonus | ako vyššie, zoznam **Bonusový obsah** | Skryté, kým návštevník neodošle kontaktný formulár |

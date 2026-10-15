@@ -135,8 +135,9 @@ const ENABLE_GTM = true;
           gtag('consent', 'default', defaults);
         })();
 
-        // Load GTM after consent defaults are set - but off the critical path:
-        // on the first interaction, or 3.5 s after the page has loaded. Events
+        // Load GTM after consent defaults are set - but only once the visitor
+        // interacts (scroll, tap, key). Marketing tags (Meta pixel ≈ 1.3 MB of
+        // JS) then never block the first paint or input on phones. Events
         // pushed to dataLayer before that are queued and sent once it loads.
         (function(w,d,s,l,i){
           w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
@@ -147,7 +148,6 @@ const ENABLE_GTM = true;
             var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:''; j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl; f.parentNode.insertBefore(j,f);
           }
           evs.forEach(function(e){ w.addEventListener(e, load, { once: true, passive: true }); });
-          w.addEventListener('load', function(){ setTimeout(load, 3500); }, { once: true });
         })(window,document,'script','dataLayer','GTM-WT79RGCG');
       </script>
     )}

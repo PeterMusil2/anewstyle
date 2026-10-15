@@ -30,7 +30,7 @@ export function useTranslations(lang: Lang) {
  * Normalize an HTML page pathname to the canonical trailing-slash form.
  * Static assets keep their file-extension URLs unchanged.
  */
-export function normalizePagePath(pathname: string): string {
+function normalizePagePath(pathname: string): string {
   const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
 
   if (
@@ -49,29 +49,6 @@ export function normalizePagePath(pathname: string): string {
  */
 export function getCanonicalUrl(currentUrl: URL, site: URL): URL {
   return new URL(normalizePagePath(currentUrl.pathname), site);
-}
-
-/**
- * Get localized path for a given path and language
- */
-export function getLocalizedPath(path: string, lang: Lang): string {
-  const suffixIndex = path.search(/[?#]/);
-  const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
-  const suffix = suffixIndex === -1 ? "" : path.slice(suffixIndex);
-
-  // Remove leading slash for processing
-  const cleanPath = pathname.startsWith("/") ? pathname.slice(1) : pathname;
-
-  // Remove any existing language prefix
-  const pathWithoutLang = cleanPath.replace(/^(cs|en)(\/|$)/, "");
-
-  // For default language (cs), don't add prefix
-  if (lang === defaultLang) {
-    return `${normalizePagePath(`/${pathWithoutLang}`)}${suffix}`;
-  }
-
-  // For other languages, add prefix
-  return `${normalizePagePath(`/${lang}/${pathWithoutLang}`)}${suffix}`;
 }
 
 /**
@@ -122,30 +99,6 @@ export function getAlternateLinks(
   });
 }
 
-/**
- * Check if a language is supported
- */
-export function isValidLang(lang: string): lang is Lang {
-  return lang in languages;
-}
-
-/**
- * Get language from localStorage (client-side only)
- */
-export function getStoredLang(): Lang | null {
-  if (typeof localStorage === "undefined") return null;
-  const stored = localStorage.getItem("lang");
-  return isValidLang(stored || "") ? (stored as Lang) : null;
-}
-
-/**
- * Store language preference (client-side only)
- */
-export function setStoredLang(lang: Lang): void {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem("lang", lang);
-}
-
 export const getLangShortLabel = (lang: Lang): string => {
   const labels: Record<Lang, string> = {
     cs: "CZ",
@@ -155,4 +108,4 @@ export const getLangShortLabel = (lang: Lang): string => {
   return labels[lang];
 };
 
-export { defaultLang, languages, type Lang, type TranslationKey };
+export { defaultLang, type Lang, type TranslationKey };

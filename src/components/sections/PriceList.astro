@@ -171,7 +171,7 @@ const cheapest = (key: SizeKey) =>
           </span>
         </h3>
         <div class="flex items-center gap-5">
-          <p class="hidden text-xs text-fg-muted sm:block">{t("price.vat")}</p>
+          <p class="hidden text-xs text-fg-muted italic sm:block">{t("price.vat")}</p>
           <a href={`#${id}-compare`} class="hidden min-h-11 items-center gap-2 text-xs font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light lg:inline-flex">
             {t("price.compareCta")} ↓
           </a>
@@ -291,6 +291,17 @@ const cheapest = (key: SizeKey) =>
       <a href={`#${id}-compare`} class="ml-auto inline-flex min-h-11 items-center gap-2 font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light">
         {t("price.compareCta")} ↓
       </a>
+    </div>
+  </div>
+
+  <!-- Offer: contact form unlocks current stone decors and a discount -->
+  <div class="container-page pt-10 lg:pt-14">
+    <div class="flex flex-col items-start gap-5 border border-gold/60 bg-ink-900 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
+      <p class="max-w-3xl text-base leading-relaxed text-fg-soft md:text-lg">
+        {t("price.offerPromptBefore")}{" "}
+        <strong class="text-[1.2em] font-black text-gold-light">{t("price.offerDiscount")}</strong>.
+      </p>
+      <Button href={`${basePath}/#contact`} class="shrink-0">{t("price.offerCta")}</Button>
     </div>
   </div>
 

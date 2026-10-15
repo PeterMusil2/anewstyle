@@ -1,4 +1,5 @@
 ---
+import Picture from "../ui/Picture.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
@@ -25,14 +26,9 @@ const t = useTranslations(lang);
       class="ba-slider reveal relative aspect-[1440/809] max-h-[80svh] w-full overflow-hidden border border-line select-none"
     >
       <div class="absolute inset-0">
-        <img
+        <Picture
           src="/images/before-after/Rockfoil_viz5_after_1440.webp"
-          srcset="/images/before-after/Rockfoil_viz5_after_425.webp 425w, /images/before-after/Rockfoil_viz5_after_768.webp 768w, /images/before-after/Rockfoil_viz5_after_1024.webp 1024w, /images/before-after/Rockfoil_viz5_after_1366.webp 1366w, /images/before-after/Rockfoil_viz5_after_1440.webp 1440w"
           sizes="(min-width: 90rem) 90rem, 100vw"
-          loading="lazy"
-          decoding="async"
-          width="1440"
-          height="809"
           class="size-full object-cover object-left"
           alt={t("slider.titleNight")}
         />
@@ -41,14 +37,9 @@ const t = useTranslations(lang);
         </span>
       </div>
       <div class="ba-slider__before absolute inset-0">
-        <img
+        <Picture
           src="/images/before-after/Rockfoil_viz5_before_1440.webp"
-          srcset="/images/before-after/Rockfoil_viz5_before_425.webp 425w, /images/before-after/Rockfoil_viz5_before_768.webp 768w, /images/before-after/Rockfoil_viz5_before_1024.webp 1024w, /images/before-after/Rockfoil_viz5_before_1366.webp 1366w, /images/before-after/Rockfoil_viz5_before_1440.webp 1440w"
           sizes="(min-width: 90rem) 90rem, 100vw"
-          loading="lazy"
-          decoding="async"
-          width="1440"
-          height="809"
           class="size-full object-cover object-left"
           alt={t("slider.titleDay")}
         />

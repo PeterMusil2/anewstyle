@@ -257,11 +257,11 @@ function tileOptsFor(orientation) {
  * no fallback when their URLs fail, which blanked photos and 360 tiles.)
  * Commas inside a srcset URL are valid - only ", " separates candidates.
  */
-function tileSrcSet(publicId, { orientation = "landscape" } = {}) {
+function tileSrcSet(publicId, { orientation = "landscape", format = "auto" } = {}) {
   return THUMB_WIDTHS.map((w) => {
     const url = cloudinary.url(publicId, {
       ...tileOptsFor(orientation),
-      fetch_format: "auto",
+      fetch_format: format,
       width: w,
     });
     return `${url} ${w}w`;
@@ -280,6 +280,7 @@ function buildItem(resource, { bonus = false, override } = {}) {
   const thumbW = Math.min(THUMB_WIDTH, nativeW);
   const thumbH = Math.max(1, Math.round((thumbW * nativeH) / nativeW));
 
+  /** @type {{ type: string, width: number, height: number, alt: string, altEn?: string, bonus?: boolean }} */
   const base = { type: category, width: thumbW, height: thumbH, alt };
   if (override?.altEn) base.altEn = override.altEn;
   if (bonus) base.bonus = true;
@@ -312,6 +313,8 @@ function buildItem(resource, { bonus = false, override } = {}) {
       height: Math.round((THUMB_WIDTH * 9) / 16),
       thumb: cloudinary.url(publicId, { ...tileOpts, fetch_format: "auto", width: THUMB_WIDTH }),
       thumbSrcset: tileSrcSet(publicId),
+      // f_auto settles on WebP for this account, so AVIF is offered explicitly.
+      thumbAvif: tileSrcSet(publicId, { format: "avif" }),
       // The panorama itself must keep its full 2:1 equirectangular frame -
       // cropping it would make Photo Sphere Viewer render a distorted sphere.
       full: cloudinary.url(publicId, { ...imageOpts, width: PANO_FULL_WIDTH }),
@@ -338,6 +341,7 @@ function buildItem(resource, { bonus = false, override } = {}) {
       width: tileW,
     }),
     thumbSrcset: tileSrcSet(publicId, { orientation }),
+    thumbAvif: tileSrcSet(publicId, { orientation, format: "avif" }),
     // The lightbox keeps the original aspect and negotiates its own format,
     // so it stays correct on browsers without AVIF support.
     full: cloudinary.url(publicId, { ...imageOpts, width: IMAGE_FULL_WIDTH }),

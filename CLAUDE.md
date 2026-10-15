@@ -113,7 +113,9 @@ All components receive `lang` and translate through `t()`.
 
 ### Content & CMS
 
-- Products: `src/content/products/*.md` (front matter).
+- Products (stone patterns): `src/data/products.json` – list order = order on the site (drag & drop in the CMS).
+- Responsive images: `scripts/optimize-images.mjs` writes AVIF/WebP variants to `public/_img` + `src/data/image-manifest.json`; use `<Picture>` (`src/components/ui/Picture.astro`). Outputs are committed so builds only encode new images.
+- Admin scripts in `public/admin/*.js` are loaded with `?v=YYYYMMDD` – bump it in `public/admin/index.html` after changing them.
 - Price list: `src/data/prices.json` (prices per size, taglines, feature matrix).
 - FAQ: `src/data/faq.json` (cs/en, `**bold**` rendered by `src/lib/inline-markdown.ts`).
 - All three are editable in **Decap CMS** at `/admin/` (`public/admin/config.yml`).

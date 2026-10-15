@@ -1,4 +1,5 @@
 ---
+import Picture from "../ui/Picture.astro";
 /**
  * "Rozsviť mě" – the three panel states are native radio inputs; the matching
  * photo is shown purely with :has() (see .showcase in effects.css).
@@ -78,13 +79,10 @@ const states = [
     <div class="reveal relative aspect-[1024/813] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
       {
         states.map((state) => (
-          <img
+          <Picture
             src={state.src}
             alt={`${t("products.stoneAsLighting")} – ${state.label}`}
-            width="1024"
-            height="813"
-            loading="lazy"
-            decoding="async"
+            sizes="(min-width: 64rem) 50vw, 100vw"
             data-state={state.value}
             class="absolute inset-0 size-full object-contain"
           />

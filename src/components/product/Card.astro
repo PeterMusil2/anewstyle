@@ -1,4 +1,5 @@
 ---
+import Picture from "../ui/Picture.astro";
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
@@ -64,13 +65,12 @@ const extraFancyboxItems = [
   data-thumb={lightPhoto}
 >
   <div class="relative flex aspect-[1024/524] items-center justify-center overflow-hidden bg-[radial-gradient(60%_60%_at_50%_50%,rgb(163_140_82/0.12),transparent_70%)]">
-    <img
-      src={productImage(imgLight)}
+    <Picture
+      src={lightPhoto ?? ""}
       alt=""
-      loading="lazy"
-      decoding="async"
-      width="1024"
-      height="524"
+      sizes="(min-width: 80rem) 25vw, (min-width: 40rem) 50vw, 100vw"
+      width={1024}
+      height={524}
       class="size-full object-contain transition-transform duration-500 ease-out-soft group-hover:scale-105"
     />
     {

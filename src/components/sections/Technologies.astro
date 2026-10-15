@@ -1,4 +1,5 @@
 ---
+import Picture from "../ui/Picture.astro";
 import Tooltip from "../tooltip/Tooltip.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
@@ -49,13 +50,10 @@ const blocks: { title: string; img: string; layers: Layer[] }[] = [
       {
         blocks.map((block) => (
           <article class="reveal flex flex-col gap-8 border border-line bg-ink-900 p-6 sm:p-10">
-            <img
+            <Picture
               src={block.img}
               alt={block.title}
-              loading="lazy"
-              decoding="async"
-              width="600"
-              height="400"
+              sizes="(min-width: 64rem) 40vw, 90vw"
               class="mx-auto h-auto max-h-72 w-full object-contain"
             />
             <h3 class="text-lg font-black tracking-[0.12em] text-gold uppercase">{block.title}</h3>

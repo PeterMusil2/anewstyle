@@ -12,6 +12,21 @@ const t = useTranslations(lang);
 ---
 
 <header class="scheme-dark relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
+  <!-- Poster: the LCP image. The video fades in over it once it plays. -->
+  <picture>
+    <source media="(max-width: 560px)" type="image/avif" srcset="/images/hero/hero-poster-mobile.avif" />
+    <source media="(max-width: 560px)" type="image/webp" srcset="/images/hero/hero-poster-mobile.webp" />
+    <source type="image/avif" srcset="/images/hero/hero-poster-1280.avif" />
+    <img
+      src="/images/hero/hero-poster-1280.webp"
+      alt=""
+      width="1280"
+      height="720"
+      fetchpriority="high"
+      decoding="async"
+      class="absolute inset-0 -z-30 size-full object-cover"
+    />
+  </picture>
   <video
     class="hero-video absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
@@ -165,8 +180,9 @@ const t = useTranslations(lang);
   }
 
   const MOBILE_BREAKPOINT = 560;
-  const VIDEO_MOBILE = "/videos/main-vide-mobile.mp4";
-  const VIDEO_DESKTOP = "/videos/main-video.mp4";
+  // Re-encoded without audio (the hero is always muted): 1.9 MB / 1.1 MB.
+  const VIDEO_MOBILE = "/videos/hero-mobile.mp4";
+  const VIDEO_DESKTOP = "/videos/hero-1280.mp4";
   const SLOW_CONNECTION = /^(slow-2g|2g)$/;
 
   interface NetworkInformation {
@@ -259,6 +275,22 @@ const t = useTranslations(lang);
     };
 
     const afterPageReady = () => {
+      // Phones: the poster is shown until the visitor interacts (or 6 s
+      // pass), so the video never competes with first paint and input.
+      if (window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px), (pointer: coarse)`).matches) {
+        const events = ["pointerdown", "touchstart", "scroll", "keydown"] as const;
+        let started = false;
+        const start = () => {
+          if (started) return;
+          started = true;
+          events.forEach((e) => window.removeEventListener(e, start));
+          loadWhenIdle();
+        };
+        events.forEach((e) => window.addEventListener(e, start, { once: true, passive: true }));
+        window.setTimeout(start, 6000);
+        return;
+      }
+
       if ("IntersectionObserver" in window) {
         const observer = new IntersectionObserver(
           (entries) => {

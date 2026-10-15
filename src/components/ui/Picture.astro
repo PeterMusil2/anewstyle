@@ -1,0 +1,76 @@
+---
+/**
+ * Responsive picture: AVIF first, WebP fallback, sized by `sizes`.
+ *
+ * Local images (/images/...) use the variants generated at build time by
+ * scripts/optimize-images.mjs (src/data/image-manifest.json). Cloudinary URLs
+ * get the same treatment through on-the-fly transformations. Anything else
+ * renders as a plain <img>.
+ */
+import manifestJson from "../../data/image-manifest.json";
+
+type Variant = [string, number];
+interface Entry {
+  width: number;
+  height: number;
+  avif: Variant[];
+  webp: Variant[];
+}
+
+interface Props {
+  src: string;
+  alt: string;
+  sizes: string;
+  width?: number;
+  height?: number;
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+  [key: `data-${string}`]: string | undefined;
+}
+
+const {
+  src,
+  alt,
+  sizes,
+  loading = "lazy",
+  fetchpriority,
+  class: className,
+  width: widthProp,
+  height: heightProp,
+  ...rest
+} = Astro.props;
+
+const manifest = manifestJson as unknown as Record<string, Entry>;
+const toSrcset = (variants: Variant[]) => variants.map(([url, w]) => `${url} ${w}w`).join(", ");
+
+const local = manifest[src];
+
+// Cloudinary: same widths, AVIF requested explicitly (f_auto settles on WebP).
+const CLOUDINARY = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(?:v\d+\/)?(.+)$/;
+const cloud = CLOUDINARY.exec(src);
+const cloudSet = (format: string) =>
+  cloud ? [400, 640, 960, 1280].map((w) => `${cloud[1]}c_limit,f_${format},q_auto,w_${w}/${cloud[2]} ${w}w`).join(", ") : "";
+
+const avif = local ? toSrcset(local.avif) : cloudSet("avif");
+const webp = local ? toSrcset(local.webp) : cloudSet("webp");
+const fallback = local ? local.webp.at(-1)?.[0] : cloud ? `${cloud[1]}c_limit,f_auto,q_auto,w_1280/${cloud[2]}` : src;
+const width = widthProp ?? local?.width;
+const height = heightProp ?? local?.height;
+---
+
+<picture>
+  {avif && <source type="image/avif" srcset={avif} sizes={sizes} />}
+  {webp && <source type="image/webp" srcset={webp} sizes={sizes} />}
+  <img
+    src={fallback}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+    class={className}
+    {...rest}
+  />
+</picture>

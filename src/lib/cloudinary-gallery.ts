@@ -1,10 +1,12 @@
-export type GalleryItemType = "image" | "video" | "360";
+type GalleryItemType = "image" | "video" | "360";
 
 export interface CloudinaryGalleryItem {
   type: GalleryItemType;
   thumb: string;
   /** f_auto srcset for the grid tile, widths matching THUMB_WIDTHS. */
   thumbSrcset?: string;
+  /** Same widths in AVIF (offered first through <picture>). */
+  thumbAvif?: string;
   full: string;
   /** Tile shape the asset is cropped to: a 2x1 or 1x2 cell in the grid. */
   orientation?: "landscape" | "portrait";

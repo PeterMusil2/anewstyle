@@ -30,6 +30,8 @@ interface Props {
     | "ContactPage";
   breadcrumbs?: Array<{ name: string; url: string }>;
   additionalStructuredData?: Array<Record<string, unknown>>;
+  /** Origins this page fetches early from (e.g. the Cloudinary CDN). */
+  preconnect?: string[];
 }
 
 const {
@@ -40,6 +42,7 @@ const {
   pageType,
   breadcrumbs,
   additionalStructuredData,
+  preconnect = [],
 } = Astro.props;
 const lang = getLangFromUrl(Astro.url) as Lang;
 const t = useTranslations(lang);
@@ -132,13 +135,23 @@ const ENABLE_GTM = true;
           gtag('consent', 'default', defaults);
         })();
 
-        // Load GTM after consent defaults are set
+        // Load GTM after consent defaults are set - but off the critical path:
+        // on the first interaction, or 3.5 s after the page has loaded. Events
+        // pushed to dataLayer before that are queued and sent once it loads.
         (function(w,d,s,l,i){
           w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(), event:'gtm.js'});
-          var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:''; j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl; f.parentNode.insertBefore(j,f);
+          var loaded=false, evs=['pointerdown','keydown','scroll','touchstart'];
+          function load(){
+            if(loaded) return; loaded=true;
+            evs.forEach(function(e){ w.removeEventListener(e, load); });
+            var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:''; j.async=true; j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl; f.parentNode.insertBefore(j,f);
+          }
+          evs.forEach(function(e){ w.addEventListener(e, load, { once: true, passive: true }); });
+          w.addEventListener('load', function(){ setTimeout(load, 3500); }, { once: true });
         })(window,document,'script','dataLayer','GTM-WT79RGCG');
       </script>
     )}
+    {preconnect.map((origin) => <link rel="preconnect" href={origin} />)}
     <link rel="canonical" href={canonicalUrl.href} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -176,7 +189,10 @@ const ENABLE_GTM = true;
     <link rel="alternate" type="text/markdown" title="llms.txt" href="/llms.txt" />
     <link rel="alternate" type="application/json" title="Site data for agents" href="/agent/site.json" />
 
-    <meta name="msapplication-TileColor" content="#000000" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="ANEW STYLE" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
@@ -326,52 +342,69 @@ const ENABLE_GTM = true;
     <slot />
     <Footer lang={lang} />
     <WebMcp />
+    {import.meta.env.PROD && (
+      <script is:inline>
+        // PWA: register the service worker once the page has loaded.
+        if ("serviceWorker" in navigator) {
+          addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+        }
+      </script>
+    )}
     <script>
       import fancyboxCss from "@fancyapps/ui/dist/fancybox/fancybox.css?url";
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const elements = document.querySelectorAll("[data-fancybox]");
-        if (elements.length === 0) return;
+      // The lightbox (JS + CSS) loads on intent: the first hover, focus or
+      // touch on a [data-fancybox] trigger. A click that arrives before it is
+      // ready is replayed once it has loaded.
+      const SELECTOR = "[data-fancybox]";
+      let ready: Promise<void> | null = null;
 
-        const windowRef = window;
-        if (windowRef.__fancyboxBound) return;
-
-        // Lightbox JS + CSS load only on pages that use it. The stylesheet is
-        // imported as a URL so it never ends up inlined in every page.
-        if (!document.querySelector("link[data-fancybox-css]")) {
-          const link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.href = fancyboxCss;
-          link.dataset.fancyboxCss = "";
-          document.head.append(link);
-        }
-
-        import("@fancyapps/ui")
-          .then(({ Fancybox }) => {
-            // @ts-ignore - Fancybox callback typing
-            const onFancyboxInit = (fancybox) => {
-              const fb = /** @type {{ items?: Array<{ trigger?: Element | null }>; options: { parentEl?: Element } }} */ (
-                fancybox
-              );
-              const trigger = fb.items?.[0]?.trigger;
-              if (!trigger) return;
-              const dialog = trigger.closest("dialog");
-              if (dialog) {
-                fb.options.parentEl = dialog;
-              }
-            };
-
-            Fancybox.bind(document.body, "[data-fancybox]", {
-              on: {
-                init: onFancyboxInit,
+      const loadFancybox = () =>
+        (ready ??= (async () => {
+          if (!document.querySelector("link[data-fancybox-css]")) {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = fancyboxCss;
+            link.dataset.fancyboxCss = "";
+            document.head.append(link);
+          }
+          const { Fancybox } = await import("@fancyapps/ui");
+          Fancybox.bind(document.body, SELECTOR, {
+            on: {
+              // Lightboxes opened from inside a <dialog> must render in it.
+              init: (fancybox: { items?: Array<{ trigger?: Element | null }>; options: { parentEl?: Element } }) => {
+                const dialog = fancybox.items?.[0]?.trigger?.closest("dialog");
+                if (dialog) fancybox.options.parentEl = dialog;
               },
-            });
-            windowRef.__fancyboxBound = true;
-          })
-          .catch((error) => {
-            console.error(error);
+            } as never,
           });
-      });
+        })());
+
+      const intent = (event: Event) => {
+        if ((event.target as Element | null)?.closest?.(SELECTOR)) loadFancybox();
+      };
+      for (const type of ["pointerover", "focusin", "touchstart"]) {
+        document.addEventListener(type, intent, { passive: true });
+      }
+
+      let loaded = false;
+      document.addEventListener(
+        "click",
+        (event) => {
+          if (loaded) return;
+          const trigger = (event.target as Element | null)?.closest?.<HTMLElement>(SELECTOR);
+          if (!trigger) return;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          loadFancybox()
+            .then(() => {
+              loaded = true;
+              trigger.click();
+            })
+            .catch((error) => console.error(error));
+        },
+        true,
+      );
     </script>
   </body>
 </html>

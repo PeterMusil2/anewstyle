@@ -10,11 +10,12 @@
     "dev": "astro dev",
     "gallery:build": "node scripts/build-cloudinary-gallery.mjs",
     "typecheck": "astro check && node node_modules/typescript-7/bin/tsc --noEmit",
-    "build": "bun run gallery:build && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
+    "build": "bun run gallery:build && bun run images && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "cms:local": "decap-server",
-    "stylelint": "stylelint --fix \"src/**/*.css\" \"src/**/*.astro\""
+    "stylelint": "stylelint --fix \"src/**/*.css\" \"src/**/*.astro\"",
+    "images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

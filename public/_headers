@@ -28,3 +28,27 @@
 
 /build.json
   Cache-Control: no-store
+
+# Static media: not content-hashed, so a month plus background revalidation.
+/images/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/_img/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/videos/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/3d/*
+  Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
+
+/downloads/*
+  Cache-Control: public, max-age=604800
+
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=86400

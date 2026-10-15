@@ -17,24 +17,25 @@
     "stylelint": "stylelint --fix \"src/**/*.css\" \"src/**/*.astro\""
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@astrojs/sitemap": "^3.7.3",
-    "@fancyapps/ui": "^6.1.14",
-    "@google/model-viewer": "^4.3.1",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fancyapps/ui": "^6.1.15",
+    "@google/model-viewer": "^4.4.0",
     "@photo-sphere-viewer/core": "^5.15.1",
-    "astro": "^7.2.2",
-    "cloudinary": "^2.10.0",
-    "three": "^0.183.0",
+    "astro": "^7.4.0",
+    "cloudinary": "^2.11.0",
+    "three": "^0.183.2",
     "typescript": "^6.0.3",
     "typescript-7": "npm:typescript@^7.0.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^24.0.0",
-    "decap-server": "^3.5.0",
-    "postcss-html": "^1.8.1",
-    "stylelint": "^17.14.0",
-    "stylelint-order": "^8.1.1",
+    "@types/node": "^24.19.2",
+    "decap-server": "^3.11.5",
+    "postcss-html": "^2.0.0",
+    "sharp": "^0.35.5",
+    "stylelint": "^17.16.0",
+    "stylelint-order": "^8.1.2",
     "tailwindcss": "^4.3.3"
   },
   "engines": {

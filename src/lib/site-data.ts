@@ -2,9 +2,10 @@
  * One source of truth for the facts about ANEW STYLE that machines read:
  * JSON-LD (StructuredData), /llms.txt, /agent/site.json, the WebMCP tools in
  * the browser and the /mcp server. Content still comes from the CMS-edited
- * files (prices.json, faq.json, content/products).
+ * files (prices.json, faq.json, products.json).
  */
 import prices from "../data/prices.json";
+import productsData from "../data/products.json";
 import faq from "../data/faq.json";
 import type { PricesData, Price } from "../components/sections/PriceList.types";
 import cs from "../i18n/cs.json";
@@ -14,8 +15,8 @@ export type Lang = "cs" | "en";
 export type SizeKey = keyof Price;
 
 export const SITE_URL = "https://anewstyle.cz";
-export const ESHOP_URL = "https://www.anewstyle-eshop.cz/";
-export const VAT_RATE = 0.21;
+const ESHOP_URL = "https://www.anewstyle-eshop.cz/";
+const VAT_RATE = 0.21;
 export const CURRENCY = "CZK";
 
 export const contact = {
@@ -65,13 +66,13 @@ const translate = (lang: Lang, key: string): string =>
   (dictionaries.cs as Record<string, string>)[key] ??
   key;
 
-export const toNumber = (value: string): number => Number(value.replace(/\s/g, ""));
-export const withVat = (net: number): number => Math.round(net * (1 + VAT_RATE));
+const toNumber = (value: string): number => Number(value.replace(/\s/g, ""));
+const withVat = (net: number): number => Math.round(net * (1 + VAT_RATE));
 
 /** Panel versions with prices for every size (CZK, excl. and incl. VAT). */
 export function getVersions(lang: Lang) {
-  return (prices as PricesData).products.map((product) => ({
-    id: product.id,
+  return (prices as PricesData).products.map((product, index) => ({
+    id: String(index + 1),
     name: product.title,
     tagline: product.tagline?.[lang] ?? "",
     prices: sizes.map((size) => {
@@ -97,34 +98,16 @@ export function getFaq(lang: Lang) {
   }));
 }
 
-interface PatternFrontmatter {
-  id: number;
-  title: string;
-  description?: string;
-  descriptionEn?: string;
-  imgLight: string;
-  modelHorizontal3d?: string;
-  modelVertical3d?: string;
-}
-
 const asset = (folder: string, value?: string) =>
   value ? new URL(/^(\/|https?:)/.test(value) ? value : `${folder}/${value}`, SITE_URL).href : undefined;
 
-/** Illustrative stone patterns from src/content/products. */
-export function getPatterns(lang: Lang) {
-  const files = import.meta.glob<{ frontmatter: PatternFrontmatter }>(
-    "../content/products/*.md",
-    { eager: true },
-  );
-  return Object.values(files)
-    .map(({ frontmatter: data }) => data)
-    .sort((a, b) => a.id - b.id)
-    .map((data) => ({
-      name: data.title,
-      description: (lang === "en" ? data.descriptionEn : data.description) ?? "",
-      image: asset("/images/products", data.imgLight),
-      model3d: asset("/3d/products", data.modelHorizontal3d ?? data.modelVertical3d),
-    }));
+/** Illustrative stone patterns (src/data/products.json, ordered in the CMS). */
+export function getPatterns() {
+  return productsData.items.map((item) => ({
+    name: item.title,
+    image: asset("/images/products", item.imgLight),
+    model3d: asset("/3d/products", item.modelHorizontal3d || item.modelVertical3d),
+  }));
 }
 
 /** Everything an agent needs, in one language. */
@@ -144,7 +127,7 @@ export function getSiteData(lang: Lang) {
       dimensionsMm: `${size.heightMm} × ${size.widthMm}`,
     })),
     versions: getVersions(lang),
-    patterns: getPatterns(lang),
+    patterns: getPatterns(),
     patternsNote: translate(lang, "products.samplesNote"),
     faq: getFaq(lang),
     contact: {

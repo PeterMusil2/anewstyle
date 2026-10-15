@@ -1,7 +1,6 @@
 {
   "products": [
     {
-      "id": "1",
       "title": "SLIM",
       "tagline": {
         "cs": "Elegantní nejtenčí provedení 16 mm v základní výbavě.",
@@ -30,7 +29,6 @@
       }
     },
     {
-      "id": "2",
       "title": "BASIC",
       "tagline": {
         "cs": "Hloubka 34 mm skryje zásuvku i přívodní kabel za panel.",
@@ -59,7 +57,6 @@
       }
     },
     {
-      "id": "3",
       "title": "DELUXE",
       "tagline": {
         "cs": "Luxusní, plně vybavená verze s ojedinělým dekorem kamene.",

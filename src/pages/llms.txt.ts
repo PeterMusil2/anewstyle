@@ -45,7 +45,7 @@ const section = (data: SiteData, lang: Lang): string => {
     "",
     data.patternsNote,
     "",
-    ...data.patterns.map((p) => `- **${p.name}**${p.description ? ` – ${p.description}` : ""}${p.image ? ` ([foto](${p.image}))` : ""}`),
+    ...data.patterns.map((p) => `- **${p.name}**${p.image ? ` ([foto](${p.image}))` : ""}`),
     "",
     `## ${h.faq}`,
     "",

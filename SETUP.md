@@ -165,7 +165,7 @@ upravovať ručne. Pri fotke na výšku sa vytvorí dlaždica na výšku.
 | Efekty mimo Tailwindu (CSS-first) | `src/styles/effects.css` |
 | Ceník | CMS → Ceník (`src/data/prices.json`) |
 | FAQ | CMS → Časté dotazy (`src/data/faq.json`) |
-| Produkty / vzory kameňa | CMS → Produkty (`src/content/products/`) |
+| Vzory kameňa | CMS → Vzory kamene (`src/data/products.json`, poradie ťahaním) |
 | Galéria – metadáta | CMS → Galerie (`src/data/gallery-cms.json`) |
 | Dáta pre agentov (JSON-LD, llms.txt, MCP, WebMCP) | `src/lib/site-data.ts` |
 | Nasadenie, OAuth, Cloudinary | `DEPLOY.md` |

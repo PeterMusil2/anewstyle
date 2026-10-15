@@ -5,8 +5,7 @@ export interface Price {
   xxxl: string;
 }
 
-export interface Product {
-  id: string;
+interface Product {
   title: string;
   /** Short pitch shown under the version name, per language. */
   tagline?: Record<"cs" | "en", string>;

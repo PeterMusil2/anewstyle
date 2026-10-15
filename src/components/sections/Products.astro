@@ -1,5 +1,6 @@
 ---
 import Card from "../product/Card.astro";
+import productsData from "../../data/products.json";
 import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import {
@@ -18,22 +19,8 @@ const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
 
-interface ProductFrontmatter {
-  id: number;
-  title: string;
-  imgLight: string;
-  imgDark: string;
-  imgFrame: string;
-  modelHorizontal3d?: string;
-  modelVertical3d?: string;
-}
-
-const products = Object.values(
-  import.meta.glob<{ frontmatter: ProductFrontmatter }>(
-    "../../content/products/*.md",
-    { eager: true },
-  ),
-);
+// Stone patterns in the order set in the CMS (drag & drop).
+const products = productsData.items;
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink-850">
@@ -57,26 +44,21 @@ const products = Object.values(
       </h3>
       <ul class="product-list grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {
-          products
-            .sort((a, b) => a.frontmatter.id - b.frontmatter.id)
-            .map((product) => {
-              const data = product.frontmatter;
-              return (
-                <li class="reveal">
-                  <Card
-                    id={data.id}
-                    title={data.title}
-                    imgLight={data.imgLight}
-                    imgDark={data.imgDark}
-                    imgFrame={data.imgFrame}
-                    modelHorizontal3d={data.modelHorizontal3d}
-                    modelVertical3d={data.modelVertical3d}
-                    has3D={Boolean(data.modelHorizontal3d || data.modelVertical3d)}
-                    lang={lang}
-                  />
-                </li>
-              );
-            })
+          products.map((product, index) => (
+            <li class="reveal">
+              <Card
+                id={index + 1}
+                title={product.title}
+                imgLight={product.imgLight}
+                imgDark={product.imgDark}
+                imgFrame={product.imgFrame}
+                modelHorizontal3d={product.modelHorizontal3d}
+                modelVertical3d={product.modelVertical3d}
+                has3D={Boolean(product.modelHorizontal3d || product.modelVertical3d)}
+                lang={lang}
+              />
+            </li>
+          ))
         }
       </ul>
     </div>

@@ -66,13 +66,12 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
     "@type": "ItemList",
     "@id": `${pageUrl}#stone-patterns`,
     name: lang === "cs" ? "Ilustrační vzory kamenných dekorů" : "Illustrative stone patterns",
-    itemListElement: getPatterns(lang).map((pattern, index) => ({
+    itemListElement: getPatterns().map((pattern, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
         "@type": "CreativeWork",
         name: pattern.name,
-        description: pattern.description,
         image: pattern.image,
       },
     })),

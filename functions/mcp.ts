@@ -63,7 +63,7 @@ const TOOLS = [
   {
     name: "list_stone_patterns",
     title: "Stone patterns",
-    description: "Illustrative natural-stone patterns with descriptions, photos and 3D models.",
+    description: "Illustrative natural-stone patterns with photos and 3D models.",
     inputSchema: { type: "object", properties: { ...langProperty } },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },

@@ -25,3 +25,6 @@
 /admin/*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-cache
+
+/build.json
+  Cache-Control: no-store

@@ -99,7 +99,7 @@
 
   const GalleryControl = createClass({
     getInitialState() {
-      return { filter: "all", confirm: null };
+      return { filter: "all" };
     },
 
     items() {
@@ -133,9 +133,14 @@
       this.commit(next);
     },
 
-    remove(index) {
-      this.setState({ confirm: null });
-      this.commit(this.items().filter((_, i) => i !== index));
+    async askRemove(index, name) {
+      const ask = window.AnewConfirm ?? (async () => window.confirm("Odebrat z webu?"));
+      const ok = await ask({
+        title: "Odebrat médium z webu?",
+        text: `„${name}“ zmizí z galerie po uložení a publikování. Soubor v Cloudinary zůstane, takže ho lze později vrátit.`,
+        ok: "Odebrat z webu",
+      });
+      if (ok) this.commit(this.items().filter((_, i) => i !== index));
     },
 
     async add() {
@@ -151,7 +156,6 @@
 
     renderCard(item, index, visiblePos, visibleCount) {
       const kind = kindOf(item);
-      const confirm = this.state.confirm === index;
       const name = fileName(item);
       return h("article", { key: item.media + index, className: "gm-card", "data-hidden": String(Boolean(item.hidden)) },
         h("a", { className: "gm-thumb", href: item.media, target: "_blank", rel: "noopener", title: "Otevřít originál v nové záložce" },
@@ -179,12 +183,7 @@
           h("div", { className: "gm-actions" },
             h("button", { type: "button", className: "gm-icon", "aria-label": "Posunout dříve", title: "Posunout dříve", disabled: visiblePos === 0, onClick: () => this.move(index, -1) }, icon("up")),
             h("button", { type: "button", className: "gm-icon", "aria-label": "Posunout později", title: "Posunout později", disabled: visiblePos === visibleCount - 1, onClick: () => this.move(index, 1) }, icon("down")),
-            confirm
-              ? h("div", { className: "gm-confirm", role: "group", "aria-label": "Potvrzení odebrání" },
-                  "Odebrat z webu?",
-                  h("button", { type: "button", className: "yes", onClick: () => this.remove(index) }, "Ano"),
-                  h("button", { type: "button", onClick: () => this.setState({ confirm: null }) }, "Ne"))
-              : h("button", { type: "button", className: "gm-icon danger", "aria-label": `Odebrat ${name} z webu`, title: "Odebrat z webu", onClick: () => this.setState({ confirm: index }) }, icon("trash")))));
+            h("button", { type: "button", className: "gm-icon danger", "aria-label": `Odebrat ${name} z webu`, title: "Odebrat z webu", onClick: () => this.askRemove(index, name) }, icon("trash")))));
     },
 
     render() {

@@ -249,6 +249,7 @@ const panoLabels = {
 </script>
 
 <script>
+  import psvCss from "@photo-sphere-viewer/core/index.css?url";
   // Lazy 360° panorama viewer. Photo Sphere Viewer (WebGL/three.js) and its CSS
   // are only fetched the first time a visitor opens a panorama. Prev/next cycle
   // through every panorama in the gallery by swapping the source on one viewer.
@@ -317,10 +318,16 @@ const panoLabels = {
       document.body.append(modal);
       document.documentElement.style.overflow = "hidden";
 
-      const [{ Viewer }] = await Promise.all([
-        import("@photo-sphere-viewer/core"),
-        import("@photo-sphere-viewer/core/index.css"),
-      ]);
+      // The stylesheet is linked by URL: with inlined stylesheets Vite cannot
+      // preload a CSS chunk for a dynamic import ("Unable to preload CSS").
+      if (!document.querySelector("link[data-psv-css]")) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = psvCss;
+        link.dataset.psvCss = "";
+        document.head.append(link);
+      }
+      const { Viewer } = await import("@photo-sphere-viewer/core");
 
       const viewer = new Viewer({
         container: stage,

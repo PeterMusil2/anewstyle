@@ -2,22 +2,22 @@
   "items": [
     {
       "question": {
-        "cs": "Je nutné řešit umístění zdroje a kabelů při instalaci?",
-        "en": "Do I need to worry about the placement of the power source and cables during installation?"
-      },
-      "answer": {
-        "cs": "Panely **BASIC** a **DELUXE** jsou navrženy pro maximální jednoduchost. Stačí je **zavěsit na zeď** jako obraz a zapojit do zásuvky. Všechny komponenty (včetně zásuvky) se skrývají za panelem.",
-        "en": "**BASIC** and **DELUXE** panels are designed for maximum simplicity. Just **hang them on the wall** like a picture and plug them into a socket. All components (including the socket) are hidden behind the panel."
-      }
-    },
-    {
-      "question": {
         "cs": "Mám designovou lampu, ale vadí mi viditelný napájecí kabel. Jak to řešíte u panelů?",
         "en": "I have a designer lamp, but the visible power cord bothers me. How do you solve this with your panels?"
       },
       "answer": {
         "cs": "Panely **BASIC** a **DELUXE** jsou navrženy pro maximální čistotu designu. Jejich **hloubka skryje zásuvku i přívodní kabel** za panel. Jednoduše jej pověsíte jako obraz a zapojíte – bez viditelných kabelů.",
         "en": "**BASIC** and **DELUXE** panels are designed for maximum design purity. Their **depth hides the socket and power cord** behind the panel. You simply hang it like a picture and plug it in – no visible cables."
+      }
+    },
+    {
+      "question": {
+        "cs": "Je nutné řešit umístění zdroje a kabelů při instalaci?",
+        "en": "Do I need to worry about the placement of the power source and cables during installation?"
+      },
+      "answer": {
+        "cs": "Panely **BASIC** a **DELUXE** jsou navrženy pro maximální jednoduchost. Stačí je **zavěsit na zeď** jako obraz a zapojit do zásuvky. Všechny komponenty (včetně zásuvky) se skrývají za panelem.",
+        "en": "**BASIC** and **DELUXE** panels are designed for maximum simplicity. Just **hang them on the wall** like a picture and plug them into a socket. All components (including the socket) are hidden behind the panel."
       }
     },
     {

@@ -9,6 +9,10 @@
   </head>
   <body>
     <!-- Decap CMS – configuration lives in ./config.yml -->
+    <script>window.CMS_MANUAL_INIT = true;</script>
     <script src="https://unpkg.com/decap-cms@^3.16.3/dist/decap-cms.js"></script>
+    <!-- Uploads to Cloudinary without a Cloudinary account (see /api/cloudinary) -->
+    <script src="/admin/cloudinary-upload.js"></script>
+    <script>window.CMS.init();</script>
   </body>
 </html>

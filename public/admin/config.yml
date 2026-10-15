@@ -28,18 +28,12 @@ site_url: https://anewstyle.cz
 display_url: https://anewstyle.cz
 logo_url: /images/logos/logo.svg
 
-# Photos and videos are uploaded to Cloudinary (cloud "lukaschylik") through
-# its Media Library widget; editors sign in with their Cloudinary account.
-# The API key is public by design – the secret never leaves the build env.
+# Photos and videos go to Cloudinary through our own upload dialog
+# (public/admin/cloudinary-upload.js + functions/api/cloudinary.ts): editors
+# only need their CMS login, no Cloudinary account. Fields set `target`
+# (gallery | bonus) or a fixed `folder.path`.
 media_library:
-  name: cloudinary
-  output_filename_only: false
-  use_transformations: false
-  use_secure_url: true
-  config:
-    cloud_name: lukaschylik
-    api_key: "526684664418576"
-    multiple: false
+  name: anewstyle-cloudinary
 
 # Required by Decap even with an external media library (fallback only).
 media_folder: public/images/uploads
@@ -184,9 +178,9 @@ collections:
         label: Galerie (Cloudinary)
         file: src/data/gallery-cms.json
         description: >-
-          Nahrajte fotky, videa nebo 360° panoramata – soubory se uloží do
-          Cloudinary (složka AnewStyle/Gallery/cms). Uložením změn se web znovu
-          sestaví a galerie se aktualizuje. Pomocí výběru existujícího souboru
+          Nahrajte fotky, videa nebo 360° panoramata – v okně nahrávání vyberete,
+          zda jde do galerie nebo bonusu a o jaký typ jde. Soubor se uloží do
+          Cloudinary a web se za 1–3 minuty sám aktualizuje. Pomocí výběru existujícího souboru
           lze upravit i média, která už v Cloudinary jsou (popisek, skrytí).
         fields:
           - name: items
@@ -200,7 +194,7 @@ collections:
                 widget: file
                 media_library:
                   config:
-                    folder: { path: AnewStyle/Gallery/cms }
+                    target: gallery
               - name: alt
                 label: Popisek
                 widget: object
@@ -220,7 +214,7 @@ collections:
                 widget: file
                 media_library:
                   config:
-                    folder: { path: AnewStyle/Bonus/cms }
+                    target: bonus
               - name: alt
                 label: Popisek
                 widget: object

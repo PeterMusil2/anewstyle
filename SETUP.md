@@ -92,39 +92,28 @@ koncept (pull request), Cloudflare k nej postaví preview, a až po
 
 ### 4.1 Jednorazové nastavenie
 
-1. **Over API kľúč.** V `public/admin/config.yml` je `cloud_name: lukaschylik`
-   a verejný `api_key` z tvojho `.env`. Ak by si kľúč niekedy menil, prepíš ho
-   aj tam (secret tam nikdy nepatrí).
-2. **Pozvi editorov do Cloudinary** – nahrávacie okno (Media Library widget)
-   vyžaduje prihlásenie účtom Cloudinary:
-   Cloudinary Console → *Settings → Users* → *Add user* (rola s právom
-   nahrávať do Media Library).
-3. **Vytvor priečinky** (Media Library → *New folder*), aby sa okno otváralo
-   na správnom mieste:
-   - `AnewStyle/Gallery/cms` – nové médiá do galérie
-   - `AnewStyle/Bonus/cms` – bonusový obsah (zobrazí sa po odoslaní formulára)
-   - `AnewStyle/Products`, `AnewStyle/Products/3D`, `AnewStyle/Products/Downloads`
-4. **Transformácie musia byť povolené.** Cloudinary → *Settings → Security* →
-   *Strict transformations* nechaj **vypnuté** (web si generuje rôzne veľkosti
-   a formáty (f_auto) za behu).
-5. *(Voliteľné)* **Automatický rebuild aj pri nahratí mimo CMS:**
-   Cloudflare → projekt → *Settings → Builds → Deploy hooks* → vytvor hook
-   (vetva `master`) a jeho URL vlož do Cloudinary → *Settings → Upload →
-   Notification URL*. Každé nahratie potom spustí nový build.
-   Bez toho sa médiá nahraté priamo v Cloudinary objavia až pri najbližšom
-   nasadení.
+Editori **nepotrebujú účet v Cloudinary**. Nahrávacie okno v CMS pošle súbor
+priamo do Cloudinary; podpis nahrávania vydá funkcia `/api/cloudinary` iba
+tomu, kto je v CMS prihlásený GitHub účtom s právom zápisu do repozitára.
+
+1. Cloudflare → *Variables and Secrets*: `CLOUDINARY_URL` (už je) – funkcia z
+   neho berie API kľúč a secret.
+2. *(Voliteľné)* `DEPLOY_HOOK_URL` (Secret) = URL deploy hooku z
+   *Settings → Builds → Deploy hooks*. Po nahratí sa web hneď prebuildí.
+   Ak už Cloudinary volá deploy hook cez *Settings → Upload → Notification
+   URL*, netreba.
+3. Cloudinary → *Settings → Security* → *Strict transformations* **vypnuté**.
 
 ### 4.2 Ako nahrať médium (pre editora)
 
-1. Otvor `https://anewstyle.cz/admin/` → **Nastavení webu → Galerie (Cloudinary)**.
-2. *Add Médium* → v poli **Fotka / video** klikni na výber → otvorí sa
-   Cloudinary → **Upload** (alebo vyber súbor, ktorý už v Cloudinary je).
-3. Vyplň **Popisek** (CZ/EN) – použije sa ako alternatívny text a v lightboxe.
-4. Ak ide o 360° panorámu, zapni **360° panorama**.
-5. **Uložiť** → **Ready** → **Publish**.
-6. Cloudflare web znovu postaví (zvyčajne 1–3 minúty) a médium sa objaví
-   v galérii. Poradie v zozname = poradie na webe (v rámci videí / fotiek / 360).
-7. Skryť médium bez zmazania: zapni **Skrýt na webu** a publikuj.
+1. `https://anewstyle.cz/admin/` → **Nastavení webu → Galerie (Cloudinary)**.
+2. V zozname **Galerie** alebo **Bonusový obsah** → *Add* → pole
+   **Fotka / video** → výber súboru.
+3. V okne zvoľ **Kam** (Galerie / Bonus) a **Typ** (Fotka / Video / 360°),
+   vyber súbor → **Nahrát**. Súbor ide do `AnewStyle/<Gallery|Bonus>/<images|videos|360>`.
+4. Vyplň **Popisek** (CZ/EN) → **Uložiť** → **Ready** → **Publish**.
+5. Web sa znovu postaví (1–3 minúty) a médium sa objaví v galérii.
+6. Skryť médium bez zmazania: zapni **Skrýt na webu** a publikuj.
 
 ### 4.3 Ako sa médiá zobrazia (formát a veľkosť rieši web sám)
 

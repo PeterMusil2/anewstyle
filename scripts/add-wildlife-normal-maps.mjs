@@ -14,11 +14,11 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const models = [
   {
     source: "public/3d/products/Rockfoil_WILDLIFE_3D.glb",
-    output: "public/3d/products/Rockfoil_WILDLIFE_3D_relief_matte.glb",
+    output: "public/3d/products/Rockfoil_WILDLIFE_3D_relief_matte_detail.glb",
   },
   {
     source: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical.glb",
-    output: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte.glb",
+    output: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte_detail.glb",
   },
 ];
 const normalMapUri = "WILDLIFE_surface_normal.png";
@@ -26,7 +26,7 @@ const normalMapWidth = 512;
 const fineBlurRadius = 1.2;
 const broadBlurRadius = 8;
 const normalStrength = 6.5;
-const materialNormalScale = 0.55;
+const materialNormalScale = 0.95;
 const materialRoughnessFactor = 0.82;
 
 const alignToFourBytes = (length) => (length + 3) & ~3;

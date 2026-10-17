@@ -5,8 +5,8 @@
       "imgLight": "/images/products/Rockfoil_WILDLIFE_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_WILDLIFE_dark.webp",
       "imgFrame": "/images/products/Rockfoil_WILDLIFE_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_WILDLIFE_3D_relief_matte.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_WILDLIFE_3D_relief_matte_detail.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte_detail.glb"
     },
     {
       "title": "Pink",

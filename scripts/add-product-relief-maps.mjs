@@ -193,7 +193,7 @@ for (const { slug, model } of products) {
       .replace(/_light$/, "")
       .replace(/[^a-zA-Z0-9_-]+/g, "_");
     const mapLabel = texturedMaterials.length === 1 ? slug : `${slug}_${imageLabel}`;
-    const uri = `${mapLabel}_surface_normal_v1.png`;
+    const uri = `${mapLabel}_surface_normal_v2.png`;
     const map = await makeNormalMap(
       getEmbeddedImage(sourceDocument, sourceBinary, imageIndex, sourcePath),
     );
@@ -206,7 +206,7 @@ for (const { slug, model } of products) {
 
   for (const orientation of ["", "_vertical"]) {
     const source = `public/3d/products/${model}${orientation}.glb`;
-    const output = `public/3d/products/${model}${orientation}_relief_matte_v1.glb`;
+    const output = `public/3d/products/${model}${orientation}_relief_matte_v2.glb`;
     const input = await readFile(resolve(projectRoot, source));
     const { document, binary } = readGlb(input, source);
 

@@ -245,6 +245,28 @@
   /* Hero video                                                         */
   /* ------------------------------------------------------------------ */
 
+  .hero-title {
+    position: relative;
+    isolation: isolate;
+    color: color-mix(in srgb, var(--color-fg) 60%, transparent);
+
+    &::before {
+      position: absolute;
+      z-index: -1;
+      inset: -1.25rem -2.5rem;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse at center,
+        rgb(0 0 0 / 0.56) 0%,
+        rgb(0 0 0 / 0.34) 42%,
+        transparent 76%
+      );
+      filter: blur(12px);
+      content: "";
+      pointer-events: none;
+    }
+  }
+
   .hero-video {
     opacity: 0;
     transition: opacity 1.2s var(--ease-out-soft);

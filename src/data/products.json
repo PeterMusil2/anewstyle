@@ -5,64 +5,64 @@
       "imgLight": "/images/products/Rockfoil_WILDLIFE_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_WILDLIFE_dark.webp",
       "imgFrame": "/images/products/Rockfoil_WILDLIFE_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_WILDLIFE_3D_relief_matte_v2.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte_v2.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_WILDLIFE_3D_relief_matte_v3.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte_v3.glb"
     },
     {
       "title": "Pink",
       "imgLight": "/images/products/Rockfoil_PINK_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_PINK_dark.webp",
       "imgFrame": "/images/products/Rockfoil_PINK_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_PINK_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_PINK_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_PINK_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_PINK_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "Goldenbark",
       "imgLight": "/images/products/Rockfoil_GOLDENBARK_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_GOLDENBARK_dark.webp",
       "imgFrame": "/images/products/Rockfoil_GOLDENBARK_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_GOLDENBARK_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_GOLDENBARK_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_GOLDENBARK_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_GOLDENBARK_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "Darkgold",
       "imgLight": "/images/products/Rockfoil_DARKGOLD_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_DARKGOLD_dark.webp",
       "imgFrame": "/images/products/Rockfoil_DARKGOLD_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_DARKGOLD_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_DARKGOLD_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_DARKGOLD_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "GOLDENSUN",
       "imgLight": "/images/products/Rockfoil_GOLDENSUN_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_GOLDENSUN_dark.webp",
       "imgFrame": "/images/products/Rockfoil_GOLDENSUN_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_GOLDENSUN_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_GOLDENSUN_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_GOLDENSUN_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_GOLDENSUN_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "BRIGHTGREY",
       "imgLight": "/images/products/Rockfoil_BRIGHTGREY_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_BRIGHTGREY_light_frame_thirds.webp",
       "imgFrame": "/images/products/Rockfoil_BRIGHTGREY_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_BRIGHTGREY_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_BRIGHTGREY_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_BRIGHTGREY_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_BRIGHTGREY_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "SAFARI",
       "imgLight": "/images/products/Rockfoil_SAFARI_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_SAFARI_light_frame_thirds.webp",
       "imgFrame": "/images/products/Rockfoil_SAFARI_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_SAFARI_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_SAFARI_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_SAFARI_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_SAFARI_3D_vertical_relief_matte_v1.glb"
     },
     {
       "title": "RUSTY",
       "imgLight": "/images/products/Rockfoil_RUSTY_light_frame.webp",
       "imgDark": "/images/products/Rockfoil_RUSTY_light_frame_thirds.webp",
       "imgFrame": "/images/products/Rockfoil_RUSTY_dark_frame.webp",
-      "modelHorizontal3d": "/3d/products/Rockfoil_RUSTY_3D.glb",
-      "modelVertical3d": "/3d/products/Rockfoil_RUSTY_3D_vertical.glb"
+      "modelHorizontal3d": "/3d/products/Rockfoil_RUSTY_3D_relief_matte_v1.glb",
+      "modelVertical3d": "/3d/products/Rockfoil_RUSTY_3D_vertical_relief_matte_v1.glb"
     }
   ]
 }

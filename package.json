@@ -10,6 +10,7 @@
     "dev": "astro dev",
     "gallery:build": "node scripts/build-cloudinary-gallery.mjs",
     "models:wildlife-normals": "bun scripts/add-wildlife-normal-maps.mjs",
+    "models:product-relief": "bun scripts/add-product-relief-maps.mjs",
     "typecheck": "astro check && node node_modules/typescript-7/bin/tsc --noEmit",
     "build": "bun run gallery:build && bun run images && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",

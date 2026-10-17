@@ -198,7 +198,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2100x600_2100x400_a66emc",
@@ -208,7 +208,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/21_utrk5o",
@@ -238,7 +238,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x1200_2400x600_2on_pkp36t",
@@ -248,7 +248,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_2400x800_hqebe1",
@@ -258,7 +258,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_off_kw8npo",
@@ -268,7 +268,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_on_gwmubq",
@@ -278,7 +278,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/24_unrdpn",
@@ -358,7 +358,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": true
     },
     {
       "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/32_d0ewwj",

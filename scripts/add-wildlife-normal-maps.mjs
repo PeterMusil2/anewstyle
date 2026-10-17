@@ -1,5 +1,5 @@
 /**
- * Add a shared tangent-space normal map to the Wildlife 3D models.
+ * Add a shared tangent-space normal map and a matte finish to the Wildlife 3D models.
  *
  * Each normal map is derived from the model's own stone texture, keeping the
  * surface relief aligned with the existing Wildlife image in both orientations.
@@ -14,11 +14,11 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const models = [
   {
     source: "public/3d/products/Rockfoil_WILDLIFE_3D.glb",
-    output: "public/3d/products/Rockfoil_WILDLIFE_3D_relief.glb",
+    output: "public/3d/products/Rockfoil_WILDLIFE_3D_relief_matte.glb",
   },
   {
     source: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical.glb",
-    output: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief.glb",
+    output: "public/3d/products/Rockfoil_WILDLIFE_3D_vertical_relief_matte.glb",
   },
 ];
 const normalMapUri = "WILDLIFE_surface_normal.png";
@@ -27,6 +27,7 @@ const fineBlurRadius = 1.2;
 const broadBlurRadius = 8;
 const normalStrength = 6.5;
 const materialNormalScale = 0.55;
+const materialRoughnessFactor = 0.82;
 
 const alignToFourBytes = (length) => (length + 3) & ~3;
 
@@ -188,13 +189,14 @@ async function addNormalMap(sourcePath, outputPath, normalMap) {
     name: "WILDLIFE surface relief",
   });
   material.normalTexture = { index: textureIndex, scale: materialNormalScale };
+  material.pbrMetallicRoughness.roughnessFactor = materialRoughnessFactor;
 
   const output = buildGlb(document, binary);
   const path = resolve(projectRoot, outputPath);
   const temporaryPath = `${path}.tmp`;
   await writeFile(temporaryPath, output);
   await rename(temporaryPath, path);
-  console.log(`Created ${outputPath} with the shared stone relief map.`);
+  console.log(`Created ${outputPath} with matte stone relief.`);
 }
 
 const firstPath = resolve(projectRoot, models[0].source);

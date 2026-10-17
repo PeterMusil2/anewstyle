@@ -5,6 +5,14 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
+# Opt out of training while preserving search and assistant access.
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Disallow: /
+
 # Machine-readable summary for LLMs: https://anewstyle.cz/llms.txt
 # Structured data for agents:        https://anewstyle.cz/agent/site.json
 # MCP server (read-only):            https://anewstyle.cz/mcp

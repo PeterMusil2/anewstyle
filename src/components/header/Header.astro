@@ -32,7 +32,7 @@ const t = useTranslations(lang);
     id="headerVideo"
     aria-hidden="true"
     tabindex="-1"
-    preload="none"
+    preload="auto"
     autoplay
     loop
     muted
@@ -198,35 +198,21 @@ const t = useTranslations(lang);
   // Re-encoded without audio (the hero is always muted): 1.9 MB / 1.1 MB.
   const VIDEO_MOBILE = "/videos/hero-mobile.mp4";
   const VIDEO_DESKTOP = "/videos/hero-1280.mp4";
-  const SLOW_CONNECTION = /^(slow-2g|2g)$/;
-
-  interface NetworkInformation {
-    saveData?: boolean;
-    effectiveType?: string;
-  }
-
-  function getConnection(): NetworkInformation | undefined {
-    return (navigator as Navigator & { connection?: NetworkInformation })
-      .connection;
-  }
 
   function initHeaderVideo(): void {
     const video = document.querySelector<HTMLVideoElement>("#headerVideo");
     const toggle = document.querySelector<HTMLButtonElement>("#headerVideoToggle");
     if (!video || !toggle) return;
 
-    const connection = getConnection();
-    // Match Vila Scala: the still poster is the reduced-motion/data-saving fallback.
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
-      connection?.saveData ||
-      SLOW_CONNECTION.test(connection?.effectiveType ?? "")
-    ) return;
+    // Autoplay is the default on phones too, regardless of connection estimates.
+    // Keep the explicit accessibility preference for a still background.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Set the live properties before attaching a source, including on iOS.
     video.muted = true;
     video.defaultMuted = true;
     video.playsInline = true;
+    video.autoplay = true;
     video.controls = false;
 
     let userPaused = false;
@@ -287,6 +273,8 @@ const t = useTranslations(lang);
       if (document.hidden) video.pause();
       else void play();
     });
+    // Mobile browsers can restore a frozen page from the back/forward cache.
+    window.addEventListener("pageshow", () => { void play(); });
 
     // Do not wait for unrelated images, analytics or the window load event.
     const isMobile = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;

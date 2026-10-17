@@ -52,10 +52,12 @@ const questions = faq.items.map((item) => ({
                 <Icon name="plus" class="faq-icon size-4" />
               </span>
             </summary>
-            <p
-              class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16"
-              set:html={item.answer}
-            />
+            <div class="faq-answer">
+              <p
+                class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16"
+                set:html={item.answer}
+              />
+            </div>
           </details>
         ))
       }

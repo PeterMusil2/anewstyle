@@ -28,9 +28,10 @@ const t = useTranslations(lang);
     />
   </picture>
   <video
-    class="hero-video absolute inset-0 -z-20 size-full object-cover"
+    class="hero-video pointer-events-none absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
-    aria-label={t('header.videoLabel')}
+    aria-hidden="true"
+    tabindex="-1"
     preload="none"
     autoplay
     loop
@@ -47,14 +48,14 @@ const t = useTranslations(lang);
     type="button"
     id="headerVideoToggle"
     hidden
-    aria-pressed="false"
+    aria-controls="headerVideo"
     aria-label={t('header.videoPause')}
     data-label-pause={t('header.videoPause')}
     data-label-play={t('header.videoPlay')}
-    class="absolute right-5 bottom-5 z-10 grid size-11 place-items-center rounded-full bg-black/45 text-white backdrop-blur-md transition-colors hover:bg-black/65 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 sm:bottom-8 [&[hidden]]:hidden!"
+    class="hero-video-toggle absolute z-10 grid size-11 cursor-pointer place-items-center rounded-full border border-fg/35 bg-ink/45 text-fg backdrop-blur-md transition-colors hover:bg-fg/12 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg [&[hidden]]:hidden!"
   >
-    <svg class="video-toggle__pause size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
-    <svg class="video-toggle__play hidden size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+    <svg class="video-toggle__pause size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
+    <svg class="video-toggle__play hidden size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
   </button>
 
   <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
@@ -209,135 +210,94 @@ const t = useTranslations(lang);
       .connection;
   }
 
-  function requestIdle(callback: () => void, timeout: number): void {
-    const idle = (
-      window as Window &
-        typeof globalThis & {
-          requestIdleCallback?: (
-            cb: IdleRequestCallback,
-            options?: IdleRequestOptions
-          ) => number;
-        }
-    ).requestIdleCallback;
-
-    if (idle) {
-      idle(() => callback(), { timeout });
-      return;
-    }
-
-    window.setTimeout(callback, 300);
-  }
-
-  function shouldSkipVideo(): boolean {
-    const connection = getConnection();
-
-    if (connection?.saveData) {
-      return true;
-    }
-
-    if (
-      typeof connection?.effectiveType === "string" &&
-      SLOW_CONNECTION.test(connection.effectiveType)
-    ) {
-      return true;
-    }
-
-    // Reduced motion no longer removes the video (it is a slow, muted
-    // ambience); the pause button below keeps it compliant (WCAG 2.2.2).
-    return false;
-  }
-
-  function attachHeaderVideoSource(video: HTMLVideoElement): void {
-    if (video.querySelector("source")) {
-      return;
-    }
-
-    const isMobile = window.matchMedia(
-      `(max-width: ${MOBILE_BREAKPOINT}px)`
-    ).matches;
-
-    const source = document.createElement("source");
-    source.src = isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP;
-    source.type = "video/mp4";
-
-    // Fade in only once frames are actually rendering, never before
-    const reveal = () => video.classList.add("is-playing");
-    video.addEventListener("playing", reveal, { once: true });
-    video.addEventListener("canplay", reveal, { once: true });
-
-    // Pause / play control (WCAG 2.2.2) appears with the video.
-    const toggle = document.querySelector<HTMLButtonElement>("#headerVideoToggle");
-    if (toggle) {
-      const sync = () => {
-        const paused = video.paused;
-        toggle.setAttribute("aria-pressed", String(paused));
-        toggle.setAttribute("aria-label", (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? "");
-        toggle.querySelector(".video-toggle__pause")?.classList.toggle("hidden", paused);
-        toggle.querySelector(".video-toggle__play")?.classList.toggle("hidden", !paused);
-      };
-      toggle.addEventListener("click", () => (video.paused ? video.play().catch(() => {}) : video.pause()));
-      video.addEventListener("play", sync);
-      video.addEventListener("pause", sync);
-      video.addEventListener("playing", () => { toggle.hidden = false; sync(); }, { once: true });
-    }
-
-    video.appendChild(source);
-    video.preload = "auto";
-    video.load();
-    video.play().catch(() => {
-      // Autoplay refused (e.g. iOS Low Power Mode): start on the first touch.
-      const retry = () => video.play().catch(() => {});
-      window.addEventListener("touchstart", retry, { once: true, passive: true });
-      window.addEventListener("pointerdown", retry, { once: true });
-    });
-  }
-
   function initHeaderVideo(): void {
     const video = document.querySelector<HTMLVideoElement>("#headerVideo");
+    const toggle = document.querySelector<HTMLButtonElement>("#headerVideoToggle");
+    if (!video || !toggle) return;
 
-    if (!video) {
-      return;
-    }
+    const connection = getConnection();
+    // Match Vila Scala: the still poster is the reduced-motion/data-saving fallback.
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      connection?.saveData ||
+      SLOW_CONNECTION.test(connection?.effectiveType ?? "")
+    ) return;
 
-    if (shouldSkipVideo()) {
-      video.remove();
-      return;
-    }
+    // Set the live properties before attaching a source, including on iOS.
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.controls = false;
 
-    // Never compete with LCP: wait for full load, then for an idle frame
-    const loadWhenIdle = () => {
-      requestIdle(() => attachHeaderVideoSource(video), 3000);
+    let userPaused = false;
+    let inView = true;
+    let playPending = false;
+    const sync = () => {
+      const paused = video.paused;
+      toggle.setAttribute("aria-label", (paused ? toggle.dataset.labelPlay : toggle.dataset.labelPause) ?? "");
+      toggle.querySelector(".video-toggle__pause")?.classList.toggle("hidden", paused);
+      toggle.querySelector(".video-toggle__play")?.classList.toggle("hidden", !paused);
     };
-
-    const afterPageReady = () => {
-      if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                observer.disconnect();
-                loadWhenIdle();
-              }
-            }
-          },
-          { rootMargin: "200px" }
-        );
-
-        observer.observe(video);
-        return;
+    const play = async () => {
+      if (playPending || userPaused || !inView || document.hidden) return;
+      playPending = true;
+      try {
+        await video.play();
+      } catch {
+        // OS autoplay restrictions keep the poster and offer the same small control.
+        if (!userPaused && inView && !document.hidden && !video.error) {
+          toggle.hidden = false;
+          sync();
+        }
+      } finally {
+        playPending = false;
       }
-
-      loadWhenIdle();
     };
 
-    if (document.readyState === "complete") {
-      afterPageReady();
-    } else {
-      window.addEventListener("load", afterPageReady, { once: true });
+    video.addEventListener("playing", () => {
+      // Never expose a native central play overlay before playback succeeds.
+      video.classList.add("is-playing");
+      toggle.hidden = false;
+      sync();
+    });
+    video.addEventListener("pause", sync);
+    video.addEventListener("error", () => {
+      video.classList.remove("is-playing");
+      toggle.hidden = true;
+    });
+    toggle.addEventListener("click", () => {
+      if (video.paused) {
+        userPaused = false;
+        void play();
+      } else {
+        userPaused = true;
+        video.pause();
+      }
+    });
+
+    // Save decoding work off screen, without undoing an explicit user pause.
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView) void play();
+        else video.pause();
+      }, { threshold: 0.05 }).observe(video);
     }
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) video.pause();
+      else void play();
+    });
+
+    // Do not wait for unrelated images, analytics or the window load event.
+    const isMobile = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+    video.src = isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP;
+    video.preload = "auto";
+    video.addEventListener("canplay", () => { void play(); }, { once: true });
+    video.load();
+    void play();
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
+  function initHeader(): void {
     initHeaderVideo();
 
     // AR button initialization
@@ -378,5 +338,11 @@ const t = useTranslations(lang);
         }, 2000);
       }
     });
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHeader, { once: true });
+  } else {
+    initHeader();
+  }
 </script>

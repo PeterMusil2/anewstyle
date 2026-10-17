@@ -229,6 +229,15 @@
     }
   }
 
+  .hero-video-toggle {
+    inset-block-start: calc(var(--nav-height) + 1.5rem);
+    inset-inline-end: 1.25rem;
+
+    @media (width >= 40rem) {
+      inset-inline-end: 2rem;
+    }
+  }
+
   /* model-viewer used for the AR quick action stays off-screen. */
   model-viewer[style*="position: fixed"] {
     z-index: -9999 !important;

@@ -161,7 +161,7 @@ const cheapest = (key: SizeKey) =>
 
     <!-- Step 2: version -->
     <div class="flex flex-col gap-2.5">
-      <div class="flex items-center justify-between gap-4 tiny:max-lg:sr-only">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="flex items-center gap-3">
           <span class="grid size-7 shrink-0 place-items-center border border-gold text-xs font-extrabold text-gold">2</span>
           <span class="text-xs font-extrabold tracking-[0.14em] uppercase sm:text-[0.8125rem]">
@@ -175,6 +175,33 @@ const cheapest = (key: SizeKey) =>
           <a href={`#${id}-compare`} class="hidden min-h-11 items-center gap-2 text-xs font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light lg:inline-flex">
             {t("price.compareCta")} ↓
           </a>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 border border-line bg-ink-900 px-4 py-3 xl:hidden">
+        <div class="relative h-28 w-14 shrink-0">
+          {
+            sizes.map((size) => (
+              <img
+                src={`/images/priceList/${size.key}.avif`}
+                width="280"
+                height="560"
+                loading="lazy"
+                decoding="async"
+                alt={`${t("price.previewAlt")} ${size.label}`}
+                data-size={size.key}
+                data-size-preview
+                class="absolute inset-0 size-full -scale-x-100 object-contain object-bottom"
+              />
+            ))
+          }
+          <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[33%]" />
+        </div>
+        <div class="flex min-w-0 flex-col gap-1.5">
+          <p class="text-[0.6875rem] font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
+          <p class="text-sm font-semibold text-fg-soft">
+            {sizes.map((size) => <span data-size={size.key}>{size.label} · {dims(size.width)}</span>)}
+          </p>
         </div>
       </div>
 

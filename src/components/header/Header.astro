@@ -11,7 +11,7 @@ const { lang = 'cs' } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<header class="scheme-dark relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
+<header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
   <!-- Poster: the LCP image. The video fades in over it once it plays. -->
   <picture>
     <source media="(max-width: 560px)" type="image/avif" srcset="/images/hero/hero-poster-mobile.avif" />

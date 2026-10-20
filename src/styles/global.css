@@ -24,8 +24,7 @@
 
   /*
    * Every colour is a light-dark() pair, so the active `color-scheme`
-   * decides the theme – per element. `scheme-dark` on a subtree (hero,
-   * showcase) keeps it dark even when the page is light.
+   * decides the theme per element. The hero opts into a protected dark scheme.
    * Light values are checked for WCAG AA on the light grounds.
    */
 
@@ -110,6 +109,11 @@
   }
 }
 
+/* Keep the hero's deliberately dark palette from browser auto-darkening. */
+@utility scheme-dark-protected {
+  color-scheme: only dark;
+}
+
 /* Section rhythm: one vertical spacing scale for the whole site. */
 @utility section-y {
   padding-block: 5rem;
@@ -138,14 +142,18 @@
      set before first paint by the inline script in Layout.astro). */
   :root {
     --nav-height: 4.5rem;
-    color-scheme: light dark;
+    color-scheme: only light;
+
+    @media (prefers-color-scheme: dark) {
+      color-scheme: only dark;
+    }
 
     &[data-theme="light"] {
-      color-scheme: light;
+      color-scheme: only light;
     }
 
     &[data-theme="dark"] {
-      color-scheme: dark;
+      color-scheme: only dark;
     }
 
     @media (width >= 64rem) {

@@ -31,13 +31,11 @@ interface Context {
 
 const REPO = "PeterMusil2/anewstyle";
 
+// Gallery photos and 360° panoramas live in the repository (public/gallery/),
+// so only gallery videos and product files are uploaded here.
 const ALLOWED_FOLDERS = new Set([
-  "AnewStyle/Gallery/images",
   "AnewStyle/Gallery/videos",
-  "AnewStyle/Gallery/360",
-  "AnewStyle/Bonus/images",
   "AnewStyle/Bonus/videos",
-  "AnewStyle/Bonus/360",
   "AnewStyle/Products",
   "AnewStyle/Products/3D",
   "AnewStyle/Products/Downloads",

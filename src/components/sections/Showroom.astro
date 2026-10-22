@@ -2,7 +2,7 @@
 import Icon from "../icons/Icon.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
-import { getGalleryItems } from "../../lib/cloudinary-gallery";
+import { getGalleryItems } from "../../lib/gallery";
 
 interface Props {
   id: string;
@@ -12,22 +12,22 @@ interface Props {
 const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
-// Images and videos loaded from the Cloudinary `AnewStyle/Gallery` folder at
-// build time. Falls back to an empty list when the JSON hasn't been generated.
-const rawGalleryItems = await getGalleryItems();
-
+// Photos and 360° panoramas are watermarked image sets in public/media/,
+// videos come from Cloudinary; the CMS list decides order and visibility
+// (see src/lib/gallery.ts).
 // Display order mirrors the segment control: videos first, then 360, then photos.
 const GALLERY_ORDER: Record<string, number> = { video: 0, "360": 1, image: 2 };
-const cloudinaryItems = [...rawGalleryItems]
+const galleryItems = getGalleryItems()
   .map((item) => ({ ...item, alt: lang === "en" ? (item.altEn ?? item.alt) : item.alt }))
-  .sort(
-  (a, b) => (GALLERY_ORDER[a.type] ?? 99) - (GALLERY_ORDER[b.type] ?? 99),
-);
+  .sort((a, b) => (GALLERY_ORDER[a.type] ?? 99) - (GALLERY_ORDER[b.type] ?? 99));
 
-// Tile widths the browser picks from, mirroring the .gallery column counts:
-// 1 column on mobile, 2 on tablet, 3 on small laptops, 4 above that.
-const GALLERY_SIZES =
-  "(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw";
+// Tile widths, mirroring the .gallery grid (container 4 → 3 → 2 → 1 columns):
+// a landscape tile spans two columns, a portrait tile one. Lazy tiles use
+// sizes="auto" where supported (the real rendered width), these otherwise.
+const TILE_SIZES = {
+  landscape: "auto, (max-width: 35rem) 100vw, (max-width: 48rem) 100vw, (max-width: 64rem) 66vw, 50vw",
+  portrait: "auto, (max-width: 35rem) 100vw, (max-width: 48rem) 50vw, (max-width: 64rem) 33vw, 25vw",
+};
 
 // One look for every segment of the filter.
 const segmentButton =
@@ -69,7 +69,7 @@ const panoLabels = {
       data-pano-next={panoLabels.next}
     >
     {
-      cloudinaryItems.map((item) =>
+      galleryItems.map((item) =>
         item.type === "360" ? (
           <a
             href={item.full}
@@ -82,20 +82,17 @@ const panoLabels = {
             rel="noopener"
           >
             <div class="gitem__photo size-full">
-              <picture>
-                {item.thumbAvif && <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />}
-                <img
-                  src={item.thumb}
-                  srcset={item.thumbSrcset}
-                  sizes={item.thumbSrcset ? GALLERY_SIZES : undefined}
-                  loading="lazy"
-                  decoding="async"
-                  width={item.width}
-                  height={item.height}
-                  alt={item.alt ?? t("gallery.preview360Day")}
-                  class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
-                />
-              </picture>
+              <img
+                src={item.tile.src}
+                srcset={item.tile.srcset}
+                sizes={item.tile.srcset ? TILE_SIZES.landscape : undefined}
+                loading="lazy"
+                decoding="async"
+                width={item.tile.width}
+                height={item.tile.height}
+                alt={item.alt ?? t("gallery.preview360Day")}
+                class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
+              />
             </div>
             <div class="absolute inset-0 grid place-items-center bg-black/10 transition-colors group-hover:bg-black/0">
               <span class="grid size-18 place-items-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:scale-110 sm:size-22">
@@ -109,27 +106,27 @@ const panoLabels = {
             aria-label={item.alt ?? t("products.stoneAsLighting")}
             data-fancybox={item.bonus ? undefined : "gallery"}
             data-fancybox-locked={item.bonus ? "gallery" : undefined}
+            data-srcset={item.fullSrcset}
+            data-sizes={item.fullSrcset ? "100vw" : undefined}
             data-media={item.type}
-            data-orientation={item.orientation ?? "landscape"}
+            data-orientation={item.orientation}
             data-bonus={item.bonus ? "true" : undefined}
             class="gitem group relative overflow-hidden border border-line bg-ink-900 no-underline"
             rel="noopener"
           >
             <div class="gitem__photo size-full">
-              <picture>
-                {item.thumbAvif && <source type="image/avif" srcset={item.thumbAvif} sizes={GALLERY_SIZES} />}
-                <img
-                  src={item.thumb}
-                  srcset={item.thumbSrcset}
-                  sizes={item.thumbSrcset ? GALLERY_SIZES : undefined}
-                  loading="lazy"
-                  decoding="async"
-                  width={item.width}
-                  height={item.height}
-                  alt={item.alt ?? t("products.stoneAsLighting")}
-                  class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
-                />
-              </picture>
+              <img
+                src={item.tile.src}
+                srcset={item.tile.srcset}
+                sizes={item.tile.srcset ? TILE_SIZES[item.orientation] : undefined}
+                loading="lazy"
+                decoding="async"
+                width={item.tile.width}
+                height={item.tile.height}
+                style={item.tile.style}
+                alt={item.alt ?? t("products.stoneAsLighting")}
+                class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
+              />
             </div>
             {item.type === "video" && (
               <div class="absolute inset-0 grid place-items-center bg-black/10 transition-colors group-hover:bg-black/0">

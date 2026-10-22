@@ -10,7 +10,7 @@ ANEW STYLE is a Czech product showcase website for illuminated stone panels (Roc
 
 ```bash
 bun run dev          # Astro dev server (http://localhost:4321)
-bun run build        # gallery:build → typecheck → astro build → sitemap alias
+bun run build        # admin:build → images → typecheck → astro build → sitemap alias
 bun run typecheck    # astro check (TypeScript 6 API) + tsc from TypeScript 7
 bun run preview      # serve the production build
 bun run cms:local    # local Decap CMS backend, then open /admin/ on the dev server
@@ -116,6 +116,11 @@ All components receive `lang` and translate through `t()`.
 - Products (stone patterns): `src/data/products.json` – list order = order on the site (drag & drop in the CMS).
 - Responsive images: `scripts/optimize-images.mjs` writes AVIF/WebP variants to `public/_img` + `src/data/image-manifest.json`; use `<Picture>` (`src/components/ui/Picture.astro`). Outputs are committed so builds only encode new images.
 - Admin scripts in `public/admin/*.js` are loaded with `?v=YYYYMMDD` – bump it in `public/admin/index.html` after changing them.
+- Gallery (`src/data/gallery-cms.json`, CMS → Galerie, rendered via `src/lib/gallery.ts`):
+  - Photos and 360° panoramas are watermarked AVIF image sets in `public/media/<images|360>/<name>-<width>.avif`; entries store only the base path, `src/lib/image-set.ts` reads widths/sizes from the files.
+  - One rule set, `src/lib/image-pipeline.ts` (widths, quality, watermark placement), is used by `scripts/image-set.ts` (Bun + sharp) and bundled into `public/admin/pipeline-core.js` (`bun run admin:build`, generated – don't edit) for the CMS worker (`public/admin/image-worker.js`).
+  - CMS uploads: `media-upload.js` → `image-pipeline.js` (browser AVIF + watermark) → `repo-store.js` (GitHub Git Data API, `[skip ci]`). Videos still go to Cloudinary (`cloudinary-upload.js`, `functions/api/cloudinary.ts`).
+  - Watermark artwork: `public/images/logos/watermark.svg` → `bun run watermark` renders `public/admin/watermark.png`.
 - Price list: `src/data/prices.json` (prices per size, taglines, feature matrix).
 - FAQ: `src/data/faq.json` (cs/en, `**bold**` rendered by `src/lib/inline-markdown.ts`).
 - All three are editable in **Decap CMS** at `/admin/` (`public/admin/config.yml`).

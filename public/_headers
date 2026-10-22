@@ -45,6 +45,10 @@ https://:version.:project.pages.dev/*
 /_img/*
   Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
 
+# Gallery image sets: every upload gets a new random name, so files never change.
+/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
 /videos/*
   Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
 

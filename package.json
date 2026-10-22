@@ -8,11 +8,13 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "gallery:build": "node scripts/build-cloudinary-gallery.mjs",
+    "admin:build": "bun build src/lib/image-pipeline.ts --outfile public/admin/pipeline-core.js --format esm --target browser --banner \"// Generated from src/lib/image-pipeline.ts by bun run admin:build - do not edit.\"",
+    "gallery:image": "bun scripts/image-set.ts",
+    "watermark": "bun scripts/watermark.ts",
     "models:wildlife-normals": "bun scripts/add-wildlife-normal-maps.mjs",
     "models:product-relief": "bun scripts/add-product-relief-maps.mjs",
     "typecheck": "astro check && node node_modules/typescript-7/bin/tsc --noEmit",
-    "build": "bun run gallery:build && bun run images && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
+    "build": "bun run admin:build && bun run images && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "cms:local": "decap-server",
@@ -26,7 +28,6 @@
     "@google/model-viewer": "^4.4.0",
     "@photo-sphere-viewer/core": "^5.15.1",
     "astro": "^7.4.0",
-    "cloudinary": "^2.11.0",
     "three": "^0.183.2",
     "typescript": "^6.0.3",
     "typescript-7": "npm:typescript@^7.0.2"
@@ -37,6 +38,7 @@
     "decap-server": "^3.11.5",
     "postcss-html": "^2.0.0",
     "sharp": "^0.35.5",
+    "smartcrop-sharp": "^2.0.8",
     "stylelint": "^17.16.0",
     "stylelint-order": "^8.1.2",
     "tailwindcss": "^4.3.3"

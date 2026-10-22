@@ -1,22 +1,6 @@
 {
   "media": [
     {
-      "media": "/media/images/strom-pro-prirodu-q3o2",
-      "alt": {
-        "cs": "",
-        "en": ""
-      },
-      "bonus": false,
-      "panorama": false,
-      "hidden": false,
-      "focus": {
-        "x": 50,
-        "y": 34
-      },
-      "width": 800,
-      "height": 800
-    },
-    {
       "media": "https://res.cloudinary.com/lukaschylik/video/upload/AnewStyle/Gallery/videos/Video_web_1_v3ngmg",
       "alt": {
         "cs": "",

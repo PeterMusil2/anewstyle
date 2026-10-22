@@ -51,884 +51,1392 @@
       "hidden": false
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_1_j9wipy",
+      "media": "/media/images/viz-web-1-j9wipy",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_2_xq3zkj",
+      "media": "/media/images/viz-web-2-xq3zkj",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_3_gqcn4w",
+      "media": "/media/images/viz-web-3-gqcn4w",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_4_et7cqw",
+      "media": "/media/images/viz-web-4-et7cqw",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_5_kd7i3l",
+      "media": "/media/images/viz-web-5-kd7i3l",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/images/Viz_web_6_ws3im4",
+      "media": "/media/images/viz-web-6-ws3im4",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": false,
-      "hidden": false
-    },
-    {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_01_txb4fs",
-      "alt": {
-        "cs": "",
-        "en": ""
+      "hidden": false,
+      "focus": {
+        "x": 50,
+        "y": 50
       },
-      "bonus": false,
-      "panorama": true,
-      "hidden": false
+      "width": 1280,
+      "height": 720
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_02_smijsc",
-      "alt": {
-        "cs": "",
-        "en": ""
-      },
-      "bonus": false,
-      "panorama": true,
-      "hidden": false
-    },
-    {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_03_mmpyp2",
-      "alt": {
-        "cs": "",
-        "en": ""
-      },
-      "bonus": false,
-      "panorama": true,
-      "hidden": false
-    },
-    {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_05_t52e4a",
-      "alt": {
-        "cs": "",
-        "en": ""
-      },
-      "bonus": false,
-      "panorama": true,
-      "hidden": false
-    },
-    {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Gallery/360/360_viz_06_ry0ur9",
+      "media": "/media/360/360-viz-01-txb4fs",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": false,
       "panorama": true,
-      "hidden": false
+      "hidden": false,
+      "width": 5000,
+      "height": 2500
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/19_sumawi",
+      "media": "/media/360/360-viz-02-smijsc",
       "alt": {
         "cs": "",
         "en": ""
       },
+      "bonus": false,
+      "panorama": true,
+      "hidden": false,
+      "width": 5000,
+      "height": 2500
+    },
+    {
+      "media": "/media/360/360-viz-03-mmpyp2",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "bonus": false,
+      "panorama": true,
+      "hidden": false,
+      "width": 5000,
+      "height": 2500
+    },
+    {
+      "media": "/media/360/360-viz-05-t52e4a",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "bonus": false,
+      "panorama": true,
+      "hidden": false,
+      "width": 5000,
+      "height": 2500
+    },
+    {
+      "media": "/media/360/360-viz-06-ry0ur9",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
+      "bonus": false,
+      "panorama": true,
+      "hidden": false,
+      "width": 6000,
+      "height": 3000
+    },
+    {
+      "media": "/media/images/19-sumawi",
+      "alt": {
+        "cs": "",
+        "en": ""
+      },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/19b_li6e8l",
+      "media": "/media/images/19b-li6e8l",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/20_omoqra",
+      "media": "/media/images/20-omoqra",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2100x400_2100x800_dfi4pd",
+      "media": "/media/images/2100x400-2100x800-dfi4pd",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 47,
+        "y": 50
+      },
+      "width": 4284,
+      "height": 5712
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2100x600_2100x400_a66emc",
+      "media": "/media/images/2100x600-2100x400-a66emc",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1290,
+      "height": 2288
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/21_utrk5o",
+      "media": "/media/images/21-utrk5o",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/22_yl12yy",
+      "media": "/media/images/22-yl12yy",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x1200_2400x600_1on_d4wmxh",
+      "media": "/media/images/2400x1200-2400x600-1on-d4wmxh",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 50,
+        "y": 41
+      },
+      "width": 2448,
+      "height": 1836
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x1200_2400x600_2on_pkp36t",
+      "media": "/media/images/2400x1200-2400x600-2on-pkp36t",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 50,
+        "y": 50
+      },
+      "width": 1836,
+      "height": 2448
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_2400x800_hqebe1",
+      "media": "/media/images/2400x400-2400x800-hqebe1",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 50,
+        "y": 41
+      },
+      "width": 4032,
+      "height": 3024
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_off_kw8npo",
+      "media": "/media/images/2400x400-off-kw8npo",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 47,
+        "y": 50
+      },
+      "width": 4284,
+      "height": 5712
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/2400x400_on_gwmubq",
+      "media": "/media/images/2400x400-on-gwmubq",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 47,
+        "y": 50
+      },
+      "width": 4284,
+      "height": 5712
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/24_unrdpn",
+      "media": "/media/images/24-unrdpn",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/24b_xtod1h",
+      "media": "/media/images/24b-xtod1h",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/25_n2nib6",
+      "media": "/media/images/25-n2nib6",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/27_bdix3s",
+      "media": "/media/images/27-bdix3s",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/27b_dlnjuz",
+      "media": "/media/images/27b-dlnjuz",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/28_raqzws",
+      "media": "/media/images/28-raqzws",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/29_jhzlxi",
+      "media": "/media/images/29-jhzlxi",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/3005x600_2on_z6uafb",
+      "media": "/media/images/3005x600-2on-z6uafb",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": true
+      "hidden": true,
+      "focus": {
+        "x": 43,
+        "y": 50
+      },
+      "width": 1836,
+      "height": 2580
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/32_d0ewwj",
+      "media": "/media/images/32-d0ewwj",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/34_tqemj6",
+      "media": "/media/images/34-tqemj6",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/34b_bqbwbh",
+      "media": "/media/images/34b-bqbwbh",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/36b_zbhxs9",
+      "media": "/media/images/36b-zbhxs9",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/36c_anugai",
+      "media": "/media/images/36c-anugai",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/37_clq3pk",
+      "media": "/media/images/37-clq3pk",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/38_vnkdx8",
+      "media": "/media/images/38-vnkdx8",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 51,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/39_nw45e7",
+      "media": "/media/images/39-nw45e7",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/41_qd7ibu",
+      "media": "/media/images/41-qd7ibu",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42b_xjkoml",
+      "media": "/media/images/42b-xjkoml",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 54,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42c_eja9kz",
+      "media": "/media/images/42c-eja9kz",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 54,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/42d_cirn6p",
+      "media": "/media/images/42d-cirn6p",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 57,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/50_s6htem",
+      "media": "/media/images/50-s6htem",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/51_kvxefu",
+      "media": "/media/images/51-kvxefu",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55b_ajmt4n",
+      "media": "/media/images/55b-ajmt4n",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 51,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55c_uqcwzi",
+      "media": "/media/images/55c-uqcwzi",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/55d_a5e2rs",
+      "media": "/media/images/55d-a5e2rs",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/56_vkofl7",
+      "media": "/media/images/56-vkofl7",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/57b_280_jgct8o",
+      "media": "/media/images/57b-280-jgct8o",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58a_280_uwi6fv",
+      "media": "/media/images/58a-280-uwi6fv",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 57,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58b_280_hnnygu",
+      "media": "/media/images/58b-280-hnnygu",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58c_280_qknm1x",
+      "media": "/media/images/58c-280-qknm1x",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/58d_280_lfwipb",
+      "media": "/media/images/58d-280-lfwipb",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 57,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/59a_280_rs4u0g",
+      "media": "/media/images/59a-280-rs4u0g",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/59b_280_u1jurx",
+      "media": "/media/images/59b-280-u1jurx",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/61a_280_t5lop9",
+      "media": "/media/images/61a-280-t5lop9",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/61b_280_ato0n0",
+      "media": "/media/images/61b-280-ato0n0",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63b_300_aooltk",
+      "media": "/media/images/63b-300-aooltk",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63c_300_memxrm",
+      "media": "/media/images/63c-300-memxrm",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63d_300_k5nmmv",
+      "media": "/media/images/63d-300-k5nmmv",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/63e_300_ybpy3d",
+      "media": "/media/images/63e-300-ybpy3d",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/65_myej1l",
+      "media": "/media/images/65-myej1l",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 57,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/66_e6fucd",
+      "media": "/media/images/66-e6fucd",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/67_hfuzke",
+      "media": "/media/images/67-hfuzke",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/68_ux4sxp",
+      "media": "/media/images/68-ux4sxp",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69a_oqze9a",
+      "media": "/media/images/69a-oqze9a",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69b_bjavjy",
+      "media": "/media/images/69b-bjavjy",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69c_cykuc8",
+      "media": "/media/images/69c-cykuc8",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/69d_ujhmks",
+      "media": "/media/images/69d-ujhmks",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/70a_d5isv7",
+      "media": "/media/images/70a-d5isv7",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/70b_q8ezbc",
+      "media": "/media/images/70b-q8ezbc",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/71a_pdgz5u",
+      "media": "/media/images/71a-pdgz5u",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/71b_qn8luo",
+      "media": "/media/images/71b-qn8luo",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/72_qsqiqp",
+      "media": "/media/images/72-qsqiqp",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 45,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/73_z7rtss",
+      "media": "/media/images/73-z7rtss",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74a_i1n9wb",
+      "media": "/media/images/74a-i1n9wb",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74b_rnwx1t",
+      "media": "/media/images/74b-rnwx1t",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/74c_kzenc1",
+      "media": "/media/images/74c-kzenc1",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/75a_300_kzzlw3",
+      "media": "/media/images/75a-300-kzzlw3",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/75b_300_jbujaj",
+      "media": "/media/images/75b-300-jbujaj",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76a_300_icnrb8",
+      "media": "/media/images/76a-300-icnrb8",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76b_300_rpconh",
+      "media": "/media/images/76b-300-rpconh",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/76c_300_jr2evo",
+      "media": "/media/images/76c-300-jr2evo",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 61,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/77a_300_acl6dg",
+      "media": "/media/images/77a-300-acl6dg",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/77b_300_tjdcvv",
+      "media": "/media/images/77b-300-tjdcvv",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 39,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/78_280_icekck",
+      "media": "/media/images/78-280-icekck",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     },
     {
-      "media": "https://res.cloudinary.com/lukaschylik/image/upload/AnewStyle/Bonus/images/7_g8xl2o",
+      "media": "/media/images/7-g8xl2o",
       "alt": {
         "cs": "",
         "en": ""
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false
+      "hidden": false,
+      "focus": {
+        "x": 48,
+        "y": 50
+      },
+      "width": 3720,
+      "height": 5138
     }
   ]
 }

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 365 850" width="365" height="850">
+  <!--
+    ANEW STYLE watermark – stroke-only redraw of logo.svg on the same grid.
+    Every shape is drawn twice from one <symbol>: a wider black stroke under a
+    white one, so the mark reads on light and dark photos. The root opacity is
+    the single knob for strength (baked into public/admin/watermark.png by
+    scripts/watermark.ts).
+  -->
+  <defs>
+    <g id="mark">
+      <!-- Frame, centre post, left bar -->
+      <rect x="14" y="21" width="282" height="805" />
+      <path d="M155 21V826M14 418H155" />
+      <!-- A: legs from the top of the post to the bottom corners, inner Λ -->
+      <path d="M155 21L24 826M155 21L290 826M223 428L155 826" />
+      <!-- S -->
+      <path d="M298 22C140 90 100 320 222 425C344 530 310 770 162 824" />
+    </g>
+    <!-- "ANEW STYLE", read bottom to top; local x = along the line, cap height 45 -->
+    <g id="type" transform="translate(352 828) rotate(-90)">
+      <path d="M0 0L44-45L88 0M14.7-15H73.3" />
+      <path d="M104 0V-45L184 0V-45" />
+      <path d="M264-45H212V0H264M212-22.5H258" />
+      <path d="M274-45L306 0L338-45L370 0L402-45" />
+      <path d="M510-39C505-44 495-45 483-45C468-45 456-41 456-33.5C456-26 468-24 483-22.5C498-21 510-19 510-11C510-3 498 0 483 0C470 0 459-2 454-7" />
+      <path d="M524-45H594M559-45V0" />
+      <path d="M600-45L637-22L674-45M637-22V0" />
+      <path d="M690-45V0H742" />
+      <path d="M810-45H758V0H810M758-22.5H804" />
+    </g>
+  </defs>
+  <g opacity="0.32" fill="none" stroke-linejoin="miter" stroke-linecap="butt">
+    <g stroke="#000">
+      <use href="#mark" stroke-width="11" />
+      <use href="#type" stroke-width="7.5" />
+    </g>
+    <g stroke="#fff">
+      <use href="#mark" stroke-width="7" />
+      <use href="#type" stroke-width="4" />
+    </g>
+  </g>
+</svg>

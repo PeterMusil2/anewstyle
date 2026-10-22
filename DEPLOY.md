@@ -8,8 +8,8 @@ custom domain `anewstyle.cz` points at the Pages project.
 - **Build command:** `bun run build`
 - **Build output directory:** `dist` (also declared in `wrangler.toml`)
 - **Production branch:** `master`
-- **Required build secret:** `CLOUDINARY_URL` — without it the build still
-  succeeds, the Cloudinary gallery just renders empty.
+- **Build secrets:** none. `CLOUDINARY_URL` is a runtime secret of the
+  `/api/cloudinary` Pages Function (CMS video and product uploads).
 
 ## One-time Cloudflare setup
 
@@ -22,10 +22,10 @@ custom domain `anewstyle.cz` points at the Pages project.
    - **Build command:** `bun run build`
    - **Build output directory:** `dist`
 4. Add environment variables (Settings → Environment variables), for the
-   **Production** environment (and **Preview** if you want preview deploys to
-   pull fresh gallery data):
+   **Production** environment:
    - `CLOUDINARY_URL` = `cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>`
-     — click **Encrypt** so it's stored as a secret.
+     — click **Encrypt** so it's stored as a secret. Only the CMS upload
+     function uses it (gallery videos, product files).
    - Optional pins if a build ever picks the wrong runtime:
      - `BUN_VERSION` = `1.3.1`
      - `NODE_VERSION` = `24.15.0` (also pinned in `.node-version`, which
@@ -72,13 +72,12 @@ To find it:
 ## Local build
 
 ```bash
-echo 'CLOUDINARY_URL=cloudinary://KEY:SECRET@CLOUD' > .env   # git-ignored
-bun run build        # runs gallery:build → astro check → astro build
+bun run build        # admin:build → images → typecheck → astro build
 bun run preview      # serve dist/ locally
 ```
 
-Without `CLOUDINARY_URL` the build still succeeds — the Cloudinary gallery just
-renders empty (the loader fails soft), so previews and PRs don't need the secret.
+The build needs no secrets: gallery photos are files in `public/media/`, and
+gallery videos are plain Cloudinary delivery URLs stored in the CMS data.
 
 ## Decap CMS (`/admin/`)
 
@@ -113,19 +112,27 @@ Nothing to configure – they deploy with the site:
 - `/mcp` – read-only MCP server (Cloudflare Pages Function). Test:
   `curl -s https://anewstyle.cz/mcp -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'`
 
-## Photos & videos from the CMS (Cloudinary)
+## Gallery media from the CMS
 
-The CMS uploads media straight to Cloudinary (cloud `lukaschylik`) through the
-Cloudinary Media Library widget – editors sign in with a Cloudinary account
-that has access to the `AnewStyle` folders.
+**CMS → Galerie** lists the whole gallery (`src/data/gallery-cms.json`).
+Editors need only their CMS (GitHub) login.
 
-- **Settings → Galerie (Cloudinary)**: upload or pick photos, videos and 360°
-  panoramas, add Czech/English captions, mark panoramas, hide items, or add
-  bonus content (shown after the contact form is sent). New uploads land in
-  `AnewStyle/Gallery/cms` (bonus: `AnewStyle/Bonus/cms`).
-- Saving commits `src/data/gallery-cms.json`, which triggers a Cloudflare
-  build; `scripts/build-cloudinary-gallery.mjs` merges that metadata with
-  everything in the Cloudinary folders.
-- Product photos and 3D files picked in the CMS are stored in
-  `AnewStyle/Products/…`; the site accepts both Cloudinary URLs and the older
-  file names in `public/`.
+- **Photos and 360° panoramas live in this repository.** The upload dialog
+  (`public/admin/media-upload.js`) bakes the ANEW STYLE watermark into the
+  full-size image, encodes AVIF widths in the browser (photos 400–1800 px,
+  panoramas 800/2048/4096 px, never upscaled) and commits them to
+  `public/media/<images|360>/` through the GitHub API in one `[skip ci]`
+  commit. The gallery entry stores only the base path; the site reads widths
+  and sizes from the files. Rules: `src/lib/image-pipeline.ts`.
+- **Videos stay on Cloudinary** (cloud `lukaschylik`): `/api/cloudinary` signs
+  the upload for editors with push access, the file goes straight to
+  `AnewStyle/<Gallery|Bonus>/videos`.
+- Saving the gallery goes through the editorial workflow like any other edit;
+  the photo files are already on `master` and go live with the publish.
+- Bulk import without the CMS:
+  `bun scripts/image-set.ts <file-or-url> /media/images/<name> [photo|360]`.
+  Watermark artwork: `public/images/logos/watermark.svg` →
+  `bun scripts/watermark.ts` re-renders `public/admin/watermark.png`.
+- Product photos and 3D files picked in the CMS still go to Cloudinary
+  (`AnewStyle/Products/…`); the site accepts both Cloudinary URLs and the
+  older file names in `public/`.

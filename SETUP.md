@@ -1,8 +1,8 @@
 # ANEW STYLE – čo treba nastaviť po redesigne
 
 Návod krok za krokom pre vetvu `feat/redesign-tailwind4`: od lokálneho
-spustenia cez nasadenie a prihlasovanie do CMS až po nahrávanie médií do
-Cloudinary.
+spustenia cez nasadenie a prihlasovanie do CMS až po nahrávanie médií
+(fotky a 360° do repozitára s vodoznakom, videá do Cloudinary).
 
 ---
 
@@ -25,7 +25,7 @@ Cloudinary.
 3. Overenie buildu (rovnaký príkaz ako na Cloudflare):
 
    ```bash
-   bun run build          # gallery:build → astro check + TS 7 → astro build
+   bun run build          # admin:build → images → astro check + TS 7 → astro build
    bun run preview
    ```
 
@@ -36,8 +36,8 @@ Cloudinary.
    # otvor http://localhost:4321/admin/
    ```
 
-   Pozor: tlačidlo na nahrávanie médií otvára Cloudinary aj lokálne, takže
-   nahraté súbory sa reálne uložia do Cloudinary.
+   Fotky a 360° nahraté lokálne sa zapíšu do pracovnej kópie
+   (`public/media/`). Videá idú aj lokálne reálne do Cloudinary.
 
 ---
 
@@ -53,7 +53,8 @@ Cloudinary.
    - `CLOUDINARY_URL` = `cloudinary://API_KEY:API_SECRET@lukaschylik` (Encrypt)
 4. Na preview adrese skontroluj, čo som nevedel overiť ja:
    - video v úvode stránky,
-   - fotky, videá a 360° v galérii (načítajú sa z Cloudinary),
+   - fotky a 360° v galérii (súbory z `public/media/`, s vodoznakom) a videá
+     (z Cloudinary),
    - 3D model a „Zobraz u mě doma“ (AR) na mobile.
 5. Funkcia `/mcp` beží ako Pages Function – priečinok `functions/` Cloudflare
    nasadí automaticky, nič netreba nastavovať.
@@ -88,13 +89,18 @@ koncept (pull request), Cloudflare k nej postaví preview, a až po
 
 ---
 
-## 4. Cloudinary – nahrávanie fotiek a videí z CMS
+## 4. Nahrávanie fotiek, 360° a videí z CMS
 
 ### 4.1 Jednorazové nastavenie
 
-Editori **nepotrebujú účet v Cloudinary**. Nahrávacie okno v CMS pošle súbor
-priamo do Cloudinary; podpis nahrávania vydá funkcia `/api/cloudinary` iba
-tomu, kto je v CMS prihlásený GitHub účtom s právom zápisu do repozitára.
+Editori **nepotrebujú účet v Cloudinary** ani iný účet než prihlásenie do CMS.
+
+- **Fotky a 360°** spracuje prehliadač editora: pridá vodoznak ANEW STYLE,
+  vytvorí AVIF v niekoľkých šírkach a uloží ich jedným commitom do
+  repozitára (`public/media/`). Žiadna služba, nič sa neplatí.
+- **Videá** idú priamo do Cloudinary; podpis nahrávania vydá funkcia
+  `/api/cloudinary` iba tomu, kto je v CMS prihlásený GitHub účtom s právom
+  zápisu do repozitára.
 
 1. Cloudflare → *Variables and Secrets*: `CLOUDINARY_URL` (už je) – funkcia z
    neho berie API kľúč a secret.
@@ -111,26 +117,29 @@ sú všetky fotky, videá a 360° z webu ako karty s náhľadom.
 
 - **Filtre** hore: Vše / Veřejné / Bonus / Fotky / Videa / 360° / Skryté.
 - **Nahrát fotky / videa** – vyberieš, či ide do verejnej galérie alebo do
-  bonusu a čo nahrávaš (fotka, video, 360°); dá sa vybrať viac súborov naraz.
-- Na karte: popisok CZ/EN, prepínač **Veřejné / Bonus**, **Skrýt**, **360°**,
-  šípky na poradie a kôš (**Odebrat z webu**, s potvrdením).
+  bonusu a čo nahrávaš (fotka, 360°, video); dá sa vybrať viac súborov naraz.
+  Fotky a 360° dostanú vodoznak automaticky.
+- Na karte: popisok CZ/EN, prepínač **Veřejné / Bonus**, **Skrýt**,
+  **výrez** (čo z fotky ostane vidieť v dlaždici), šípky na poradie a kôš
+  (**Odebrat z webu**, s potvrdením).
 - Hotovo → **Uložit** → **Publikovat**. Web sa aktualizuje do 3 minút.
 
 Zoznam v CMS je presne to, čo je na webe. Odobratím položky zmizne z webu,
-súbor v Cloudinary ostane (dá sa vrátiť). Súbory nahrané priamo v Cloudinary
-konzole sa na web dostanú až po pridaní do CMS.
+súbor samotný ostane (dá sa vrátiť). Originály sa neukladajú – v repozitári
+sú len verzie s vodoznakom, preto si zdrojové fotky nechaj u seba.
 
 ### 4.3 Ako sa médiá zobrazia (formát a veľkosť rieši web sám)
 
 | Typ | Čo nahrať | Čo z toho web spraví |
 | --- | --- | --- |
-| Fotka | JPG/PNG/WebP, ideálne ≥ 2000 px na dlhšej strane | Dlaždica orezaná na 16:9 (na šírku) alebo 9:16 (na výšku) s inteligentným výrezom, formát (AVIF/WebP/JPG) volí Cloudinary podľa prehliadača, šírky 400–1600 px; v lightboxe celá fotka do 1600 px |
+| Fotka | JPG/PNG/WebP, ideálne ≥ 1800 px na šírku | Vodoznak v strede, AVIF v šírkach 400–1800 px (nikdy nezväčšuje). Dlaždica 16:9 (na šírku) alebo 9:16 (na výšku) podľa výrezu; v lightboxe celá fotka |
 | Video | MP4 (H.264), 1080p, rozumne krátke | MP4 do šírky 1280 px, náhľad (JPG) sa vytvorí z videa automaticky |
-| 360° | rovnobežková panoráma 2:1 (napr. 8192 × 4096), zapnúť „360°“ | Náhľad 16:9, prehliadač panorámy v rozlíšení 4096 px |
+| 360° | rovnobežková panoráma 2:1 (napr. 8192 × 4096), v okne zvoliť „360° panorama“ | Menší vodoznak v strede, AVIF 800 / 2048 / 4096 px; náhľad 16:9, prehliadač panorámy 4096 px |
 | Bonus | ako vyššie, zoznam **Bonusový obsah** | Skryté, kým návštevník neodošle kontaktný formulár |
 
-Orientáciu (na šírku / na výšku) a orez rieši build automaticky – netreba nič
-upravovať ručne. Pri fotke na výšku sa vytvorí dlaždica na výšku.
+Orientáciu (na šírku / na výšku) rieši web automaticky, pri fotke na výšku sa
+vytvorí dlaždica na výšku. Výrez dlaždice sa predvyplní automaticky, upraviť
+ho možno tlačidlom výrezu na karte.
 
 ---
 
@@ -168,4 +177,4 @@ upravovať ručne. Pri fotke na výšku sa vytvorí dlaždica na výšku.
 | Vzory kameňa | CMS → Vzory kamene (`src/data/products.json`, poradie ťahaním) |
 | Galéria – metadáta | CMS → Galerie (`src/data/gallery-cms.json`) |
 | Dáta pre agentov (JSON-LD, llms.txt, MCP, WebMCP) | `src/lib/site-data.ts` |
-| Nasadenie, OAuth, Cloudinary | `DEPLOY.md` |
+| Nasadenie, OAuth, nahrávanie médií | `DEPLOY.md` |

@@ -11,13 +11,18 @@
     <!-- Decap CMS – configuration lives in ./config.yml -->
     <script>window.CMS_MANUAL_INIT = true;</script>
     <script src="https://unpkg.com/decap-cms@3.17.1/dist/decap-cms.js"></script>
-    <!-- Uploads to Cloudinary without a Cloudinary account (see /api/cloudinary) -->
-    <script src="/admin/cloudinary-upload.js?v=20261016"></script>
-    <script src="/admin/gallery-manager.js?v=20261016"></script>
+    <!-- Videos and product files: Cloudinary without a Cloudinary account (see /api/cloudinary) -->
+    <script src="/admin/cloudinary-upload.js?v=20261022"></script>
+    <!-- Gallery photos + 360°: watermark and AVIF in the browser, committed to the repo -->
+    <script src="/admin/vendor/smartcrop/smartcrop.js?v=2.0.5"></script>
+    <script src="/admin/image-pipeline.js?v=20261022"></script>
+    <script src="/admin/repo-store.js?v=20261022"></script>
+    <script src="/admin/media-upload.js?v=20261022b"></script>
+    <script src="/admin/gallery-manager.js?v=20261022"></script>
     <script src="/admin/media-widgets.js?v=20261016"></script>
     <script src="/admin/publish-status.js?v=20261016"></script>
     <!-- Confirmations before removing anything + guided tours (driver.js) -->
-    <script src="/admin/admin-ux.js?v=20261016"></script>
+    <script src="/admin/admin-ux.js?v=20261022"></script>
     <script>window.CMS.init();</script>
   </body>
 </html>

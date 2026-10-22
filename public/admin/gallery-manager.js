@@ -2,16 +2,20 @@
  * "gallery-manager" widget: the whole website gallery on one screen.
  *
  * Every card is one item of the gallery exactly as the website shows it:
- * thumbnail, caption, public/bonus, hidden, order, remove. New files are
- * uploaded straight to Cloudinary (see cloudinary-upload.js) and appended.
+ * thumbnail, caption, public/bonus, hidden, tile crop, order, remove. New
+ * files go through media-upload.js: photos and 360° panoramas are
+ * watermarked and committed to the repository, videos go to Cloudinary.
  *
- * Value: array of { media, alt: { cs, en }, bonus, panorama, hidden }.
+ * Value: array of { media, alt: { cs, en }, bonus, panorama, hidden,
+ *   focus?: { x, y }, width?, height? } – `media` is `/media/<images|360>/<name>`
+ *   (image set in public/) or a Cloudinary video URL.
  */
 (() => {
   const { h, createClass } = window;
-  // Resolved on use: cloudinary-upload.js defines it, and a stale cached copy
-  // of that file must not crash the whole editor.
+  // Resolved on use: the upload scripts define them, and a stale cached copy
+  // of one must not crash the whole editor.
   const AC = new Proxy({}, { get: (_, key) => window.AnewCloudinary?.[key] ?? (() => "") });
+  const AM = new Proxy({}, { get: (_, key) => window.AnewMedia?.[key] ?? (() => "") });
 
   const toArray = (value) => {
     const plain = value?.toJS ? value.toJS() : value;
@@ -19,12 +23,16 @@
   };
 
   const kindOf = (item) => {
+    if (AM.isSet(item.media)) return AM.kindOfSet(item.media) === "360" ? "360" : "image";
     const p = AC.parse(item.media);
     if (p?.kind === "video") return "video";
     if (item.panorama || /\/360\//.test(p?.id || "")) return "360";
     return "image";
   };
-  const fileName = (item) => (AC.parse(item.media)?.id || "").split("/").pop();
+  const fileName = (item) =>
+    AM.isSet(item.media) ? item.media.split("/").pop() : (AC.parse(item.media)?.id || "").split("/").pop();
+  const thumbOf = (item) => (AM.isSet(item.media) ? AM.thumb(item.media) : AC.thumbOf(item.media));
+  const hrefOf = (item) => (AM.isSet(item.media) ? AM.large(item) : item.media);
 
   // Lucide-style icons (stroke, 24 viewBox), always paired with text or a label.
   const ICONS = {
@@ -37,6 +45,7 @@
     upload: "M12 16V4 M7 9l5-5 5 5 M4 20h16",
     eyeOff: "M3 3l18 18 M10.6 10.6a2 2 0 0 0 2.8 2.8 M9.9 5.1A9.8 9.8 0 0 1 21 12a13 13 0 0 1-2.2 3.1 M6.6 6.6A13 13 0 0 0 3 12a9.8 9.8 0 0 0 11.4 5.6",
     lock: "M6 11h12v9H6z M8 11V8a4 4 0 0 1 8 0v3",
+    crop: "M6 2v14h14 M2 6h14v14",
   };
   const icon = (name, size = 18) =>
     h("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" },
@@ -137,7 +146,7 @@
       const ask = window.AnewConfirm ?? (async () => window.confirm("Odebrat z webu?"));
       const ok = await ask({
         title: "Odebrat médium z webu?",
-        text: `„${name}“ zmizí z galerie po uložení a publikování. Soubor v Cloudinary zůstane, takže ho lze později vrátit.`,
+        text: `„${name}“ zmizí z galerie po uložení a publikování. Soubor samotný se nemaže, takže ho lze později vrátit.`,
         ok: "Odebrat z webu",
       });
       if (ok) this.commit(this.items().filter((_, i) => i !== index));
@@ -145,21 +154,32 @@
 
     async add() {
       const target = this.state.filter === "bonus" ? "bonus" : "gallery";
-      const uploaded = await AC.openDialog({ multiple: true, target });
-      if (!uploaded.length) return;
-      const added = uploaded.map(({ url, target: t, kind }) => ({
-        media: url, alt: { cs: "", en: "" }, bonus: t === "bonus", panorama: kind === "360", hidden: false,
+      const uploaded = await AM.openDialog({ multiple: true, target });
+      if (!uploaded?.length) return;
+      const added = uploaded.map(({ media, target: t, kind, focus, width, height }) => ({
+        media, alt: { cs: "", en: "" }, bonus: t === "bonus", panorama: kind === "360", hidden: false,
+        ...(kind === "photo" ? { focus, width, height } : {}),
+        ...(kind === "360" ? { width, height } : {}),
       }));
       // Newest first so the editor sees them straight away.
       this.commit([...added, ...this.items()]);
+    },
+
+    async editFocus(index) {
+      const focus = await AM.editFocus(this.items()[index]);
+      if (focus) this.update(index, { focus });
     },
 
     renderCard(item, index, visiblePos, visibleCount) {
       const kind = kindOf(item);
       const name = fileName(item);
       return h("article", { key: item.media + index, className: "gm-card", "data-hidden": String(Boolean(item.hidden)) },
-        h("a", { className: "gm-thumb", href: item.media, target: "_blank", rel: "noopener", title: "Otevřít originál v nové záložce" },
-          h("img", { src: AC.thumbOf(item.media), alt: item.alt?.cs || name, loading: "lazy", decoding: "async" }),
+        h("a", { className: "gm-thumb", href: hrefOf(item), target: "_blank", rel: "noopener", title: "Otevřít v plné velikosti v nové záložce" },
+          h("img", {
+            src: thumbOf(item), alt: item.alt?.cs || name, loading: "lazy", decoding: "async",
+            style: item.focus ? { objectPosition: `${item.focus.x}% ${item.focus.y}%` } : undefined,
+            onError: (e) => AM.onThumbError(e, item.media),
+          }),
           h("div", { className: "gm-badges" },
             h("span", { className: "gm-badge" }, icon(kind, 14), KIND_LABEL[kind]),
             item.bonus && h("span", { className: "gm-badge bonus" }, icon("lock", 14), "Bonus"),
@@ -177,12 +197,13 @@
             h("label", { className: "gm-check" },
               h("input", { type: "checkbox", checked: Boolean(item.hidden), onChange: (e) => this.update(index, { hidden: e.target.checked }) }),
               "Skrýt"),
-            kind !== "video" && h("label", { className: "gm-check" },
+            kind !== "video" && !AM.isSet(item.media) && h("label", { className: "gm-check" },
               h("input", { type: "checkbox", checked: kind === "360", onChange: (e) => this.update(index, { panorama: e.target.checked }) }),
               "360°")),
           h("div", { className: "gm-actions" },
             h("button", { type: "button", className: "gm-icon", "aria-label": "Posunout dříve", title: "Posunout dříve", disabled: visiblePos === 0, onClick: () => this.move(index, -1) }, icon("up")),
             h("button", { type: "button", className: "gm-icon", "aria-label": "Posunout později", title: "Posunout později", disabled: visiblePos === visibleCount - 1, onClick: () => this.move(index, 1) }, icon("down")),
+            kind === "image" && AM.isSet(item.media) && h("button", { type: "button", className: "gm-icon", "aria-label": "Výřez náhledu", title: "Výřez náhledu – co má být vidět v dlaždici", onClick: () => this.editFocus(index) }, icon("crop")),
             h("button", { type: "button", className: "gm-icon danger", "aria-label": `Odebrat ${name} z webu`, title: "Odebrat z webu", onClick: () => this.askRemove(index, name) }, icon("trash")))));
     },
 

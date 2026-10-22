@@ -4,15 +4,14 @@
  * /api/cloudinary checks the editor's CMS (GitHub) login and signs each
  * upload; the file then goes straight from the browser to Cloudinary.
  *
- * Exposes window.AnewCloudinary for gallery-manager.js and registers the
- * "anewstyle-cloudinary" media library used by the product image fields.
+ * Used for gallery videos (media-upload.js) and the product fields, which
+ * register the "anewstyle-cloudinary" media library. Gallery photos and 360°
+ * panoramas live in the repository instead (media-upload.js).
  *
  * Field config (config.yml → media_library.config):
  *   folder: { path: "…" }   fixed folder (products)
  */
 (() => {
-  const TARGETS = [["gallery", "Veřejná galerie"], ["bonus", "Bonus (po odeslání formuláře)"]];
-  const KINDS = [["images", "Fotka"], ["videos", "Video"], ["360", "360° panorama"]];
 
   const token = () => {
     for (const key of ["decap-cms-user", "netlify-cms-user"]) {
@@ -78,11 +77,6 @@
     .acu::backdrop{background:rgb(0 0 0/.5)}
     .acu form{display:flex;flex-direction:column;gap:18px;padding:24px}
     .acu h2{margin:0;font-size:19px}
-    .acu fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-    .acu legend{font-weight:600;margin-bottom:6px}
-    .acu label.opt{display:flex;align-items:center;gap:8px;min-height:44px;border:1px solid #d0d7de;border-radius:8px;padding:0 14px;cursor:pointer;transition:border-color .2s,background .2s}
-    .acu label.opt:has(:checked){border-color:#7d6a3a;background:#f6f1e4}
-    .acu label.opt:has(:focus-visible){outline:2px solid #7d6a3a;outline-offset:2px}
     .acu .drop{display:flex;flex-direction:column;gap:6px;padding:16px;border:2px dashed #8c959f;border-radius:8px;cursor:pointer}
     .acu .drop small{color:#57606a}
     .acu progress{width:100%;height:8px;accent-color:#7d6a3a}
@@ -94,17 +88,11 @@
     .acu button:focus-visible{outline:2px solid #7d6a3a;outline-offset:2px}
     .acu button:disabled{opacity:.6;cursor:wait}`;
 
-  const radios = (name, options, selected) =>
-    options
-      .map(([value, label]) =>
-        `<label class="opt"><input type="radio" name="${name}" value="${value}"${value === selected ? " checked" : ""} required>${label}</label>`)
-      .join("");
-
   /**
-   * Upload dialog. Resolves with [{ url, target, kind }] for every uploaded
-   * file (empty array when cancelled).
+   * Upload dialog for one fixed Cloudinary folder. Resolves with [{ url }]
+   * for every uploaded file (empty array when cancelled).
    */
-  function openDialog({ folder: fixedFolder = "", target = "gallery", multiple = false } = {}) {
+  function openDialog({ folder, multiple = false } = {}) {
     return new Promise((resolve) => {
       const results = [];
       const dialog = document.createElement("dialog");
@@ -113,13 +101,11 @@
         <style>${css}</style>
         <form method="dialog">
           <h2>Nahrát ${multiple ? "soubory" : "soubor"}</h2>
-          ${fixedFolder ? `<p class="msg">Uloží se do složky <strong>${fixedFolder}</strong>.</p>` : `
-            <fieldset><legend>Kde se zobrazí</legend>${radios("target", TARGETS, target)}</fieldset>
-            <fieldset><legend>Co nahráváte</legend>${radios("kind", KINDS, "images")}</fieldset>`}
+          <p class="msg">Uloží se do složky <strong>${folder}</strong>.</p>
           <label class="drop">
             <span><strong>Vyberte ${multiple ? "soubory" : "soubor"}</strong></span>
             <input type="file" name="file" ${multiple ? "multiple" : ""} required>
-            <small>Fotky JPG/PNG/WebP, videa MP4. 360° panorama musí mít poměr 2:1.</small>
+            <small>Fotky JPG/PNG/WebP, 3D modely GLB, soubory PDF.</small>
           </label>
           <progress value="0" max="1" hidden></progress>
           <p class="msg" role="status" aria-live="polite"></p>
@@ -140,29 +126,15 @@
       dialog.querySelector("button[value=cancel]").addEventListener("click", close);
       dialog.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
 
-      // Video files pick "Video" automatically.
-      fileInput.addEventListener("change", () => {
-        const files = [...(fileInput.files || [])];
-        if (files.length && files.every((f) => f.type.startsWith("video/")) && form.elements.kind) {
-          form.elements.kind.value = "videos";
-        }
-      });
-
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const files = [...(fileInput.files || [])];
         if (!files.length) return;
-        const chosenTarget = form.elements.target?.value || target;
-        const kindChoice = form.elements.kind?.value || "images";
-
         submit.disabled = true;
         progress.hidden = false;
         msg.className = "msg";
         try {
           for (const [i, file] of files.entries()) {
-            const kind = file.type.startsWith("video/") ? "videos" : kindChoice;
-            const folder = fixedFolder ||
-              `AnewStyle/${chosenTarget === "bonus" ? "Bonus" : "Gallery"}/${kind}`;
             const label = files.length > 1 ? `${i + 1} / ${files.length}: ` : "";
             msg.textContent = `${label}připravuji…`;
             const sig = await api({ action: "sign", folder });
@@ -170,7 +142,7 @@
               progress.value = p;
               msg.textContent = `${label}nahrávám ${file.name} – ${Math.round(p * 100)} %`;
             });
-            results.push({ url: result.secure_url, target: chosenTarget, kind });
+            results.push({ url: result.secure_url });
           }
           msg.textContent = files.length > 1 ? `Nahráno ${files.length} souborů.` : "Nahráno.";
           setTimeout(close, 700);
@@ -192,7 +164,7 @@
     name: "anewstyle-cloudinary",
     init: ({ handleInsert }) => ({
       show: async ({ config = {} } = {}) => {
-        const [first] = await openDialog({ folder: config.folder?.path || config.folder || "" , target: config.target });
+        const [first] = await openDialog({ folder: config.folder?.path || config.folder || "" });
         if (first) handleInsert(first.url);
       },
       hide: () => {},

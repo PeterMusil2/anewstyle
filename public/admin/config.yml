@@ -28,10 +28,12 @@ site_url: https://anewstyle.cz
 display_url: https://anewstyle.cz
 logo_url: /images/logos/logo.svg
 
-# Photos and videos go to Cloudinary through our own upload dialog
-# (public/admin/cloudinary-upload.js + functions/api/cloudinary.ts): editors
-# only need their CMS login, no Cloudinary account. Fields set `target`
-# (gallery | bonus) or a fixed `folder.path`.
+# Gallery photos and 360° panoramas are watermarked and compressed in the
+# browser and committed to this repository (public/media/, see
+# public/admin/media-upload.js). Gallery videos and the product fields go to
+# Cloudinary through our own upload dialog (public/admin/cloudinary-upload.js
+# + functions/api/cloudinary.ts): editors only need their CMS login, no
+# Cloudinary account. Product fields set a fixed `folder.path`.
 media_library:
   name: anewstyle-cloudinary
 

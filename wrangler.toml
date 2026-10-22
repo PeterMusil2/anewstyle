@@ -1,7 +1,8 @@
 # Cloudflare Pages project configuration.
 # The site is a static Astro build — Cloudflare Pages serves the contents of
 # `dist/` directly. `CLOUDINARY_URL` must be set as an encrypted environment
-# variable in the Pages project (see DEPLOY.md), it is only used at build time.
+# variable in the Pages project (see DEPLOY.md) for the /api/cloudinary
+# upload function (CMS videos and product files).
 name = "anewstyle"
 pages_build_output_dir = "dist"
 compatibility_date = "2025-08-03"

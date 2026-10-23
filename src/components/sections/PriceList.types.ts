@@ -16,4 +16,6 @@ interface Product {
 
 export interface PricesData {
   products: Product[];
+  /** Added to every version's price for mineral panels, per size (Kč without VAT). */
+  mineralSurcharge?: Price;
 }

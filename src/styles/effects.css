@@ -685,20 +685,35 @@ html[data-panel-category="mineral"] [data-panel-type="stone"] {
 }
 
 /* Stone samples form a real, responsive fan. Each tile opens its own
-   existing product 3D/AR viewer; hover and keyboard focus lift it forward. */
+   existing product 3D/AR viewer; hover and keyboard focus lift it forward.
+
+   Cards spread evenly (--fan-t from Products.astro) between --fan-from and
+   the mirrored right edge. A card tilted by up to 27° around its bottom
+   centre reaches about 1.05 × its width sideways (×1.07 when lifted), so
+   --fan-from moves inwards whenever that would cross the screen edge; the
+   page margin outside the list (100vw − 100cqi) is used first, so wide
+   screens keep the designed spread. */
 .product-pattern-fan {
+  --fan-card: clamp(6rem, 20vw, 16rem);
+  --fan-turn: 1;
+  --fan-reach-factor: 1.13;
+
   position: relative;
   isolation: isolate;
+  container-type: inline-size;
   min-block-size: clamp(17rem, 34vw, 25rem);
   overflow: visible;
 }
 
 .product-pattern-fan > li {
+  --fan-reach: calc(var(--fan-card) * var(--fan-reach-factor) - (100vw - 100cqi) / 2 + 1rem);
+  --fan-from: max(var(--fan-edge, 14cqi), var(--fan-reach));
+
   position: absolute;
   inset-block-end: 1.5rem;
-  inset-inline-start: var(--fan-position);
-  inline-size: clamp(6rem, 20vw, 16rem);
-  transform: translateX(-50%) translateY(var(--fan-lift)) rotate(var(--fan-angle));
+  inset-inline-start: calc(var(--fan-from) + var(--fan-t, 0.5) * (100cqi - 2 * var(--fan-from)));
+  inline-size: var(--fan-card);
+  transform: translateX(-50%) translateY(var(--fan-lift)) rotate(calc(var(--fan-angle) * var(--fan-turn)));
   transform-origin: 50% 100%;
   transition:
     transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -709,7 +724,7 @@ html[data-panel-category="mineral"] [data-panel-type="stone"] {
 .product-pattern-fan > li:is(:hover, :focus-within) {
   z-index: 20 !important;
   filter: brightness(1.08);
-  transform: translateX(-50%) translateY(calc(var(--fan-lift) - 1.25rem)) rotate(var(--fan-angle)) scale(1.07);
+  transform: translateX(-50%) translateY(calc(var(--fan-lift) - 1.25rem)) rotate(calc(var(--fan-angle) * var(--fan-turn))) scale(1.07);
 }
 
 .product-fan-card {
@@ -757,14 +772,18 @@ html[data-panel-category="mineral"] [data-panel-type="stone"] {
 }
 
 @media (width < 40rem) {
+  /* Phones: a gentler fan (65 % of the tilt) reaches less far sideways
+     (≈ 0.85 × the card), which leaves room to spread the cards. */
   .product-pattern-fan {
+    --fan-card: clamp(5.5rem, 22vw, 8rem);
+    --fan-turn: 0.65;
+    --fan-reach-factor: 0.92;
+
     min-block-size: 14rem;
   }
 
   .product-pattern-fan > li {
     inset-block-end: 1.25rem;
-    inset-inline-start: var(--fan-mobile-position);
-    inline-size: clamp(6rem, 22vw, 8rem);
   }
 }
 

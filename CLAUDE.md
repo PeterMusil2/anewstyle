@@ -113,16 +113,17 @@ All components receive `lang` and translate through `t()`.
 
 ### Content & CMS
 
-- Products (stone patterns): `src/data/products.json` – list order = order on the site (drag & drop in the CMS).
+- Panel patterns: `src/data/products.json` – `items` (stone) and `mineral` (texture images for the mineral 3D/AR viewer; empty `title` → numbered "Minerální dekor N"). List order = order in the fan on the site (drag & drop in the CMS); the fan in `Products.astro` + `effects.css` fits any count and any screen width.
 - Responsive images: `scripts/optimize-images.mjs` writes AVIF/WebP variants to `public/_img` + `src/data/image-manifest.json`; use `<Picture>` (`src/components/ui/Picture.astro`). Outputs are committed so builds only encode new images.
 - Admin scripts in `public/admin/*.js` are loaded with `?v=YYYYMMDD` – bump it in `public/admin/index.html` after changing them.
+- Stone vs mineral: `PanelCategorySwitch` sets `data-panel-category` on `<html>`; elements tagged `data-panel-type="stone|mineral"` show for one category only. Content that differs per category belongs in the data files above so the CMS can edit it.
 - Gallery (`src/data/gallery-cms.json`, CMS → Galerie, rendered via `src/lib/gallery.ts`):
   - Photos and 360° panoramas are watermarked AVIF image sets in `public/media/<images|360>/<name>-<width>.avif`; entries store only the base path, `src/lib/image-set.ts` reads widths/sizes from the files.
   - One rule set, `src/lib/image-pipeline.ts` (widths, quality, watermark placement), is used by `scripts/image-set.ts` (Bun + sharp) and bundled into `public/admin/pipeline-core.js` (`bun run admin:build`, generated – don't edit) for the CMS worker (`public/admin/image-worker.js`).
   - CMS uploads: `media-upload.js` → `image-pipeline.js` (browser AVIF + watermark) → `repo-store.js` (GitHub Git Data API, `[skip ci]`). Videos still go to Cloudinary (`cloudinary-upload.js`, `functions/api/cloudinary.ts`).
   - Watermark artwork: `public/images/logos/watermark.svg` → `bun run watermark` renders `public/admin/watermark.png`.
-- Price list: `src/data/prices.json` (prices per size, taglines, feature matrix).
-- FAQ: `src/data/faq.json` (cs/en, `**bold**` rendered by `src/lib/inline-markdown.ts`).
+- Price list: `src/data/prices.json` (prices per size, taglines, feature matrix, `mineralSurcharge` per size added for mineral panels).
+- FAQ: `src/data/faq.json` (cs/en, `**bold**` rendered by `src/lib/inline-markdown.ts`; optional `answerMineral` and `hideInMineral` for the mineral panel view).
 - All three are editable in **Decap CMS** at `/admin/` (`public/admin/config.yml`).
   GitHub OAuth runs through Cloudflare Pages Functions in `functions/api/`
   (see DEPLOY.md).

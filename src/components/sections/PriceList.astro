@@ -75,13 +75,10 @@ const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const format = (value: number) => number.format(value);
 
 const products = (prices as PricesData).products;
-// Keep the mineral premium proportional to panel area, with XXXL fixed at +10,000 Kč.
-const xxxlMineralPremium = 10_000;
-const priceRoundingStep = 50;
-const mineralSurcharge = (key: SizeKey) => {
-  const width = sizes.find((size) => size.key === key)!.width;
-  return Math.round(((xxxlMineralPremium * width) / 1200) / priceRoundingStep) * priceRoundingStep;
-};
+// Mineral panels cost the stone price plus a surcharge per size, the same for
+// every version; the surcharges are edited in the CMS (Ceník).
+const mineralSurcharges = (prices as PricesData).mineralSurcharge;
+const mineralSurcharge = (key: SizeKey) => toNumber(mineralSurcharges?.[key] ?? "0");
 const priceFor = (product: (typeof products)[number], key: SizeKey, category: PanelCategory) =>
   toNumber(product.prices[key]) + (category === "mineral" ? mineralSurcharge(key) : 0);
 const priceMap = (product: (typeof products)[number], category: PanelCategory) =>

@@ -24,7 +24,9 @@ const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
 
 const questions = faq.items.map((item) => {
-  const mineralAnswer = "answerMineral" in item && item.answerMineral ? item.answerMineral[lang] : item.answer[lang];
+  // A mineral-specific answer is optional; an empty one (as the CMS saves an
+  // untouched field) falls back to the shared answer.
+  const mineralAnswer = ("answerMineral" in item && item.answerMineral?.[lang]?.trim()) || item.answer[lang];
   return {
     question: item.question[lang],
     answer: inlineMarkdown(item.answer[lang]),

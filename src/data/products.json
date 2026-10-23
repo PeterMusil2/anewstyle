@@ -64,5 +64,31 @@
       "modelHorizontal3d": "/3d/products/Rockfoil_RUSTY_3D_relief_matte_v2.glb",
       "modelVertical3d": "/3d/products/Rockfoil_RUSTY_3D_vertical_relief_matte_v2.glb"
     }
+  ],
+  "mineral": [
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-1.png"
+    },
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-2.png"
+    },
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-3.png"
+    },
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-4.png"
+    },
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-5.png"
+    },
+    {
+      "title": "",
+      "image": "/images/patterns/mineral-6.png"
+    }
   ]
 }

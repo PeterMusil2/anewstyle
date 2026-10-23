@@ -59,18 +59,18 @@ collections:
       label: Fotky, videa a 360°
       widget: gallery-manager
 - name: products
-  label: Vzory kamene
-  description: Sekce „Produkty“ na úvodní stránce. Pořadí změníte přetažením karty za úchyt (⠿). Kliknutím
-    na kartu ji rozbalíte a upravíte.
+  label: Vzory panelů
+  description: Sekce „Produkty“ na úvodní stránce – vzory kamenných a minerálních panelů. Pořadí změníte
+    přetažením karty za úchyt (⠿). Kliknutím na kartu ji rozbalíte a upravíte.
   editor:
     preview: false
   files:
   - name: products
-    label: Vzory kamene
+    label: Vzory panelů
     file: src/data/products.json
     fields:
     - name: items
-      label: Vzory
+      label: Kamenné vzory
       label_singular: vzor kamene
       widget: list
       collapsed: true
@@ -125,10 +125,33 @@ collections:
           config:
             folder:
               path: AnewStyle/Products/3D
+    - name: mineral
+      label: Minerální vzory
+      label_singular: minerální vzor
+      widget: list
+      collapsed: true
+      summary: '{{fields.title}} {{fields.image}}'
+      add_to_top: false
+      hint: Zobrazí se po přepnutí webu na „Svítící minerální panely“. Kliknutím na vzor si ho návštěvník
+        prohlédne ve 3D a v AR.
+      fields:
+      - name: title
+        label: Název vzoru
+        widget: string
+        required: false
+        hint: Když zůstane prázdné, web vzor očísluje („Minerální dekor 3“).
+      - name: image
+        label: Textura vzoru
+        widget: media-image
+        media_library:
+          config:
+            folder:
+              path: AnewStyle/Products
+        hint: Fotka povrchu panelu na výšku (poměr 3:4) – zobrazí se na kartě a jako textura 3D modelu.
 - name: prices
   label: Ceník
   description: Sekce „Ceník“ na úvodní stránce – ceny podle velikosti a výbava jednotlivých verzí (SLIM,
-    BASIC, DELUXE).
+    BASIC, DELUXE) a příplatek za minerální panely.
   editor:
     preview: false
   files:
@@ -216,6 +239,24 @@ collections:
         - name: '13'
           label: Barva rámu RAL
           widget: boolean
+    - name: mineralSurcharge
+      label: Příplatek za minerální panel
+      widget: object
+      hint: Přičte se k ceně každého provedení, když návštěvník přepne ceník na minerální panely. Kč bez
+        DPH, např. „5 000“.
+      fields:
+      - name: l
+        label: L – 2400 × 400 mm
+        widget: string
+      - name: xl
+        label: XL – 2400 × 600 mm
+        widget: string
+      - name: xxl
+        label: XXL – 2400 × 800 mm
+        widget: string
+      - name: xxxl
+        label: XXXL – 2400 × 1200 mm
+        widget: string
 - name: faq
   label: Časté dotazy
   description: Sekce „Časté dotazy“ na úvodní stránce.
@@ -253,3 +294,25 @@ collections:
         - name: en
           label: English
           widget: text
+      - name: hideInMineral
+        label: Skrýt u minerálních panelů
+        widget: boolean
+        required: false
+        default: false
+        hint: Otázka se nezobrazí, když je web přepnutý na „Svítící minerální panely“.
+      - name: answerMineral
+        label: Odpověď pro minerální panely
+        widget: object
+        required: false
+        collapsed: true
+        hint: Nepovinné. Když zůstane prázdné, u minerálních panelů se zobrazí stejná odpověď jako u
+          kamenných.
+        fields:
+        - name: cs
+          label: Česky
+          widget: text
+          required: false
+        - name: en
+          label: English
+          widget: text
+          required: false

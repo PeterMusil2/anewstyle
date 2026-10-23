@@ -90,7 +90,10 @@ const extraFancyboxItems = [
       has3D && (
         <span
           aria-hidden="true"
-          class="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[0.6875rem] font-extrabold tracking-caps text-white uppercase backdrop-blur-md"
+          class:list={[
+            "absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[0.6875rem] font-extrabold tracking-caps text-white uppercase backdrop-blur-md",
+            fan && "fan-ar-badge",
+          ]}
           title={t("products.showIn3d")}
         >
           <Icon name="ar" class="size-4" />

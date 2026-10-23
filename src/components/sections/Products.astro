@@ -5,6 +5,8 @@ import productsData from "../../data/products.json";
 import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
+import PatternStepper from "../product/PatternStepper.astro";
+import { fanStyle } from "../../lib/pattern-fan";
 import {
   useTranslations,
   type Lang,
@@ -29,23 +31,6 @@ const mineralPatterns = productsData.mineral.map((pattern, index) => ({
   title: pattern.title?.trim() || `${t("products.mineralPattern")} ${index + 1}`,
 }));
 
-// Fan geometry. Cards sit on an even spread (--fan-t, 0 → 1) between two
-// outer positions; effects.css narrows that spread when the tilted outer
-// cards would leave the screen. Six and eight cards keep their hand-tuned
-// angles and lifts, any other count (the CMS can add or remove patterns)
-// follows the same curve.
-const FAN_TABLES: Record<number, { angles: number[]; lifts: number[] }> = {
-  8: { angles: [-27, -20, -13, -6, 6, 13, 20, 27], lifts: [28, 16, 7, 0, 0, 7, 16, 28] },
-  6: { angles: [-27, -16, -6, 6, 16, 27], lifts: [28, 7, 0, 0, 7, 28] },
-};
-const fanLayout = (index: number, count: number) => {
-  const spread = count > 1 ? index / (count - 1) : 0.5;
-  const offset = spread * 2 - 1; // -1 (left) … 1 (right)
-  const angle = FAN_TABLES[count]?.angles[index] ?? Math.round(offset * 27);
-  const lift = FAN_TABLES[count]?.lifts[index] ?? Math.round(28 * offset * offset);
-  const edge = count >= 8 ? 14 : 17;
-  return `--fan-t:${spread}; --fan-edge:${edge}cqi; --fan-angle:${angle}deg; --fan-lift:${lift}px; z-index:${index + 1}`;
-};
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y overflow-x-clip bg-ink-850">
@@ -75,7 +60,7 @@ const fanLayout = (index: number, count: number) => {
       <ul class="product-list product-pattern-fan" aria-label={t("products.fanAlt")}>
         {
           products.map((product, index) => (
-            <li class="reveal" style={fanLayout(index, products.length)}>
+            <li class="reveal" style={fanStyle(index, products.length)}>
               <Card
                 id={index + 1}
                 title={product.title}
@@ -92,6 +77,7 @@ const fanLayout = (index: number, count: number) => {
           ))
         }
       </ul>
+      <PatternStepper id={`${id}-stone-stepper`} titles={products.map((product) => product.title)} label={t("products.stepperLabel")} />
     </div>
 
     <div data-panel-type="mineral" class="flex flex-col gap-6">
@@ -105,7 +91,7 @@ const fanLayout = (index: number, count: number) => {
       <ul class="product-pattern-fan product-pattern-fan--mineral" aria-label={t("products.mineralPatternsTitle")}>
         {
           mineralPatterns.map((pattern, index) => (
-            <li class="reveal" style={fanLayout(index, mineralPatterns.length)}>
+            <li class="reveal" style={fanStyle(index, mineralPatterns.length)}>
               <button
                 type="button"
                 data-mineral-pattern
@@ -121,10 +107,10 @@ const fanLayout = (index: number, count: number) => {
                     sizes="(min-width: 80rem) 16vw, (min-width: 48rem) 20vw, 22vw"
                     class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
                   />
-                  <span class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[0.5625rem] font-extrabold text-white uppercase">
+                  <span class="fan-ar-badge absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[0.5625rem] font-extrabold text-white uppercase">
                     <Icon name="ar" class="size-3.5" /> 3D · AR
                   </span>
-                  <span class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 via-black/75 to-transparent px-3 pt-10 pb-3 text-center text-[0.625rem] font-black tracking-[0.1em] text-white uppercase sm:px-4 sm:pb-4 sm:text-xs">
+                  <span class="product-fan-card__title absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 via-black/75 to-transparent px-3 pt-10 pb-3 text-center text-[0.625rem] font-black tracking-[0.1em] text-white uppercase sm:px-4 sm:pb-4 sm:text-xs">
                     {pattern.title}
                   </span>
                 </span>
@@ -133,6 +119,7 @@ const fanLayout = (index: number, count: number) => {
           ))
         }
       </ul>
+      <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.title)} label={t("products.stepperLabel")} />
     </div>
 
     <div class="flex flex-col items-start justify-between gap-6 border border-line bg-ink-900 p-7 md:flex-row md:items-center md:gap-10 md:p-8">

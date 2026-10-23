@@ -1,0 +1,21 @@
+# Runs the test suite (CMS parity, content, image rules) on every push and
+# pull request – including commits made directly on GitHub and CMS drafts
+# (cms/… branches). Cloudflare Pages deploys independently; a red check here
+# means content or code drifted from the CMS (see AGENTS.md).
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile
+      - run: bun test

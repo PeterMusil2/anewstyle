@@ -12,6 +12,11 @@ bun test                     # all
 bun test tests/cms-parity    # one file
 ```
 
+## When tests run automatically
+
+- After an agent edits content or content code – Claude Code hook `.claude/hooks/test-on-content-change.sh` (registered in `.claude/settings.json`); a failure comes back as feedback to fix.
+- On every push and pull request on GitHub – `.github/workflows/test.yml` (client commits, CMS drafts).
+
 ## What exists
 
 | File | Guards |

@@ -1,0 +1,85 @@
+---
+/**
+ * Touch stepper under a pattern fan. Touch screens have no hover, so this
+ * range input (one step per card, count from the CMS) lifts the matching card
+ * the way hover does on desktop and names it. It starts on the middle card.
+ * Shown only on devices without hover (effects.css, .pattern-stepper), where
+ * the hover lift is switched off; tapping a card still opens it.
+ */
+import { fanStepper } from "../../lib/pattern-fan";
+
+interface Props {
+  /** Unique id for the input (two fans on one page). */
+  id: string;
+  /** Card titles in fan order. */
+  titles: string[];
+  /** Visible label telling the user what the slider does. */
+  label: string;
+}
+
+const { id, titles, label } = Astro.props;
+const stepper = fanStepper(titles.length);
+const percent = (value: number) => (stepper.max ? (value / stepper.max) * 100 : 0);
+---
+
+{
+  stepper.show && (
+    <div class="pattern-stepper" data-pattern-stepper>
+      <label for={id} class="pattern-stepper__label">{label}</label>
+      <div class="pattern-stepper__track">
+        <span class="pattern-stepper__dots" aria-hidden="true">
+          {titles.map(() => <i />)}
+        </span>
+        <input
+          id={id}
+          type="range"
+          class="pattern-stepper__range"
+          min={stepper.min}
+          max={stepper.max}
+          step="1"
+          value={stepper.value}
+          aria-valuetext={titles[stepper.value]}
+          data-titles={JSON.stringify(titles)}
+          style={`--progress:${percent(stepper.value)}%`}
+        />
+      </div>
+      <output class="pattern-stepper__name" aria-hidden="true">{titles[stepper.value]}</output>
+    </div>
+  )
+}
+
+<script>
+  // Range → lift the card with the same index (data-active), name it, fill the
+  // track. Tapping or focusing a card moves the stepper to it.
+  const initPatternSteppers = () => {
+    document.querySelectorAll<HTMLElement>("[data-pattern-stepper]").forEach((stepper) => {
+      if (stepper.dataset.ready) return;
+      stepper.dataset.ready = "1";
+      const fan = stepper.parentElement?.querySelector<HTMLElement>(".product-pattern-fan");
+      const range = stepper.querySelector<HTMLInputElement>("input[type=range]");
+      const name = stepper.querySelector<HTMLOutputElement>("output");
+      if (!fan || !range || !name) return;
+      const cards = Array.from(fan.children) as HTMLElement[];
+      const titles: string[] = JSON.parse(range.dataset.titles ?? "[]");
+
+      const select = (index: number) => {
+        const max = Number(range.max) || 1;
+        range.value = String(index);
+        range.style.setProperty("--progress", `${(index / max) * 100}%`);
+        range.setAttribute("aria-valuetext", titles[index] ?? "");
+        name.textContent = titles[index] ?? "";
+        cards.forEach((card, i) => card.toggleAttribute("data-active", i === index));
+      };
+
+      range.addEventListener("input", () => select(Number(range.value)));
+      cards.forEach((card, i) => {
+        card.addEventListener("pointerdown", () => select(i));
+        card.addEventListener("focusin", () => select(i));
+      });
+      select(Number(range.value));
+    });
+  };
+
+  initPatternSteppers();
+  document.addEventListener("astro:page-load", initPatternSteppers);
+</script>

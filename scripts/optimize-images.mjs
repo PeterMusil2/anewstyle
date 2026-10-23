@@ -19,7 +19,7 @@ sharp.concurrency(1);
 const ROOT = path.join(process.cwd(), "public");
 const OUT = path.join(ROOT, "_img");
 const MANIFEST = path.join(process.cwd(), "src", "data", "image-manifest.json");
-const FOLDERS = ["images/products", "images/showcase", "images/before-after", "images/backgrounds", "images/technologies", "downloads/Manual_AnewStyle_Basic_Deluxe.jpg"];
+const FOLDERS = ["images/products", "images/showcase", "images/before-after", "images/backgrounds", "images/technologies", "images/patterns", "downloads/Manual_AnewStyle_Basic_Deluxe.jpg"];
 const WIDTHS = [400, 640, 960, 1280];
 // AVIF encoding is the slow part of a build; effort 3 is a good size/speed
 // trade-off and outputs are reused across builds (they are committed).

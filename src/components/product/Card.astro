@@ -12,6 +12,7 @@ interface Props {
   modelHorizontal3d?: string;
   modelVertical3d?: string;
   has3D: boolean;
+  fan?: boolean;
   lang?: Lang;
 }
 
@@ -24,6 +25,7 @@ const {
   modelHorizontal3d,
   modelVertical3d,
   has3D,
+  fan = false,
   lang = "cs",
 } = Astro.props;
 const t = useTranslations(lang);
@@ -58,20 +60,31 @@ const extraFancyboxItems = [
 
 <a
   id={`productCard${id}`}
-  class="card group flex h-full flex-col border border-line bg-ink-900 text-fg no-underline transition-colors duration-300 hover:border-gold/50"
+  class:list={[
+    "card group border border-line bg-ink-900 text-fg no-underline",
+    fan
+      ? "product-fan-card relative block aspect-[3/4] overflow-hidden shadow-2xl transition-[border-color,box-shadow,filter] duration-300"
+      : "flex h-full flex-col transition-colors duration-300 hover:border-gold/50",
+  ]}
   href={primaryFancyboxHref}
   data-fancybox={groupName}
   data-caption={title}
   data-thumb={lightPhoto}
 >
-  <div class="relative flex aspect-[1024/524] items-center justify-center overflow-hidden bg-[radial-gradient(60%_60%_at_50%_50%,rgb(163_140_82/0.12),transparent_70%)]">
+  <div class:list={[
+    "relative flex items-center justify-center overflow-hidden bg-[radial-gradient(60%_60%_at_50%_50%,rgb(163_140_82/0.12),transparent_70%)]",
+    fan ? "size-full" : "aspect-[1024/524]",
+  ]}>
     <Picture
       src={lightPhoto ?? ""}
       alt=""
       sizes="(min-width: 80rem) 25vw, (min-width: 40rem) 50vw, 100vw"
       width={1024}
       height={524}
-      class="size-full object-contain transition-transform duration-500 ease-out-soft group-hover:scale-105"
+      class:list={[
+        "size-full transition-transform duration-500 ease-out-soft group-hover:scale-105",
+        fan ? "product-fan-card__stone-image object-cover" : "object-contain",
+      ]}
     />
     {
       has3D && (
@@ -86,16 +99,24 @@ const extraFancyboxItems = [
       )
     }
   </div>
-  <div class="flex items-center justify-between gap-4 border-t border-line px-5 py-4">
-    <strong class="truncate text-[0.9375rem] font-black tracking-[0.18em] uppercase">{title}<span class="sr-only"> – {t("products.showProductDetail")}</span></strong>
-    <span
-      class="grid size-11 shrink-0 place-items-center border border-line-strong text-gold transition-colors group-hover:border-gold group-hover:bg-gold group-hover:text-ink"
-      title={t("products.btnShowDetail")}
-      aria-hidden="true"
-    >
-      <svg viewBox="0 0 16 16" class="size-4 fill-none stroke-current stroke-[1.75]"><path d="M3 8h10M9 4l4 4-4 4"></path></svg>
-    </span>
-  </div>
+  {
+    fan ? (
+      <span class="product-fan-card__title absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 via-black/75 to-transparent px-3 pt-9 pb-3 text-center text-[0.625rem] font-black tracking-[0.12em] text-white uppercase sm:px-4 sm:pb-4 sm:text-xs">
+        {title}<span class="sr-only"> – {t("products.showProductDetail")}</span>
+      </span>
+    ) : (
+      <div class="flex items-center justify-between gap-4 border-t border-line px-5 py-4">
+        <strong class="truncate text-[0.9375rem] font-black tracking-[0.18em] uppercase">{title}<span class="sr-only"> – {t("products.showProductDetail")}</span></strong>
+        <span
+          class="grid size-11 shrink-0 place-items-center border border-line-strong text-gold transition-colors group-hover:border-gold group-hover:bg-gold group-hover:text-ink"
+          title={t("products.btnShowDetail")}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 16 16" class="size-4 fill-none stroke-current stroke-[1.75]"><path d="M3 8h10M9 4l4 4-4 4"></path></svg>
+        </span>
+      </div>
+    )
+  }
 </a>
 {
   extraFancyboxItems.map((item) => (

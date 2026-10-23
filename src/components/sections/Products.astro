@@ -1,8 +1,10 @@
 ---
 import Card from "../product/Card.astro";
+import Picture from "../ui/Picture.astro";
 import productsData from "../../data/products.json";
 import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
+import Icon from "../icons/Icon.astro";
 import {
   useTranslations,
   type Lang,
@@ -21,6 +23,27 @@ const basePath = lang === "cs" ? "" : "/en";
 
 // Stone patterns in the order set in the CMS (drag & drop).
 const products = productsData.items;
+const mineralPatterns = Array.from({ length: 6 }, (_, index) => ({
+  number: index + 1,
+  src: `/images/patterns/mineral-${index + 1}.png`,
+  title: `${t("products.mineralPattern")} ${index + 1}`,
+}));
+const fanLayout = (index: number, count: number) => {
+  const layout = count === 8
+    ? {
+        positions: [14, 24.3, 34.6, 44.9, 55.1, 65.4, 75.7, 86],
+        mobilePositions: [17, 26.4, 35.8, 45.2, 54.8, 64.2, 73.6, 83],
+        angles: [-27, -20, -13, -6, 6, 13, 20, 27],
+        lifts: [28, 16, 7, 0, 0, 7, 16, 28],
+      }
+    : {
+        positions: [17, 30.2, 43.4, 56.6, 69.8, 83],
+        mobilePositions: [17, 30.2, 43.4, 56.6, 69.8, 83],
+        angles: [-27, -16, -6, 6, 16, 27],
+        lifts: [28, 7, 0, 0, 7, 28],
+      };
+  return `--fan-position:${layout.positions[index] ?? 50}%; --fan-mobile-position:${layout.mobilePositions[index] ?? 50}%; --fan-angle:${layout.angles[index] ?? 0}deg; --fan-lift:${layout.lifts[index] ?? 0}px; z-index:${index + 1}`;
+};
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink-850">
@@ -28,24 +51,29 @@ const products = productsData.items;
     <SectionHeader
       id={`${id}-title`}
       eyebrow={t("products.title")}
-      title={t("products.descPart1").trim()}
+      title={t("products.heading")}
     >
-      <p>
+      <p data-panel-type="stone">
         <span>{t("products.descPart2")}</span><strong class="font-bold text-gold">{t("products.descPart3")}</strong><span>{t("products.descPart4")}</span>
       </p>
-      <p class="text-fg-muted">
+      <p data-panel-type="stone" class="text-fg-muted">
         <span>{t("products.descPart5")}</span><strong class="font-bold text-fg">{t("products.descPart6")}</strong><span>{t("products.descPart7")}</span>
       </p>
+      <p data-panel-type="mineral">{t("products.mineralIntro")}</p>
     </SectionHeader>
 
-    <div class="flex flex-col gap-6">
-      <h3 class="border-b border-line pb-4 text-sm font-extrabold tracking-[0.18em] uppercase">
-        {t("products.illustrative" as TranslationKey)}
-      </h3>
-      <ul class="product-list grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div data-panel-type="stone" class="flex flex-col gap-6">
+      <div class="flex flex-col gap-2 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.fanCaption")}</h3>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-fg-muted">{t("products.stoneFanHint")}</p>
+        </div>
+        <p class="text-xs font-bold tracking-caps text-gold uppercase">{t("products.patternsArBadge")}</p>
+      </div>
+      <ul class="product-list product-pattern-fan" aria-label={t("products.fanAlt")}>
         {
           products.map((product, index) => (
-            <li class="reveal">
+            <li class="reveal" style={fanLayout(index, products.length)}>
               <Card
                 id={index + 1}
                 title={product.title}
@@ -55,8 +83,50 @@ const products = productsData.items;
                 modelHorizontal3d={product.modelHorizontal3d}
                 modelVertical3d={product.modelVertical3d}
                 has3D={Boolean(product.modelHorizontal3d || product.modelVertical3d)}
+                fan
                 lang={lang}
               />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div data-panel-type="mineral" class="flex flex-col gap-6">
+      <div class="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.mineralPatternsTitle")}</h3>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-fg-muted">{t("products.mineralArHint")}</p>
+        </div>
+        <p class="text-xs font-bold tracking-caps text-gold uppercase">{t("products.patternsArBadge")}</p>
+      </div>
+      <ul class="product-pattern-fan product-pattern-fan--mineral" aria-label={t("products.mineralPatternsTitle")}>
+        {
+          mineralPatterns.map((pattern, index) => (
+            <li class="reveal" style={fanLayout(index, mineralPatterns.length)}>
+              <button
+                type="button"
+                data-mineral-pattern
+                data-pattern-source={pattern.src}
+                data-pattern-title={pattern.title}
+                class="product-fan-card group relative block aspect-[3/4] w-full cursor-pointer overflow-hidden border text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
+                aria-label={`${pattern.title} — ${t("products.showIn3d")}`}
+              >
+                <span class="absolute inset-0 block overflow-hidden bg-ink-800">
+                  <Picture
+                    src={pattern.src}
+                    alt=""
+                    sizes="(min-width: 80rem) 16vw, (min-width: 48rem) 20vw, 22vw"
+                    class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
+                  />
+                  <span class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-black/70 px-2 py-1 text-[0.5625rem] font-extrabold text-white uppercase">
+                    <Icon name="ar" class="size-3.5" /> 3D · AR
+                  </span>
+                  <span class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 via-black/75 to-transparent px-3 pt-10 pb-3 text-center text-[0.625rem] font-black tracking-[0.1em] text-white uppercase sm:px-4 sm:pb-4 sm:text-xs">
+                    {pattern.title}
+                  </span>
+                </span>
+              </button>
             </li>
           ))
         }
@@ -73,6 +143,53 @@ const products = productsData.items;
     </div>
   </div>
 </section>
+
+<dialog id="mineral-ar-dialog" class="mineral-ar-dialog m-auto w-[min(96vw,74rem)] max-w-none border border-line-strong bg-ink-900 p-0 text-fg backdrop:bg-black/80">
+  <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-6">
+    <h2 id="mineral-ar-title" class="text-sm font-black tracking-[0.14em] uppercase sm:text-base"></h2>
+    <button type="button" data-mineral-dialog-close class="grid size-11 shrink-0 cursor-pointer place-items-center border border-line-strong text-fg transition-colors hover:border-gold hover:text-gold" aria-label={t("products.arClose")}>
+      <Icon name="close" class="size-5" />
+    </button>
+  </div>
+  <div class="grid gap-4 p-3 sm:p-5 lg:grid-cols-[minmax(0,1fr)_15rem]">
+    <model-viewer
+      id="mineral-ar-viewer"
+      alt={t("products.mineralViewerAlt")}
+      loading="lazy"
+      ar
+      ar-scale="auto"
+      ar-placement="wall"
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      touch-action="pan-y"
+      interaction-prompt="auto"
+      camera-orbit="0deg 90deg auto"
+      field-of-view="22deg"
+      max-camera-orbit="auto auto auto"
+      environment-image="neutral"
+      shadow-intensity="0.6"
+      exposure="1.05"
+      class="product-3d mineral-ar-viewer"
+    >
+      <span slot="progress-bar" class="product-3d__progress"></span>
+      <button slot="ar-button" type="button" class="product-3d__ar">{t("header.btnAr")}</button>
+    </model-viewer>
+    <div class="flex flex-col justify-between gap-4 border border-line bg-ink-850 p-4 sm:p-5">
+      <div>
+        <p class="eyebrow">{t("products.mineralPatternsTitle")}</p>
+        <p
+          id="mineral-ar-status"
+          class="mt-3 text-sm leading-relaxed text-fg-muted"
+          aria-live="polite"
+          data-loading={t("products.arLoading")}
+          data-ready={t("products.arReady")}
+          data-error={t("products.arError")}
+        >{t("products.arLoading")}</p>
+      </div>
+      <p class="text-xs leading-relaxed text-fg-subtle">{t("products.arHint")}</p>
+    </div>
+  </div>
+</dialog>
 
 <script>
   // The 3D viewer is bundled locally and fetched on the first card click only.
@@ -104,5 +221,85 @@ const products = productsData.items;
       },
       { once: true },
     );
+  });
+
+  const mineralDialog = document.querySelector<HTMLDialogElement>("#mineral-ar-dialog");
+  const mineralViewer = document.querySelector<HTMLElement & Record<string, any>>("#mineral-ar-viewer");
+  const mineralTitle = document.querySelector<HTMLElement>("#mineral-ar-title");
+  const mineralStatus = document.querySelector<HTMLElement>("#mineral-ar-status");
+  const textureCache = new Map<string, any>();
+  let textureRequest = 0;
+
+  const waitForMineralModel = (): Promise<void> => {
+    if (mineralViewer?.loaded) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      if (!mineralViewer) return reject(new Error("Mineral model viewer is missing."));
+      const timeout = window.setTimeout(() => finish(new Error("Mineral model load timed out.")), 20000);
+      const finish = (error?: Error) => {
+        window.clearTimeout(timeout);
+        mineralViewer.removeEventListener("load", onLoad);
+        mineralViewer.removeEventListener("error", onError);
+        error ? reject(error) : resolve();
+      };
+      const onLoad = () => finish();
+      const onError = () => finish(new Error("Mineral model could not be loaded."));
+      mineralViewer.addEventListener("load", onLoad, { once: true });
+      mineralViewer.addEventListener("error", onError, { once: true });
+    });
+  };
+
+  const openMineralPattern = async (button: HTMLButtonElement) => {
+    if (!mineralDialog || !mineralViewer || !mineralTitle || !mineralStatus) return;
+    const request = ++textureRequest;
+    const source = button.dataset.patternSource;
+    if (!source) return;
+
+    mineralTitle.textContent = button.dataset.patternTitle ?? "";
+    mineralStatus.textContent = mineralStatus.dataset.loading ?? mineralStatus.textContent ?? "";
+    if (!mineralDialog.open) mineralDialog.showModal();
+
+    try {
+      await import("@google/model-viewer");
+      await customElements.whenDefined("model-viewer");
+      if (!mineralViewer.getAttribute("src")) {
+        mineralViewer.src = "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb";
+      }
+      await waitForMineralModel();
+      if (request !== textureRequest) return;
+
+      let texture = textureCache.get(source);
+      if (!texture) {
+        texture = await mineralViewer.createTexture(source);
+        if (!texture) throw new Error("Mineral texture could not be loaded.");
+        textureCache.set(source, texture);
+      }
+
+      const materials = mineralViewer.model?.materials.filter(
+        (item: any) => item.pbrMetallicRoughness.baseColorTexture,
+      ) ?? [];
+      if (!materials.length) {
+        throw new Error("The model does not expose a textured panel material.");
+      }
+      if (request !== textureRequest) return;
+      materials.forEach((material: any) => {
+        material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+      });
+      mineralStatus.textContent = mineralStatus.dataset.ready ?? "";
+    } catch (error) {
+      console.error("Could not prepare the mineral AR preview:", error);
+      if (request === textureRequest) {
+        mineralStatus.textContent = mineralStatus.dataset.error ?? "";
+      }
+    }
+  };
+
+  document.querySelectorAll<HTMLButtonElement>("[data-mineral-pattern]").forEach((button) => {
+    button.addEventListener("click", () => void openMineralPattern(button));
+  });
+  document.querySelector<HTMLButtonElement>("[data-mineral-dialog-close]")?.addEventListener("click", () => {
+    mineralDialog?.close();
+  });
+  mineralDialog?.addEventListener("click", (event) => {
+    if (event.target === mineralDialog) mineralDialog.close();
   });
 </script>

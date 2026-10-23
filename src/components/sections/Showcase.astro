@@ -16,9 +16,9 @@ const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 const states = [
-  { value: "off", icon: "turn-off", label: t("showcase.btn1"), src: "/images/showcase/rockfoil_pink_dark_mirror.webp" },
-  { value: "frame", icon: "frame", label: t("showcase.btn2"), src: "/images/showcase/rockfoil_pink_dark_frame_mirror.webp" },
-  { value: "panel", icon: "bulp", label: t("showcase.btn3"), src: "/images/showcase/rockfoil_pink_light_frame_mirror.webp" },
+  { value: "off", icon: "turn-off", label: t("showcase.btn1"), src: "/images/showcase/rockfoil_pink_dark.jpg", mineralSrc: "/images/showcase/Mineral_off.png" },
+  { value: "frame", icon: "frame", label: t("showcase.btn2"), src: "/images/showcase/rockfoil_pink_dark.jpg", mineralSrc: "/images/showcase/Mineral_off.png" },
+  { value: "panel", icon: "bulp", label: t("showcase.btn3"), src: "/images/showcase/rockfoil_pink_light.jpg", mineralSrc: "/images/showcase/Mineral_on.png" },
 ];
 ---
 
@@ -43,8 +43,11 @@ const states = [
           {t("showcase.titlePart2")}
         </span>
       </h2>
-      <p class="max-w-xl text-lg leading-relaxed text-fg-muted">
+      <p data-panel-type="stone" class="max-w-xl text-lg leading-relaxed text-fg-muted">
         <span>{t("showcase.descPart1")}</span><strong class="font-bold text-fg">{t("showcase.descPart2")}</strong><span>{t("showcase.descPart3")}</span>
+      </p>
+      <p data-panel-type="mineral" class="max-w-xl text-lg leading-relaxed text-fg-muted">
+        {t("showcase.mineralDesc")}
       </p>
 
       <fieldset class="mt-2 flex flex-col gap-3">
@@ -76,18 +79,61 @@ const states = [
       theme it melts into the section; in the light theme it reads as a framed
       display.
     -->
-    <div class="reveal relative aspect-[1024/813] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
-      {
-        states.map((state) => (
-          <Picture
-            src={state.src}
-            alt={`${t("products.stoneAsLighting")} – ${state.label}`}
-            sizes="(min-width: 64rem) 50vw, 100vw"
-            data-state={state.value}
-            class="absolute inset-0 size-full object-contain"
-          />
-        ))
-      }
+    <div class="reveal relative aspect-[1024/1000] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
+      <div class="showcase__stone-states absolute inset-0" data-panel-type="stone">
+        {
+          states.map((state) => (
+            <Picture
+              src={state.src}
+              alt={`${t("products.stoneAsLighting")} – ${state.label}`}
+              sizes="(min-width: 64rem) 50vw, 100vw"
+              data-state={state.value}
+              class="absolute inset-0 size-full object-contain"
+            />
+          ))
+        }
+      </div>
+      <div class="showcase__stone-reflection" data-panel-type="stone" aria-hidden="true">
+        {
+          states.map((state) => (
+            <Picture
+              src={state.src}
+              alt=""
+              sizes="(min-width: 64rem) 50vw, 100vw"
+              data-state={state.value}
+              class="showcase__stone-reflection-image"
+            />
+          ))
+        }
+      </div>
+      <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center" data-panel-type="mineral">
+        <div class="showcase__mineral-reflection" aria-hidden="true">
+          {
+            states.map((state) => (
+              <Picture
+                src={state.mineralSrc}
+                alt=""
+                sizes="(min-width: 64rem) 28vw, 52vw"
+                data-state={state.value}
+                class="showcase__mineral-texture size-full object-cover"
+              />
+            ))
+          }
+        </div>
+        <div class="showcase__mineral-panel overflow-hidden border border-white/20 bg-ink-900">
+          {
+            states.map((state) => (
+              <Picture
+                src={state.mineralSrc}
+                alt={`${t("showcase.mineralTextureAlt")} – ${state.label}`}
+                sizes="(min-width: 64rem) 28vw, 52vw"
+                data-state={state.value}
+                class="showcase__mineral-texture size-full object-cover"
+              />
+            ))
+          }
+        </div>
+      </div>
     </div>
   </div>
 </section>

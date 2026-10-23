@@ -48,6 +48,10 @@
       "answer": {
         "cs": "Naše panely jsou **odolné proti vlhkosti** díky nano impregnaci a je možno je instalovat také do wellness nebo do koupelny, no ale **nedoporučujeme** je pro **přímý kontakt** s tekoucí vodou.",
         "en": "Our panels are **moisture-resistant** thanks to nano impregnation and can be installed in wellness areas or bathrooms, but we do not **recommend** them for **direct contact** with running water."
+      },
+      "answerMineral": {
+        "cs": "Naše panely jsou **odolné proti vlhkosti** a je možno je instalovat také do wellness nebo do koupelny, no ale **nedoporučujeme** je pro **přímý kontakt** s tekoucí vodou.",
+        "en": "Our panels are **moisture-resistant** and can also be installed in wellness areas or bathrooms, but we do not **recommend** them for **direct contact** with running water."
       }
     },
     {
@@ -65,6 +69,7 @@
         "cs": "Je nutná impregnace panelu po instalaci?",
         "en": "Is panel impregnation necessary after installation?"
       },
+      "hideInMineral": true,
       "answer": {
         "cs": "Panely jsou již z výroby ošetřeny speciální **nano impregnací**, která je chrání proti vlhkosti a usnadňuje čištění.",
         "en": "The panels are treated with special **nano impregnation** from the factory, which protects them against moisture and facilitates cleaning."
@@ -78,6 +83,10 @@
       "answer": {
         "cs": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od **14kg** v nejmenší verzi SLIM rozměr L.",
         "en": "Despite using natural stone, the panels are lightweight because they use ultra-thin veneers. The panels are easy to handle and hang on the wall. Their weight ranges from **14kg** in the smallest SLIM version size L."
+      },
+      "answerMineral": {
+        "cs": "Minerální panely se snadno **manipulují a zavěšují na stěnu**. Hmotnost začíná na **25 kg** u nejmenší velikosti SLIM L.",
+        "en": "Mineral panels are easy to **handle and mount on the wall**. Their weight starts at **25 kg** for the smallest SLIM L size."
       }
     }
   ]

@@ -23,10 +23,15 @@ const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
 
-const questions = faq.items.map((item) => ({
-  question: item.question[lang],
-  answer: inlineMarkdown(item.answer[lang]),
-}));
+const questions = faq.items.map((item) => {
+  const mineralAnswer = "answerMineral" in item && item.answerMineral ? item.answerMineral[lang] : item.answer[lang];
+  return {
+    question: item.question[lang],
+    answer: inlineMarkdown(item.answer[lang]),
+    mineralAnswer: inlineMarkdown(mineralAnswer),
+    hideInMineral: "hideInMineral" in item && item.hideInMineral === true,
+  };
+});
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
@@ -43,7 +48,12 @@ const questions = faq.items.map((item) => ({
     <div class="border-t border-line-strong">
       {
         questions.map((item, index) => (
-          <details name="faq" class="faq-item group border-b border-line-strong" open={index === 0}>
+          <details
+            name="faq"
+            class="faq-item group border-b border-line-strong"
+            data-panel-type={item.hideInMineral ? "stone" : undefined}
+            open={index === 0}
+          >
             <summary class="flex min-h-19 cursor-pointer items-center justify-between gap-6 py-5 text-left">
               <h3 class="text-lg leading-snug font-bold text-fg transition-colors group-open:text-gold">
                 {item.question}
@@ -53,10 +63,10 @@ const questions = faq.items.map((item) => ({
               </span>
             </summary>
             <div class="faq-answer">
-              <p
-                class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16"
-                set:html={item.answer}
-              />
+              <p class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16">
+                <span data-panel-type="stone" set:html={item.answer} />
+                {item.mineralAnswer && <span data-panel-type="mineral" set:html={item.mineralAnswer} />}
+              </p>
             </div>
           </details>
         ))

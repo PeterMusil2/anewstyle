@@ -1,6 +1,7 @@
 ---
 import Palette from "../palette/Palette.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
+import { inlineMarkdown } from "../../lib/inline-markdown";
 import {
   useTranslations,
   type Lang,
@@ -23,30 +24,37 @@ interface Feature {
   icon?: string;
   label: TranslationKey;
   desc: Part[];
+  mineralLabel?: TranslationKey;
+  mineralDesc?: TranslationKey;
   palette?: boolean;
   note?: TranslationKey;
 }
 
 const features: Feature[] = [
-  { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [["features.item1Desc1"], ["features.item1Desc2", true], ["features.item1Desc3"], ["features.item1Desc4", true]] },
+  { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [["features.item1Desc1"], ["features.item1Desc2", true], ["features.item1Desc3"], ["features.item1Desc4", true]], mineralDesc: "features.item1Mineral" },
   { id: "quick-mounting", icon: "Mounting.svg", label: "features.iconMounting", desc: [["features.item2Desc1"], ["features.item2Desc2", true], ["features.item2Desc3"]] },
-  { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]] },
-  { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]] },
-  { id: "smartphone-control", icon: "MobileControl.svg", label: "features.iconSmartphone", desc: [["features.item5Desc1"], ["features.item5Desc2", true], ["features.item5Desc3"]] },
+  { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]], mineralDesc: "features.item3Mineral" },
+  { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]], mineralDesc: "features.item4Mineral" },
+  { id: "smartphone-control", icon: "MobileControl.svg", label: "features.iconSmartphone", desc: [["features.item5Desc1"], ["features.item5Desc2", true], ["features.item5Desc3"]], mineralDesc: "features.item5Mineral" },
   { id: "touch-control", icon: "touch.svg", label: "features.iconTouch", desc: [["features.item15Desc1"], ["features.item15Desc2", true]] },
   { id: "temperature", icon: "temperature.png", label: "features.iconTemperature", desc: [["features.item16Desc1"], ["features.item16Desc2", true], ["features.item16Desc3"]] },
-  { id: "thickness-16mm", icon: "16mm.svg", label: "features.iconThickness16", desc: [["features.item6Desc1"], ["features.item6Desc2", true], ["features.item6Desc3"]] },
-  { id: "thickness-34mm", icon: "34mm.svg", label: "features.iconThickness34", desc: [["features.item7Desc1"], ["features.item7Desc2", true], ["features.item7Desc3"]] },
-  { id: "laminated", icon: "laminated.svg", label: "features.iconLaminated", desc: [["features.item8Desc1"], ["features.item8Desc2", true], ["features.item8Desc3"]] },
-  { id: "custom-size", icon: "CustomSize.svg", label: "features.iconCustomSize", desc: [["features.item9Desc1"], ["features.item9Desc2", true], ["features.item9Desc3"]] },
-  { id: "led", icon: "LED.svg", label: "features.iconLed", desc: [["features.item10Desc1"], ["features.item10Desc2", true], ["features.item10Desc3"]] },
+  { id: "thickness-16mm", icon: "16mm.svg", label: "features.iconThickness16", desc: [["features.item6Desc1"], ["features.item6Desc2", true], ["features.item6Desc3"]], mineralLabel: "features.iconThickness20", mineralDesc: "features.item6Mineral" },
+  { id: "thickness-34mm", icon: "34mm.svg", label: "features.iconThickness34", desc: [["features.item7Desc1"], ["features.item7Desc2", true], ["features.item7Desc3"]], mineralLabel: "features.iconThickness38", mineralDesc: "features.item7Mineral" },
+  { id: "laminated", icon: "laminated.svg", label: "features.iconLaminated", desc: [["features.item8Desc1"], ["features.item8Desc2", true], ["features.item8Desc3"]], mineralDesc: "features.item8Mineral" },
+  { id: "custom-size", icon: "CustomSize.svg", label: "features.iconCustomSize", desc: [["features.item9Desc1"], ["features.item9Desc2", true], ["features.item9Desc3"]], mineralDesc: "features.item9Mineral" },
+  { id: "led", icon: "LED.svg", label: "features.iconLed", desc: [["features.item10Desc1"], ["features.item10Desc2", true], ["features.item10Desc3"]], mineralDesc: "features.item10Mineral" },
   { id: "dimmable", icon: "Dimmable.svg", label: "features.iconDimmable", desc: [["features.item11Desc1", true], ["features.item11Desc2"]] },
-  { id: "nano-impregnation", icon: "Waterproof.svg", label: "features.iconWaterResistant", desc: [["features.item12Desc1"], ["features.item12Desc2", true], ["features.item12Desc3"]], note: "features.item12Desc4" },
-  { id: "easy-repair", icon: "Repair.svg", label: "features.iconEasyRepair", desc: [["features.item13Desc1"], ["features.item13Desc2", true], ["features.item13Desc3"]] },
-  { id: "color-palette", label: "price.feature13", desc: [["features.item14Desc1"], ["features.item14Desc2", true], ["features.item14Desc3"]], palette: true },
+  { id: "nano-impregnation", icon: "Waterproof.svg", label: "features.iconWaterResistant", desc: [["features.item12Desc1"], ["features.item12Desc2", true], ["features.item12Desc3"]], mineralDesc: "features.item12Mineral", note: "features.item12Desc4" },
+  { id: "easy-repair", icon: "Repair.svg", label: "features.iconEasyRepair", desc: [["features.item13Desc1"], ["features.item13Desc2", true], ["features.item13Desc3"]], mineralDesc: "features.item13Mineral" },
+  { id: "color-palette", label: "price.feature13", desc: [["features.item14Desc1"], ["features.item14Desc2", true], ["features.item14Desc3"]], mineralDesc: "features.item14Mineral", palette: true },
 ];
 
 const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
+const mineralDescription = (key: TranslationKey) =>
+  inlineMarkdown(t(key)).replaceAll(
+    "<strong>",
+    '<strong class="font-semibold text-fg">',
+  );
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink-850">
@@ -73,12 +81,30 @@ const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
                 aria-hidden="true"
               />
             )}
-            <h3 class="text-base font-black tracking-[0.1em] uppercase">{label(feature.label)}</h3>
+            <h3 class="text-base font-black tracking-[0.1em] uppercase">
+              {feature.mineralLabel ? (
+                <>
+                  <span data-panel-type="stone">{label(feature.label)}</span>
+                  <span data-panel-type="mineral">{label(feature.mineralLabel)}</span>
+                </>
+              ) : label(feature.label)}
+            </h3>
             <p class="text-[0.9375rem] leading-relaxed text-fg-muted">
-              {feature.desc.map(([key, strong]) =>
-                strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
+              {feature.mineralDesc ? (
+                <>
+                  <span data-panel-type="stone">
+                    {feature.desc.map(([key, strong]) =>
+                      strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
+                    )}
+                  </span>
+                  <span data-panel-type="mineral" set:html={mineralDescription(feature.mineralDesc)} />
+                </>
+              ) : (
+                feature.desc.map(([key, strong]) =>
+                  strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
+                )
               )}
-              {feature.note && <em class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
+              {feature.note && <em data-panel-type="stone" class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
             </p>
           </li>
         ))

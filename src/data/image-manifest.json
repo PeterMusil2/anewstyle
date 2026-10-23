@@ -319,6 +319,78 @@
    ]
   ]
  },
+ "/images/showcase/Mineral_off.png": {
+  "width": 200,
+  "height": 393,
+  "avif": [
+   [
+    "/_img/images/showcase/Mineral_off-200.avif",
+    200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/Mineral_off-200.webp",
+    200
+   ]
+  ]
+ },
+ "/images/showcase/Mineral_on.png": {
+  "width": 200,
+  "height": 393,
+  "avif": [
+   [
+    "/_img/images/showcase/Mineral_on-200.avif",
+    200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/Mineral_on-200.webp",
+    200
+   ]
+  ]
+ },
+ "/images/showcase/rockfoil_pink_dark.jpg": {
+  "width": 1024,
+  "height": 514,
+  "avif": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-400.avif",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-640.avif",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-960.avif",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-400.webp",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-640.webp",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-960.webp",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark-1024.webp",
+    1024
+   ]
+  ]
+ },
  "/images/showcase/rockfoil_pink_dark_frame_mirror.webp": {
   "width": 1024,
   "height": 813,
@@ -355,6 +427,46 @@
    ],
    [
     "/_img/images/showcase/rockfoil_pink_dark_frame_mirror-1024.webp",
+    1024
+   ]
+  ]
+ },
+ "/images/showcase/rockfoil_pink_dark_frame_no_mirror.webp": {
+  "width": 1024,
+  "height": 512,
+  "avif": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-400.avif",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-640.avif",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-960.avif",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-400.webp",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-640.webp",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-960.webp",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_frame_no_mirror-1024.webp",
     1024
    ]
   ]
@@ -399,6 +511,86 @@
    ]
   ]
  },
+ "/images/showcase/rockfoil_pink_dark_no_mirror.webp": {
+  "width": 1024,
+  "height": 512,
+  "avif": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-400.avif",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-640.avif",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-960.avif",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-400.webp",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-640.webp",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-960.webp",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_dark_no_mirror-1024.webp",
+    1024
+   ]
+  ]
+ },
+ "/images/showcase/rockfoil_pink_light.jpg": {
+  "width": 1024,
+  "height": 512,
+  "avif": [
+   [
+    "/_img/images/showcase/rockfoil_pink_light-400.avif",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-640.avif",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-960.avif",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/showcase/rockfoil_pink_light-400.webp",
+    400
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-640.webp",
+    640
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-960.webp",
+    960
+   ],
+   [
+    "/_img/images/showcase/rockfoil_pink_light-1024.webp",
+    1024
+   ]
+  ]
+ },
  "/images/showcase/rockfoil_pink_light_frame_mirror.webp": {
   "width": 1024,
   "height": 813,
@@ -436,6 +628,326 @@
    [
     "/_img/images/showcase/rockfoil_pink_light_frame_mirror-1024.webp",
     1024
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-angled-day-off.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-off-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-angled-day.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-day-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-angled-night-on.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-on-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-angled-night.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-angled-night-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-day.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-day-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-day-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-day-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-evening.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-evening-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-evening-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-evening-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-perspective-day.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-day-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/mineral-glass-perspective-night.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/mineral-glass-perspective-night-1280.webp",
+    1280
    ]
   ]
  },
@@ -519,6 +1031,86 @@
    ]
   ]
  },
+ "/images/before-after/stone-library-angled-day-off.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-day-off-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/before-after/stone-library-angled-night-on.webp": {
+  "width": 1600,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-400.avif",
+    400
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-640.avif",
+    640
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-960.avif",
+    960
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-400.webp",
+    400
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-640.webp",
+    640
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-960.webp",
+    960
+   ],
+   [
+    "/_img/images/before-after/stone-library-angled-night-on-1280.webp",
+    1280
+   ]
+  ]
+ },
  "/images/backgrounds/showroom.webp": {
   "width": 425,
   "height": 293,
@@ -540,6 +1132,46 @@
    [
     "/_img/images/backgrounds/showroom-425.webp",
     425
+   ]
+  ]
+ },
+ "/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png": {
+  "width": 1344,
+  "height": 1170,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_mineralniho_panelu-1280.webp",
+    1280
    ]
   ]
  },
@@ -619,6 +1251,142 @@
    ],
    [
     "/_img/images/technologies/skladba_kamenne_dyhy-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/patterns/mineral-1.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-1-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-1-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/mineral-2.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-2-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-2-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/mineral-3.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-3-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-3-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/mineral-4.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-4-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-4-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/mineral-5.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-5-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-5-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/mineral-6.png": {
+  "width": 228,
+  "height": 435,
+  "avif": [
+   [
+    "/_img/images/patterns/mineral-6-228.avif",
+    228
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/mineral-6-228.webp",
+    228
+   ]
+  ]
+ },
+ "/images/patterns/rock-pattern-fan.webp": {
+  "width": 1685,
+  "height": 1427,
+  "avif": [
+   [
+    "/_img/images/patterns/rock-pattern-fan-400.avif",
+    400
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-640.avif",
+    640
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-960.avif",
+    960
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/patterns/rock-pattern-fan-400.webp",
+    400
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-640.webp",
+    640
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-960.webp",
+    960
+   ],
+   [
+    "/_img/images/patterns/rock-pattern-fan-1280.webp",
     1280
    ]
   ]

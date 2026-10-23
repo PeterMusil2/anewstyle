@@ -38,17 +38,74 @@ const blocks: { title: string; img: string; layers: Layer[] }[] = [
     ],
   },
 ];
+
+const mineralBlocks: { title: string; img: string; layers: Layer[] }[] = [
+  {
+    title: t("tech.mineralPanelTitle"),
+    img: "/images/patterns/mineral-2.png",
+    layers: [
+      { label: t("tech.mineralTransparent") },
+      { label: t("tech.mineralRigid") },
+      { label: t("tech.mineralThickness") },
+    ],
+  },
+  {
+    title: t("tech.mineralConstructionTitle"),
+    img: "/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png",
+    layers: [
+      { label: t("tech.mineralPanelLayer"), tooltip: t("tech.mineralTooltip") },
+      { label: t("tech.panel2") },
+      { label: t("tech.panel3") },
+      { label: t("tech.panel4") },
+      { label: t("tech.panel5") },
+      { label: t("tech.panel6Label"), tooltip: t("tech.panel6Tooltip") },
+    ],
+  },
+];
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
   <div class="container-page flex flex-col gap-14">
     <SectionHeader id={`${id}-title`} eyebrow={t("tech.title")} title={t("tech.heading")}>
-      <p>{t("tech.desc")}</p>
+      <p data-panel-type="stone">{t("tech.desc")}</p>
+      <p data-panel-type="mineral">{t("tech.mineralDesc")}</p>
     </SectionHeader>
 
-    <div class="grid gap-6 lg:grid-cols-2">
+    <div data-panel-type="stone" class="grid gap-6 lg:grid-cols-2">
       {
         blocks.map((block) => (
+          <article class="reveal flex flex-col gap-8 border border-line bg-ink-900 p-6 sm:p-10">
+            <Picture
+              src={block.img}
+              alt={block.title}
+              sizes="(min-width: 64rem) 40vw, 90vw"
+              class="mx-auto h-auto max-h-72 w-full object-contain"
+            />
+            <h3 class="text-lg font-black tracking-[0.12em] text-gold uppercase">{block.title}</h3>
+            <ol class="flex flex-col gap-3.5">
+              {block.layers.map((layer, index) => (
+                <li class="grid grid-cols-[2rem_minmax(0,1fr)] items-center gap-4">
+                  <span class="inline-grid size-7 place-items-center border border-gold text-xs font-extrabold text-gold">
+                    {index + 1}
+                  </span>
+                  <span class="flex flex-wrap items-center gap-2.5 text-base text-fg-soft">
+                    {layer.label}
+                    {layer.tooltip && (
+                      <Tooltip label={`${t("tech.tooltipAria")}: ${layer.label}`}>
+                        {layer.tooltip}
+                      </Tooltip>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </article>
+        ))
+      }
+    </div>
+    <div data-panel-type="mineral" class="grid gap-6 lg:grid-cols-2">
+      {
+        mineralBlocks.map((block) => (
           <article class="reveal flex flex-col gap-8 border border-line bg-ink-900 p-6 sm:p-10">
             <Picture
               src={block.img}

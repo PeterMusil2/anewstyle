@@ -9,6 +9,7 @@ import Contact from "../components/sections/Contact.astro";
 import Products from "../components/sections/Products.astro";
 import PriceList from "../components/sections/PriceList.astro";
 import Technologies from "../components/sections/Technologies.astro";
+import PanelCategorySwitch from "../components/ui/PanelCategorySwitch.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
 import { homeStructuredData } from "../lib/structured-data";
 
@@ -25,6 +26,7 @@ const pageUrl = new URL(lang === "en" ? "/en/" : "/", Astro.site ?? Astro.url.or
   additionalStructuredData={homeStructuredData(lang, pageUrl)}
 >
   <Header lang={lang} />
+  <PanelCategorySwitch lang={lang} />
   <main id="main">
     <Showcase id="about" lang={lang} />
     <Products id="products" lang={lang} />

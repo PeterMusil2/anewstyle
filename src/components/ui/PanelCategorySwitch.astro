@@ -1,0 +1,67 @@
+---
+import { useTranslations, type Lang } from "../../i18n/utils";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "cs" } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<div
+  class="panel-type-bar"
+  data-title-stone={t("meta.title")}
+  data-title-mineral={t("meta.titleMineral")}
+>
+  <div class="container-page flex items-center justify-between gap-3 py-2.5 sm:py-3">
+    <p class="hidden text-xs font-bold tracking-[0.12em] text-fg-muted uppercase sm:block">
+      {t("price.categoryLabel")}
+    </p>
+    <fieldset class="grid w-full grid-cols-2 gap-1.5 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
+      <legend class="sr-only">{t("price.categoryLabel")}</legend>
+      <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
+        <input type="radio" name="panel-category" value="stone" data-panel-category-input checked class="sr-only" />
+        {t("price.categoryStone")}
+      </label>
+      <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
+        <input type="radio" name="panel-category" value="mineral" data-panel-category-input class="sr-only" />
+        {t("price.categoryMineral")}
+      </label>
+    </fieldset>
+  </div>
+</div>
+
+<script>
+  const categorySelector = 'input[name="panel-category"]';
+  const categoryBar = document.querySelector<HTMLElement>(".panel-type-bar");
+  const syncPanelCategory = (value: string) => {
+    document.documentElement.dataset.panelCategory = value;
+    const title = value === "mineral"
+      ? categoryBar?.dataset.titleMineral
+      : categoryBar?.dataset.titleStone;
+    if (title) document.title = title;
+  };
+
+  const initial = document.querySelector<HTMLInputElement>(categorySelector + ":checked");
+  if (initial) syncPanelCategory(initial.value);
+
+  document.addEventListener("change", (event) => {
+    const input = event.target;
+    if (input instanceof HTMLInputElement && input.matches(categorySelector)) {
+      syncPanelCategory(input.value);
+    }
+  });
+</script>
+
+<style>
+  .panel-type-bar {
+    position: sticky;
+    inset-block-start: var(--nav-height);
+    z-index: 40;
+    border-block-end: 1px solid var(--color-line);
+    background: color-mix(in srgb, var(--color-ink-900) 92%, transparent);
+    color: var(--color-fg);
+    backdrop-filter: blur(14px);
+  }
+</style>

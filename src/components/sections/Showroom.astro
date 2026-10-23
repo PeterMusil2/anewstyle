@@ -103,7 +103,7 @@ const panoLabels = {
         ) : (
           <a
             href={item.full}
-            aria-label={item.alt ?? t("products.stoneAsLighting")}
+            aria-label={item.alt ?? t("products.panelAsLighting")}
             data-fancybox={item.bonus ? undefined : "gallery"}
             data-fancybox-locked={item.bonus ? "gallery" : undefined}
             data-srcset={item.fullSrcset}
@@ -124,7 +124,7 @@ const panoLabels = {
                 width={item.tile.width}
                 height={item.tile.height}
                 style={item.tile.style}
-                alt={item.alt ?? t("products.stoneAsLighting")}
+                alt={item.alt ?? t("products.panelAsLighting")}
                 class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
               />
             </div>

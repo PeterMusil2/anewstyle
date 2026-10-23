@@ -675,15 +675,282 @@
  * (an element hidden by state must stay hidden whatever display utility it
  * carries, e.g. `flex` or `block`).
  */
+html:has(.panel-type-bar) {
+  scroll-padding-block-start: calc(var(--nav-height) + 3.5rem);
+}
+
+html:not([data-panel-category="mineral"]) [data-panel-type="mineral"],
+html[data-panel-category="mineral"] [data-panel-type="stone"] {
+  display: none !important;
+}
+
+/* Stone samples form a real, responsive fan. Each tile opens its own
+   existing product 3D/AR viewer; hover and keyboard focus lift it forward. */
+.product-pattern-fan {
+  position: relative;
+  isolation: isolate;
+  min-block-size: clamp(17rem, 34vw, 25rem);
+  overflow: visible;
+}
+
+.product-pattern-fan > li {
+  position: absolute;
+  inset-block-end: 1.5rem;
+  inset-inline-start: var(--fan-position);
+  inline-size: clamp(6rem, 20vw, 16rem);
+  transform: translateX(-50%) translateY(var(--fan-lift)) rotate(var(--fan-angle));
+  transform-origin: 50% 100%;
+  transition:
+    transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 280ms ease;
+  will-change: transform;
+}
+
+.product-pattern-fan > li:is(:hover, :focus-within) {
+  z-index: 20 !important;
+  filter: brightness(1.08);
+  transform: translateX(-50%) translateY(calc(var(--fan-lift) - 1.25rem)) rotate(var(--fan-angle)) scale(1.07);
+}
+
+.product-fan-card {
+  border: 0;
+  background: #111;
+  box-shadow:
+    -0.35rem 0.65rem 0.9rem rgb(0 0 0 / 0.78),
+    -0.65rem 1rem 1.5rem rgb(0 0 0 / 0.58);
+}
+
+.product-fan-card__stone-image {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 133.333%;
+  block-size: 75%;
+  max-inline-size: none;
+  transform: translate(-50%, -50%) rotate(90deg) scale(1.12);
+}
+
+.product-fan-card:is(:hover, :focus-visible) {
+  box-shadow:
+    -0.45rem 0.8rem 1rem rgb(0 0 0 / 0.84),
+    0 1.25rem 3rem rgb(0 0 0 / 0.68),
+    0 0 1.25rem rgb(183 163 112 / 0.24);
+}
+
+.product-pattern-fan--mineral .product-fan-card {
+  box-shadow:
+    -0.45rem 0.75rem 0.95rem rgb(0 0 0 / 0.86),
+    -0.8rem 1.1rem 1.65rem rgb(0 0 0 / 0.66);
+}
+
+.product-pattern-fan--mineral .product-fan-card:is(:hover, :focus-visible) {
+  box-shadow:
+    -0.55rem 0.9rem 1.1rem rgb(0 0 0 / 0.9),
+    0 1.25rem 3rem rgb(0 0 0 / 0.72),
+    0 0 1.25rem rgb(183 163 112 / 0.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-pattern-fan > li {
+    transition: none;
+  }
+}
+
+@media (width < 40rem) {
+  .product-pattern-fan {
+    min-block-size: 14rem;
+  }
+
+  .product-pattern-fan > li {
+    inset-block-end: 1.25rem;
+    inset-inline-start: var(--fan-mobile-position);
+    inline-size: clamp(6rem, 22vw, 8rem);
+  }
+}
+
 .showcase [data-state] {
   opacity: 0;
-  transition: opacity 0.6s var(--ease-out-soft);
+  transition:
+    opacity 0.6s var(--ease-out-soft),
+    box-shadow 0.6s var(--ease-out-soft);
+}
+
+.showcase__stone-states [data-state] {
+  inset: auto;
+  top: 40.8%;
+  left: 50%;
+  width: 69.9%;
+  height: 35.8%;
+  max-width: none;
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.showcase__stone-reflection {
+  position: absolute;
+  z-index: 0;
+  top: 81.1%;
+  left: 50%;
+  width: 34.95%;
+  height: 71.6%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.32) 0%,
+    rgb(0 0 0 / 0.14) 12%,
+    transparent 28%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.32) 0%,
+    rgb(0 0 0 / 0.14) 12%,
+    transparent 28%
+  );
+}
+
+.showcase__stone-reflection-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 50%;
+  max-width: none;
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(90deg) scaleX(-1);
 }
 
 .showcase:has(input[value="off"]:checked) [data-state="off"],
 .showcase:has(input[value="frame"]:checked) [data-state="frame"],
 .showcase:has(input[value="panel"]:checked) [data-state="panel"] {
   opacity: 1;
+}
+
+.showcase:has(input[value="frame"]:checked) .showcase__stone-states [data-state="frame"],
+.showcase:has(input[value="frame"]:checked) .showcase__stone-reflection [data-state="frame"] {
+  box-shadow:
+    0 0 2rem rgb(255 176 45 / 0.55),
+    0 0 5rem rgb(255 153 0 / 0.29),
+    0 0 7rem rgb(255 190 70 / 0.13);
+}
+
+.showcase:has(input[value="panel"]:checked) .showcase__stone-states [data-state="panel"],
+.showcase:has(input[value="panel"]:checked) .showcase__stone-reflection [data-state="panel"] {
+  box-shadow:
+    0 0 2rem rgb(255 176 45 / 0.55),
+    0 0 5rem rgb(255 153 0 / 0.29),
+    0 0 7rem rgb(255 190 70 / 0.13);
+}
+
+.showcase__mineral-panel {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  width: 34.95%;
+  height: 71.6%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  z-index: 1;
+  box-shadow: 0 0 2rem rgb(163 140 82 / 0.18);
+  transition:
+    filter 0.6s var(--ease-out-soft),
+    box-shadow 0.6s var(--ease-out-soft),
+    border-color 0.6s var(--ease-out-soft);
+}
+
+.showcase__mineral-panel [data-state],
+.showcase__mineral-reflection [data-state] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-soft);
+}
+
+.showcase:has(input[value="off"]:checked) .showcase__mineral-panel [data-state="off"],
+.showcase:has(input[value="off"]:checked) .showcase__mineral-reflection [data-state="off"],
+.showcase:has(input[value="frame"]:checked) .showcase__mineral-panel [data-state="frame"],
+.showcase:has(input[value="frame"]:checked) .showcase__mineral-reflection [data-state="frame"],
+.showcase:has(input[value="panel"]:checked) .showcase__mineral-panel [data-state="panel"],
+.showcase:has(input[value="panel"]:checked) .showcase__mineral-reflection [data-state="panel"] {
+  opacity: 1;
+}
+
+.showcase__mineral-reflection {
+  position: absolute;
+  top: 81.1%;
+  left: 50%;
+  width: 34.95%;
+  height: 71.6%;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  background: var(--color-ink-900);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.32) 0%,
+    rgb(0 0 0 / 0.14) 12%,
+    transparent 28%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.32) 0%,
+    rgb(0 0 0 / 0.14) 12%,
+    transparent 28%
+  );
+  transition:
+    filter 0.6s var(--ease-out-soft),
+    box-shadow 0.6s var(--ease-out-soft),
+    border-color 0.6s var(--ease-out-soft);
+}
+
+.showcase__mineral-reflection .showcase__mineral-texture {
+  transform: scaleY(-1);
+}
+
+.showcase:has(input[value="off"]:checked) .showcase__mineral-panel,
+.showcase:has(input[value="off"]:checked) .showcase__mineral-reflection {
+  box-shadow: none;
+}
+
+.showcase:has(input[value="frame"]:checked) .showcase__mineral-panel,
+.showcase:has(input[value="frame"]:checked) .showcase__mineral-reflection {
+  border-color: rgb(255 191 77 / 0.95);
+  box-shadow:
+    0 0 2rem rgb(255 176 45 / 0.475),
+    0 0 5rem rgb(255 153 0 / 0.31),
+    0 0 7rem rgb(255 190 70 / 0.145);
+}
+
+.showcase:has(input[value="panel"]:checked) .showcase__mineral-panel,
+.showcase:has(input[value="panel"]:checked) .showcase__mineral-reflection {
+  border-color: rgb(230 211 160 / 0.72);
+  box-shadow:
+    0 0 2rem rgb(255 176 45 / 0.475),
+    0 0 5rem rgb(255 153 0 / 0.31),
+    0 0 7rem rgb(255 190 70 / 0.145),
+    inset 0 0 1.5rem rgb(255 255 255 / 0.18);
+}
+
+.mineral-ar-dialog {
+  max-block-size: min(92svh, 58rem);
+  overflow: auto;
+}
+
+.mineral-ar-dialog::backdrop {
+  background: rgb(0 0 0 / 0.82);
+  backdrop-filter: blur(6px);
+}
+
+model-viewer.product-3d.mineral-ar-viewer {
+  inline-size: 100%;
+  block-size: min(68svh, 42rem);
+
+  @media (width < 48rem) {
+    inline-size: 100%;
+    block-size: min(56svh, 31rem);
+  }
 }
 
 .pricing:has(input[name="size"][value="l"]:checked) [data-size]:not([data-size="l"]),

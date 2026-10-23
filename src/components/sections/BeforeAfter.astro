@@ -25,27 +25,53 @@ const t = useTranslations(lang);
       id="baSlider"
       class="ba-slider reveal relative aspect-[1440/809] max-h-[80svh] w-full overflow-hidden border border-line select-none"
     >
-      <div class="absolute inset-0">
-        <Picture
-          src="/images/before-after/Rockfoil_viz5_after_1440.webp"
-          sizes="(min-width: 90rem) 90rem, 100vw"
-          class="size-full object-cover object-left"
-          alt={t("slider.titleNight")}
-        />
-        <span class="absolute top-5 right-5 bg-gold px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-ink uppercase sm:top-8 sm:right-8">
-          {t("slider.titleNight")}
-        </span>
+      <div data-panel-type="stone" class="absolute inset-0">
+        <div class="absolute inset-0">
+          <Picture
+            src="/images/before-after/stone-library-angled-night-on.webp"
+            sizes="(min-width: 90rem) 90rem, 100vw"
+            class="size-full object-cover object-left"
+            alt={t("slider.titleNight")}
+          />
+          <span class="absolute top-5 right-5 bg-gold px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-ink uppercase sm:top-8 sm:right-8">
+            {t("slider.titleNight")}
+          </span>
+        </div>
+        <div class="ba-slider__before absolute inset-0">
+          <Picture
+            src="/images/before-after/stone-library-angled-day-off.webp"
+            sizes="(min-width: 90rem) 90rem, 100vw"
+            class="size-full object-cover object-left"
+            alt={t("slider.titleDay")}
+          />
+          <span class="absolute top-5 left-5 bg-ink/80 px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-fg uppercase sm:top-8 sm:left-8">
+            {t("slider.titleDay")}
+          </span>
+        </div>
       </div>
-      <div class="ba-slider__before absolute inset-0">
-        <Picture
-          src="/images/before-after/Rockfoil_viz5_before_1440.webp"
-          sizes="(min-width: 90rem) 90rem, 100vw"
-          class="size-full object-cover object-left"
-          alt={t("slider.titleDay")}
-        />
-        <span class="absolute top-5 left-5 bg-ink/80 px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-fg uppercase sm:top-8 sm:left-8">
-          {t("slider.titleDay")}
-        </span>
+      <div data-panel-type="mineral" class="absolute inset-0">
+        <div class="absolute inset-0">
+          <Picture
+            src="/images/before-after/mineral-glass-angled-night-on.webp"
+            sizes="(min-width: 90rem) 90rem, 100vw"
+            class="size-full object-cover object-center"
+            alt={`${t("showcase.mineralTextureAlt")} – ${t("slider.titleNight")}`}
+          />
+          <span class="absolute top-5 right-5 bg-gold px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-ink uppercase sm:top-8 sm:right-8">
+            {t("slider.titleNight")}
+          </span>
+        </div>
+        <div class="ba-slider__before absolute inset-0">
+          <Picture
+            src="/images/before-after/mineral-glass-angled-day-off.webp"
+            sizes="(min-width: 90rem) 90rem, 100vw"
+            class="size-full object-cover object-center"
+            alt={`${t("showcase.mineralTextureAlt")} – ${t("slider.titleDay")}`}
+          />
+          <span class="absolute top-5 left-5 bg-ink/80 px-3.5 py-2 text-xs font-extrabold tracking-[0.18em] text-fg uppercase sm:top-8 sm:left-8">
+            {t("slider.titleDay")}
+          </span>
+        </div>
       </div>
       <input
         type="range"

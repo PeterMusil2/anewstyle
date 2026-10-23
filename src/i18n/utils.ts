@@ -60,6 +60,30 @@ export function getLanguageSwitchPath(
 ): string {
   const pathname = currentUrl.pathname;
 
+  const productRoutes: Record<string, Record<Lang, string>> = {
+    "/svitici-kamenne-panely/": {
+      cs: "/svitici-kamenne-panely/",
+      en: "/en/illuminated-stone-panels/",
+    },
+    "/svitici-mineralni-panely/": {
+      cs: "/svitici-mineralni-panely/",
+      en: "/en/illuminated-mineral-panels/",
+    },
+    "/en/illuminated-stone-panels/": {
+      cs: "/svitici-kamenne-panely/",
+      en: "/en/illuminated-stone-panels/",
+    },
+    "/en/illuminated-mineral-panels/": {
+      cs: "/svitici-mineralni-panely/",
+      en: "/en/illuminated-mineral-panels/",
+    },
+  };
+
+  const productRoute = productRoutes[pathname];
+  if (productRoute) {
+    return `${productRoute[targetLang]}${currentUrl.search}${currentUrl.hash}`;
+  }
+
   // Remove current language prefix if exists
   const pathWithoutLang = pathname.replace(/^\/(cs|en)(\/|$)/, "/");
 
@@ -83,6 +107,33 @@ export function getAlternateLinks(
 ): { lang: Lang; href: string }[] {
   const baseUrl = currentUrl.origin;
   const pathname = normalizePagePath(currentUrl.pathname);
+
+  const productRoutes: Record<string, Record<Lang, string>> = {
+    "/svitici-kamenne-panely/": {
+      cs: "/svitici-kamenne-panely/",
+      en: "/en/illuminated-stone-panels/",
+    },
+    "/svitici-mineralni-panely/": {
+      cs: "/svitici-mineralni-panely/",
+      en: "/en/illuminated-mineral-panels/",
+    },
+    "/en/illuminated-stone-panels/": {
+      cs: "/svitici-kamenne-panely/",
+      en: "/en/illuminated-stone-panels/",
+    },
+    "/en/illuminated-mineral-panels/": {
+      cs: "/svitici-mineralni-panely/",
+      en: "/en/illuminated-mineral-panels/",
+    },
+  };
+
+  const productRoute = productRoutes[pathname];
+  if (productRoute) {
+    return (Object.keys(languages) as Lang[]).map((lang) => ({
+      lang,
+      href: `${baseUrl}${productRoute[lang]}`,
+    }));
+  }
 
   // Remove current language prefix if exists
   const pathWithoutLang = pathname.replace(/^\/(cs|en)(\/|$)/, "/");

@@ -20,6 +20,7 @@ import {
 interface Props {
   title: string;
   description: string;
+  panelCategory?: "stone" | "mineral";
   showNav?: boolean;
   metaImageUrl?: string;
   pageType?:
@@ -37,6 +38,7 @@ interface Props {
 const {
   title,
   description,
+  panelCategory,
   showNav = true,
   metaImageUrl,
   pageType,
@@ -65,7 +67,7 @@ const ENABLE_GTM = true;
 ---
 
 <!doctype html>
-<html lang={lang}>
+  <html lang={lang} data-panel-category={panelCategory}>
   <head>
     <meta charset="utf-8" />
     <meta
@@ -338,7 +340,7 @@ const ENABLE_GTM = true;
     <CookieBar lang={lang} />
     <CookieDialog lang={lang} />
     <IconSet />
-    {showNav && <Nav lang={lang} />}
+    {showNav && <Nav lang={lang} panelCategory={panelCategory} />}
     <slot />
     <Footer lang={lang} />
     <WebMcp />

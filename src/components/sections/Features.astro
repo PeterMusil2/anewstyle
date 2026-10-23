@@ -11,9 +11,10 @@ import {
 interface Props {
   id: string;
   lang?: Lang;
+  panelCategory?: "stone" | "mineral";
 }
 
-const { id, lang = "cs" } = Astro.props as Props;
+const { id, lang = "cs", panelCategory } = Astro.props as Props;
 const t = useTranslations(lang);
 
 /** A description is a list of [translation key, emphasised?] parts. */
@@ -50,7 +51,7 @@ const features: Feature[] = [
 ];
 
 const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
-const mineralDescription = (key: TranslationKey) =>
+const formattedDescription = (key: TranslationKey) =>
   inlineMarkdown(t(key)).replaceAll(
     "<strong>",
     '<strong class="font-semibold text-fg">',
@@ -82,29 +83,26 @@ const mineralDescription = (key: TranslationKey) =>
               />
             )}
             <h3 class="text-base font-black tracking-[0.1em] uppercase">
-              {feature.mineralLabel ? (
-                <>
-                  <span data-panel-type="stone">{label(feature.label)}</span>
-                  <span data-panel-type="mineral">{label(feature.mineralLabel)}</span>
-                </>
+              {panelCategory ? (
+                panelCategory === "mineral" && feature.mineralLabel ? label(feature.mineralLabel) : label(feature.label)
+              ) : feature.mineralLabel ? (
+                <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
               ) : label(feature.label)}
             </h3>
             <p class="text-[0.9375rem] leading-relaxed text-fg-muted">
-              {feature.mineralDesc ? (
-                <>
-                  <span data-panel-type="stone">
-                    {feature.desc.map(([key, strong]) =>
-                      strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
-                    )}
-                  </span>
-                  <span data-panel-type="mineral" set:html={mineralDescription(feature.mineralDesc)} />
-                </>
+              {panelCategory ? panelCategory === "mineral" && feature.mineralDesc ? (
+                <span set:html={formattedDescription(feature.mineralDesc)} />
               ) : (
                 feature.desc.map(([key, strong]) =>
                   strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
                 )
-              )}
-              {feature.note && <em data-panel-type="stone" class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
+              ) : feature.mineralDesc ? (
+                <>
+                  <span data-panel-type="stone">{feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}</span>
+                  <span data-panel-type="mineral" set:html={formattedDescription(feature.mineralDesc)} />
+                </>
+              ) : feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}
+              {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type="stone" class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
             </p>
           </li>
         ))

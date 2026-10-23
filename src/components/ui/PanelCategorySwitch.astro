@@ -3,10 +3,13 @@ import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
+  activeCategory?: "stone" | "mineral";
 }
 
-const { lang = "cs" } = Astro.props;
+const { lang = "cs", activeCategory } = Astro.props;
 const t = useTranslations(lang);
+const stoneHref = lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/";
+const mineralHref = lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/";
 ---
 
 <div
@@ -20,17 +23,34 @@ const t = useTranslations(lang);
     <p class="hidden text-xs font-bold tracking-[0.12em] text-fg-muted uppercase sm:block">
       {t("price.categoryLabel")}
     </p>
-    <fieldset class="grid w-full grid-cols-2 gap-1.5 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
-      <legend class="sr-only">{t("price.categoryLabel")}</legend>
-      <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
-        <input type="radio" name="panel-category" value="stone" data-panel-category-input checked class="sr-only" />
-        {t("price.categoryStone")}
-      </label>
-      <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
-        <input type="radio" name="panel-category" value="mineral" data-panel-category-input class="sr-only" />
-        {t("price.categoryMineral")}
-      </label>
-    </fieldset>
+    {activeCategory ? (
+      <nav aria-label={t("price.categoryLabel")} class="grid w-full grid-cols-2 gap-1.5 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
+        <a href={stoneHref} aria-current={activeCategory === "stone" ? "page" : undefined} class:list={["flex min-h-10 items-center justify-center border px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase no-underline transition-colors sm:px-4 sm:text-xs", activeCategory === "stone" ? "border-gold bg-gold/12 text-gold-light" : "border-line bg-ink-900 text-fg-soft hover:border-line-strong hover:text-fg"]}>
+          {t("price.categoryStone")}
+        </a>
+        <a href={mineralHref} aria-current={activeCategory === "mineral" ? "page" : undefined} class:list={["flex min-h-10 items-center justify-center border px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase no-underline transition-colors sm:px-4 sm:text-xs", activeCategory === "mineral" ? "border-gold bg-gold/12 text-gold-light" : "border-line bg-ink-900 text-fg-soft hover:border-line-strong hover:text-fg"]}>
+          {t("price.categoryMineral")}
+        </a>
+      </nav>
+    ) : (
+      <div class="flex w-full flex-col gap-2 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
+        <fieldset class="grid w-full grid-cols-2 gap-1.5">
+          <legend class="sr-only">{t("price.categoryLabel")}</legend>
+          <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
+            <input type="radio" name="panel-category" value="stone" data-panel-category-input checked class="sr-only" />
+            {t("price.categoryStone")}
+          </label>
+          <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
+            <input type="radio" name="panel-category" value="mineral" data-panel-category-input class="sr-only" />
+            {t("price.categoryMineral")}
+          </label>
+        </fieldset>
+        <nav aria-label={t("price.categoryLabel")} class="flex justify-end gap-4 text-[0.625rem] font-bold tracking-caps text-fg-subtle uppercase">
+          <a class="text-inherit underline decoration-gold/50 underline-offset-4 hover:text-gold" href={stoneHref}>{t("price.categoryStone")}</a>
+          <a class="text-inherit underline decoration-gold/50 underline-offset-4 hover:text-gold" href={mineralHref}>{t("price.categoryMineral")}</a>
+        </nav>
+      </div>
+    )}
   </div>
 </div>
 

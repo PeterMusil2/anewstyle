@@ -5,9 +5,11 @@ import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
+  pageTitle?: string;
+  pageDescription?: string;
 }
 
-const { lang = 'cs' } = Astro.props;
+const { lang = 'cs', pageTitle, pageDescription } = Astro.props;
 const t = useTranslations(lang);
 ---
 
@@ -60,10 +62,10 @@ const t = useTranslations(lang);
 
   <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
     <h1 class="hero-title max-w-4xl font-display text-6xl leading-[0.92] font-black tracking-[0.08em] uppercase sm:text-7xl lg:text-[7.5rem]">
-      Anew style
+      {pageTitle ?? "Anew style"}
     </h1>
     <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
-      {t('header.title')}
+      {pageDescription ?? t('header.title')}
     </p>
     <div class="flex flex-wrap items-center gap-4 pt-2">
       <Button href="#about" id="headerMoreButton">

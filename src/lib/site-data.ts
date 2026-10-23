@@ -2,12 +2,15 @@
  * One source of truth for the facts about ANEW STYLE that machines read:
  * JSON-LD (StructuredData), /llms.txt, /agent/site.json, the WebMCP tools in
  * the browser and the /mcp server. Content still comes from the CMS-edited
- * files (prices.json, faq.json, products.json).
+ * files (prices.json, faq.json, products.json). Both panel categories –
+ * stone and mineral – are covered, like on the pages.
  */
 import prices from "../data/prices.json";
 import productsData from "../data/products.json";
-import faq from "../data/faq.json";
 import type { PricesData, Price } from "../components/sections/PriceList.types";
+import { faqItems } from "./faq";
+import { mineralPatternTitle } from "./pattern-fan";
+import { MINERAL_FEATURE_KEYS, mineralSurcharge, priceFor, type PanelCategory } from "./prices";
 import cs from "../i18n/cs.json";
 import en from "../i18n/en.json";
 
@@ -66,40 +69,79 @@ const translate = (lang: Lang, key: string): string =>
   (dictionaries.cs as Record<string, string>)[key] ??
   key;
 
-const toNumber = (value: string): number => Number(value.replace(/\s/g, ""));
 const withVat = (net: number): number => Math.round(net * (1 + VAT_RATE));
 
-/** Panel versions with prices for every size (CZK, excl. and incl. VAT). */
+/** The two panel categories the site switches between (stone / mineral). */
+export function getPanelCategories(lang: Lang): { id: PanelCategory; name: string; description: string }[] {
+  return [
+    { id: "stone", name: translate(lang, "price.categoryStone"), description: translate(lang, "tech.desc") },
+    { id: "mineral", name: translate(lang, "price.categoryMineral"), description: translate(lang, "tech.mineralDesc") },
+  ];
+}
+
+/**
+ * Panel versions with prices for every size (CZK, excl. and incl. VAT), for
+ * stone panels and – stone price + per-size surcharge – mineral panels.
+ */
 export function getVersions(lang: Lang) {
   return (prices as PricesData).products.map((product, index) => ({
     id: String(index + 1),
     name: product.title,
     tagline: product.tagline?.[lang] ?? "",
     prices: sizes.map((size) => {
-      const net = toNumber(product.prices[size.key]);
+      const net = priceFor(product, size.key, "stone");
+      const mineralNet = priceFor(product, size.key, "mineral");
       return {
         size: size.label,
         dimensionsMm: `${size.heightMm} × ${size.widthMm}`,
         priceExclVat: net,
         priceInclVat: withVat(net),
+        mineralPriceExclVat: mineralNet,
+        mineralPriceInclVat: withVat(mineralNet),
       };
     }),
     features: Object.entries(product.features).map(([key, included]) => ({
       feature: translate(lang, `price.feature${key}`),
+      ...(MINERAL_FEATURE_KEYS.has(key) ? { featureMineral: translate(lang, `price.feature${key}Mineral`) } : {}),
       included,
     })),
   }));
 }
 
+/** Per-size surcharge for mineral panels (CZK excl. VAT, same for every version). */
+export function getMineralSurcharge() {
+  return sizes.map((size) => ({ size: size.label, surchargeExclVat: mineralSurcharge(size.key) }));
+}
+
+const plainText = (markdown: string) => markdown.replace(/\*\*(.+?)\*\*/g, "$1");
+
+/**
+ * FAQ; `answerMineral` only where mineral panels differ, `stoneOnly` for
+ * questions the site hides in the mineral view.
+ */
 export function getFaq(lang: Lang) {
-  return faq.items.map((item) => ({
-    question: item.question[lang],
-    answer: item.answer[lang].replace(/\*\*(.+?)\*\*/g, "$1"),
-  }));
+  return faqItems(lang).map((item) => {
+    const answer = plainText(item.answer);
+    const mineral = plainText(item.mineralAnswer);
+    return {
+      question: item.question,
+      answer,
+      ...(mineral !== answer ? { answerMineral: mineral } : {}),
+      ...(item.hideInMineral ? { stoneOnly: true } : {}),
+    };
+  });
 }
 
 const asset = (folder: string, value?: string) =>
   value ? new URL(/^(\/|https?:)/.test(value) ? value : `${folder}/${value}`, SITE_URL).href : undefined;
+
+/** Mineral decors (src/data/products.json → mineral, ordered in the CMS). */
+export function getMineralPatterns(lang: Lang) {
+  return productsData.mineral.map((pattern, index) => ({
+    name: mineralPatternTitle(pattern.title, index, translate(lang, "products.mineralPattern")),
+    image: asset("/images/patterns", pattern.image),
+  }));
+}
 
 /** Illustrative stone patterns (src/data/products.json, ordered in the CMS). */
 export function getPatterns() {
@@ -126,9 +168,13 @@ export function getSiteData(lang: Lang) {
       size: size.label,
       dimensionsMm: `${size.heightMm} × ${size.widthMm}`,
     })),
+    panelCategories: getPanelCategories(lang),
     versions: getVersions(lang),
+    mineralSurcharge: getMineralSurcharge(),
     patterns: getPatterns(),
     patternsNote: translate(lang, "products.samplesNote"),
+    mineralPatterns: getMineralPatterns(lang),
+    mineralPatternsNote: translate(lang, "products.mineralArHint"),
     faq: getFaq(lang),
     contact: {
       email: contact.email,

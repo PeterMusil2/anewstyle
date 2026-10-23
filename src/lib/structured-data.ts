@@ -1,13 +1,15 @@
 /**
  * Extra JSON-LD for the home page: the three panel versions as Products with
- * per-size Offers, the illustrative stone patterns, the FAQ and the Brno
- * showroom. Merged into the @graph built by StructuredData.astro.
+ * per-size Offers – once as stone and once as mineral panels –, the stone and
+ * mineral patterns, the FAQ and the Brno showroom. Merged into the @graph
+ * built by StructuredData.astro.
  */
 import {
   CURRENCY,
   SITE_URL,
   contact,
   getFaq,
+  getMineralPatterns,
   getPatterns,
   getVersions,
   sizes,
@@ -17,50 +19,76 @@ import {
 export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, unknown>[] {
   const organizationId = `${SITE_URL}/#organization`;
   const brand = { "@type": "Brand", name: contact.brand };
-  const panelName = lang === "cs" ? "Svítící kamenný panel" : "Illuminated stone panel";
   const sizeLabel = lang === "cs" ? "velikost" : "size";
-
-  const products = getVersions(lang).map((version) => {
-    const net = version.prices.map((price) => price.priceExclVat);
-    return {
-      "@type": "Product",
-      "@id": `${pageUrl}#product-${version.name.toLowerCase()}`,
-      name: `${panelName} ${version.name}`,
-      description: version.tagline,
-      brand,
-      manufacturer: { "@id": organizationId },
-      category: lang === "cs" ? "Designové interiérové osvětlení" : "Designer interior lighting",
+  const categories = {
+    stone: {
+      panelName: lang === "cs" ? "Svítící kamenný panel" : "Illuminated stone panel",
       material: lang === "cs" ? "Přírodní kámen (břidlice, pískovec)" : "Natural stone (slate, sandstone)",
       image: `${SITE_URL}/images/showcase/rockfoil_pink_light_frame_mirror.webp`,
-      url: `${pageUrl}#price-list`,
-      additionalProperty: version.features
-        .filter((feature) => feature.included)
-        .map((feature) => ({ "@type": "PropertyValue", name: feature.feature, value: true })),
-      offers: {
-        "@type": "AggregateOffer",
-        priceCurrency: CURRENCY,
-        lowPrice: Math.min(...net),
-        highPrice: Math.max(...net),
-        offerCount: version.prices.length,
-        seller: { "@id": organizationId },
-        offers: version.prices.map((price, index) => ({
-          "@type": "Offer",
-          name: `${version.name} – ${sizeLabel} ${price.size} (${price.dimensionsMm} mm)`,
-          sku: `${version.name}-${sizes[index]?.label ?? price.size}`,
-          price: price.priceExclVat,
+      idSuffix: "",
+      skuPrefix: "",
+    },
+    mineral: {
+      panelName: lang === "cs" ? "Svítící minerální panel" : "Illuminated mineral panel",
+      material: lang === "cs" ? "Transparentní rigidní minerální deska 6 mm" : "Transparent rigid 6 mm mineral sheet",
+      image: `${SITE_URL}/images/showcase/Mineral_on.png`,
+      idSuffix: "-mineral",
+      skuPrefix: "M-",
+    },
+  } as const;
+
+  const productsFor = (category: keyof typeof categories) => {
+    const meta = categories[category];
+    return getVersions(lang).map((version) => {
+      const priceOf = (price: (typeof version.prices)[number]) =>
+        category === "mineral" ? price.mineralPriceExclVat : price.priceExclVat;
+      const net = version.prices.map(priceOf);
+      return {
+        "@type": "Product",
+        "@id": `${pageUrl}#product-${version.name.toLowerCase()}${meta.idSuffix}`,
+        name: `${meta.panelName} ${version.name}`,
+        description: version.tagline,
+        brand,
+        manufacturer: { "@id": organizationId },
+        category: lang === "cs" ? "Designové interiérové osvětlení" : "Designer interior lighting",
+        material: meta.material,
+        image: meta.image,
+        url: `${pageUrl}#price-list`,
+        additionalProperty: version.features
+          .filter((feature) => feature.included)
+          .map((feature) => ({
+            "@type": "PropertyValue",
+            name: category === "mineral" && feature.featureMineral ? feature.featureMineral : feature.feature,
+            value: true,
+          })),
+        offers: {
+          "@type": "AggregateOffer",
           priceCurrency: CURRENCY,
-          url: `${pageUrl}#price-list`,
-          priceSpecification: {
-            "@type": "UnitPriceSpecification",
-            price: price.priceExclVat,
-            priceCurrency: CURRENCY,
-            valueAddedTaxIncluded: false,
-          },
+          lowPrice: Math.min(...net),
+          highPrice: Math.max(...net),
+          offerCount: version.prices.length,
           seller: { "@id": organizationId },
-        })),
-      },
-    };
-  });
+          offers: version.prices.map((price, index) => ({
+            "@type": "Offer",
+            name: `${meta.panelName} ${version.name} – ${sizeLabel} ${price.size} (${price.dimensionsMm} mm)`,
+            sku: `${meta.skuPrefix}${version.name}-${sizes[index]?.label ?? price.size}`,
+            price: priceOf(price),
+            priceCurrency: CURRENCY,
+            url: `${pageUrl}#price-list`,
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: priceOf(price),
+              priceCurrency: CURRENCY,
+              valueAddedTaxIncluded: false,
+            },
+            seller: { "@id": organizationId },
+          })),
+        },
+      };
+    });
+  };
+
+  const products = [...productsFor("stone"), ...productsFor("mineral")];
 
   const patterns = {
     "@type": "ItemList",
@@ -74,6 +102,17 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
         name: pattern.name,
         image: pattern.image,
       },
+    })),
+  };
+
+  const mineralPatterns = {
+    "@type": "ItemList",
+    "@id": `${pageUrl}#mineral-patterns`,
+    name: lang === "cs" ? "Minerální dekory" : "Mineral decors",
+    itemListElement: getMineralPatterns(lang).map((pattern, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: { "@type": "CreativeWork", name: pattern.name, image: pattern.image },
     })),
   };
 
@@ -113,5 +152,5 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
     hasMap: contact.showroom.mapUrl,
   };
 
-  return [...products, patterns, faqPage, showroom];
+  return [...products, patterns, mineralPatterns, faqPage, showroom];
 }

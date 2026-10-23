@@ -5,7 +5,8 @@
  * the ones matching the checked radio with :has() – no JavaScript needed.
  */
 import prices from "../../data/prices.json";
-import type { PricesData, Price } from "./PriceList.types";
+import type { PricesData } from "./PriceList.types";
+import { MINERAL_FEATURE_KEYS, priceFor, type PanelCategory, type SizeKey } from "../../lib/prices";
 import Button from "../ui/Button.astro";
 import ScaleFigure from "../ui/ScaleFigure.astro";
 import Icon from "../icons/Icon.astro";
@@ -24,8 +25,6 @@ const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
 
-type SizeKey = keyof Price;
-type PanelCategory = "stone" | "mineral";
 
 const sizes: { key: SizeKey; label: string; width: number; aria: TranslationKey }[] = [
   { key: "l", label: "L", width: 400, aria: "price.showL" },
@@ -66,21 +65,16 @@ const groups: { title: TranslationKey; features: string[] }[] = [
 
 const featureLabel = (key: string) => t(`price.feature${key}` as TranslationKey);
 const categoryFeatureLabel = (key: string, category: PanelCategory) =>
-  category === "mineral" && (key === "1" || key === "2")
+  category === "mineral" && MINERAL_FEATURE_KEYS.has(key)
     ? t(`price.feature${key}Mineral` as TranslationKey)
     : featureLabel(key);
 
 const number = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
-const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const format = (value: number) => number.format(value);
 
 const products = (prices as PricesData).products;
-// Mineral panels cost the stone price plus a surcharge per size, the same for
-// every version; the surcharges are edited in the CMS (Ceník).
-const mineralSurcharges = (prices as PricesData).mineralSurcharge;
-const mineralSurcharge = (key: SizeKey) => toNumber(mineralSurcharges?.[key] ?? "0");
-const priceFor = (product: (typeof products)[number], key: SizeKey, category: PanelCategory) =>
-  toNumber(product.prices[key]) + (category === "mineral" ? mineralSurcharge(key) : 0);
+// Mineral = stone price + per-size surcharge (src/lib/prices.ts, shared with
+// the agent data so the site and the agents quote the same numbers).
 const priceMap = (product: (typeof products)[number], category: PanelCategory) =>
   Object.fromEntries(
     sizes.map(({ key }) => {

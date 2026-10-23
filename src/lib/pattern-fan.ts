@@ -34,6 +34,10 @@ export function fanCard(index: number, count: number): FanCard {
   };
 }
 
+/** Mineral pattern name: the CMS title, or "<label> <n>" when it is empty. */
+export const mineralPatternTitle = (title: string | undefined, index: number, label: string): string =>
+  title?.trim() || `${label} ${index + 1}`;
+
 /** Inline custom properties for one card `<li>`. */
 export function fanStyle(index: number, count: number): string {
   const card = fanCard(index, count);

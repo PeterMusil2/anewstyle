@@ -6,7 +6,7 @@ import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import PatternStepper from "../product/PatternStepper.astro";
-import { fanStepper, fanStyle } from "../../lib/pattern-fan";
+import { fanStepper, fanStyle, mineralPatternTitle } from "../../lib/pattern-fan";
 import {
   useTranslations,
   type Lang,
@@ -28,7 +28,7 @@ const products = productsData.items;
 const mineralPatterns = productsData.mineral.map((pattern, index) => ({
   src: pattern.image,
   // Without a name in the CMS the pattern is numbered ("Minerální dekor 3").
-  title: pattern.title?.trim() || `${t("products.mineralPattern")} ${index + 1}`,
+  title: mineralPatternTitle(pattern.title, index, t("products.mineralPattern")),
 }));
 
 // Touch stepper start position: the middle card is selected in the HTML, so

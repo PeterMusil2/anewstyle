@@ -96,12 +96,14 @@ All components receive `lang` and translate through `t()`.
 
 ### Agents, SEO, structured data
 
-- `src/lib/site-data.ts` is the single source of machine-readable facts.
+- `src/lib/site-data.ts` is the single source of machine-readable facts,
+  covering both panel categories (stone and mineral; prices via `src/lib/prices.ts`,
+  shared with the price list).
   It feeds JSON-LD (`lib/structured-data.ts` → Product/AggregateOffer,
   FAQPage, Store, ItemList), `/llms.txt`, `/agent/site.json`, the WebMCP
   tools (`components/agent/WebMcp.astro`) and the MCP server (`functions/mcp.ts`).
-- WebMCP tools: get_price_list, list_stone_patterns, search_faq, get_contact
-  (read-only) and show_price_for_size, prefill_inquiry, open_page (UI only –
+- WebMCP tools: get_price_list (stone + mineral prices), list_stone_patterns,
+  list_mineral_patterns, search_faq, get_contact (read-only) and show_price_for_size, prefill_inquiry, open_page (UI only –
   agents never send the form). The contact form also carries declarative
   `toolname` attributes.
 - `/mcp` is a stateless, read-only MCP server (Streamable HTTP, JSON-RPC).

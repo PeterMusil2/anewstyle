@@ -4,6 +4,7 @@ import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
+import { contact } from "../../lib/site-data";
 
 interface Props {
   id: string;
@@ -175,8 +176,8 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           <span>621 00 Brno, {t("contact.czechia")}</span>
         </address>
         <dl class="flex gap-8 text-sm text-fg-muted">
-          <div class="flex gap-2"><dt>IČ</dt><dd class="font-bold text-fg">47903180</dd></div>
-          <div class="flex gap-2"><dt>DIČ</dt><dd class="font-bold text-fg">CZ47903180</dd></div>
+          <div class="flex gap-2"><dt><abbr title={t("contact.companyIdTitle")} class="no-underline">{t("contact.companyIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.companyId}</dd></div>
+          <div class="flex gap-2"><dt><abbr title={t("contact.vatIdTitle")} class="no-underline">{t("contact.vatIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.vatId}</dd></div>
         </dl>
       </article>
       </div>

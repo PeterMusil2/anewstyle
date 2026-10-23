@@ -19,8 +19,12 @@ interface Context {
 type Lang = "cs" | "en";
 type SiteData = Record<string, unknown> & {
   versions: { name: string; prices: { size: string }[] }[];
-  faq: { question: string; answer: string }[];
+  faq: { question: string; answer: string; answerMineral?: string }[];
   patterns: unknown[];
+  mineralPatterns: unknown[];
+  mineralPatternsNote: string;
+  mineralSurcharge: { size: string }[];
+  panelCategories: unknown[];
   contact: unknown;
   currency: string;
   priceNote: string;
@@ -53,7 +57,7 @@ const TOOLS = [
     name: "get_price_list",
     title: "Price list",
     description:
-      "Prices in CZK (excl. and incl. 21% VAT) of the ANEW STYLE illuminated stone panel versions SLIM, BASIC and DELUXE for sizes L–XXXL, plus the feature matrix.",
+      "Prices in CZK (excl. and incl. 21% VAT) of the ANEW STYLE illuminated stone and mineral panel versions SLIM, BASIC and DELUXE for sizes L–XXXL (mineral = stone price + per-size surcharge), plus the feature matrix.",
     inputSchema: {
       type: "object",
       properties: { ...langProperty, size: { type: "string", enum: SIZES } },
@@ -68,9 +72,16 @@ const TOOLS = [
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
+    name: "list_mineral_patterns",
+    title: "Mineral decors",
+    description: "Mineral panel decors with photos (viewable in 3D and AR on the website).",
+    inputSchema: { type: "object", properties: { ...langProperty } },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  {
     name: "search_faq",
     title: "FAQ",
-    description: "Frequently asked questions about installation, cables, humidity, repairs, control and weight.",
+    description: "Frequently asked questions about installation, cables, humidity, repairs, control and weight; answerMineral where mineral panels differ.",
     inputSchema: { type: "object", properties: { ...langProperty, query: { type: "string" } } },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
@@ -115,6 +126,8 @@ async function callTool(context: Context, name: string, args: Record<string, unk
         currency: data.currency,
         note: data.priceNote,
         customSize: data.customSizeNote,
+        panelCategories: data.panelCategories,
+        mineralSurcharge: size ? data.mineralSurcharge.filter((item) => item.size === size) : data.mineralSurcharge,
         versions: data.versions.map((version) => ({
           ...version,
           prices: size ? version.prices.filter((price) => price.size === size) : version.prices,
@@ -125,10 +138,13 @@ async function callTool(context: Context, name: string, args: Record<string, unk
     case "list_stone_patterns":
       payload = { note: data.patternsNote, patterns: data.patterns };
       break;
+    case "list_mineral_patterns":
+      payload = { note: data.mineralPatternsNote, patterns: data.mineralPatterns };
+      break;
     case "search_faq": {
       const query = typeof args.query === "string" ? args.query.toLowerCase().trim() : "";
       const hits = query
-        ? data.faq.filter((item) => `${item.question} ${item.answer}`.toLowerCase().includes(query))
+        ? data.faq.filter((item) => `${item.question} ${item.answer} ${item.answerMineral ?? ""}`.toLowerCase().includes(query))
         : data.faq;
       payload = hits.length ? hits : data.faq;
       break;
@@ -182,7 +198,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           capabilities: { tools: { listChanged: false } },
           serverInfo: { name: "anewstyle", title: "ANEW STYLE", version: "1.0.0" },
           instructions:
-            "Read-only facts about ANEW STYLE illuminated stone panels (Brno, CZ): prices, versions, sizes, stone patterns, FAQ and contact. Inquiries are sent by people via the contact form at https://anewstyle.cz/#contact.",
+            "Read-only facts about ANEW STYLE illuminated stone and mineral panels (Brno, CZ): prices, versions, sizes, stone patterns, mineral decors, FAQ and contact. Inquiries are sent by people via the contact form at https://anewstyle.cz/#contact.",
         }),
       );
     }

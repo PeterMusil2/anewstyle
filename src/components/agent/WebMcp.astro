@@ -56,7 +56,7 @@
       name: "get_price_list",
       title: "Price list",
       description:
-        "Prices (CZK, excluding and including 21% VAT) of the illuminated stone panel versions SLIM, BASIC and DELUXE for every size, plus the feature matrix. Optionally filter by size.",
+        "Prices (CZK, excluding and including 21% VAT) of the illuminated stone and mineral panel versions SLIM, BASIC and DELUXE for every size (mineral = stone price + per-size surcharge), plus the feature matrix. Optionally filter by size.",
       inputSchema: {
         type: "object",
         properties: { size: { type: "string", enum: SIZES, description: "Panel size (height 2400 mm)." } },
@@ -68,7 +68,14 @@
           ...version,
           prices: size ? version.prices.filter((price) => price.size === size) : version.prices,
         }));
-        return result({ currency: site.currency, note: site.priceNote, customSize: site.customSizeNote, versions });
+        return result({
+          currency: site.currency,
+          note: site.priceNote,
+          customSize: site.customSizeNote,
+          panelCategories: site.panelCategories,
+          mineralSurcharge: size ? site.mineralSurcharge.filter((item) => item.size === size) : site.mineralSurcharge,
+          versions,
+        });
       },
     },
     {
@@ -83,16 +90,29 @@
       },
     },
     {
+      name: "list_mineral_patterns",
+      title: "Mineral decors",
+      description: "Mineral panel decors (name, photo) that can be viewed in 3D and AR on the page.",
+      inputSchema: { type: "object", properties: {} },
+      annotations: { readOnlyHint: true },
+      execute: async () => {
+        const site = await data();
+        return result({ note: site.mineralPatternsNote, patterns: site.mineralPatterns });
+      },
+    },
+    {
       name: "search_faq",
       title: "FAQ",
-      description: "Answers to common questions about installation, cables, humidity, repairs, remote control and weight. Pass a query to filter.",
+      description: "Answers to common questions about installation, cables, humidity, repairs, remote control and weight; answerMineral where mineral panels differ, stoneOnly where a question applies to stone panels only. Pass a query to filter.",
       inputSchema: { type: "object", properties: { query: { type: "string" } } },
       annotations: { readOnlyHint: true },
       execute: async ({ query }) => {
         const site = await data();
         const needle = typeof query === "string" ? query.toLowerCase().trim() : "";
         const items = needle
-          ? site.faq.filter((item) => `${item.question} ${item.answer}`.toLowerCase().includes(needle))
+          ? site.faq.filter((item) =>
+              `${item.question} ${item.answer} ${"answerMineral" in item ? item.answerMineral : ""}`.toLowerCase().includes(needle),
+            )
           : site.faq;
         return result(items.length ? items : site.faq);
       },

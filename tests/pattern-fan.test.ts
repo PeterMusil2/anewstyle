@@ -4,7 +4,7 @@
  */
 import { describe, expect, test } from "bun:test";
 import products from "../src/data/products.json";
-import { fanCard, fanStepper, fanStyle } from "../src/lib/pattern-fan";
+import { fanCard, fanStepper, fanStyle, stepperLabelLines } from "../src/lib/pattern-fan";
 
 describe("fan geometry", () => {
   test("six and eight cards keep the hand-tuned angles", () => {
@@ -54,6 +54,26 @@ describe("touch stepper", () => {
       const stepper = fanStepper(list.length);
       expect(stepper.max).toBe(list.length - 1);
       expect(stepper.value).toBe(Math.floor((list.length - 1) / 2));
+    }
+  });
+});
+
+describe("stepper label", () => {
+  test("breaks the line after the comma, keeping the comma", () => {
+    expect(stepperLabelLines("Posunutím vyberete dekor, kliknutím zobrazíte v AR")).toEqual([
+      "Posunutím vyberete dekor,",
+      "kliknutím zobrazíte v AR",
+    ]);
+  });
+
+  test("a label without a comma stays on one line", () => {
+    expect(stepperLabelLines("Browse decors")).toEqual(["Browse decors"]);
+  });
+
+  test("both language labels split into two lines", async () => {
+    for (const lang of ["cs", "en"]) {
+      const strings = await Bun.file(`src/i18n/${lang}.json`).json();
+      expect(stepperLabelLines(strings["products.stepperLabel"]).length).toBe(2);
     }
   });
 });

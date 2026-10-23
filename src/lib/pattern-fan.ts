@@ -41,6 +41,17 @@ export function fanStyle(index: number, count: number): string {
 }
 
 /**
+ * Stepper label split into lines after each comma ("Posunutím vyberete
+ * dekor," / "kliknutím zobrazíte v AR"); the comma stays on its line.
+ */
+export function stepperLabelLines(label: string): string[] {
+  return label
+    .split(/(?<=,)\s*/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+/**
  * Touch stepper (input type=range) under a fan: one step per card, starting
  * on the middle card. Not shown for a single card – nothing to browse.
  */

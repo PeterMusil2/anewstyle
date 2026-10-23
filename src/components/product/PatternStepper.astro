@@ -6,7 +6,7 @@
  * Shown only on devices without hover (effects.css, .pattern-stepper), where
  * the hover lift is switched off; tapping a card still opens it.
  */
-import { fanStepper } from "../../lib/pattern-fan";
+import { fanStepper, stepperLabelLines } from "../../lib/pattern-fan";
 
 interface Props {
   /** Unique id for the input (two fans on one page). */
@@ -19,13 +19,16 @@ interface Props {
 
 const { id, titles, label } = Astro.props;
 const stepper = fanStepper(titles.length);
+const labelLines = stepperLabelLines(label);
 const percent = (value: number) => (stepper.max ? (value / stepper.max) * 100 : 0);
 ---
 
 {
   stepper.show && (
     <div class="pattern-stepper" data-pattern-stepper>
-      <label for={id} class="pattern-stepper__label">{label}</label>
+      <label for={id} class="pattern-stepper__label">
+        {labelLines.map((line, index) => (index ? <><br />{line}</> : line))}
+      </label>
       <div class="pattern-stepper__track">
         <span class="pattern-stepper__dots" aria-hidden="true">
           {titles.map(() => <i />)}

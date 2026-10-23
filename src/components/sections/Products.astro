@@ -6,7 +6,7 @@ import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import PatternStepper from "../product/PatternStepper.astro";
-import { fanStyle } from "../../lib/pattern-fan";
+import { fanStepper, fanStyle } from "../../lib/pattern-fan";
 import {
   useTranslations,
   type Lang,
@@ -30,6 +30,11 @@ const mineralPatterns = productsData.mineral.map((pattern, index) => ({
   // Without a name in the CMS the pattern is numbered ("Minerální dekor 3").
   title: pattern.title?.trim() || `${t("products.mineralPattern")} ${index + 1}`,
 }));
+
+// Touch stepper start position: the middle card is selected in the HTML, so
+// it is lifted (and animated in via @starting-style) before any script runs.
+const stoneStepper = fanStepper(products.length);
+const mineralStepper = fanStepper(mineralPatterns.length);
 
 ---
 
@@ -60,7 +65,7 @@ const mineralPatterns = productsData.mineral.map((pattern, index) => ({
       <ul class="product-list product-pattern-fan" aria-label={t("products.fanAlt")}>
         {
           products.map((product, index) => (
-            <li class="reveal" style={fanStyle(index, products.length)}>
+            <li class="reveal" style={fanStyle(index, products.length)} data-active={index === stoneStepper.value && stoneStepper.show ? "" : undefined}>
               <Card
                 id={index + 1}
                 title={product.title}
@@ -91,7 +96,7 @@ const mineralPatterns = productsData.mineral.map((pattern, index) => ({
       <ul class="product-pattern-fan product-pattern-fan--mineral" aria-label={t("products.mineralPatternsTitle")}>
         {
           mineralPatterns.map((pattern, index) => (
-            <li class="reveal" style={fanStyle(index, mineralPatterns.length)}>
+            <li class="reveal" style={fanStyle(index, mineralPatterns.length)} data-active={index === mineralStepper.value && mineralStepper.show ? "" : undefined}>
               <button
                 type="button"
                 data-mineral-pattern

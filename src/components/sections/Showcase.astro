@@ -10,10 +10,9 @@ import { useTranslations, type Lang } from "../../i18n/utils";
 interface Props {
   id: string;
   lang?: Lang;
-  panelCategory?: "stone" | "mineral";
 }
 
-const { id, lang = "cs", panelCategory } = Astro.props;
+const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 const states = [
@@ -44,16 +43,12 @@ const states = [
           {t("showcase.titlePart2")}
         </span>
       </h2>
-      {(!panelCategory || panelCategory === "stone") && (
-        <p data-panel-type="stone" class="max-w-xl text-lg leading-relaxed text-fg-muted">
-          <span>{t("showcase.descPart1")}</span><strong class="font-bold text-fg">{t("showcase.descPart2")}</strong><span>{t("showcase.descPart3")}</span>
-        </p>
-      )}
-      {(!panelCategory || panelCategory === "mineral") && (
-        <p data-panel-type="mineral" class="max-w-xl text-lg leading-relaxed text-fg-muted">
-          {t("showcase.mineralDesc")}
-        </p>
-      )}
+      <p data-panel-type="stone" class="max-w-xl text-lg leading-relaxed text-fg-muted">
+        <span>{t("showcase.descPart1")}</span><strong class="font-bold text-fg">{t("showcase.descPart2")}</strong><span>{t("showcase.descPart3")}</span>
+      </p>
+      <p data-panel-type="mineral" class="max-w-xl text-lg leading-relaxed text-fg-muted">
+        {t("showcase.mineralDesc")}
+      </p>
 
       <fieldset class="mt-2 flex flex-col gap-3">
         <legend class="mb-3 text-xs font-bold tracking-eyebrow text-fg-muted uppercase">
@@ -85,7 +80,7 @@ const states = [
       display.
     -->
     <div class="reveal relative aspect-[1024/1000] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
-      {(!panelCategory || panelCategory === "stone") && <div class="showcase__stone-states absolute inset-0" data-panel-type="stone">
+      <div class="showcase__stone-states absolute inset-0" data-panel-type="stone">
         {
           states.map((state) => (
             <Picture
@@ -97,8 +92,8 @@ const states = [
             />
           ))
         }
-      </div>}
-      {(!panelCategory || panelCategory === "stone") && <div class="showcase__stone-reflection" data-panel-type="stone" aria-hidden="true">
+      </div>
+      <div class="showcase__stone-reflection" data-panel-type="stone" aria-hidden="true">
         {
           states.map((state) => (
             <Picture
@@ -110,8 +105,8 @@ const states = [
             />
           ))
         }
-      </div>}
-      {(!panelCategory || panelCategory === "mineral") && <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center" data-panel-type="mineral">
+      </div>
+      <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center" data-panel-type="mineral">
         <div class="showcase__mineral-reflection" aria-hidden="true">
           {
             states.map((state) => (
@@ -138,7 +133,7 @@ const states = [
             ))
           }
         </div>
-      </div>}
+      </div>
     </div>
   </div>
 </section>

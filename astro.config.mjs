@@ -13,24 +13,6 @@ const manualPdfUrls = {
     site
   ).href,
 };
-const panelPageAlternates = {
-  "/svitici-kamenne-panely/": {
-    cs: new URL("/svitici-kamenne-panely/", site).href,
-    en: new URL("/en/illuminated-stone-panels/", site).href,
-  },
-  "/en/illuminated-stone-panels/": {
-    cs: new URL("/svitici-kamenne-panely/", site).href,
-    en: new URL("/en/illuminated-stone-panels/", site).href,
-  },
-  "/svitici-mineralni-panely/": {
-    cs: new URL("/svitici-mineralni-panely/", site).href,
-    en: new URL("/en/illuminated-mineral-panels/", site).href,
-  },
-  "/en/illuminated-mineral-panels/": {
-    cs: new URL("/svitici-mineralni-panely/", site).href,
-    en: new URL("/en/illuminated-mineral-panels/", site).href,
-  },
-};
 
 // Cloudflare Pages serves public/admin/index.html at /admin/, but the Astro
 // dev server only serves public files by their exact path. Rewrite the folder
@@ -82,19 +64,6 @@ export default defineConfig({
         },
       },
       serialize(item) {
-        const itemPath = new URL(item.url).pathname;
-        const panelAlternate = panelPageAlternates[itemPath];
-        if (panelAlternate) {
-          return {
-            ...item,
-            links: [
-              { lang: "cs", url: panelAlternate.cs },
-              { lang: "en", url: panelAlternate.en },
-              { lang: "x-default", url: panelAlternate.cs },
-            ],
-          };
-        }
-
         if (Object.values(manualPdfUrls).includes(item.url)) {
           return {
             ...item,

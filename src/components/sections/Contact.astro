@@ -9,10 +9,9 @@ import { contact } from "../../lib/site-data";
 interface Props {
   id: string;
   lang?: Lang;
-  panelCategory?: "stone" | "mineral";
 }
 
-const { id, lang = "cs", panelCategory } = Astro.props;
+const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 // Where the bonus button sends the visitor, honouring the locale prefix.
@@ -53,16 +52,14 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-6">
       <form
         class="contact-form flex h-full flex-col gap-5 sm:border sm:border-line sm:bg-ink-850 sm:p-10"
-        data-panel-category={panelCategory}
         action="https://api.web3forms.com/submit"
         method="POST"
         novalidate
         toolname="anewstyle_inquiry"
-        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : "illuminated stone panels"}): name, e-mail and message. The visitor confirms and submits it.`}
+        tooldescription="Send an inquiry to ANEW STYLE (illuminated stone panels): name, e-mail and message. The visitor confirms and submits it."
       >
         <input type="hidden" name="access_key" value="f48bcfa0-bfd9-4098-9a68-6116fd0b952f" />
         <input type="hidden" name="subject" value="AnewStyle – nová zpráva z webu" />
-        <input type="hidden" name="panel_category" value={panelCategory ?? "stone"} />
         <input type="hidden" name="from_name" value="AnewStyle web" />
         <input type="hidden" name="gclid" data-attribution />
         <input type="hidden" name="fbclid" data-attribution />
@@ -298,15 +295,6 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-      const panelCategoryField = form.querySelector<HTMLInputElement>(
-        'input[name="panel_category"]',
-      );
-      if (panelCategoryField) {
-        panelCategoryField.value =
-          form.dataset.panelCategory ??
-          document.documentElement.dataset.panelCategory ??
-          panelCategoryField.value;
-      }
       fillAttributionFields();
 
       setStatus("idle", "");

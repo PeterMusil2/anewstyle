@@ -8,29 +8,23 @@ import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
-  panelCategory?: "stone" | "mineral";
 }
 
-const { lang = "cs", panelCategory } = Astro.props;
+const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
-const panelPath = panelCategory
-  ? panelCategory === "stone"
-    ? lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"
-    : lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"
-  : `${basePath}/`;
 const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
 const links = [
-  { href: `${panelPath}#about`, text: t("nav.light"), accent: true },
-  { href: `${panelPath}#products`, text: t("nav.products") },
-  { href: `${panelPath}#technologies`, text: t("nav.technologies") },
-  { href: `${panelPath}#faq`, text: t("nav.faq") },
+  { href: `${basePath}/#about`, text: t("nav.light"), accent: true },
+  { href: `${basePath}/#products`, text: t("nav.products") },
+  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
+  { href: `${basePath}/#faq`, text: t("nav.faq") },
   { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-  { href: `${panelPath}#price-list`, text: t("nav.price") },
+  { href: `${basePath}/#price-list`, text: t("nav.price") },
   { href: `${basePath}/manual/`, text: t("nav.manual") },
-  { href: `${panelPath}#contact`, text: t("nav.contact") },
+  { href: `${basePath}/#contact`, text: t("nav.contact") },
 ];
 ---
 

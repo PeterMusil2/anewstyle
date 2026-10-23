@@ -14,6 +14,32 @@ const manualPdfUrls = {
   ).href,
 };
 
+// Cloudflare Pages serves public/admin/index.html at /admin/, but the Astro
+// dev server only serves public files by their exact path. Rewrite the folder
+// URL in dev so the CMS opens at /admin/ locally too (`bun run cms:local`).
+const adminIndexInDev = {
+  name: "admin-index-in-dev",
+  apply: "serve",
+  configureServer(server) {
+    const handle = (req, res, next) => {
+      const url = req.url ?? "";
+      if (/^\/admin(?:[?#]|$)/.test(url)) {
+        // Like Cloudflare: /admin → /admin/ (Astro's trailing-slash check would 404 it).
+        res.statusCode = 301;
+        res.setHeader("Location", url.replace(/^\/admin/, "/admin/"));
+        return res.end();
+      }
+      if (/^\/admin\/(?:[?#]|$)/.test(url)) {
+        req.url = url.replace(/^\/admin\//, "/admin/index.html");
+      }
+      next();
+    };
+    // Astro puts its trailing-slash check at the front of the stack in its
+    // post hook; this post hook runs after it, so /admin is handled first.
+    return () => server.middlewares.stack.unshift({ route: "", handle });
+  },
+};
+
 // https://astro.build/config
 export default defineConfig({
   allowImportingTsExtensions: true,
@@ -71,6 +97,6 @@ export default defineConfig({
     inlineStylesheets: "always",
   },
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), adminIndexInDev],
   },
 });

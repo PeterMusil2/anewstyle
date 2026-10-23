@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+**Read [`AGENTS.md`](AGENTS.md) first** – project skills (`.agents/skills/`, linked as `.claude/skills/`), the two rules for every change (content in code always gets a CMS equivalent; every change ships with tests) and the step-by-step validation process before anything goes to `master`.
+
 ## Project Overview
 
 ANEW STYLE is a Czech product showcase website for illuminated stone panels (Rockfoil). Built with Astro 7 and Tailwind CSS 4, it features internationalization support (CS/EN) and 3D product visualization.
@@ -12,6 +14,7 @@ ANEW STYLE is a Czech product showcase website for illuminated stone panels (Roc
 bun run dev          # Astro dev server (http://localhost:4321)
 bun run build        # admin:build → images → typecheck → astro build → sitemap alias
 bun run typecheck    # astro check (TypeScript 6 API) + tsc from TypeScript 7
+bun test             # tests in tests/ (CMS parity, content, image rules)
 bun run preview      # serve the production build
 bun run cms:local    # local Decap CMS backend, then open /admin/ on the dev server
 bun run stylelint    # lint + order CSS in src/**/*.css and <style> in .astro
@@ -29,7 +32,7 @@ Uses Astro's built-in i18n with URL-based routing:
 - Example: `/` (Czech), `/en/` (English), `/gallery` (Czech), `/en/gallery` (English)
 
 **Translation System** (`src/i18n/`):
-- `ui.ts` - All translations as TypeScript objects with dotted keys (e.g., `nav.home`, `cookie.accept`)
+- `cs.json` / `en.json` - All UI translations with flat dotted keys (e.g., `nav.home`, `cookie.accept`), combined in `i18n.ts`; both files must have the same keys (tested)
 - `utils.ts` - Helper functions:
   - `getLangFromUrl(url)` - Extract language from URL
   - `useTranslations(lang)` - Returns `t()` function for translations

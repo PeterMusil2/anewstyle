@@ -6,7 +6,7 @@
 import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
-import faq from "../../data/faq.json";
+import { faqItems } from "../../lib/faq";
 import { inlineMarkdown } from "../../lib/inline-markdown";
 import {
   useTranslations,
@@ -23,17 +23,11 @@ const { id, lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
 
-const questions = faq.items.map((item) => {
-  // A mineral-specific answer is optional; an empty one (as the CMS saves an
-  // untouched field) falls back to the shared answer.
-  const mineralAnswer = ("answerMineral" in item && item.answerMineral?.[lang]?.trim()) || item.answer[lang];
-  return {
-    question: item.question[lang],
-    answer: inlineMarkdown(item.answer[lang]),
-    mineralAnswer: inlineMarkdown(mineralAnswer),
-    hideInMineral: "hideInMineral" in item && item.hideInMineral === true,
-  };
-});
+const questions = faqItems(lang).map((item) => ({
+  ...item,
+  answer: inlineMarkdown(item.answer),
+  mineralAnswer: inlineMarkdown(item.mineralAnswer),
+}));
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">

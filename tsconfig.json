@@ -4,5 +4,5 @@
     "rootDir": ".",
     "types": ["node"]
   },
-  "exclude": ["dist", "public", "node_modules"]
+  "exclude": ["dist", "public", "node_modules", "tests"]
 }

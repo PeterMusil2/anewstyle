@@ -14,6 +14,7 @@
     "models:wildlife-normals": "bun scripts/add-wildlife-normal-maps.mjs",
     "models:product-relief": "bun scripts/add-product-relief-maps.mjs",
     "typecheck": "astro check && node node_modules/typescript-7/bin/tsc --noEmit",
+    "test": "bun test",
     "build": "bun run admin:build && bun run images && bun run typecheck && astro build && node scripts/postbuild-sitemap-alias.mjs",
     "preview": "astro preview",
     "astro": "astro",

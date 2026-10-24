@@ -19,11 +19,17 @@ import {
 interface Props {
   id: string;
   lang?: Lang;
+  panelCategory?: "stone" | "mineral";
 }
 
-const { id, lang = "cs" } = Astro.props;
+const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
+const pagePath = panelCategory
+  ? panelCategory === "stone"
+    ? lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"
+    : lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"
+  : `${basePath}/`;
 
 
 const sizes: { key: SizeKey; label: string; width: number; aria: TranslationKey }[] = [
@@ -32,7 +38,7 @@ const sizes: { key: SizeKey; label: string; width: number; aria: TranslationKey 
   { key: "xxl", label: "XXL", width: 800, aria: "price.showXXL" },
   { key: "xxxl", label: "XXXL", width: 1200, aria: "price.showXXXL" },
 ];
-const previewCategories: PanelCategory[] = ["stone", "mineral"];
+const previewCategories: PanelCategory[] = panelCategory ? [panelCategory] : ["stone", "mineral"];
 const previewImage = (size: SizeKey, category: PanelCategory) =>
   `/images/priceList/${size}${category === "mineral" ? "-art-stone" : ""}.avif`;
 
@@ -104,6 +110,8 @@ const tiers = products.map((product, index) => {
 
 const cheapest = (key: SizeKey, category: PanelCategory) =>
   format(Math.min(...products.map((product) => priceFor(product, key, category))));
+const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
+  category === "mineral" ? tier.mineralPrice : tier.price;
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="pricing bg-ink-850">
@@ -118,11 +126,11 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
         </h2>
       </div>
       <div class="flex flex-col gap-1 lg:max-w-2xl lg:justify-self-end lg:text-right tiny:hidden">
-        <p class="text-[0.9375rem] text-fg-soft lg:text-base">{t("price.desc1")}</p>
+        <p class="text-[0.9375rem] text-fg-soft lg:text-base">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.desc1")}</p>
       </div>
     </header>
 
-    <fieldset class="grid grid-cols-2 gap-2 sm:max-w-3xl sm:gap-3" aria-label={t("price.categoryLabel")}>
+    {!panelCategory && <fieldset class="grid grid-cols-2 gap-2 sm:max-w-3xl sm:gap-3" aria-label={t("price.categoryLabel")}>
       <legend class="sr-only">{t("price.categoryLabel")}</legend>
       <label class="flex min-h-14 cursor-pointer items-center justify-center border border-line bg-ink-900 px-3 py-3 text-center text-xs leading-snug font-extrabold tracking-[0.08em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-5 sm:text-sm">
         <input type="radio" name="panel-category" value="stone" data-price-category="stone" class="sr-only" />
@@ -132,7 +140,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
         <input type="radio" name="panel-category" value="mineral" data-price-category="mineral" class="sr-only" />
         {t("price.categoryMineral")}
       </label>
-    </fieldset>
+    </fieldset>}
     </div>
 
     <div class="price-catalog__body">
@@ -141,9 +149,9 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
         the size picker and all three versions are visible together.
       -->
       <div class="container-page flex min-h-[min(calc(100svh-var(--nav-height)),56rem)] flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4">
-        <p data-price-type="stone" class="hidden text-sm text-fg-muted sm:block short:hidden">
-          <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
-        </p>
+        {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="hidden text-sm text-fg-muted sm:block short:hidden">
+          <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{category === "mineral" ? t("price.desc4Mineral") : t("price.desc4")}</span>
+        </p>)}
     <!-- Step 1: size -->
     <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1`}>
       <div class="flex items-center justify-between gap-4">
@@ -178,8 +186,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
                   <span class="hidden sm:inline">{dims(size.width)}</span>
                 </span>
                 <span class="hidden truncate text-xs leading-tight font-bold text-gold group-has-checked:text-gold-light lg:block">
-                  <span data-price-type="stone">{t("price.from")} {cheapest(size.key, "stone")} {t("price.currency")}</span>
-                  <span data-price-type="mineral" data-price-display="inline">{t("price.from")} {cheapest(size.key, "mineral")} {t("price.currency")}</span>
+                  {previewCategories.map((category) => <span data-price-type={category} data-price-display="inline">{t("price.from")} {cheapest(size.key, category)} {t("price.currency")}</span>)}
                 </span>
               </span>
             </label>
@@ -284,36 +291,24 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
                 )}
                 <div class="flex flex-col gap-1.5">
                   <h4 class="text-[0.9375rem] font-black tracking-[0.22em] text-gold">{tier.title}</h4>
-                  <p data-price-type="stone" class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{tier.tagline}</p>
+                  {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{tier.tagline}</p>)}
                 </div>
 
                 <div class="border-y border-line py-2.5 lg:py-3">
                   {sizes.map((size) => (
                     <>
-                      <div data-size={size.key} data-price-type="stone" class="flex flex-col gap-1">
+                      {previewCategories.map((category) => <div data-size={size.key} data-price-type={category} data-price-display="flex" class="flex flex-col gap-1">
                         <p class="flex flex-wrap items-baseline gap-x-1.5">
                           <span class="text-4xl leading-none font-extrabold tracking-tight tabular-nums lg:text-[2.5rem] short:text-[2rem] tiny:text-[1.875rem]">
-                            {tier.price[size.key].net}
+                            {getTierPrice(tier, category)[size.key].net}
                           </span>
                           <span class="text-base font-bold">{t("price.currency")}</span>
                           <span class="text-xs text-fg-muted">{t("price.withoutVat")}</span>
                         </p>
                         <p class="text-xs text-fg-muted tabular-nums">
-                          {tier.price[size.key].gross} {t("price.currency")} {t("price.withVat")}
+                          {getTierPrice(tier, category)[size.key].gross} {t("price.currency")} {t("price.withVat")}
                         </p>
-                      </div>
-                      <div data-size={size.key} data-price-type="mineral" data-price-display="flex" class="flex flex-col gap-1">
-                        <p class="flex flex-wrap items-baseline gap-x-1.5">
-                          <span class="text-4xl leading-none font-extrabold tracking-tight tabular-nums lg:text-[2.5rem] short:text-[2rem] tiny:text-[1.875rem]">
-                            {tier.mineralPrice[size.key].net}
-                          </span>
-                          <span class="text-base font-bold">{t("price.currency")}</span>
-                          <span class="text-xs text-fg-muted">{t("price.withoutVat")}</span>
-                        </p>
-                        <p class="text-xs text-fg-muted tabular-nums">
-                          {tier.mineralPrice[size.key].gross} {t("price.currency")} {t("price.withVat")}
-                        </p>
-                      </div>
+                      </div>)}
                     </>
                   ))}
                 </div>
@@ -339,7 +334,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
 
                 <div class="flex items-center gap-3">
                   <Button
-                    href={`${basePath}/#contact`}
+                    href={`${pagePath}#contact`}
                     size="sm"
                     variant={tier.featured ? "primary" : "outline"}
                     class="flex-1 px-3!"
@@ -376,11 +371,10 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
   <div class="container-page pt-10 lg:pt-14">
     <div class="flex flex-col items-start gap-5 border border-gold/60 bg-ink-900 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
       <p class="max-w-3xl text-base leading-relaxed text-fg-soft md:text-lg">
-        <span data-panel-type="stone">{t("price.offerPromptBefore")}</span>
-        <span data-panel-type="mineral">{t("price.offerPromptBeforeMineral")}</span>{" "}
+        {panelCategory ? (panelCategory === "mineral" ? t("price.offerPromptBeforeMineral") : t("price.offerPromptBefore")) : <><span data-panel-type="stone">{t("price.offerPromptBefore")}</span><span data-panel-type="mineral">{t("price.offerPromptBeforeMineral")}</span></>}{" "}
         <strong class="text-[1.2em] font-black text-gold-light">{t("price.offerDiscount")}</strong>.
       </p>
-      <Button href={`${basePath}/#contact`} class="w-full py-3 text-center whitespace-normal! sm:w-auto sm:shrink-0 sm:whitespace-nowrap!">{t("price.offerCta")}</Button>
+      <Button href={`${pagePath}#contact`} class="w-full py-3 text-center whitespace-normal! sm:w-auto sm:shrink-0 sm:whitespace-nowrap!">{t("price.offerCta")}</Button>
     </div>
   </div>
 
@@ -388,7 +382,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
   <div id={`${id}-compare`} class="container-page flex scroll-mt-(--nav-height) flex-col gap-5 pt-10 pb-20 lg:pt-14 lg:pb-30">
     <p class="hidden text-[0.9375rem] text-fg-soft tiny:block">{t("price.desc1")}</p>
     <p class="text-sm text-fg-muted sm:hidden short:block tiny:block">
-      <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span data-panel-type="stone">{t("price.desc4")}</span><span data-panel-type="mineral">{t("price.desc4Mineral")}</span>
+      <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}{panelCategory ? (panelCategory === "mineral" ? t("price.desc4Mineral") : t("price.desc4")) : <><span data-panel-type="stone">{t("price.desc4")}</span><span data-panel-type="mineral">{t("price.desc4Mineral")}</span></>}
     </p>
     <div class="flex flex-col justify-between gap-2 md:flex-row md:items-end md:gap-6">
       <h3 class="text-2xl font-black tracking-[0.08em] uppercase lg:text-[1.75rem]">{t("price.compareTitle")}</h3>
@@ -406,12 +400,11 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
               <th scope="col" class="sticky top-(--nav-height) z-10 w-[19%] border-t border-b border-t-gold border-b-line bg-ink-900 px-1 py-3 text-center sm:w-[18%] sm:px-4 sm:py-4">
                 <span class="block text-[0.6875rem] font-black tracking-[0.14em] text-gold sm:text-[0.9375rem] sm:tracking-[0.2em]">{tier.title}</span>
                 {sizes.map((size) => (
-                  <span data-size={size.key} data-price-type="stone" class="block text-[0.6875rem] font-normal whitespace-nowrap text-fg tabular-nums sm:text-sm">
-                    {tier.price[size.key].net} {t("price.currency")}
-                  </span>
-                  <span data-size={size.key} data-price-type="mineral" data-price-display="block" class="block text-[0.6875rem] font-normal whitespace-nowrap text-fg tabular-nums sm:text-sm">
-                    {tier.mineralPrice[size.key].net} {t("price.currency")}
-                  </span>
+                  <>
+                    {previewCategories.map((category) => <span data-size={size.key} data-price-type={category} data-price-display="block" class="block text-[0.6875rem] font-normal whitespace-nowrap text-fg tabular-nums sm:text-sm">
+                      {getTierPrice(tier, category)[size.key].net} {t("price.currency")}
+                    </span>)}
+                  </>
                 ))}
               </th>
             ))
@@ -438,7 +431,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
                         </span>
                       ))}
                     </a>
-                    {meta.hint && <span class="block text-xs text-fg-subtle sm:text-[0.8125rem]">{t(meta.hint)}</span>}
+                    {meta.hint && <span class="block text-xs text-fg-subtle sm:text-[0.8125rem]">{previewCategories.map((category) => <span data-price-type={category} data-price-display="inline">{t(category === "mineral" && key === "4" ? "price.hint4Mineral" : meta.hint!)}</span>)}</span>}
                   </th>
                   {tiers.map((tier) => (
                     <td class="border-b border-line px-1 py-2.5 text-center sm:px-4 sm:py-3">
@@ -461,7 +454,7 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("price.customTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.customDesc")}</p>
-        <Button href={`${basePath}/#contact`} variant="link" class="self-start">{t("price.customCta")} →</Button>
+        <Button href={`${pagePath}#contact`} variant="link" class="self-start">{t("price.customCta")} →</Button>
       </div>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>

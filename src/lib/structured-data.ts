@@ -1,8 +1,7 @@
 /**
- * Extra JSON-LD for the home page: the three panel versions as Products with
- * per-size Offers – once as stone and once as mineral panels –, the stone and
- * mineral patterns, the FAQ and the Brno showroom. Merged into the @graph
- * built by StructuredData.astro.
+ * Category-specific Product, pattern, FAQ and showroom JSON-LD, merged into
+ * the @graph built by StructuredData.astro. The home chooser has no product
+ * schema because it doesn't display product details or prices.
  */
 import {
   CURRENCY,
@@ -15,8 +14,13 @@ import {
   sizes,
   type Lang,
 } from "./site-data";
+import type { PanelCategory } from "./prices";
 
-export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, unknown>[] {
+export function panelPageStructuredData(
+  lang: Lang,
+  pageUrl: string,
+  panelCategory?: PanelCategory,
+): Record<string, unknown>[] {
   const organizationId = `${SITE_URL}/#organization`;
   const brand = { "@type": "Brand", name: contact.brand };
   const sizeLabel = lang === "cs" ? "velikost" : "size";
@@ -88,7 +92,7 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
     });
   };
 
-  const products = [...productsFor("stone"), ...productsFor("mineral")];
+  const products = panelCategory ? productsFor(panelCategory) : [];
 
   const patterns = {
     "@type": "ItemList",
@@ -116,18 +120,24 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
     })),
   };
 
-  const faqPage = {
+  const faqItems = panelCategory
+    ? getFaq(lang).filter((item) => panelCategory !== "mineral" || !item.stoneOnly)
+    : [];
+  const faqPage = panelCategory ? {
     "@type": "FAQPage",
     "@id": `${pageUrl}#faq`,
     inLanguage: lang,
-    mainEntity: getFaq(lang).map((item) => ({
+    mainEntity: faqItems.map((item) => ({
       "@type": "Question",
       name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: panelCategory === "mineral" && item.answerMineral ? item.answerMineral : item.answer,
+      },
     })),
-  };
+  } : undefined;
 
-  const showroom = {
+  const showroom = panelCategory ? {
     "@type": "Store",
     "@id": `${SITE_URL}/#showroom`,
     name: `${contact.brand} Showroom`,
@@ -150,7 +160,13 @@ export function homeStructuredData(lang: Lang, pageUrl: string): Record<string, 
       longitude: contact.showroom.longitude,
     },
     hasMap: contact.showroom.mapUrl,
-  };
+  } : undefined;
 
-  return [...products, patterns, mineralPatterns, faqPage, showroom];
+  return [
+    ...products,
+    ...(panelCategory === "stone" ? [patterns] : []),
+    ...(panelCategory === "mineral" ? [mineralPatterns] : []),
+    ...(faqPage ? [faqPage] : []),
+    ...(showroom ? [showroom] : []),
+  ];
 }

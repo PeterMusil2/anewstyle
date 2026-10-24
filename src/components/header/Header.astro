@@ -1,35 +1,65 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
-import { useTranslations, type Lang } from "../../i18n/utils";
+import {
+  getPanelPagePath,
+  useTranslations,
+  type Lang,
+  type PanelCategory,
+} from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
+  pageTitle?: string;
+  pageDescription?: string;
+  home?: boolean;
+  panelCategory?: PanelCategory;
 }
 
-const { lang = 'cs' } = Astro.props;
+const { lang = 'cs', pageTitle, pageDescription, home = false, panelCategory } = Astro.props;
 const t = useTranslations(lang);
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
   <!-- Poster: the LCP image. The video fades in over it once it plays. -->
-  <picture>
-    <source media="(max-width: 560px)" type="image/avif" srcset="/images/hero/hero-poster-mobile.avif" />
-    <source media="(max-width: 560px)" type="image/webp" srcset="/images/hero/hero-poster-mobile.webp" />
-    <source type="image/avif" srcset="/images/hero/hero-poster-1280.avif" />
-    <img
-      src="/images/hero/hero-poster-1280.webp"
-      alt=""
-      width="1280"
-      height="720"
-      fetchpriority="high"
-      decoding="async"
-      class="absolute inset-0 -z-30 size-full object-cover"
-    />
-  </picture>
+  {panelCategory === "mineral" ? (
+    <picture>
+      <source
+        media="(max-width: 560px)"
+        type="image/webp"
+        srcset="/images/hero/hero-poster-mineral-mobile.webp 540w"
+        sizes="100vw"
+      />
+      <img
+        src="/images/hero/hero-poster-mineral-desktop.webp"
+        alt=""
+        width="1280"
+        height="720"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 -z-30 size-full object-cover"
+      />
+    </picture>
+  ) : (
+    <picture>
+      <source media="(max-width: 560px)" type="image/avif" srcset="/images/hero/hero-poster-mobile.avif" />
+      <source media="(max-width: 560px)" type="image/webp" srcset="/images/hero/hero-poster-mobile.webp" />
+      <source type="image/avif" srcset="/images/hero/hero-poster-1280.avif" />
+      <img
+        src="/images/hero/hero-poster-1280.webp"
+        alt=""
+        width="1280"
+        height="720"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 -z-30 size-full object-cover"
+      />
+    </picture>
+  )}
   <video
     class="hero-video pointer-events-none absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
+    data-panel-category={panelCategory ?? "stone"}
     aria-hidden="true"
     tabindex="-1"
     preload="auto"
@@ -59,38 +89,68 @@ const t = useTranslations(lang);
   </button>
 
   <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
-    <h1 class="hero-title max-w-4xl font-display text-6xl leading-[0.92] font-black tracking-[0.08em] uppercase sm:text-7xl lg:text-[7.5rem]">
-      Anew style
+    <h1 class:list={[
+      "hero-title max-w-4xl font-display leading-[0.92] font-black tracking-[0.08em] uppercase",
+      pageTitle ? "text-5xl sm:text-6xl lg:text-7xl" : "text-6xl sm:text-7xl lg:text-[7.5rem]",
+    ]}>
+      {pageTitle ?? "ANEW STYLE"}
     </h1>
     <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
-      {t('header.title')}
+      {pageDescription ?? t('header.title')}
     </p>
-    <div class="flex flex-wrap items-center gap-4 pt-2">
-      <Button href="#about" id="headerMoreButton">
-        {t('header.btnMore')}
-      </Button>
-      <Button
-        href="https://www.anewstyle-eshop.cz"
-        variant="ghost"
-        rel="external"
-        target="_blank"
-        title={t('header.gotoEshop')}
-        class="max-lg:hidden!"
-      >
-        {t('header.btnEshop')}
-        <Icon name="eshop" class="size-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        id="headerArButton"
-        data-loading="false"
-        data-error="false"
-        class="[--spinner-color:var(--color-gold)] lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
-      >
-        {t('header.btnAr')}
-        <Icon name="ar" class="size-5" />
-      </Button>
-    </div>
+    {home ? (
+      <nav aria-label={t("price.categoryLabel")} class="grid w-full max-w-3xl grid-cols-1 gap-3 pt-2 sm:grid-cols-2 sm:gap-4">
+        <div class="flex flex-col items-center gap-2.5">
+          <Button href={getPanelPagePath("stone", lang)} class="w-full min-h-15 sm:min-h-16">
+            {t("price.categoryStone")}
+          </Button>
+          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
+            {t("header.stoneMaterial")}
+          </p>
+        </div>
+        <div class="flex flex-col items-center gap-2.5">
+          <Button href={getPanelPagePath("mineral", lang)} variant="outline" class="w-full min-h-15 sm:min-h-16">
+            {t("price.categoryMineral")}
+          </Button>
+          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
+            {t("header.mineralMaterial")}
+          </p>
+        </div>
+      </nav>
+    ) : (
+      <div class="flex flex-wrap items-center gap-4 pt-2">
+        <Button href="#about" id="headerMoreButton">
+          {t('header.btnMore')}
+        </Button>
+        <Button
+          href="https://www.anewstyle-eshop.cz"
+          variant="ghost"
+          rel="external"
+          target="_blank"
+          title={t('header.gotoEshop')}
+          class="max-lg:hidden!"
+        >
+          {t('header.btnEshop')}
+          <Icon name="eshop" class="size-4" />
+        </Button>
+        {panelCategory === "mineral" ? (
+          <Button href="#products" variant="ghost" class="lg:hidden!">
+            {t("products.heading")}
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            id="headerArButton"
+            data-loading="false"
+            data-error="false"
+            class="[--spinner-color:var(--color-gold)] lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
+          >
+            {t('header.btnAr')}
+            <Icon name="ar" class="size-5" />
+          </Button>
+        )}
+      </div>
+    )}
   </div>
 
   <div
@@ -195,9 +255,7 @@ const t = useTranslations(lang);
   }
 
   const MOBILE_BREAKPOINT = 560;
-  // Re-encoded without audio (the hero is always muted): 1.9 MB / 1.1 MB.
-  const VIDEO_MOBILE = "/videos/hero-mobile.mp4";
-  const VIDEO_DESKTOP = "/videos/hero-1280.mp4";
+  // Use a landscape and portrait loop; the hero is always muted.
 
   function initHeaderVideo(): void {
     const video = document.querySelector<HTMLVideoElement>("#headerVideo");
@@ -214,6 +272,10 @@ const t = useTranslations(lang);
     video.playsInline = true;
     video.autoplay = true;
     video.controls = false;
+
+    const isMineral = video.dataset.panelCategory === "mineral";
+    const videoMobile = isMineral ? "/videos/hero-mineral-mobile.mp4" : "/videos/hero-mobile.mp4";
+    const videoDesktop = isMineral ? "/videos/mineral_before_after_intro_loop_16x9.mp4" : "/videos/hero-1280.mp4";
 
     let userPaused = false;
     let inView = true;
@@ -278,7 +340,7 @@ const t = useTranslations(lang);
 
     // Do not wait for unrelated images, analytics or the window load event.
     const isMobile = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
-    video.src = isMobile ? VIDEO_MOBILE : VIDEO_DESKTOP;
+    video.src = isMobile ? videoMobile : videoDesktop;
     video.preload = "auto";
     video.addEventListener("canplay", () => { void play(); }, { once: true });
     video.load();
@@ -293,10 +355,7 @@ const t = useTranslations(lang);
       "#headerArButton"
     ) as HTMLButtonElement;
 
-    if (!arButton) {
-      console.warn("AR button not found");
-      return;
-    }
+    if (!arButton) return;
 
     arButton.addEventListener("click", async () => {
       try {

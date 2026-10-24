@@ -44,6 +44,30 @@ function normalizePagePath(pathname: string): string {
   return `${normalizedPath}/`;
 }
 
+export type PanelCategory = "stone" | "mineral";
+
+const panelPagePaths: Record<PanelCategory, Record<Lang, string>> = {
+  stone: {
+    cs: "/svitici-kamenne-panely/",
+    en: "/en/illuminated-stone-panels/",
+  },
+  mineral: {
+    cs: "/svitici-mineralni-panely/",
+    en: "/en/illuminated-mineral-panels/",
+  },
+};
+
+const panelPageLanguages: Record<string, Record<Lang, string>> = {
+  [panelPagePaths.stone.cs]: panelPagePaths.stone,
+  [panelPagePaths.stone.en]: panelPagePaths.stone,
+  [panelPagePaths.mineral.cs]: panelPagePaths.mineral,
+  [panelPagePaths.mineral.en]: panelPagePaths.mineral,
+};
+
+export function getPanelPagePath(category: PanelCategory, lang: Lang): string {
+  return panelPagePaths[category][lang];
+}
+
 /**
  * Build a canonical URL without query parameters or fragments.
  */
@@ -59,6 +83,11 @@ export function getLanguageSwitchPath(
   targetLang: Lang
 ): string {
   const pathname = currentUrl.pathname;
+
+  const productRoute = panelPageLanguages[pathname];
+  if (productRoute) {
+    return `${productRoute[targetLang]}${currentUrl.search}${currentUrl.hash}`;
+  }
 
   // Remove current language prefix if exists
   const pathWithoutLang = pathname.replace(/^\/(cs|en)(\/|$)/, "/");
@@ -83,6 +112,14 @@ export function getAlternateLinks(
 ): { lang: Lang; href: string }[] {
   const baseUrl = currentUrl.origin;
   const pathname = normalizePagePath(currentUrl.pathname);
+
+  const productRoute = panelPageLanguages[pathname];
+  if (productRoute) {
+    return (Object.keys(languages) as Lang[]).map((lang) => ({
+      lang,
+      href: `${baseUrl}${productRoute[lang]}`,
+    }));
+  }
 
   // Remove current language prefix if exists
   const pathWithoutLang = pathname.replace(/^\/(cs|en)(\/|$)/, "/");

@@ -116,6 +116,8 @@ export const GET: APIRoute = () => {
     "## Stránky / Pages",
     "",
     `- [Domů / Home (cs)](${cs.pages.home}) · [en](${en.pages.home})`,
+    `- [Svítící kamenné panely / Illuminated stone panels (cs)](${cs.pages.stonePanels}) · [en](${en.pages.stonePanels})`,
+    `- [Svítící minerální panely / Illuminated mineral panels (cs)](${cs.pages.mineralPanels}) · [en](${en.pages.mineralPanels})`,
     `- [Ceník / Price list](${cs.pages.priceList}) · [en](${en.pages.priceList})`,
     `- [Galerie / Gallery](${cs.pages.gallery}) · [en](${en.pages.gallery})`,
     `- [Návody / Manuals](${cs.pages.manual}) · [en](${en.pages.manual})`,

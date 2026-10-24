@@ -1,22 +1,35 @@
 ---
 import Icon from "../icons/Icon.astro";
-import { useTranslations, type Lang } from "../../i18n/utils";
+import {
+  getPanelPagePath,
+  useTranslations,
+  type Lang,
+  type PanelCategory,
+} from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
+  panelCategory?: PanelCategory;
 }
 
-const { lang = "cs" } = Astro.props;
+const { lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
-const links = [
-  { href: `${basePath}/#products`, text: t("nav.products") },
-  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
-  { href: `${basePath}/#price-list`, text: t("nav.price") },
-  { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-  { href: `${basePath}/manual/`, text: t("nav.manual") },
-  { href: `${basePath}/#contact`, text: t("nav.contact") },
-];
+const links = panelCategory
+  ? [
+      { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
+      { href: `${getPanelPagePath(panelCategory, lang)}#technologies`, text: t("nav.technologies") },
+      { href: `${getPanelPagePath(panelCategory, lang)}#price-list`, text: t("nav.price") },
+      { href: `${basePath}/gallery/`, text: t("nav.gallery") },
+      { href: `${basePath}/manual/`, text: t("nav.manual") },
+      { href: `${getPanelPagePath(panelCategory, lang)}#contact`, text: t("nav.contact") },
+    ]
+  : [
+      { href: getPanelPagePath("stone", lang), text: t("price.categoryStone") },
+      { href: getPanelPagePath("mineral", lang), text: t("price.categoryMineral") },
+      { href: `${basePath}/gallery/`, text: t("nav.gallery") },
+      { href: `${basePath}/manual/`, text: t("nav.manual") },
+    ];
 const currentYear = new Date().getFullYear();
 ---
 

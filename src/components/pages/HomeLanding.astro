@@ -1,0 +1,23 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../header/Header.astro";
+import { getLangFromUrl, useTranslations, type Lang } from "../../i18n/utils";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = getLangFromUrl(Astro.url) } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<Layout
+  title={t("meta.titleHome")}
+  description={t("meta.descriptionHome")}
+  metaImageUrl="/images/meta/meta-facebook.webp"
+  pageType="WebPage"
+>
+  <main id="main">
+    <Header lang={lang} home />
+  </main>
+</Layout>

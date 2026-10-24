@@ -189,12 +189,24 @@
     inputSchema: {
       type: "object",
       properties: {
-        page: { type: "string", enum: ["home", "products", "technologies", "faq", "price-list", "contact", "gallery", "manual"] },
+        page: { type: "string", enum: ["home", "stone-panels", "mineral-panels", "products", "technologies", "faq", "price-list", "contact", "gallery", "manual"] },
       },
       required: ["page"],
     },
     execute: async ({ page }) => {
-      const target = page === "gallery" || page === "manual" ? `${basePath}/${page}/` : page === "home" ? `${basePath}/` : `${basePath}/#${page}`;
+      const panelPaths = lang === "en"
+        ? { stone: "/en/illuminated-stone-panels/", mineral: "/en/illuminated-mineral-panels/" }
+        : { stone: "/svitici-kamenne-panely/", mineral: "/svitici-mineralni-panely/" };
+      const panelSection = page === "technologies" || page === "faq" || page === "price-list" || page === "contact" || page === "products";
+      const target = page === "gallery" || page === "manual"
+        ? `${basePath}/${page}/`
+        : page === "home"
+          ? `${basePath}/`
+          : page === "stone-panels"
+            ? panelPaths.stone
+            : page === "mineral-panels"
+              ? panelPaths.mineral
+              : `${panelPaths.stone}#${panelSection ? page : "products"}`;
       window.location.assign(target);
       return result(`Opening ${target}`);
     },

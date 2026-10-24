@@ -1,0 +1,61 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../header/Header.astro";
+import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
+import Showcase from "../sections/Showcase.astro";
+import Products from "../sections/Products.astro";
+import Technologies from "../sections/Technologies.astro";
+import Features from "../sections/Features.astro";
+import BeforeAfter from "../sections/BeforeAfter.astro";
+import Faq from "../sections/Faq.astro";
+import PriceList from "../sections/PriceList.astro";
+import Contact from "../sections/Contact.astro";
+import {
+  getLangFromUrl,
+  getPanelPagePath,
+  useTranslations,
+  type Lang,
+  type PanelCategory,
+} from "../../i18n/utils";
+import { panelPageStructuredData } from "../../lib/structured-data";
+
+interface Props {
+  category: PanelCategory;
+  lang?: Lang;
+}
+
+const { category, lang = getLangFromUrl(Astro.url) } = Astro.props;
+const t = useTranslations(lang);
+const categoryName = t(category === "stone" ? "price.categoryStone" : "price.categoryMineral");
+const title = t(category === "stone" ? "meta.title" : "meta.titleMineral");
+const description = t(category === "stone" ? "meta.descriptionStone" : "meta.descriptionMineral");
+const pagePath = getPanelPagePath(category, lang);
+const homePath = lang === "cs" ? "/" : "/en/";
+const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
+---
+
+<Layout
+  title={title}
+  description={description}
+  panelCategory={category}
+  metaImageUrl={category === "stone" ? "/images/meta/meta-facebook.webp" : "/images/patterns/mineral-2.png"}
+  pageType="CollectionPage"
+  breadcrumbs={[
+    { name: lang === "cs" ? "Domů" : "Home", url: new URL(homePath, Astro.site ?? Astro.url.origin).href },
+    { name: categoryName, url: pageUrl },
+  ]}
+  additionalStructuredData={panelPageStructuredData(lang, pageUrl, category)}
+>
+  <Header lang={lang} pageTitle={categoryName} pageDescription={t("header.title")} panelCategory={category} />
+  <PanelCategorySwitch lang={lang} activeCategory={category} />
+  <main id="main">
+    <Showcase id="about" lang={lang} panelCategory={category} />
+    <Products id="products" lang={lang} panelCategory={category} />
+    <Technologies id="technologies" lang={lang} panelCategory={category} />
+    <Features id="features" lang={lang} panelCategory={category} />
+    <BeforeAfter lang={lang} panelCategory={category} />
+    <Faq id="faq" lang={lang} panelCategory={category} />
+    <PriceList id="price-list" lang={lang} panelCategory={category} />
+    <Contact id="contact" lang={lang} panelCategory={category} />
+  </main>
+</Layout>

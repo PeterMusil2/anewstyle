@@ -155,6 +155,8 @@ export function getPatterns() {
 /** Everything an agent needs, in one language. */
 export function getSiteData(lang: Lang) {
   const base = lang === "cs" ? SITE_URL : `${SITE_URL}/en`;
+  const stonePanels = `${SITE_URL}${lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"}`;
+  const mineralPanels = `${SITE_URL}${lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"}`;
   return {
     name: contact.brand,
     description: translate(lang, "meta.description"),
@@ -185,11 +187,13 @@ export function getSiteData(lang: Lang) {
       companyId: contact.companyId,
       vatId: contact.vatId,
       eshop: ESHOP_URL,
-      contactForm: `${base}/#contact`,
+      contactForm: `${stonePanels}#contact`,
     },
     pages: {
       home: `${base}/`,
-      priceList: `${base}/#price-list`,
+      stonePanels,
+      mineralPanels,
+      priceList: `${stonePanels}#price-list`,
       gallery: `${base}/gallery/`,
       manual: `${base}/manual/`,
     },

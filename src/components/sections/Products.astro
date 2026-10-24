@@ -16,12 +16,18 @@ import {
 interface Props {
   id: string;
   lang?: Lang;
+  panelCategory?: "stone" | "mineral";
 }
 
-const { id, lang = "cs" } = Astro.props;
+const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
+const pagePath = panelCategory
+  ? panelCategory === "stone"
+    ? lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"
+    : lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"
+  : `${basePath}/`;
 
 // Stone and mineral patterns in the order set in the CMS (drag & drop).
 const products = productsData.items;
@@ -45,16 +51,16 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       eyebrow={t("products.title")}
       title={t("products.heading")}
     >
-      <p data-panel-type="stone">
+      {(!panelCategory || panelCategory === "stone") && <p data-panel-type="stone">
         <span>{t("products.descPart2")}</span><strong class="font-bold text-gold">{t("products.descPart3")}</strong><span>{t("products.descPart4")}</span>
-      </p>
-      <p data-panel-type="stone" class="text-fg-muted">
+      </p>}
+      {(!panelCategory || panelCategory === "stone") && <p data-panel-type="stone" class="text-fg-muted">
         <span>{t("products.descPart5")}</span><strong class="font-bold text-fg">{t("products.descPart6")}</strong><span>{t("products.descPart7")}</span>
-      </p>
-      <p data-panel-type="mineral">{t("products.mineralIntro")}</p>
+      </p>}
+      {(!panelCategory || panelCategory === "mineral") && <p data-panel-type="mineral">{t("products.mineralIntro")}</p>}
     </SectionHeader>
 
-    <div data-panel-type="stone" class="flex flex-col gap-6">
+    {(!panelCategory || panelCategory === "stone") && <div data-panel-type="stone" class="flex flex-col gap-6">
       <div class="flex flex-col gap-2 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.fanCaption")}</h3>
@@ -83,9 +89,9 @@ const mineralStepper = fanStepper(mineralPatterns.length);
         }
       </ul>
       <PatternStepper id={`${id}-stone-stepper`} titles={products.map((product) => product.title)} label={t("products.stepperLabel")} />
-    </div>
+    </div>}
 
-    <div data-panel-type="mineral" class="flex flex-col gap-6">
+    {(!panelCategory || panelCategory === "mineral") && <div data-panel-type="mineral" class="flex flex-col gap-6">
       <div class="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.mineralPatternsTitle")}</h3>
@@ -125,20 +131,20 @@ const mineralStepper = fanStepper(mineralPatterns.length);
         }
       </ul>
       <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.title)} label={t("products.stepperLabel")} />
-    </div>
+    </div>}
 
     <div class="flex flex-col items-start justify-between gap-6 border border-line bg-ink-900 p-7 md:flex-row md:items-center md:gap-10 md:p-8">
       <p class="max-w-3xl text-base leading-relaxed text-fg-soft">
         {t("products.samplesNote" as TranslationKey)}
       </p>
-      <Button href={`${basePath}/#contact`} variant="outline" class="shrink-0">
+      <Button href={`${pagePath}#contact`} variant="outline" class="shrink-0">
         {t("products.samplesCta" as TranslationKey)}
       </Button>
     </div>
   </div>
 </section>
 
-<dialog id="mineral-ar-dialog" class="mineral-ar-dialog m-auto w-[min(96vw,74rem)] max-w-none border border-line-strong bg-ink-900 p-0 text-fg backdrop:bg-black/80">
+{(!panelCategory || panelCategory === "mineral") && <dialog id="mineral-ar-dialog" class="mineral-ar-dialog m-auto w-[min(96vw,74rem)] max-w-none border border-line-strong bg-ink-900 p-0 text-fg backdrop:bg-black/80">
   <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-6">
     <h2 id="mineral-ar-title" class="text-sm font-black tracking-[0.14em] uppercase sm:text-base"></h2>
     <button type="button" data-mineral-dialog-close class="grid size-11 shrink-0 cursor-pointer place-items-center border border-line-strong text-fg transition-colors hover:border-gold hover:text-gold" aria-label={t("products.arClose")}>
@@ -183,7 +189,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       <p class="text-xs leading-relaxed text-fg-subtle">{t("products.arHint")}</p>
     </div>
   </div>
-</dialog>
+</dialog>}
 
 <script>
   // The 3D viewer is bundled locally and fetched on the first card click only.

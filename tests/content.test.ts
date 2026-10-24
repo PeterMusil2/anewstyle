@@ -115,4 +115,32 @@ describe("i18n", () => {
       expect(empty.map(([key]) => `${lang}:${key}`)).toEqual([]);
     }
   });
+
+  test("home panel choices show each material description below its button", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    const header = await Bun.file("src/components/header/Header.astro").text();
+
+    expect(cs["header.stoneMaterial"]).toBe("Transparentní kamenná dýha 2-3 mm");
+    expect(cs["header.mineralMaterial"]).toBe("Transparentní minerální deska 6 mm");
+    expect(en["header.stoneMaterial"]).toBe("Transparent stone veneer 2–3 mm");
+    expect(en["header.mineralMaterial"]).toBe("Transparent mineral sheet 6 mm");
+    expect(header).toMatch(/<Button href=\{getPanelPagePath\("stone", lang\)\}[\s\S]*?<\/Button>\s*<p[^>]*>\s*\{t\("header\.stoneMaterial"\)\}/);
+    expect(header).toMatch(/<Button href=\{getPanelPagePath\("mineral", lang\)\}[\s\S]*?<\/Button>\s*<p[^>]*>\s*\{t\("header\.mineralMaterial"\)\}/);
+  });
+
+  test("contact confirmation explains the tracked discount code terms", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(cs["contact.formSuccess"]).toContain("evidence slevových kódů");
+    expect(cs["contact.thanksDesc"]).toContain("5 % pro SLIM a 7 % pro BASIC nebo DELUXE");
+    expect(cs["contact.thanksDesc"]).toContain("180 dní od vystavení");
+    expect(cs["contact.thanksDesc"]).toContain("individuální nabídky");
+
+    expect(en["contact.formSuccess"]).toContain("discount code register");
+    expect(en["contact.thanksDesc"]).toContain("5% for SLIM and 7% for BASIC or DELUXE");
+    expect(en["contact.thanksDesc"]).toContain("180 days from issue");
+    expect(en["contact.thanksDesc"]).toContain("custom quote");
+  });
 });

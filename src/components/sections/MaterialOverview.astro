@@ -1,0 +1,118 @@
+---
+import Picture from "../ui/Picture.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import materialOverview from "../../data/material-overview.json";
+import { useTranslations, type Lang, type TranslationKey } from "../../i18n/utils";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "cs" } = Astro.props;
+const t = useTranslations(lang);
+const localized = (value: Record<Lang, string>, fallbackKey: TranslationKey) => value[lang]?.trim() || t(fallbackKey);
+const materials: { title: TranslationKey; image: string; alt: TranslationKey; material: string; surface: string; mineral?: boolean; layers: TranslationKey[] }[] = [
+  {
+    title: "tech.subtitle1",
+    image: "/images/technologies/skladba_kamenne_dyhy.avif",
+    alt: "home.stoneImageAlt",
+    material: localized(materialOverview.stone.technology, "home.stoneTechnology"),
+    surface: localized(materialOverview.stone.surfaceShort, "home.stoneSurfaceShort"),
+    layers: ["tech.stone1", "tech.stone2", "tech.stone3", "tech.stone4"],
+  },
+  {
+    title: "home.mineralLayerTitle",
+    image: "/images/technologies/mineral-perspective.png",
+    alt: "home.mineralImageAlt",
+    material: localized(materialOverview.mineral.technology, "home.mineralTechnology"),
+    surface: localized(materialOverview.mineral.surfaceShort, "home.mineralSurfaceShort"),
+    mineral: true,
+    layers: ["tech.mineralTransparent", "tech.mineralRigid", "tech.mineralThickness"],
+  },
+];
+const constructions: { title: TranslationKey; image: string; alt: TranslationKey; description: TranslationKey; layers: TranslationKey[] }[] = [
+  {
+    title: "tech.subtitle2",
+    image: "/images/technologies/konstrukce_sviticiho_panelu.avif",
+    alt: "home.stoneConstructionAlt",
+    description: "tech.desc",
+    layers: ["tech.panel1Label", "tech.panel2", "tech.panel3", "tech.panel4", "tech.panel5", "tech.panel6Label"],
+  },
+  {
+    title: "tech.mineralConstructionTitle",
+    image: "/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png",
+    alt: "home.mineralConstructionAlt",
+    description: "tech.mineralDesc",
+    layers: ["tech.mineralPanelLayer", "tech.panel2", "tech.panel3", "tech.panel4", "tech.panel5", "tech.panel6Label"],
+  },
+] as const;
+---
+
+<section id="technologies" aria-labelledby="technologies-title" class="section-y bg-ink-850">
+  <div class="container-page flex flex-col gap-10 lg:gap-14">
+    <SectionHeader id="technologies-title" eyebrow={t("tech.title")} title={t("home.technologyTitle")}>
+      <p>{t("home.technologyIntro")}</p>
+    </SectionHeader>
+
+    <div class="grid gap-5 md:grid-cols-2 lg:gap-7">
+      {materials.map((item) => (
+        <article class="flex min-w-0 flex-col gap-5 border border-line bg-ink-900 p-5 sm:p-7 lg:gap-8 lg:p-9">
+          <div class="grid min-h-64 place-items-center">
+            {item.mineral ? (
+              <div class="material-overview__mineral-sheet">
+                <Picture src={item.image} alt={t(item.alt)} sizes="(min-width: 64rem) 35vw, 90vw" class="w-full object-contain" />
+              </div>
+            ) : (
+              <Picture src={item.image} alt={t(item.alt)} sizes="(min-width: 64rem) 30vw, 80vw" class="mx-auto max-h-64 w-full object-contain" />
+            )}
+          </div>
+          <div class="flex flex-col gap-4">
+            <h3 class="text-sm font-black tracking-[0.12em] text-gold uppercase">{t(item.title)}</h3>
+            <p class="text-base leading-relaxed text-fg-soft">{item.material}</p>
+            <ol class="flex flex-col gap-2 border-t border-line pt-4">
+              {item.layers.map((layer, index) => (
+                <li class="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-3 text-sm leading-relaxed text-fg-muted">
+                  <span class="inline-grid size-6 place-items-center border border-gold text-[0.6875rem] font-extrabold text-gold">
+                    {index + 1}
+                  </span>
+                  <span>{t(layer)}</span>
+                </li>
+              ))}
+            </ol>
+            <p class="border-l-2 border-gold pl-4 text-sm leading-relaxed text-fg-muted">{item.surface}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="flex flex-col gap-5 lg:gap-7">
+      <h3 class="text-center text-sm font-black tracking-[0.12em] text-gold uppercase sm:text-base">{t("home.sharedConstructionTitle")}</h3>
+      <div class="grid gap-5 md:grid-cols-2 lg:gap-7">
+        {constructions.map((item) => (
+          <figure class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-4 sm:p-6">
+            <figcaption class="text-center text-xs font-bold tracking-caps text-fg-muted uppercase sm:text-sm">{t(item.title)}</figcaption>
+            <Picture src={item.image} alt={t(item.alt)} sizes="(min-width: 64rem) 44vw, 90vw" class="mx-auto h-auto max-h-80 w-full object-contain" />
+            <p class="text-sm leading-relaxed text-fg-soft">{t(item.description)}</p>
+            <ol class="flex flex-col gap-2 border-t border-line pt-4">
+              {item.layers.map((layer, index) => (
+                <li class="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-3 text-sm leading-relaxed text-fg-muted">
+                  <span class="inline-grid size-6 place-items-center border border-gold text-[0.6875rem] font-extrabold text-gold">
+                    {index + 1}
+                  </span>
+                  <span>{t(layer)}</span>
+                </li>
+              ))}
+            </ol>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .material-overview__mineral-sheet {
+    width: min(100%, 32rem);
+    filter: drop-shadow(0 1rem 1rem rgb(0 0 0 / 0.38));
+  }
+</style>

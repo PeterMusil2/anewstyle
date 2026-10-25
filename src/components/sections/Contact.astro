@@ -54,16 +54,14 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       <form
         class="contact-form flex h-full flex-col gap-5 sm:border sm:border-line sm:bg-ink-850 sm:p-10"
         data-panel-category={panelCategory}
-        action="https://api.web3forms.com/submit"
+        action="/api/contact"
         method="POST"
         novalidate
         toolname="anewstyle_inquiry"
-        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : "illuminated stone panels"}): name, e-mail and message. The visitor confirms and submits it.`}
+        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : panelCategory === "stone" ? "illuminated stone panels" : "stone or mineral panels, selected by the visitor"}): name, e-mail, optional panel size and version, and an optional message. The visitor confirms and submits it.`}
       >
-        <input type="hidden" name="access_key" value="f48bcfa0-bfd9-4098-9a68-6116fd0b952f" />
-        <input type="hidden" name="subject" value="AnewStyle – nová zpráva z webu" />
-        <input type="hidden" name="panel_category" value={panelCategory ?? "stone"} />
-        <input type="hidden" name="from_name" value="AnewStyle web" />
+        <input type="hidden" name="panel_category" value={panelCategory ?? ""} />
+        <input type="hidden" name="locale" value={lang} />
         <input type="hidden" name="gclid" data-attribution />
         <input type="hidden" name="fbclid" data-attribution />
         <input type="hidden" name="source" data-attribution />
@@ -82,6 +80,46 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           autocomplete="off"
           aria-hidden="true"
         />
+
+        {!panelCategory && (
+          <fieldset class="flex flex-col gap-2.5">
+            <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.panelCategoryLabel")}</legend>
+            <div class="grid gap-2 sm:grid-cols-2">
+              {(["stone", "mineral"] as const).map((category) => (
+                <label class="flex min-h-12 cursor-pointer items-center gap-3 border border-line bg-ink-900 px-4 text-sm font-semibold text-fg-soft transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/10 has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+                  <input type="radio" name="panel_category_choice" value={category} required={category === "stone"} class="accent-gold" />
+                  {t(category === "stone" ? "price.categoryStone" : "price.categoryMineral")}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <p class="-mb-2 text-xs leading-relaxed text-fg-muted">{t("contact.formChoiceHint")}</p>
+
+        <fieldset class="flex flex-col gap-2.5">
+          <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.formSize")}</legend>
+          <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            {["L", "XL", "XXL", "XXXL", ""].map((size) => (
+              <label class="flex min-h-11 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-sm font-bold text-fg-soft transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/10 has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+                <input type="radio" name="size" value={size} checked={size === ""} class="sr-only" />
+                {size || t("contact.formUnknown")}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="flex flex-col gap-2.5">
+          <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.formVersion")}</legend>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {["SLIM", "BASIC", "DELUXE", ""].map((version) => (
+              <label class="flex min-h-11 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-sm font-bold text-fg-soft transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/10 has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+                <input type="radio" name="version" value={version} checked={version === ""} class="sr-only" />
+                {version || t("contact.formUnknown")}
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <div class="grid gap-5 sm:grid-cols-2">
           <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
@@ -111,15 +149,14 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           </label>
         </div>
 
-        <label class="flex grow flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
+        <label class="flex flex-col gap-2 text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">
           {t("contact.formMessage")}
           <textarea
             name="message"
-            required
-            rows="10"
+            rows="3"
             placeholder={t("contact.formMessagePlaceholder")}
-            toolparamdescription="The question or request, e.g. size, version and stone pattern of interest"
-            class="min-h-13 border border-field bg-ink-900 px-4 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger min-h-60 grow resize-y py-3.5"></textarea>
+            toolparamdescription="Optional question or additional request"
+            class="min-h-13 resize-y border border-field bg-ink-900 px-4 py-3.5 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger"></textarea>
         </label>
 
         <div class="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center">
@@ -136,6 +173,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           >
           </p>
         </div>
+        <p class="max-w-prose text-xs leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
       </form>
 
       <div class="flex flex-col gap-5">
@@ -193,6 +231,10 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   class="dialog m-auto w-[min(36rem,calc(100vw-2.5rem))] border border-gold/50 bg-ink-850 p-0 text-fg"
   aria-labelledby="contact-thanks-title"
   aria-describedby="contact-thanks-desc"
+  data-code-email-sent={t("contact.codeEmailSent")}
+  data-code-email-failed={t("contact.codeEmailFailed")}
+  data-code-copied={t("contact.codeCopied")}
+  data-code-copy-error={t("contact.codeCopyError")}
 >
   <div class="flex flex-col gap-6 p-7 sm:p-9">
     <div class="flex items-start justify-between gap-6">
@@ -210,6 +252,19 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       </button>
     </div>
     <p id="contact-thanks-desc" class="text-base leading-relaxed text-fg-soft">{t("contact.thanksDesc")}</p>
+    <div class="flex flex-col gap-3 border border-gold/50 bg-ink-900 p-5">
+      <p class="text-xs font-extrabold tracking-eyebrow text-fg-muted uppercase">{t("contact.codeLabel")}</p>
+      <code id="contact-discount-code" tabindex="0" aria-live="polite" class="max-w-full break-all font-mono text-lg font-bold tracking-[0.08em] text-gold sm:text-2xl"></code>
+      <p id="contact-code-email-status" class="text-sm leading-relaxed text-fg-soft" role="status" aria-live="polite"></p>
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          id="contact-code-copy"
+          class="min-h-11 border border-line-strong px-4 text-sm font-bold text-fg transition-colors hover:border-gold hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+        >{t("contact.codeCopy")}</button>
+        <p id="contact-code-copy-status" class="text-sm text-fg-muted" role="status" aria-live="polite"></p>
+      </div>
+    </div>
     <p class="prose-inline text-base leading-relaxed text-fg-soft" set:html={t("contact.thanksBonus")} />
     <div class="flex justify-end">
       <Button href={galleryPath} id="contact-thanks-bonus" hidden class="[&[hidden]]:hidden!">
@@ -245,12 +300,38 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     );
     close?.addEventListener("click", () => dialog.close());
 
-    return (unlocked: boolean) => {
+    const code = dialog.querySelector<HTMLElement>("#contact-discount-code");
+    const emailStatus = dialog.querySelector<HTMLElement>("#contact-code-email-status");
+    const copyStatus = dialog.querySelector<HTMLElement>("#contact-code-copy-status");
+    const copyButton = dialog.querySelector<HTMLButtonElement>("#contact-code-copy");
+    copyButton?.addEventListener("click", async () => {
+      const value = code?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(value);
+        if (copyStatus) copyStatus.textContent = copyStatus.dataset.copied ?? "";
+      } catch {
+        if (copyStatus) copyStatus.textContent = copyStatus.dataset.copyError ?? "";
+      }
+    });
+
+    if (copyStatus) {
+      copyStatus.dataset.copied = dialog.dataset.codeCopied ?? "";
+      copyStatus.dataset.copyError = dialog.dataset.codeCopyError ?? "";
+    }
+
+    return (unlocked: boolean, value: string, emailSent: boolean) => {
       const bonusLink = dialog.querySelector<HTMLAnchorElement>(
         "#contact-thanks-bonus"
       );
       // The bonus button only appears once the flag is genuinely stored.
       if (bonusLink) bonusLink.toggleAttribute("hidden", !unlocked);
+      if (code) code.textContent = value;
+      if (emailStatus) {
+        emailStatus.textContent = emailSent
+          ? dialog.dataset.codeEmailSent ?? ""
+          : dialog.dataset.codeEmailFailed ?? "";
+      }
+      if (copyStatus) copyStatus.textContent = "";
       dialog.showModal();
     };
   };
@@ -259,6 +340,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
+    const requestedCategory = new URLSearchParams(window.location.search).get("panel");
+    const requestedChoice = requestedCategory === "mineral" || requestedCategory === "stone"
+      ? form.querySelector<HTMLInputElement>(`input[name="panel_category_choice"][value="${requestedCategory}"]`)
+      : null;
+    if (requestedChoice) requestedChoice.checked = true;
+
     const fillAttributionFields = (): void => {
       try {
         const attribution = JSON.parse(
@@ -282,6 +369,15 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     const successMessage = status?.dataset.statusSuccess ?? "";
     const errorMessage = status?.dataset.statusError ?? "";
 
+    const newSubmissionId = (): string => {
+      if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+      const bytes = crypto.getRandomValues(new Uint8Array(16));
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    };
+
     const setStatus = (
       state: "idle" | "success" | "error",
       message: string,
@@ -301,13 +397,31 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       const panelCategoryField = form.querySelector<HTMLInputElement>(
         'input[name="panel_category"]',
       );
+      let submittedPanelCategory = "stone";
       if (panelCategoryField) {
+        const selectedCategory = form.querySelector<HTMLInputElement>(
+          'input[name="panel_category_choice"]:checked',
+        )?.value;
         panelCategoryField.value =
           form.dataset.panelCategory ??
+          selectedCategory ??
           document.documentElement.dataset.panelCategory ??
           panelCategoryField.value;
+        submittedPanelCategory = panelCategoryField.value;
       }
       fillAttributionFields();
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      const fingerprint = JSON.stringify(payload);
+      if (
+        !form.dataset.submissionId ||
+        form.dataset.submissionFingerprint !== fingerprint
+      ) {
+        form.dataset.submissionId = newSubmissionId();
+        form.dataset.submissionFingerprint = fingerprint;
+      }
+      payload.submission_id = form.dataset.submissionId;
 
       setStatus("idle", "");
       if (submitBtn) submitBtn.dataset.loading = "true";
@@ -315,15 +429,26 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       try {
         const response = await fetch(form.action, {
           method: "POST",
-          headers: { Accept: "application/json" },
-          body: new FormData(form),
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
-        const data = (await response.json()) as { success?: boolean };
+        const data = (await response.json()) as {
+          success?: boolean;
+          code?: string;
+          emailSent?: boolean;
+        };
 
-        if (response.ok && data.success) {
+        if (response.ok && data.success && data.code) {
           setStatus("success", successMessage);
           form.reset();
-          showThanks?.(unlockBonus());
+          const categoryChoice = form.querySelector<HTMLInputElement>(
+            `input[name="panel_category_choice"][value="${submittedPanelCategory}"]`,
+          );
+          if (categoryChoice) categoryChoice.checked = true;
+          if (panelCategoryField) panelCategoryField.value = submittedPanelCategory;
+          delete form.dataset.submissionId;
+          delete form.dataset.submissionFingerprint;
+          showThanks?.(unlockBonus(), data.code, data.emailSent === true);
         } else {
           setStatus("error", errorMessage);
         }

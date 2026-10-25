@@ -1,8 +1,4 @@
-/**
- * Category-specific Product, pattern, FAQ and showroom JSON-LD, merged into
- * the @graph built by StructuredData.astro. The home chooser has no product
- * schema because it doesn't display product details or prices.
- */
+/** Category-specific product, pattern and showroom JSON-LD. */
 import {
   CURRENCY,
   SITE_URL,
@@ -43,7 +39,7 @@ export function panelPageStructuredData(
 
   const productsFor = (category: keyof typeof categories) => {
     const meta = categories[category];
-    return getVersions(lang).map((version) => {
+    return getVersions(lang, category).map((version) => {
       const priceOf = (price: (typeof version.prices)[number]) =>
         category === "mineral" ? price.mineralPriceExclVat : price.priceExclVat;
       const net = version.prices.map(priceOf);
@@ -120,23 +116,6 @@ export function panelPageStructuredData(
     })),
   };
 
-  const faqItems = panelCategory
-    ? getFaq(lang).filter((item) => panelCategory !== "mineral" || !item.stoneOnly)
-    : [];
-  const faqPage = panelCategory ? {
-    "@type": "FAQPage",
-    "@id": `${pageUrl}#faq`,
-    inLanguage: lang,
-    mainEntity: faqItems.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: panelCategory === "mineral" && item.answerMineral ? item.answerMineral : item.answer,
-      },
-    })),
-  } : undefined;
-
   const showroom = panelCategory ? {
     "@type": "Store",
     "@id": `${SITE_URL}/#showroom`,
@@ -145,7 +124,7 @@ export function panelPageStructuredData(
     parentOrganization: { "@id": organizationId },
     telephone: contact.phone,
     email: contact.email,
-    url: `${pageUrl}#contact`,
+    url: `${SITE_URL}${lang === "cs" ? "/" : "/en/"}?panel=${panelCategory}#contact`,
     image: `${SITE_URL}/images/backgrounds/showroom.webp`,
     address: {
       "@type": "PostalAddress",
@@ -166,7 +145,30 @@ export function panelPageStructuredData(
     ...products,
     ...(panelCategory === "stone" ? [patterns] : []),
     ...(panelCategory === "mineral" ? [mineralPatterns] : []),
-    ...(faqPage ? [faqPage] : []),
     ...(showroom ? [showroom] : []),
   ];
+}
+
+/** Shared FAQ on the home comparison page, with both material answers where they differ. */
+export function homePageStructuredData(lang: Lang, pageUrl: string): Record<string, unknown>[] {
+  const stoneLabel = lang === "cs" ? "Svítící kamenné panely" : "Illuminated stone panels";
+  const mineralLabel = lang === "cs" ? "Svítící minerální panely" : "Illuminated mineral panels";
+  const faqPage = {
+    "@type": "FAQPage",
+    "@id": `${pageUrl}#faq`,
+    inLanguage: lang,
+    mainEntity: getFaq(lang).map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.stoneOnly
+          ? `${stoneLabel}: ${item.answer}`
+          : item.answerMineral
+            ? `${stoneLabel}: ${item.answer} ${mineralLabel}: ${item.answerMineral}`
+            : item.answer,
+      },
+    })),
+  };
+  return [faqPage];
 }

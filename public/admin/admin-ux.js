@@ -128,9 +128,9 @@
   const TOURS = {
     intro: () => [
       step(null, "Vítejte v administraci webu ANEW STYLE",
-        "Tady upravujete obsah webu anewstyle.cz – galerii, vzory kamene, ceník a časté dotazy. Provedu vás během minuty. Prohlídku můžete kdykoli zavřít a později spustit znovu tlačítkem <b>Nápověda</b> vlevo dole."),
+        "Tady upravujete obsah webu anewstyle.cz – galerii, vzory panelů, ceník, společné srovnání materiálů a časté dotazy. Provedu vás během minuty. Prohlídku můžete kdykoli zavřít a později spustit znovu tlačítkem <b>Nápověda</b> vlevo dole."),
       step('[class*="SidebarContainer"]', "Sekce webu",
-        "Sekce odpovídají částem webu:<br><b>Galerie</b> – stránka Galerie (fotky, videa, 360°)<br><b>Vzory kamene</b> – karty v sekci Produkty<br><b>Ceník</b> – ceny a výbava<br><b>Časté dotazy</b> – otázky a odpovědi<br><br>Klikněte na sekci a otevře se její obsah.", "right"),
+        "Sekce odpovídají částem webu:<br><b>Galerie</b> – stránka Galerie (fotky, videa, 360°)<br><b>Vzory panelů</b> – karty v sekci Produkty<br><b>Ceník</b> – ceny a výbava<br><b>Materiály panelů</b> – společné srovnání na úvodní stránce<br><b>Časté dotazy</b> – otázky a odpovědi<br><br>Klikněte na sekci a otevře se její obsah.", "right"),
       step('a[href="#/workflow"]', "Schvalování",
         "Tady jsou uložené změny, které ještě nejsou na webu (koncepty). Odtud je můžete publikovat."),
       step('[class*="AppHeaderSiteLink"]', "Odkaz na web", "Otevře živý web v nové záložce, ať si můžete změny hned zkontrolovat."),

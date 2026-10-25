@@ -12,9 +12,10 @@ interface Props {
   id: string;
   lang?: Lang;
   panelCategory?: "stone" | "mineral";
+  showBoth?: boolean;
 }
 
-const { id, lang = "cs", panelCategory } = Astro.props as Props;
+const { id, lang = "cs", panelCategory, showBoth = false } = Astro.props as Props;
 const t = useTranslations(lang);
 
 /** A description is a list of [translation key, emphasised?] parts. */
@@ -27,6 +28,7 @@ interface Feature {
   desc: Part[];
   mineralLabel?: TranslationKey;
   mineralDesc?: TranslationKey;
+  combinedDesc?: TranslationKey;
   palette?: boolean;
   note?: TranslationKey;
 }
@@ -34,20 +36,20 @@ interface Feature {
 const features: Feature[] = [
   { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [["features.item1Desc1"], ["features.item1Desc2", true], ["features.item1Desc3"], ["features.item1Desc4", true]], mineralDesc: "features.item1Mineral" },
   { id: "quick-mounting", icon: "Mounting.svg", label: "features.iconMounting", desc: [["features.item2Desc1"], ["features.item2Desc2", true], ["features.item2Desc3"]] },
-  { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]], mineralDesc: "features.item3Mineral" },
-  { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]], mineralDesc: "features.item4Mineral" },
-  { id: "smartphone-control", icon: "MobileControl.svg", label: "features.iconSmartphone", desc: [["features.item5Desc1"], ["features.item5Desc2", true], ["features.item5Desc3"]], mineralDesc: "features.item5Mineral" },
+  { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]] },
+  { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]] },
+  { id: "smartphone-control", icon: "MobileControl.svg", label: "features.iconSmartphone", desc: [["features.item5Desc1"], ["features.item5Desc2", true], ["features.item5Desc3"]] },
   { id: "touch-control", icon: "touch.svg", label: "features.iconTouch", desc: [["features.item15Desc1"], ["features.item15Desc2", true]] },
   { id: "temperature", icon: "temperature.png", label: "features.iconTemperature", desc: [["features.item16Desc1"], ["features.item16Desc2", true], ["features.item16Desc3"]] },
   { id: "thickness-16mm", icon: "16mm.svg", label: "features.iconThickness16", desc: [["features.item6Desc1"], ["features.item6Desc2", true], ["features.item6Desc3"]], mineralLabel: "features.iconThickness20", mineralDesc: "features.item6Mineral" },
-  { id: "thickness-34mm", icon: "34mm.svg", label: "features.iconThickness34", desc: [["features.item7Desc1"], ["features.item7Desc2", true], ["features.item7Desc3"]], mineralLabel: "features.iconThickness38", mineralDesc: "features.item7Mineral" },
-  { id: "laminated", icon: "laminated.svg", label: "features.iconLaminated", desc: [["features.item8Desc1"], ["features.item8Desc2", true], ["features.item8Desc3"]], mineralDesc: "features.item8Mineral" },
-  { id: "custom-size", icon: "CustomSize.svg", label: "features.iconCustomSize", desc: [["features.item9Desc1"], ["features.item9Desc2", true], ["features.item9Desc3"]], mineralDesc: "features.item9Mineral" },
-  { id: "led", icon: "LED.svg", label: "features.iconLed", desc: [["features.item10Desc1"], ["features.item10Desc2", true], ["features.item10Desc3"]], mineralDesc: "features.item10Mineral" },
+  { id: "thickness-34mm", icon: "34mm.svg", label: "features.iconThickness34", desc: [["features.item7Desc1"], ["features.item7Desc2", true], ["features.item7Desc3"]], mineralLabel: "features.iconThickness38", combinedDesc: "features.item7Combined" },
+  { id: "laminated", icon: "laminated.svg", label: "features.iconLaminated", desc: [["features.item8Desc1"], ["features.item8Desc2", true], ["features.item8Desc3"]] },
+  { id: "custom-size", icon: "CustomSize.svg", label: "features.iconCustomSize", desc: [["features.item9Desc1"], ["features.item9Desc2", true], ["features.item9Desc3"]] },
+  { id: "led", icon: "LED.svg", label: "features.iconLed", desc: [["features.item10Desc1"], ["features.item10Desc2", true], ["features.item10Desc3"]] },
   { id: "dimmable", icon: "Dimmable.svg", label: "features.iconDimmable", desc: [["features.item11Desc1", true], ["features.item11Desc2"]] },
   { id: "nano-impregnation", icon: "Waterproof.svg", label: "features.iconWaterResistant", desc: [["features.item12Desc1"], ["features.item12Desc2", true], ["features.item12Desc3"]], mineralDesc: "features.item12Mineral", note: "features.item12Desc4" },
-  { id: "easy-repair", icon: "Repair.svg", label: "features.iconEasyRepair", desc: [["features.item13Desc1"], ["features.item13Desc2", true], ["features.item13Desc3"]], mineralDesc: "features.item13Mineral" },
-  { id: "color-palette", label: "price.feature13", desc: [["features.item14Desc1"], ["features.item14Desc2", true], ["features.item14Desc3"]], mineralDesc: "features.item14Mineral", palette: true },
+  { id: "easy-repair", icon: "Repair.svg", label: "features.iconEasyRepair", desc: [["features.item13Desc1"], ["features.item13Desc2", true], ["features.item13Desc3"]] },
+  { id: "color-palette", label: "price.feature13", desc: [["features.item14Desc1"], ["features.item14Desc2", true], ["features.item14Desc3"]], palette: true },
 ];
 
 const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
@@ -83,14 +85,26 @@ const formattedDescription = (key: TranslationKey) =>
               />
             )}
             <h3 class="text-base font-black tracking-[0.1em] uppercase">
-              {panelCategory ? (
+              {showBoth && feature.mineralLabel ? (
+                <span class="grid gap-2">
+                  <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentStone")}</span>{label(feature.label)}</span>
+                  <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentMineral")}</span>{label(feature.mineralLabel)}</span>
+                </span>
+              ) : panelCategory ? (
                 panelCategory === "mineral" && feature.mineralLabel ? label(feature.mineralLabel) : label(feature.label)
               ) : feature.mineralLabel ? (
                 <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
               ) : label(feature.label)}
             </h3>
-            <p class="text-[0.9375rem] leading-relaxed text-fg-muted">
-              {panelCategory ? panelCategory === "mineral" && feature.mineralDesc ? (
+            <div class="text-[0.9375rem] leading-relaxed text-fg-muted">
+              {showBoth && feature.combinedDesc ? (
+                <span set:html={formattedDescription(feature.combinedDesc)} />
+              ) : showBoth && feature.mineralDesc ? (
+                <div class="grid gap-3">
+                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentStone")}</span>{feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}</p>
+                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentMineral")}</span><span set:html={formattedDescription(feature.mineralDesc)} /></p>
+                </div>
+              ) : panelCategory ? panelCategory === "mineral" && feature.mineralDesc ? (
                 <span set:html={formattedDescription(feature.mineralDesc)} />
               ) : (
                 feature.desc.map(([key, strong]) =>
@@ -102,8 +116,8 @@ const formattedDescription = (key: TranslationKey) =>
                   <span data-panel-type="mineral" set:html={formattedDescription(feature.mineralDesc)} />
                 </>
               ) : feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}
-              {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type="stone" class="mt-2 block text-fg-subtle">{t(feature.note)}</em>}
-            </p>
+              {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type={showBoth ? undefined : "stone"} class="mt-2 block text-fg-subtle">{showBoth && <span class="font-semibold text-fg">{t("home.equipmentStone")}:</span>} {t(feature.note)}</em>}
+            </div>
           </li>
         ))
       }

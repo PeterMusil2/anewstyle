@@ -1215,6 +1215,30 @@
    ]
   ]
  },
+ "/images/technologies/mineral-perspective.png": {
+  "width": 428,
+  "height": 157,
+  "avif": [
+   [
+    "/_img/images/technologies/mineral-perspective-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/mineral-perspective-428.avif",
+    428
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/mineral-perspective-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/mineral-perspective-428.webp",
+    428
+   ]
+  ]
+ },
  "/images/technologies/skladba_kamenne_dyhy.avif": {
   "width": 2668,
   "height": 1738,

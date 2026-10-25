@@ -23,18 +23,20 @@ const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
 const links = panelCategory
   ? [
-      { href: `${getPanelPagePath(panelCategory, lang)}#about`, text: t("nav.light"), accent: true },
       { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#technologies`, text: t("nav.technologies") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#faq`, text: t("nav.faq") },
+      { href: `${getPanelPagePath(panelCategory, lang)}#price-list`, text: t("nav.price"), accent: true },
+      { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") },
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#price-list`, text: t("nav.price") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#contact`, text: t("nav.contact") },
+      { href: `${basePath}/?panel=${panelCategory}#contact`, text: t("nav.contact") },
     ]
   : [
-      { href: getPanelPagePath("stone", lang), text: t("price.categoryStone"), accent: true },
-      { href: getPanelPagePath("mineral", lang), text: t("price.categoryMineral") },
+      { href: "#about", text: t("nav.light"), accent: true },
+      { href: "#technologies", text: t("nav.technologies") },
+      { href: "#features", text: t("nav.features") },
+      { href: "#day-night", text: t("nav.dayNight") },
+      { href: "#faq", text: t("nav.faq") },
+      { href: "#contact", text: t("nav.contact") },
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
     ];

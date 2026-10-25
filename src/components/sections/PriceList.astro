@@ -25,11 +25,10 @@ interface Props {
 const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
-const pagePath = panelCategory
-  ? panelCategory === "stone"
-    ? lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"
-    : lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"
-  : `${basePath}/`;
+const contactPath = panelCategory
+  ? `${basePath}/?panel=${panelCategory}#contact`
+  : `${basePath}/#contact`;
+const comparisonPath = `${basePath}/#equipment-comparison`;
 
 
 const sizes: { key: SizeKey; label: string; width: number; aria: TranslationKey }[] = [
@@ -44,30 +43,6 @@ const previewImage = (size: SizeKey, category: PanelCategory) =>
 
 const PANEL_HEIGHT = 2400;
 const dims = (width: number) => `${PANEL_HEIGHT} × ${width} mm`;
-
-/** Features in the order of prices.json, with their anchor in the Features section. */
-const featureMeta: Record<string, { href: string; hint?: TranslationKey }> = {
-  "1": { href: "#thickness-16mm", hint: "price.hint1" },
-  "2": { href: "#thickness-34mm", hint: "price.hint2" },
-  "3": { href: "#laminated" },
-  "4": { href: "#nano-impregnation", hint: "price.hint4" },
-  "5": { href: "#touch-control" },
-  "6": { href: "#backlight", hint: "price.hint6" },
-  "7": { href: "#quick-mounting", hint: "price.hint7" },
-  "8": { href: "#easy-repair", hint: "price.hint8" },
-  "9": { href: "#thickness-34mm", hint: "price.hint9" },
-  "10": { href: "#temperature", hint: "price.hint10" },
-  "11": { href: "#rf-control", hint: "price.hint11" },
-  "12": { href: "#smartphone-control", hint: "price.hint12" },
-  "13": { href: "#color-palette", hint: "price.hint13" },
-};
-
-const groups: { title: TranslationKey; features: string[] }[] = [
-  { title: "price.groupConstruction", features: ["1", "2", "3", "4", "9"] },
-  { title: "price.groupMounting", features: ["7", "8"] },
-  { title: "price.groupLight", features: ["5", "6", "10", "11", "12"] },
-  { title: "price.groupDesign", features: ["13"] },
-];
 
 const featureLabel = (key: string) => t(`price.feature${key}` as TranslationKey);
 const categoryFeatureLabel = (key: string, category: PanelCategory) =>
@@ -101,6 +76,7 @@ const tiers = products.map((product, index) => {
     ...product,
     featured: index === products.length - 1,
     tagline: product.tagline?.[lang] ?? "",
+    taglineMineral: product.taglineMineral?.[lang] ?? product.tagline?.[lang] ?? "",
     previousTitle: previous?.title,
     highlights,
     price: priceMap(product, "stone"),
@@ -208,7 +184,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
         </h3>
         <div class="flex items-center gap-5">
           <p class="hidden text-xs text-fg-muted italic sm:block">{t("price.vat")}</p>
-          <a href={`#${id}-compare`} class="hidden min-h-11 items-center gap-2 text-xs font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light lg:inline-flex">
+          <a href={comparisonPath} class="hidden min-h-11 items-center gap-2 text-xs font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light lg:inline-flex">
             {t("price.compareCta")} ↓
           </a>
         </div>
@@ -291,7 +267,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                 )}
                 <div class="flex flex-col gap-1.5">
                   <h4 class="text-[0.9375rem] font-black tracking-[0.22em] text-gold">{tier.title}</h4>
-                  {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{tier.tagline}</p>)}
+                  {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{category === "mineral" ? tier.taglineMineral : tier.tagline}</p>)}
                 </div>
 
                 <div class="border-y border-line py-2.5 lg:py-3">
@@ -334,7 +310,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
 
                 <div class="flex items-center gap-3">
                   <Button
-                    href={`${pagePath}#contact`}
+                    href={contactPath}
                     size="sm"
                     variant={tier.featured ? "primary" : "outline"}
                     class="flex-1 px-3!"
@@ -361,7 +337,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
 
     <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-xs lg:hidden">
             <p class="text-fg-subtle lg:hidden" aria-hidden="true">{t("price.swipeHint")} →</p>
-      <a href={`#${id}-compare`} class="ml-auto inline-flex min-h-11 items-center gap-2 font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light">
+      <a href={comparisonPath} class="ml-auto inline-flex min-h-11 items-center gap-2 font-extrabold tracking-caps text-gold uppercase no-underline hover:text-gold-light">
         {t("price.compareCta")} ↓
       </a>
     </div>
@@ -374,97 +350,26 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
         {panelCategory ? (panelCategory === "mineral" ? t("price.offerPromptBeforeMineral") : t("price.offerPromptBefore")) : <><span data-panel-type="stone">{t("price.offerPromptBefore")}</span><span data-panel-type="mineral">{t("price.offerPromptBeforeMineral")}</span></>}{" "}
         <strong class="text-[1.2em] font-black text-gold-light">{t("price.offerDiscount")}</strong>.
       </p>
-      <Button href={`${pagePath}#contact`} class="w-full py-3 text-center whitespace-normal! sm:w-auto sm:shrink-0 sm:whitespace-nowrap!">{t("price.offerCta")}</Button>
+      <div class="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0">
+        <Button href={contactPath} class="w-full py-3 text-center whitespace-normal! sm:whitespace-nowrap!">{t("price.offerCta")}</Button>
+        <p class="max-w-sm text-xs leading-relaxed text-fg-muted">{t("price.offerTerms")}</p>
+      </div>
     </div>
   </div>
 
-  <!-- Feature comparison: the header row sticks under the nav while scrolling -->
-  <div id={`${id}-compare`} class="container-page flex scroll-mt-(--nav-height) flex-col gap-5 pt-10 pb-20 lg:pt-14 lg:pb-30">
-    <p class="hidden text-[0.9375rem] text-fg-soft tiny:block">{t("price.desc1")}</p>
-    <p class="text-sm text-fg-muted sm:hidden short:block tiny:block">
-      <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}{panelCategory ? (panelCategory === "mineral" ? t("price.desc4Mineral") : t("price.desc4")) : <><span data-panel-type="stone">{t("price.desc4")}</span><span data-panel-type="mineral">{t("price.desc4Mineral")}</span></>}
-    </p>
-    <div class="flex flex-col justify-between gap-2 md:flex-row md:items-end md:gap-6">
-      <h3 class="text-2xl font-black tracking-[0.08em] uppercase lg:text-[1.75rem]">{t("price.compareTitle")}</h3>
-      <p class="text-sm text-fg-muted">{t("price.compareHint")}</p>
-    </div>
-    <table class="w-full border-separate border-spacing-0 text-left">
-      <thead>
-        <tr>
-          <th scope="col" class="sticky top-(--nav-height) z-10 border-t border-b border-t-gold border-b-line bg-ink-900 px-3 py-3 align-bottom text-[0.625rem] font-bold tracking-[0.16em] text-fg-muted uppercase sm:px-6 sm:py-4 sm:text-xs">
-            {t("price.sizeLabel")}{" "}
-            {sizes.map((size) => <span data-size={size.key}>{size.label}<span class="hidden sm:inline"> · {dims(size.width)}</span></span>)}
-          </th>
-          {
-            tiers.map((tier) => (
-              <th scope="col" class="sticky top-(--nav-height) z-10 w-[19%] border-t border-b border-t-gold border-b-line bg-ink-900 px-1 py-3 text-center sm:w-[18%] sm:px-4 sm:py-4">
-                <span class="block text-[0.6875rem] font-black tracking-[0.14em] text-gold sm:text-[0.9375rem] sm:tracking-[0.2em]">{tier.title}</span>
-                {sizes.map((size) => (
-                  <>
-                    {previewCategories.map((category) => <span data-size={size.key} data-price-type={category} data-price-display="block" class="block text-[0.6875rem] font-normal whitespace-nowrap text-fg tabular-nums sm:text-sm">
-                      {getTierPrice(tier, category)[size.key].net} {t("price.currency")}
-                    </span>)}
-                  </>
-                ))}
-              </th>
-            ))
-          }
-        </tr>
-      </thead>
-      {
-        groups.map((group) => (
-          <tbody>
-            <tr>
-              <th colspan="4" scope="colgroup" class="px-3 pt-6 pb-2 text-[0.6875rem] font-extrabold tracking-[0.2em] text-gold uppercase sm:px-6 sm:text-xs">
-                {t(group.title)}
-              </th>
-            </tr>
-            {group.features.map((key) => {
-              const meta = featureMeta[key];
-              return (
-                <tr class="transition-colors hover:bg-ink-900">
-                  <th scope="row" class="border-b border-line px-3 py-2.5 font-normal sm:px-6 sm:py-3">
-                    <a href={meta.href} class="text-sm font-semibold text-fg no-underline hover:text-gold-light sm:text-[0.9375rem]">
-                      {previewCategories.map((category) => (
-                        <span data-price-type={category} data-price-display="inline">
-                          {categoryFeatureLabel(key, category)}
-                        </span>
-                      ))}
-                    </a>
-                    {meta.hint && <span class="block text-xs text-fg-subtle sm:text-[0.8125rem]">{previewCategories.map((category) => <span data-price-type={category} data-price-display="inline">{t(category === "mineral" && key === "4" ? "price.hint4Mineral" : meta.hint!)}</span>)}</span>}
-                  </th>
-                  {tiers.map((tier) => (
-                    <td class="border-b border-line px-1 py-2.5 text-center sm:px-4 sm:py-3">
-                      {tier.features[key] ? (
-                        <Icon name="check" class="mx-auto size-5 text-gold" label={t("price.included")} />
-                      ) : (
-                        <span class="mx-auto block h-0.5 w-3.5 bg-fg-subtle" role="img" aria-label={t("price.notIncluded")} />
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        ))
-      }
-    </table>
-
-    <div class="mt-10 grid gap-4 md:grid-cols-2 md:gap-5">
+  <div class="container-page grid gap-4 pt-10 pb-20 md:grid-cols-2 md:gap-5 lg:pt-14 lg:pb-30">
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("price.customTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.customDesc")}</p>
-        <Button href={`${pagePath}#contact`} variant="link" class="self-start">{t("price.customCta")} →</Button>
+        <Button href={contactPath} variant="link" class="self-start">{t("price.customCta")} →</Button>
       </div>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.showroomDesc")}</p>
         <Button href="tel:+420601221551" variant="link" class="self-start tracking-[0.06em]!">+420 601 221 551 →</Button>
       </div>
-    </div>
   </div>
-    </div>
-
+  </div>
   </div>
 </section>
 

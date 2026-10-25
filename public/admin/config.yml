@@ -42,7 +42,7 @@ media_folder: public/images/uploads
 public_folder: /images/uploads
 
 
-# Collections follow the website: Galerie, Vzory kamene, Ceník, Časté dotazy.
+# Collections follow the website: Galerie, Vzory panelů, Ceník, Materiály panelů, Časté dotazy.
 collections:
 - name: gallery
   label: Galerie
@@ -130,7 +130,7 @@ collections:
       label_singular: minerální vzor
       widget: list
       collapsed: true
-      summary: '{{fields.title}} {{fields.image}}'
+      summary: '{{fields.code}} – {{fields.title}}'
       add_to_top: false
       hint: Zobrazí se po přepnutí webu na „Svítící minerální panely“. Kliknutím na vzor si ho návštěvník
         prohlédne ve 3D a v AR.
@@ -140,6 +140,11 @@ collections:
         widget: string
         required: false
         hint: Když zůstane prázdné, web vzor očísluje („Minerální dekor 3“).
+      - name: code
+        label: Kód vzoru
+        widget: string
+        required: false
+        hint: Zobrazí se na kartě minerálního vzoru a v jeho 3D/AR náhledu, např. M-01.
       - name: image
         label: Textura vzoru
         widget: media-image
@@ -148,10 +153,27 @@ collections:
             folder:
               path: AnewStyle/Products
         hint: Fotka povrchu panelu na výšku (poměr 3:4) – zobrazí se na kartě a jako textura 3D modelu.
+    - name: notes
+      label: Vysvětlení vzorů a skladové nabídky
+      widget: object
+      hint: Text pod vějířem vzorů na stránce kamenných nebo minerálních panelů.
+      fields:
+      - name: stone
+        label: Kamenné panely
+        widget: object
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: mineral
+        label: Minerální panely
+        widget: object
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
 - name: prices
   label: Ceník
-  description: Sekce „Ceník“ na úvodní stránce – ceny podle velikosti a výbava jednotlivých verzí (SLIM,
-    BASIC, DELUXE) a příplatek za minerální panely.
+  description: Ceníky na samostatných stránkách kamenných a minerálních panelů – ceny podle velikosti,
+    výbava verzí SLIM, BASIC a DELUXE a příplatek za minerální panely.
   editor:
     preview: false
   files:
@@ -179,6 +201,17 @@ collections:
         - name: en
           label: English
           widget: string
+      - name: taglineMineral
+        label: Krátký popis minerální verze
+        widget: object
+        hint: Text pod názvem provedení v ceníku svítících minerálních panelů.
+        fields:
+        - name: cs
+          label: Česky
+          widget: string
+        - name: en
+          label: English
+          widget: string
       - name: prices
         label: Ceny podle velikosti
         widget: object
@@ -199,6 +232,7 @@ collections:
         label: Výbava
         widget: object
         collapsed: true
+        hint: Tloušťky 16 mm a 34 mm platí pro kamenné panely. Na minerální stránce se stejné položky zobrazí jako 20 mm a 38 mm.
         fields:
         - name: '1'
           label: Tloušťka 16 mm
@@ -257,6 +291,108 @@ collections:
       - name: xxxl
         label: XXXL – 2400 × 1200 mm
         widget: string
+- name: materials
+  label: Materiály panelů
+  description: Společné srovnání na úvodní stránce – technologie, tloušťka, hmotnost a povrch svítících kamenných a minerálních panelů.
+  editor:
+    preview: false
+  files:
+  - name: material-overview
+    label: Přehled materiálů
+    file: src/data/material-overview.json
+    fields:
+    - name: stone
+      label: Svítící kamenné panely
+      widget: object
+      fields:
+      - name: technology
+        label: Technologie
+        widget: object
+        hint: Text vedle obrázku kamenného panelu na úvodní stránce v sekci Technologie.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: surfaceShort
+        label: Krátký popis povrchu
+        widget: object
+        hint: Krátký řádek pod technologií kamenného panelu na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: frontLayer
+        label: Tloušťka čelní vrstvy
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: totalThickness
+        label: Celková tloušťka
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: weight
+        label: Hmotnost od velikosti L
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: surface
+        label: Povrch a údržba
+        widget: object
+        hint: Popis v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+    - name: mineral
+      label: Svítící minerální panely
+      widget: object
+      fields:
+      - name: technology
+        label: Technologie
+        widget: object
+        hint: Text vedle obrázku minerálního panelu na úvodní stránce v sekci Technologie.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: surfaceShort
+        label: Krátký popis povrchu
+        widget: object
+        hint: Krátký řádek pod technologií minerálního panelu na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: frontLayer
+        label: Tloušťka čelní vrstvy
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: totalThickness
+        label: Celková tloušťka
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: weight
+        label: Hmotnost od velikosti L
+        widget: object
+        hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: surface
+        label: Povrch a údržba
+        widget: object
+        hint: Popis v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
 - name: faq
   label: Časté dotazy
   description: Sekce „Časté dotazy“ na úvodní stránce.

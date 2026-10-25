@@ -69,10 +69,13 @@
         "cs": "Je nutná impregnace panelu po instalaci?",
         "en": "Is panel impregnation necessary after installation?"
       },
-      "hideInMineral": true,
       "answer": {
         "cs": "Panely jsou již z výroby ošetřeny speciální **nano impregnací**, která je chrání proti vlhkosti a usnadňuje čištění.",
         "en": "The panels are treated with special **nano impregnation** from the factory, which protects them against moisture and facilitates cleaning."
+      },
+      "answerMineral": {
+        "cs": "Hladký povrch minerálního panelu **nevyžaduje impregnaci**.",
+        "en": "The smooth surface of the mineral panel **does not require impregnation**."
       }
     },
     {
@@ -81,12 +84,26 @@
         "en": "Is the panel heavy?"
       },
       "answer": {
-        "cs": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Jejich hmotnost se pohybuje od **14kg** v nejmenší verzi SLIM rozměr L.",
-        "en": "Despite using natural stone, the panels are lightweight because they use ultra-thin veneers. The panels are easy to handle and hang on the wall. Their weight ranges from **14kg** in the smallest SLIM version size L."
+        "cs": "I přes použití přírodního kamene jsou panely lehké, protože se jedná o ultratenké dýhy. Panely jsou snadné na manipulaci a zavěšení na stěnu. Hmotnost kamenného panelu velikosti L začíná na **15 kg**.",
+        "en": "Despite using natural stone, the panels are lightweight because they use ultra-thin veneers. They are easy to handle and hang on the wall. The weight of a size L stone panel starts at **15 kg**."
       },
       "answerMineral": {
         "cs": "Minerální panely se snadno **manipulují a zavěšují na stěnu**. Hmotnost začíná na **25 kg** u nejmenší velikosti SLIM L.",
         "en": "Mineral panels are easy to **handle and mount on the wall**. Their weight starts at **25 kg** for the smallest SLIM L size."
+      }
+    },
+    {
+      "question": {
+        "cs": "V čem se liší svítící kamenné a minerální panely?",
+        "en": "How do illuminated stone and mineral panels differ?"
+      },
+      "answer": {
+        "cs": "Kamenný panel tvoří lehká, pružná dýha z přírodního kamene s reliéfním povrchem ošetřeným nano impregnací.",
+        "en": "The stone panel uses a lightweight, flexible natural stone veneer with a textured surface treated with nano impregnation."
+      },
+      "answerMineral": {
+        "cs": "Minerální panel tvoří transparentní, rigidní minerální deska s hladkým povrchem v lesklém nebo matném provedení. Impregnaci nevyžaduje.",
+        "en": "The mineral panel uses a transparent, rigid mineral sheet with a smooth surface in gloss or matte finish. It does not require impregnation."
       }
     }
   ]

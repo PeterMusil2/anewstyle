@@ -1,0 +1,129 @@
+---
+import prices from "../../data/prices.json";
+import type { PricesData } from "./PriceList.types";
+import { MINERAL_FEATURE_KEYS } from "../../lib/prices";
+import { useTranslations, type Lang, type TranslationKey } from "../../i18n/utils";
+import Icon from "../icons/Icon.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "cs" } = Astro.props;
+const t = useTranslations(lang);
+const tiers = (prices as PricesData).products;
+
+const featureMeta: Record<string, { hint?: TranslationKey }> = {
+  "1": {},
+  "2": {},
+  "3": {},
+  "4": {},
+  "5": {},
+  "6": { hint: "price.hint6" },
+  "7": { hint: "price.hint7" },
+  "8": { hint: "price.hint8" },
+  "9": { hint: "price.hint9" },
+  "10": { hint: "price.hint10" },
+  "11": { hint: "price.hint11" },
+  "12": { hint: "price.hint12" },
+  "13": { hint: "price.hint13" },
+};
+
+const featureAnchors: Record<string, string> = {
+  "1": "thickness-16mm",
+  "2": "thickness-34mm",
+  "3": "laminated",
+  "4": "nano-impregnation",
+  "5": "touch-control",
+  "6": "backlight",
+  "7": "quick-mounting",
+  "8": "easy-repair",
+  "9": "thickness-34mm",
+  "10": "temperature",
+  "11": "rf-control",
+  "12": "smartphone-control",
+  "13": "color-palette",
+};
+
+const groups: { title: TranslationKey; features: string[] }[] = [
+  { title: "price.groupConstruction", features: ["1", "2", "3", "4", "9"] },
+  { title: "price.groupMounting", features: ["7", "8"] },
+  { title: "price.groupLight", features: ["5", "6", "10", "11", "12"] },
+  { title: "price.groupDesign", features: ["13"] },
+];
+
+const featureLabel = (key: string, category: "stone" | "mineral") =>
+  t(`price.feature${key}${category === "mineral" && MINERAL_FEATURE_KEYS.has(key) ? "Mineral" : ""}` as TranslationKey);
+---
+
+<section id="equipment-comparison" aria-labelledby="equipment-comparison-title" class="section-y bg-ink">
+  <div class="container-page flex flex-col gap-8 lg:gap-10">
+    <SectionHeader id="equipment-comparison-title" layout="center" eyebrow={t("nav.comparison")} title={t("price.compareTitle")}>
+      <p>{t("price.compareHint")}</p>
+    </SectionHeader>
+
+    <table class="w-full table-fixed border-separate border-spacing-0 text-left">
+      <caption class="sr-only">{t("price.compareTitle")}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="w-[52%] border-t border-b border-t-gold border-b-line bg-ink-900 px-3 py-3 text-[0.6875rem] font-bold tracking-caps text-fg-muted uppercase sm:px-5 sm:py-4 sm:text-xs">
+            {t("features.title")}
+          </th>
+          {tiers.map((tier) => (
+            <th scope="col" class="w-[16%] border-t border-b border-t-gold border-b-line bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
+              <span class="block text-[0.625rem] font-black tracking-[0.08em] text-gold uppercase sm:text-sm sm:tracking-[0.16em]">{tier.title}</span>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      {groups.map((group) => (
+        <tbody>
+          <tr>
+            <th colspan="4" scope="colgroup" class="px-3 pt-6 pb-2 text-[0.6875rem] font-extrabold tracking-caps text-gold uppercase sm:px-5 sm:text-xs">
+              {t(group.title)}
+            </th>
+          </tr>
+          {group.features.map((key) => {
+            const meta = featureMeta[key];
+            const hasMaterialVariants = MINERAL_FEATURE_KEYS.has(key);
+            return (
+              <tr class="transition-colors hover:bg-ink-900">
+                <th scope="row" class="border-b border-line px-3 py-3 font-normal sm:px-5 sm:py-3.5">
+                  {hasMaterialVariants ? (
+                    <div class="grid gap-2 text-[0.8125rem] leading-snug sm:text-sm">
+                      <p>
+                        <span class="font-bold text-gold">{t("home.equipmentStone")}:</span>{" "}
+                        <a href={`#${featureAnchors[key]}`} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{featureLabel(key, "stone")}</a>
+                        {key === "4" && <span class="mt-0.5 block text-xs text-fg-subtle sm:text-[0.8125rem]">{t("price.hint4")}</span>}
+                      </p>
+                      <p>
+                        <span class="font-bold text-gold">{t("home.equipmentMineral")}:</span>{" "}
+                        <a href={`#${featureAnchors[key]}`} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{featureLabel(key, "mineral")}</a>
+                        {key === "4" && <span class="mt-0.5 block text-xs text-fg-subtle sm:text-[0.8125rem]">{t("price.hint4Mineral")}</span>}
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <a href={`#${featureAnchors[key]}`} class="text-[0.8125rem] leading-snug font-semibold text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline sm:text-[0.9375rem]">{featureLabel(key, "stone")}</a>
+                      {meta.hint && <span class="mt-0.5 block text-xs leading-snug text-fg-subtle sm:text-[0.8125rem]">{t(meta.hint)}</span>}
+                    </>
+                  )}
+                </th>
+                {tiers.map((tier) => (
+                  <td class="border-b border-line px-1 py-3 text-center sm:px-3 sm:py-3.5">
+                    {tier.features[key] ? (
+                      <Icon name="check" class="mx-auto size-5 text-gold" label={t("price.included")} />
+                    ) : (
+                      <span class="mx-auto block h-0.5 w-3.5 bg-fg-subtle" role="img" aria-label={t("price.notIncluded")} />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      ))}
+    </table>
+  </div>
+</section>

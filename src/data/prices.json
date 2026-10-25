@@ -6,6 +6,10 @@
         "cs": "Elegantní nejtenčí provedení 16 mm v základní výbavě.",
         "en": "The slimmest 16 mm version with the essential features."
       },
+      "taglineMineral": {
+        "cs": "Minerální SLIM má celkovou tloušťku 20 mm a základní výbavu.",
+        "en": "Mineral SLIM is 20 mm thick overall and includes the essential features."
+      },
       "prices": {
         "l": "18 600",
         "xl": "26 950",
@@ -34,6 +38,10 @@
         "cs": "Hloubka 34 mm skryje zásuvku i přívodní kabel za panel.",
         "en": "Its 34 mm depth hides the socket and the power cable behind the panel."
       },
+      "taglineMineral": {
+        "cs": "Minerální BASIC má celkovou tloušťku 38 mm a skryje kabel za panelem.",
+        "en": "Mineral BASIC is 38 mm thick overall and hides the cable behind the panel."
+      },
       "prices": {
         "l": "25 900",
         "xl": "37 950",
@@ -61,6 +69,10 @@
       "tagline": {
         "cs": "Luxusní, plně vybavená verze s ojedinělým dekorem kamene.",
         "en": "The luxurious, fully equipped version with a unique stone pattern."
+      },
+      "taglineMineral": {
+        "cs": "Minerální DELUXE má celkovou tloušťku 38 mm a plnou výbavu.",
+        "en": "Mineral DELUXE is 38 mm thick overall and includes the full feature set."
       },
       "prices": {
         "l": "29 800",

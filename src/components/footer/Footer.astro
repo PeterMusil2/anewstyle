@@ -18,15 +18,16 @@ const basePath = lang === "cs" ? "" : "/en";
 const links = panelCategory
   ? [
       { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#technologies`, text: t("nav.technologies") },
       { href: `${getPanelPagePath(panelCategory, lang)}#price-list`, text: t("nav.price") },
+      { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") },
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#contact`, text: t("nav.contact") },
+      { href: `${basePath}/?panel=${panelCategory}#contact`, text: t("nav.contact") },
     ]
   : [
       { href: getPanelPagePath("stone", lang), text: t("price.categoryStone") },
       { href: getPanelPagePath("mineral", lang), text: t("price.categoryMineral") },
+      { href: `${basePath}/#contact`, text: t("nav.contact") },
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
     ];

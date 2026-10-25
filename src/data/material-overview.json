@@ -1,0 +1,54 @@
+{
+  "stone": {
+    "technology": {
+      "cs": "Lehká, pružná a transparentní dýha z přírodního kamene. Vrstva kamene má tloušťku 2–3 mm.",
+      "en": "A lightweight, flexible and transparent natural stone veneer. The stone layer is 2–3 mm thick."
+    },
+    "surfaceShort": {
+      "cs": "Přirozená kresba a reliéfní povrch",
+      "en": "Natural pattern with a textured surface"
+    },
+    "frontLayer": {
+      "cs": "Transparentní kamenná dýha 2–3 mm",
+      "en": "Transparent stone veneer, 2–3 mm"
+    },
+    "totalThickness": {
+      "cs": "16 mm ve verzi SLIM; 34 mm u BASIC a DELUXE",
+      "en": "16 mm for SLIM; 34 mm for BASIC and DELUXE"
+    },
+    "weight": {
+      "cs": "Velikost L: od 15 kg (SLIM)",
+      "en": "Size L: from 15 kg (SLIM)"
+    },
+    "surface": {
+      "cs": "Reliéfní přírodní povrch ošetřený nano impregnací. Je odolný proti vlhkosti, ale není určený pro přímý kontakt s tekoucí vodou.",
+      "en": "Natural textured surface treated with nano impregnation. Moisture-resistant, but not designed for direct contact with running water."
+    }
+  },
+  "mineral": {
+    "technology": {
+      "cs": "Transparentní, rigidní minerální deska propouští světlo a drží tvar. Její tloušťka je 6 mm.",
+      "en": "A transparent, rigid mineral sheet lets light through and holds its shape. It is 6 mm thick."
+    },
+    "surfaceShort": {
+      "cs": "Hladký povrch v lesklém nebo matném provedení",
+      "en": "Smooth surface in gloss or matte finish"
+    },
+    "frontLayer": {
+      "cs": "Transparentní minerální deska 6 mm",
+      "en": "Transparent mineral sheet, 6 mm"
+    },
+    "totalThickness": {
+      "cs": "20 mm ve verzi SLIM; 38 mm u BASIC a DELUXE",
+      "en": "20 mm for SLIM; 38 mm for BASIC and DELUXE"
+    },
+    "weight": {
+      "cs": "Velikost L: od 25 kg (SLIM)",
+      "en": "Size L: from 25 kg (SLIM)"
+    },
+    "surface": {
+      "cs": "Hladký povrch v lesklém nebo matném provedení bez nutnosti impregnace. Je odolný proti vlhkosti.",
+      "en": "Smooth gloss or matte surface with no impregnation needed. Moisture-resistant."
+    }
+  }
+}

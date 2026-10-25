@@ -5,7 +5,7 @@
  */
 import type { HTMLAttributes } from "astro/types";
 
-type Variant = "primary" | "outline" | "ghost" | "link";
+type Variant = "primary" | "outline" | "transparent" | "ghost" | "link";
 type Size = "md" | "sm";
 
 interface Props extends Omit<HTMLAttributes<"a"> & HTMLAttributes<"button">, "type"> {
@@ -38,6 +38,8 @@ const variants: Record<Variant, string> = {
     "border border-gold bg-gold text-ink hover:border-gold-light hover:bg-gold-light",
   outline:
     "border border-gold text-gold hover:bg-gold hover:text-ink",
+  transparent:
+    "border border-line-bold bg-transparent text-fg hover:border-gold hover:bg-gold hover:text-ink",
   ghost:
     "border border-line-bold text-fg hover:border-fg",
   link: "min-h-11 px-0! text-gold hover:text-gold-light",

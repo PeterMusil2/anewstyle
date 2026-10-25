@@ -1,0 +1,119 @@
+---
+import Picture from "../ui/Picture.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import Icon from "../icons/Icon.astro";
+import { useTranslations, type Lang } from "../../i18n/utils";
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = "cs" } = Astro.props;
+const t = useTranslations(lang);
+const scenes = [
+  {
+    category: "stone",
+    title: "price.categoryStone",
+    alt: "home.stoneSceneAlt",
+    day: "/images/before-after/stone-library-angled-day-off.webp",
+    night: "/images/before-after/stone-library-angled-night-on.webp",
+    position: "object-left",
+  },
+  {
+    category: "mineral",
+    title: "price.categoryMineral",
+    alt: "home.mineralSceneAlt",
+    day: "/images/before-after/mineral-glass-angled-day-off.webp",
+    night: "/images/before-after/mineral-glass-angled-night-on.webp",
+    position: "object-center",
+  },
+] as const;
+---
+
+<section id="day-night" aria-labelledby="day-night-title" class="section-y bg-ink-850">
+  <div class="container-wide flex flex-col gap-10 lg:gap-14">
+    <SectionHeader id="day-night-title" layout="center" eyebrow={`${t("slider.titleDay")} · ${t("slider.titleNight")}`} title={t("home.dayNightTitle")}>
+      <p>{t("home.dayNightIntro")}</p>
+    </SectionHeader>
+
+    <fieldset class="mx-auto grid w-full max-w-2xl grid-cols-2 gap-2 sm:gap-3">
+      <legend class="sr-only">{t("price.categoryLabel")}</legend>
+      {scenes.map((scene, index) => (
+        <label class="flex min-h-12 cursor-pointer items-center justify-center border border-line bg-ink-900 px-3 py-3 text-center text-xs leading-snug font-extrabold tracking-[0.08em] text-fg-soft uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:min-h-14 sm:px-5 sm:text-sm">
+          <input type="radio" name="home-day-night-category" value={scene.category} checked={index === 0} class="sr-only" />
+          {t(scene.title)}
+        </label>
+      ))}
+    </fieldset>
+
+    <figure class="mx-auto w-full max-w-6xl border border-line bg-ink p-3 sm:p-5">
+      <figcaption class="mb-3 text-xs font-extrabold tracking-[0.12em] text-gold uppercase">
+        {scenes.map((scene) => <span data-scene-label={scene.category}>{t(scene.title)}</span>)}
+      </figcaption>
+      <div class="ba-slider relative aspect-[1440/809] w-full overflow-hidden border border-line select-none">
+        {scenes.map((scene) => (
+          <div data-scene-category={scene.category} class="home-day-night__scene absolute inset-0">
+            <div class="absolute inset-0">
+              <Picture src={scene.night} alt={`${t(scene.alt)} · ${t("slider.titleNight")}`} sizes="(min-width: 80rem) 72rem, 100vw" class={`size-full object-cover ${scene.position}`} />
+              <span class="absolute top-3 right-3 bg-gold px-2.5 py-1.5 text-[0.625rem] font-extrabold tracking-[0.12em] text-ink uppercase sm:top-5 sm:right-5 sm:text-xs">{t("slider.titleNight")}</span>
+            </div>
+            <div class="ba-slider__before absolute inset-0">
+              <Picture src={scene.day} alt={`${t(scene.alt)} · ${t("slider.titleDay")}`} sizes="(min-width: 80rem) 72rem, 100vw" class={`size-full object-cover ${scene.position}`} />
+              <span class="absolute top-3 left-3 bg-ink/80 px-2.5 py-1.5 text-[0.625rem] font-extrabold tracking-[0.12em] text-fg uppercase sm:top-5 sm:left-5 sm:text-xs">{t("slider.titleDay")}</span>
+            </div>
+          </div>
+        ))}
+        <input type="range" min="0" max="100" value="70" step="0.1" aria-label={`${t("home.dayNightTitle")} — ${t("slider.percentage")}`} class="absolute inset-0 z-20 size-full cursor-ew-resize opacity-0" />
+        <div class="ba-slider__handle pointer-events-none absolute inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-fg" aria-hidden="true">
+          <span class="ba-slider__knob absolute top-1/2 left-1/2 grid size-10 -translate-1/2 place-items-center rounded-full bg-fg text-ink shadow-lg sm:size-12"><Icon name="move" class="size-5" /></span>
+        </div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>("#day-night .ba-slider").forEach((slider) => {
+    const input = slider.querySelector<HTMLInputElement>("input[type=range]");
+    if (!input) return;
+    const update = () => slider.style.setProperty("--ba-position", `${input.value}%`);
+    input.addEventListener("input", update);
+    update();
+  });
+</script>
+
+<style>
+  :global(#day-night .home-day-night__scene) {
+    z-index: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s var(--ease-out-soft), visibility 0.35s;
+  }
+
+  :global(#day-night:has(input[name="home-day-night-category"][value="stone"]:checked) .home-day-night__scene[data-scene-category="stone"]) {
+    z-index: 1;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  :global(#day-night:has(input[name="home-day-night-category"][value="mineral"]:checked) .home-day-night__scene[data-scene-category="mineral"]) {
+    z-index: 1;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  :global(#day-night [data-scene-label]) {
+    display: none;
+  }
+
+  :global(#day-night:has(input[name="home-day-night-category"][value="stone"]:checked) [data-scene-label="stone"]) {
+    display: inline;
+  }
+
+  :global(#day-night:has(input[name="home-day-night-category"][value="mineral"]:checked) [data-scene-label="mineral"]) {
+    display: inline;
+  }
+</style>

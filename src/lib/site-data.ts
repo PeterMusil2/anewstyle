@@ -2,14 +2,15 @@
  * One source of truth for the facts about ANEW STYLE that machines read:
  * JSON-LD (StructuredData), /llms.txt, /agent/site.json, the WebMCP tools in
  * the browser and the /mcp server. Content still comes from the CMS-edited
- * files (prices.json, faq.json, products.json). Both panel categories –
+ * files (prices.json, faq.json, products.json, material-overview.json). Both panel categories –
  * stone and mineral – are covered, like on the pages.
  */
 import prices from "../data/prices.json";
 import productsData from "../data/products.json";
+import materialOverviewData from "../data/material-overview.json";
 import type { PricesData, Price } from "../components/sections/PriceList.types";
 import { faqItems } from "./faq";
-import { mineralPatternTitle } from "./pattern-fan";
+import { mineralPatternCode } from "./pattern-fan";
 import { MINERAL_FEATURE_KEYS, mineralSurcharge, priceFor, type PanelCategory } from "./prices";
 import cs from "../i18n/cs.json";
 import en from "../i18n/en.json";
@@ -83,11 +84,13 @@ export function getPanelCategories(lang: Lang): { id: PanelCategory; name: strin
  * Panel versions with prices for every size (CZK, excl. and incl. VAT), for
  * stone panels and – stone price + per-size surcharge – mineral panels.
  */
-export function getVersions(lang: Lang) {
+export function getVersions(lang: Lang, category: PanelCategory = "stone") {
   return (prices as PricesData).products.map((product, index) => ({
     id: String(index + 1),
     name: product.title,
-    tagline: product.tagline?.[lang] ?? "",
+    tagline: category === "mineral"
+      ? product.taglineMineral?.[lang] ?? product.tagline?.[lang] ?? ""
+      : product.tagline?.[lang] ?? "",
     prices: sizes.map((size) => {
       const net = priceFor(product, size.key, "stone");
       const mineralNet = priceFor(product, size.key, "mineral");
@@ -111,6 +114,15 @@ export function getVersions(lang: Lang) {
 /** Per-size surcharge for mineral panels (CZK excl. VAT, same for every version). */
 export function getMineralSurcharge() {
   return sizes.map((size) => ({ size: size.label, surchargeExclVat: mineralSurcharge(size.key) }));
+}
+
+/** Material-specific facts used in the shared home comparison and agent data. */
+export function getMaterialOverview(lang: Lang) {
+  const copy = (value: Record<Lang, string>) => value[lang]?.trim() || value[lang === "cs" ? "en" : "cs"]?.trim() || "";
+  return {
+    stone: Object.fromEntries(Object.entries(materialOverviewData.stone).map(([key, value]) => [key, copy(value)])),
+    mineral: Object.fromEntries(Object.entries(materialOverviewData.mineral).map(([key, value]) => [key, copy(value)])),
+  };
 }
 
 const plainText = (markdown: string) => markdown.replace(/\*\*(.+?)\*\*/g, "$1");
@@ -137,10 +149,15 @@ const asset = (folder: string, value?: string) =>
 
 /** Mineral decors (src/data/products.json → mineral, ordered in the CMS). */
 export function getMineralPatterns(lang: Lang) {
-  return productsData.mineral.map((pattern, index) => ({
-    name: mineralPatternTitle(pattern.title, index, translate(lang, "products.mineralPattern")),
-    image: asset("/images/patterns", pattern.image),
-  }));
+  return productsData.mineral.map((pattern, index) => {
+    const code = mineralPatternCode(pattern.code, index);
+    const title = pattern.title?.trim();
+    return {
+      code,
+      name: title ? `${code} · ${title}` : code,
+      image: asset("/images/patterns", pattern.image),
+    };
+  });
 }
 
 /** Illustrative stone patterns (src/data/products.json, ordered in the CMS). */
@@ -171,12 +188,14 @@ export function getSiteData(lang: Lang) {
       dimensionsMm: `${size.heightMm} × ${size.widthMm}`,
     })),
     panelCategories: getPanelCategories(lang),
+    materials: getMaterialOverview(lang),
     versions: getVersions(lang),
+    mineralVersions: getVersions(lang, "mineral"),
     mineralSurcharge: getMineralSurcharge(),
     patterns: getPatterns(),
-    patternsNote: translate(lang, "products.samplesNote"),
+    patternsNote: productsData.notes.stone[lang],
     mineralPatterns: getMineralPatterns(lang),
-    mineralPatternsNote: translate(lang, "products.mineralArHint"),
+    mineralPatternsNote: productsData.notes.mineral[lang],
     faq: getFaq(lang),
     contact: {
       email: contact.email,
@@ -187,7 +206,11 @@ export function getSiteData(lang: Lang) {
       companyId: contact.companyId,
       vatId: contact.vatId,
       eshop: ESHOP_URL,
-      contactForm: `${stonePanels}#contact`,
+      contactForm: `${base}/#contact`,
+      contactForms: {
+        stone: `${base}/?panel=stone#contact`,
+        mineral: `${base}/?panel=mineral#contact`,
+      },
     },
     pages: {
       home: `${base}/`,

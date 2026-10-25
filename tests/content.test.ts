@@ -132,15 +132,23 @@ describe("i18n", () => {
   test("contact confirmation explains the tracked discount code terms", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
 
-    expect(cs["contact.formSuccess"]).toContain("evidence slevových kódů");
+    expect(cs["contact.formSuccess"]).toContain("zaznamenali do evidence");
+    expect(cs["contact.codeLabel"]).toContain("slevový kód");
+    expect(cs["contact.codeEmailSent"]).toContain("odeslali");
     expect(cs["contact.thanksDesc"]).toContain("5 % pro SLIM a 7 % pro BASIC nebo DELUXE");
     expect(cs["contact.thanksDesc"]).toContain("180 dní od vystavení");
     expect(cs["contact.thanksDesc"]).toContain("individuální nabídky");
 
-    expect(en["contact.formSuccess"]).toContain("discount code register");
+    expect(en["contact.formSuccess"]).toContain("recorded your discount code");
+    expect(en["contact.codeLabel"]).toContain("discount code");
+    expect(en["contact.codeEmailSent"]).toContain("sent the code");
     expect(en["contact.thanksDesc"]).toContain("5% for SLIM and 7% for BASIC or DELUXE");
     expect(en["contact.thanksDesc"]).toContain("180 days from issue");
     expect(en["contact.thanksDesc"]).toContain("custom quote");
+    expect(contact).toContain('action="/api/contact"');
+    expect(contact).toContain('id="contact-discount-code"');
+    expect(contact).not.toContain("api.web3forms.com");
   });
 });

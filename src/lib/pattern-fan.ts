@@ -34,9 +34,9 @@ export function fanCard(index: number, count: number): FanCard {
   };
 }
 
-/** Mineral pattern name: the CMS title, or "<label> <n>" when it is empty. */
-export const mineralPatternTitle = (title: string | undefined, index: number, label: string): string =>
-  title?.trim() || `${label} ${index + 1}`;
+/** Mineral pattern code, with a stable numbered fallback for older CMS data. */
+export const mineralPatternCode = (code: string | undefined, index: number): string =>
+  code?.trim() || `M-${String(index + 1).padStart(2, "0")}`;
 
 /** Inline custom properties for one card `<li>`. */
 export function fanStyle(index: number, count: number): string {

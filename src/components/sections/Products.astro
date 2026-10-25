@@ -6,11 +6,10 @@ import SectionHeader from "../ui/SectionHeader.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import PatternStepper from "../product/PatternStepper.astro";
-import { fanStepper, fanStyle, mineralPatternTitle } from "../../lib/pattern-fan";
+import { fanStepper, fanStyle, mineralPatternCode } from "../../lib/pattern-fan";
 import {
   useTranslations,
   type Lang,
-  type TranslationKey,
 } from "../../i18n/utils";
 
 interface Props {
@@ -23,18 +22,19 @@ const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
-const pagePath = panelCategory
-  ? panelCategory === "stone"
-    ? lang === "cs" ? "/svitici-kamenne-panely/" : "/en/illuminated-stone-panels/"
-    : lang === "cs" ? "/svitici-mineralni-panely/" : "/en/illuminated-mineral-panels/"
-  : `${basePath}/`;
+const contactPath = panelCategory
+  ? `${basePath}/?panel=${panelCategory}#contact`
+  : `${basePath}/#contact`;
+const category = panelCategory ?? "stone";
+const samplesNote = productsData.notes[category][lang];
 
 // Stone and mineral patterns in the order set in the CMS (drag & drop).
 const products = productsData.items;
 const mineralPatterns = productsData.mineral.map((pattern, index) => ({
   src: pattern.image,
-  // Without a name in the CMS the pattern is numbered ("Minerální dekor 3").
-  title: mineralPatternTitle(pattern.title, index, t("products.mineralPattern")),
+  code: mineralPatternCode(pattern.code, index),
+  title: pattern.title?.trim() ?? "",
+  label: [mineralPatternCode(pattern.code, index), pattern.title?.trim()].filter(Boolean).join(" · "),
 }));
 
 // Touch stepper start position: the middle card is selected in the HTML, so
@@ -107,9 +107,9 @@ const mineralStepper = fanStepper(mineralPatterns.length);
                 type="button"
                 data-mineral-pattern
                 data-pattern-source={pattern.src}
-                data-pattern-title={pattern.title}
+                data-pattern-title={pattern.label}
                 class="product-fan-card group relative block aspect-[3/4] w-full cursor-pointer overflow-hidden border text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
-                aria-label={`${pattern.title} — ${t("products.showIn3d")}`}
+                aria-label={`${pattern.label} — ${t("products.showIn3d")}`}
               >
                 <span class="absolute inset-0 block overflow-hidden bg-ink-800">
                   <Picture
@@ -122,7 +122,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
                     <Icon name="ar" class="size-3.5" /> 3D · AR
                   </span>
                   <span class="product-fan-card__title absolute inset-x-0 bottom-0 bg-linear-to-t from-black/95 via-black/75 to-transparent px-3 pt-10 pb-3 text-center text-[0.625rem] font-black tracking-[0.1em] text-white uppercase sm:px-4 sm:pb-4 sm:text-xs">
-                    {pattern.title}
+                    {pattern.code}{pattern.title && <span class="mt-1 block text-[0.55rem] font-semibold tracking-normal normal-case sm:text-[0.65rem]">{pattern.title}</span>}
                   </span>
                 </span>
               </button>
@@ -130,15 +130,15 @@ const mineralStepper = fanStepper(mineralPatterns.length);
           ))
         }
       </ul>
-      <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.title)} label={t("products.stepperLabel")} />
+      <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.label)} label={t("products.stepperLabel")} />
     </div>}
 
     <div class="flex flex-col items-start justify-between gap-6 border border-line bg-ink-900 p-7 md:flex-row md:items-center md:gap-10 md:p-8">
       <p class="max-w-3xl text-base leading-relaxed text-fg-soft">
-        {t("products.samplesNote" as TranslationKey)}
+        {samplesNote}
       </p>
-      <Button href={`${pagePath}#contact`} variant="outline" class="shrink-0">
-        {t("products.samplesCta" as TranslationKey)}
+      <Button href={contactPath} variant="outline" class="shrink-0">
+        {t("products.samplesCta")}
       </Button>
     </div>
   </div>

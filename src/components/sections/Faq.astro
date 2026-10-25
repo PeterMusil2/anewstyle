@@ -67,13 +67,29 @@ const questions = faqItems(lang)
               </span>
             </summary>
             <div class="faq-answer">
-              <p class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16">
+              <div class="prose-inline pr-6 pb-7 text-base leading-relaxed text-fg-soft sm:pr-16">
                 {panelCategory ? (
                   <span set:html={panelCategory === "mineral" ? item.mineralAnswer : item.answer} />
+                ) : item.answer !== item.mineralAnswer ? (
+                  <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                    <div>
+                      <h4 class="mb-2 text-xs font-extrabold tracking-caps text-gold uppercase">{t("price.categoryStone")}</h4>
+                      <span set:html={item.answer} />
+                    </div>
+                    <div>
+                      <h4 class="mb-2 text-xs font-extrabold tracking-caps text-gold uppercase">{t("price.categoryMineral")}</h4>
+                      <span set:html={item.mineralAnswer} />
+                    </div>
+                  </div>
+                ) : item.hideInMineral ? (
+                  <div>
+                    <h4 class="mb-2 text-xs font-extrabold tracking-caps text-gold uppercase">{t("price.categoryStone")}</h4>
+                    <span set:html={item.answer} />
+                  </div>
                 ) : (
-                  <><span data-panel-type="stone" set:html={item.answer} />{item.mineralAnswer && <span data-panel-type="mineral" set:html={item.mineralAnswer} />}</>
+                  <span set:html={item.answer} />
                 )}
-              </p>
+              </div>
             </div>
           </details>
         ))

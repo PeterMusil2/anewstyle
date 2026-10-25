@@ -55,6 +55,8 @@ const groups: { title: TranslationKey; features: string[] }[] = [
 
 const featureLabel = (key: string, category: "stone" | "mineral") =>
   t(`price.feature${key}${category === "mineral" && MINERAL_FEATURE_KEYS.has(key) ? "Mineral" : ""}` as TranslationKey);
+const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
+  t(`price.feature${key}${category === "mineral" ? "Mineral" : ""}Short` as TranslationKey);
 ---
 
 <section id="equipment-comparison" aria-labelledby="equipment-comparison-title" class="section-y bg-ink">
@@ -92,14 +94,14 @@ const featureLabel = (key: string, category: "stone" | "mineral") =>
                 <th scope="row" class="border-b border-line px-3 py-3 font-normal sm:px-5 sm:py-3.5">
                   {hasMaterialVariants ? (
                     <div class="grid gap-2 text-[0.8125rem] leading-snug sm:text-sm">
-                      <p>
+                      <p class="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
                         <span class="font-bold text-gold">{t("home.equipmentStone")}:</span>{" "}
-                        <a href={`#${featureAnchors[key]}`} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{featureLabel(key, "stone")}</a>
+                        <a href={`#${featureAnchors[key]}`} aria-label={featureLabel(key, "stone")} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{key === "1" || key === "2" ? thicknessValueLabel(key, "stone") : featureLabel(key, "stone")}</a>
                         {key === "4" && <span class="mt-0.5 block text-xs text-fg-subtle sm:text-[0.8125rem]">{t("price.hint4")}</span>}
                       </p>
-                      <p>
+                      <p class="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
                         <span class="font-bold text-gold">{t("home.equipmentMineral")}:</span>{" "}
-                        <a href={`#${featureAnchors[key]}`} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{featureLabel(key, "mineral")}</a>
+                        <a href={`#${featureAnchors[key]}`} aria-label={featureLabel(key, "mineral")} class="text-fg underline-offset-4 hover:text-gold hover:underline focus-visible:text-gold focus-visible:underline">{key === "1" || key === "2" ? thicknessValueLabel(key, "mineral") : featureLabel(key, "mineral")}</a>
                         {key === "4" && <span class="mt-0.5 block text-xs text-fg-subtle sm:text-[0.8125rem]">{t("price.hint4Mineral")}</span>}
                       </p>
                     </div>

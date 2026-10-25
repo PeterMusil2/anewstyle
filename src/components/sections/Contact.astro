@@ -58,7 +58,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         method="POST"
         novalidate
         toolname="anewstyle_inquiry"
-        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : panelCategory === "stone" ? "illuminated stone panels" : "stone or mineral panels, selected by the visitor"}): name, e-mail, optional panel size and version, and an optional message. The visitor confirms and submits it.`}
+        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : panelCategory === "stone" ? "illuminated stone panels" : "illuminated stone panels, illuminated mineral panels, or undecided"}): name, e-mail, optional panel size and version, and an optional message. The visitor confirms and submits it.`}
       >
         <input type="hidden" name="panel_category" value={panelCategory ?? ""} />
         <input type="hidden" name="locale" value={lang} />
@@ -84,11 +84,11 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         {!panelCategory && (
           <fieldset class="flex flex-col gap-2.5">
             <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.panelCategoryLabel")}</legend>
-            <div class="grid gap-2 sm:grid-cols-2">
-              {(["stone", "mineral"] as const).map((category) => (
+            <div class="grid gap-2 sm:grid-cols-3">
+              {(["stone", "mineral", "unknown"] as const).map((category) => (
                 <label class="flex min-h-12 cursor-pointer items-center gap-3 border border-line bg-ink-900 px-4 text-sm font-semibold text-fg-soft transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/10 has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
-                  <input type="radio" name="panel_category_choice" value={category} required={category === "stone"} class="accent-gold" />
-                  {t(category === "stone" ? "price.categoryStone" : "price.categoryMineral")}
+                  <input type="radio" name="panel_category_choice" value={category} checked={category === "unknown"} required={category === "stone"} class="accent-gold" />
+                  {t(category === "stone" ? "price.categoryStone" : category === "mineral" ? "price.categoryMineral" : "contact.formUnknown")}
                 </label>
               ))}
             </div>

@@ -1,10 +1,17 @@
-export type PanelCategory = "stone" | "mineral";
+export type PanelCategory = "stone" | "mineral" | "unknown";
 export type ContactLocale = "cs" | "en";
 export type PanelSize = "" | "L" | "XL" | "XXL" | "XXXL";
 export type PanelVersion = "" | "SLIM" | "BASIC" | "DELUXE";
 
 export const DISCOUNT_POLICY = "SLIM 5 %; BASIC a DELUXE 7 %";
 export const DISCOUNT_VALIDITY_DAYS = 180;
+
+/** Return a numeric spreadsheet percentage for the selected panel version. */
+export function getDiscountRate(version: PanelVersion): number | null {
+  if (version === "SLIM") return 0.05;
+  if (version === "BASIC" || version === "DELUXE") return 0.07;
+  return null;
+}
 
 export const ATTRIBUTION_FIELDS = [
   "gclid",
@@ -32,6 +39,7 @@ export type ContactSubmission = {
 };
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+export const DISCOUNT_CODE_PATTERN = /^(?:ANEW-[A-Z2-9]{8}|AS-[A-Z2-9]{5}-[A-Z2-9]{5})$/;
 const SUBMISSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const asRecord = (value: unknown): Record<string, unknown> | null =>
@@ -66,7 +74,7 @@ export function parseContactSubmission(input: unknown): ContactSubmission | null
   if (name.length < 2) return null;
   if (size !== "" && !["L", "XL", "XXL", "XXXL"].includes(size)) return null;
   if (version !== "" && !["SLIM", "BASIC", "DELUXE"].includes(version)) return null;
-  if (panelCategory !== "stone" && panelCategory !== "mineral") return null;
+  if (panelCategory !== "stone" && panelCategory !== "mineral" && panelCategory !== "unknown") return null;
   if (locale !== "cs" && locale !== "en") return null;
   if (body.botcheck !== undefined && body.botcheck !== "" && body.botcheck !== false) return null;
 
@@ -80,14 +88,14 @@ export function parseContactSubmission(input: unknown): ContactSubmission | null
   return { submissionId, name, email, message, size: size as PanelSize, version: version as PanelVersion, panelCategory, locale, attribution };
 }
 
-/** Format ten random bytes as a readable code with 50 bits of entropy. */
+/** Format eight random bytes as a short, branded code with 40 bits of entropy. */
 export function formatDiscountCode(randomBytes: Uint8Array): string {
-  if (randomBytes.length !== 10) {
-    throw new Error("A discount code requires exactly 10 random bytes.");
+  if (randomBytes.length !== 8) {
+    throw new Error("A discount code requires exactly 8 random bytes.");
   }
 
   const token = Array.from(randomBytes, (byte) => CODE_ALPHABET[byte & 31]).join("");
-  return `AS-${token.slice(0, 5)}-${token.slice(5)}`;
+  return `ANEW-${token}`;
 }
 
 /** Return the YYYY-MM-DD date 180 days after issue, independent of host locale. */

@@ -1215,6 +1215,126 @@
    ]
   ]
  },
+ "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png": {
+  "width": 1280,
+  "height": 905,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/technologies/konstrukce_sviticiho_panelu_matna.png": {
+  "width": 1346,
+  "height": 1169,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/technologies/konstrukce_sviticiho_panelu_matna2.png": {
+  "width": 1346,
+  "height": 1169,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_matna2-1280.webp",
+    1280
+   ]
+  ]
+ },
  "/images/technologies/mineral-perspective.png": {
   "width": 428,
   "height": 157,
@@ -1275,6 +1395,46 @@
    ],
    [
     "/_img/images/technologies/skladba_kamenne_dyhy-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/technologies/skladba_kamenne_dyhy_matna.png": {
+  "width": 1554,
+  "height": 1012,
+  "avif": [
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/skladba_kamenne_dyhy_matna-1280.webp",
     1280
    ]
   ]

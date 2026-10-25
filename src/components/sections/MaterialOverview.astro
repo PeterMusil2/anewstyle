@@ -2,6 +2,7 @@
 import Picture from "../ui/Picture.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import materialOverview from "../../data/material-overview.json";
+import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers, type ConstructionDiagramMarker } from "../../lib/construction-diagram";
 import { useTranslations, type Lang, type TranslationKey } from "../../i18n/utils";
 
 interface Props {
@@ -14,7 +15,7 @@ const localized = (value: Record<Lang, string>, fallbackKey: TranslationKey) => 
 const materials: { title: TranslationKey; image: string; alt: TranslationKey; material: string; surface: string; mineral?: boolean; layers: TranslationKey[] }[] = [
   {
     title: "tech.subtitle1",
-    image: "/images/technologies/skladba_kamenne_dyhy.avif",
+    image: "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png",
     alt: "home.stoneImageAlt",
     material: localized(materialOverview.stone.technology, "home.stoneTechnology"),
     surface: localized(materialOverview.stone.surfaceShort, "home.stoneSurfaceShort"),
@@ -30,13 +31,14 @@ const materials: { title: TranslationKey; image: string; alt: TranslationKey; ma
     layers: ["tech.mineralTransparent", "tech.mineralRigid", "tech.mineralThickness"],
   },
 ];
-const constructions: { title: TranslationKey; image: string; alt: TranslationKey; description: TranslationKey; layers: TranslationKey[] }[] = [
+const constructions: { title: TranslationKey; image: string; alt: TranslationKey; description: TranslationKey; layers: TranslationKey[]; markers?: readonly ConstructionDiagramMarker[]; scale?: number }[] = [
   {
     title: "tech.subtitle2",
-    image: "/images/technologies/konstrukce_sviticiho_panelu.avif",
+    image: "/images/technologies/konstrukce_sviticiho_panelu_matna2.png",
     alt: "home.stoneConstructionAlt",
     description: "tech.desc",
     layers: ["tech.panel1Label", "tech.panel2", "tech.panel3", "tech.panel4", "tech.panel5", "tech.panel6Label"],
+    markers: stoneConstructionMarkers,
   },
   {
     title: "tech.mineralConstructionTitle",
@@ -44,6 +46,8 @@ const constructions: { title: TranslationKey; image: string; alt: TranslationKey
     alt: "home.mineralConstructionAlt",
     description: "tech.mineralDesc",
     layers: ["tech.mineralPanelLayer", "tech.panel2", "tech.panel3", "tech.panel4", "tech.panel5", "tech.panel6Label"],
+    markers: mineralConstructionMarkers,
+    scale: 1.18,
   },
 ] as const;
 ---
@@ -91,7 +95,25 @@ const constructions: { title: TranslationKey; image: string; alt: TranslationKey
         {constructions.map((item) => (
           <figure class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-4 sm:p-6">
             <figcaption class="text-center text-xs font-bold tracking-caps text-fg-muted uppercase sm:text-sm">{t(item.title)}</figcaption>
-            <Picture src={item.image} alt={t(item.alt)} sizes="(min-width: 64rem) 44vw, 90vw" class="mx-auto h-auto max-h-80 w-full object-contain" />
+            <div class="relative mx-auto w-[calc(100%+1.5rem)] max-w-[24.5rem]">
+              <div class="relative mx-auto w-[calc(100%-1.5rem)]">
+                <div class="relative" style={item.scale ? `transform: scale(${item.scale});` : undefined}>
+                  <Picture src={item.image} alt={t(item.alt)} sizes="(min-width: 64rem) 44vw, 90vw" class="mx-auto h-auto max-h-80 w-full object-contain" />
+                </div>
+                {item.markers && (
+                  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+                  {item.markers.map((marker) => (
+                    <span
+                      class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-sm border border-gold bg-ink-950/90 text-xs font-black text-gold shadow-lg"
+                      style={`left: ${item.scale ? scaleConstructionMarkerPosition(marker.x, item.scale) : marker.x}%; top: ${item.scale ? scaleConstructionMarkerPosition(marker.y, item.scale) : marker.y}%;`}
+                    >
+                      {marker.number}
+                    </span>
+                  ))}
+                  </div>
+                )}
+              </div>
+            </div>
             <p class="text-sm leading-relaxed text-fg-soft">{t(item.description)}</p>
             <ol class="flex flex-col gap-2 border-t border-line pt-4">
               {item.layers.map((layer, index) => (

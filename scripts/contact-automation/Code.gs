@@ -4,6 +4,7 @@ const FIRST_DATA_ROW = 4;
 const BUSINESS_EMAIL = "info@anewstyle.cz";
 const SECRET_PROPERTY = "CONTACT_SHARED_SECRET";
 const SPREADSHEET_ID_PROPERTY = "SPREADSHEET_ID";
+const DISCOUNT_CODE_PATTERN = /^(?:ANEW-[A-Z2-9]{8}|AS-[A-Z2-9]{5}-[A-Z2-9]{5})$/;
 const EXPECTED_ADDITIONAL_HEADERS = [
   "Jméno zákazníka",
   "Text poptávky",
@@ -55,6 +56,10 @@ function doPost(event) {
         if (String(existing[1]).trim().toLowerCase() !== submission.email.toLowerCase()) {
           return output({ success: false, error: "id_conflict" });
         }
+        if (!existing[28] && submission.size) sheet.getRange(existingRow, 29).setValue(safeCell(submission.size));
+        if (!existing[29] && submission.version) sheet.getRange(existingRow, 30).setValue(safeCell(submission.version));
+        const discountRate = discountRateForVersion(submission.version);
+        if (discountRate !== "") sheet.getRange(existingRow, 5).setValue(discountRate);
         const mailState = String(existing[26] || "");
         const businessState = String(existing[27] || "");
         const savedBody = Object.assign({}, body, {
@@ -83,7 +88,7 @@ function doPost(event) {
         safeCell(submission.email),
         issueDate,
         "",
-        body.discountPolicy,
+        discountRateForVersion(submission.version),
         expiryDate,
         "Aktivní",
         "",
@@ -93,7 +98,7 @@ function doPost(event) {
         "",
         safeCell(submission.name),
         safeCell(submission.message),
-        submission.panelCategory === "mineral" ? "Svítící minerální panely" : "Svítící kamenné panely",
+        panelCategoryLabel(submission.panelCategory),
         safeCell(submission.attribution.gclid),
         safeCell(submission.attribution.fbclid),
         safeCell(submission.attribution.source),
@@ -117,6 +122,7 @@ function doPost(event) {
         { formatOnly: true }
       );
       sheet.getRange(rowNumber, 3).setNumberFormat("dd.mm.yyyy hh:mm");
+      sheet.getRange(rowNumber, 5).setNumberFormat("0%");
       sheet.getRange(rowNumber, 6).setNumberFormat("dd.mm.yyyy");
 
       const delivery = deliverMessages(sheet, rowNumber, body, "", "");
@@ -146,9 +152,9 @@ function isValidRequest(body, submission) {
       String(submission.message || "").length <= 4000 &&
       ["", "L", "XL", "XXL", "XXXL"].indexOf(String(submission.size || "")) >= 0 &&
       ["", "SLIM", "BASIC", "DELUXE"].indexOf(String(submission.version || "")) >= 0 &&
-      (submission.panelCategory === "stone" || submission.panelCategory === "mineral") &&
+      (submission.panelCategory === "stone" || submission.panelCategory === "mineral" || submission.panelCategory === "unknown") &&
       (submission.locale === "cs" || submission.locale === "en") &&
-      /^AS-[A-Z2-9]{5}-[A-Z2-9]{5}$/.test(String(body.code || "")) &&
+      DISCOUNT_CODE_PATTERN.test(String(body.code || "")) &&
       body.discountPolicy === "SLIM 5 %; BASIC a DELUXE 7 %" &&
       !Number.isNaN(new Date(body.issuedAt).getTime()) &&
       !Number.isNaN(new Date(String(body.expiresAt) + "T12:00:00Z").getTime()) &&
@@ -196,8 +202,11 @@ function deliverMessages(sheet, rowNumber, body, emailState, businessState) {
   const submission = body.submission;
   let emailSent = emailState === "ODESLÁNO";
   let businessNotified = businessState === "ODESLÁNO";
+  const customerDeliveryUncertain = emailState === "ODESÍLÁ SE" || emailState === "CHYBA – zkontrolovat";
+  const businessDeliveryUncertain = businessState === "ODESÍLÁ SE" || businessState === "CHYBA – zkontrolovat";
 
-  if (!emailSent) {
+  if (!emailSent && !customerDeliveryUncertain) {
+    sheet.getRange(rowNumber, 27).setValue("ODESÍLÁ SE");
     try {
       sendCustomerEmail(submission, body.code, body.expiresAt);
       emailSent = true;
@@ -208,7 +217,8 @@ function deliverMessages(sheet, rowNumber, body, emailState, businessState) {
     }
   }
 
-  if (!businessNotified) {
+  if (!businessNotified && !businessDeliveryUncertain) {
+    sheet.getRange(rowNumber, 28).setValue("ODESÍLÁ SE");
     try {
       sendBusinessEmail(submission, body.code, body.issuedAt, body.expiresAt, body.discountPolicy);
       businessNotified = true;
@@ -242,7 +252,7 @@ function sendBusinessEmail(submission, code, issuedAt, expiresAt, discountPolicy
     "Nová poptávka z webu ANEW STYLE",
     "Jméno: " + submission.name,
     "E-mail: " + submission.email,
-    "Kategorie: " + (submission.panelCategory === "mineral" ? "Svítící minerální panely" : "Svítící kamenné panely"),
+    "Kategorie: " + panelCategoryLabel(submission.panelCategory),
     "Velikost panelu: " + (submission.size || "Neuvedena"),
     "Provedení: " + (submission.version || "Neuvedeno"),
     "Slevový kód: " + code,
@@ -276,6 +286,18 @@ function sendBusinessEmail(submission, code, issuedAt, expiresAt, discountPolicy
 function safeCell(value) {
   const text = String(value || "");
   return /^[=+\-@]/.test(text) ? "'" + text : text;
+}
+
+function discountRateForVersion(version) {
+  if (version === "SLIM") return 0.05;
+  if (version === "BASIC" || version === "DELUXE") return 0.07;
+  return "";
+}
+
+function panelCategoryLabel(category) {
+  if (category === "mineral") return "Svítící minerální panely";
+  if (category === "stone") return "Svítící kamenné panely";
+  return "Zatím nevím";
 }
 
 function escapeHtml(value) {

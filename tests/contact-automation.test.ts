@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { onRequestPost } from "../functions/api/contact";
 import {
+  DISCOUNT_CODE_PATTERN,
   DISCOUNT_POLICY,
   DISCOUNT_VALIDITY_DAYS,
   formatDiscountCode,
+  getDiscountRate,
   getDiscountExpiry,
   parseContactSubmission,
 } from "../src/lib/contact-automation";
@@ -35,6 +37,13 @@ const createRequest = (body: unknown = validSubmission(), origin = "https://anew
   });
 
 describe("contact discount automation", () => {
+  test("contact form offers the undecided panel category", async () => {
+    const component = await Bun.file("src/components/sections/Contact.astro").text();
+    expect(component).toContain('["stone", "mineral", "unknown"]');
+    expect(component).toContain('"contact.formUnknown"');
+    expect(component).toContain('checked={category === "unknown"}');
+  });
+
   test("normalizes a valid inquiry and keeps advertising attribution", () => {
     const parsed = parseContactSubmission(validSubmission());
     expect(parsed).not.toBeNull();
@@ -42,6 +51,7 @@ describe("contact discount automation", () => {
     expect(parsed?.panelCategory).toBe("mineral");
     expect(parsed?.attribution.gclid).toBe("test-gclid");
     expect(parsed?.attribution.utm_campaign).toBe("mineral-panels");
+    expect(parseContactSubmission({ ...validSubmission(), panel_category: "unknown" })?.panelCategory).toBe("unknown");
   });
 
   test("rejects malformed, unsupported, and honeypot submissions", () => {
@@ -53,11 +63,14 @@ describe("contact discount automation", () => {
   });
 
   test("creates readable codes from secure random bytes", () => {
-    const code = formatDiscountCode(new Uint8Array(10).fill(0));
-    expect(code).toBe("AS-AAAAA-AAAAA");
-    expect(code).toMatch(/^AS-[A-Z2-9]{5}-[A-Z2-9]{5}$/);
+    const code = formatDiscountCode(new Uint8Array(8).fill(0));
+    expect(code).toBe("ANEW-AAAAAAAA");
+    expect(code).toMatch(/^ANEW-[A-Z2-9]{8}$/);
     expect(code).not.toMatch(/[IO01]/);
-    expect(() => formatDiscountCode(new Uint8Array(9))).toThrow();
+    expect(DISCOUNT_CODE_PATTERN.test(code)).toBe(true);
+    expect(DISCOUNT_CODE_PATTERN.test("AS-AAAAA-AAAAA")).toBe(true);
+    expect(DISCOUNT_CODE_PATTERN.test("ANEW-AAAAAAA")).toBe(false);
+    expect(() => formatDiscountCode(new Uint8Array(7))).toThrow();
   });
 
   test("sets expiry exactly 180 days after issue", () => {
@@ -66,6 +79,13 @@ describe("contact discount automation", () => {
     expect(getDiscountExpiry(new Date("2026-10-23T22:30:00.000Z"))).toBe("2027-04-22");
     expect(DISCOUNT_POLICY).toBe("SLIM 5 %; BASIC a DELUXE 7 %");
     expect(() => getDiscountExpiry(new Date("invalid"))).toThrow();
+  });
+
+  test("stores a numeric discount rate for the selected version", () => {
+    expect(getDiscountRate("SLIM")).toBe(0.05);
+    expect(getDiscountRate("BASIC")).toBe(0.07);
+    expect(getDiscountRate("DELUXE")).toBe(0.07);
+    expect(getDiscountRate("")).toBeNull();
   });
 
   test("returns a generated code only after the private register confirms the write", async () => {
@@ -95,7 +115,7 @@ describe("contact discount automation", () => {
 
       expect(response.status).toBe(200);
       expect(data.success).toBe(true);
-      expect(data.code).toMatch(/^AS-[A-Z2-9]{5}-[A-Z2-9]{5}$/);
+      expect(data.code).toMatch(/^ANEW-[A-Z2-9]{8}$/);
       expect(data.emailSent).toBe(true);
       expect(backendPayload?.secret).toBe("server-only-test-secret");
       expect(JSON.stringify(validSubmission())).not.toContain("server-only-test-secret");
@@ -136,9 +156,20 @@ describe("contact discount automation", () => {
     const script = await Bun.file("scripts/contact-automation/Code.gs").text();
     expect(script).toContain("findSubmissionRow(sheet, submission.submissionId)");
     expect(script).toContain('sheet.appendRow(record)');
+    expect(script).toContain('"Velikost panelu"');
+    expect(script).toContain('"Provedení"');
+    expect(script).toContain('submission.panelCategory === "unknown"');
+    expect(script).toContain('return "Zatím nevím"');
+    expect(script).toContain("discountRateForVersion(submission.version)");
+    expect(script).toContain("const DISCOUNT_CODE_PATTERN = /^(?:ANEW-[A-Z2-9]{8}|AS-[A-Z2-9]{5}-[A-Z2-9]{5})$/;");
+    expect(script).toContain('sheet.getRange(rowNumber, 5).setNumberFormat("0%")');
     expect(script).toContain("sendCustomerEmail(submission, body.code, body.expiresAt)");
     expect(script).toContain("sendBusinessEmail(submission, body.code");
     expect(script).toContain('sheet.getRange(rowNumber, 27).setValue("ODESLÁNO")');
     expect(script).toContain('sheet.getRange(rowNumber, 28).setValue("ODESLÁNO")');
+    expect(script).toMatch(/setValue\("ODESÍLÁ SE"\)[\s\S]*sendCustomerEmail\(/);
+    expect(script).toMatch(/setValue\("ODESÍLÁ SE"\)[\s\S]*sendBusinessEmail\(/);
+    expect(script).toContain('emailState === "CHYBA – zkontrolovat"');
+    expect(script).toContain('businessState === "CHYBA – zkontrolovat"');
   });
 });

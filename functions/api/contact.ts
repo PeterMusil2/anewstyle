@@ -1,4 +1,5 @@
 import {
+  DISCOUNT_CODE_PATTERN,
   DISCOUNT_POLICY,
   formatDiscountCode,
   getDiscountExpiry,
@@ -97,7 +98,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
   let result: AutomationResult | undefined;
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    const code = formatDiscountCode(crypto.getRandomValues(new Uint8Array(10)));
+    const code = formatDiscountCode(crypto.getRandomValues(new Uint8Array(8)));
     try {
       const response = await fetch(automationUrl, {
         method: "POST",
@@ -117,7 +118,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     }
   }
 
-  if (!result?.success || !result.recorded || !result.code || !/^AS-[A-Z2-9]{5}-[A-Z2-9]{5}$/.test(result.code)) {
+  if (!result?.success || !result.recorded || !result.code || !DISCOUNT_CODE_PATTERN.test(result.code)) {
     return json({ success: false }, 502);
   }
 

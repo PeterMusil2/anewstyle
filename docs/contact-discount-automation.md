@@ -3,12 +3,12 @@
 ## What happens after submission
 
 1. The contact form posts to the same-origin Cloudflare Pages Function at `/api/contact`.
-2. The function validates the form, creates a cryptographically random code, and sets an expiry 180 days after issue.
+2. The function validates the form, creates a cryptographically random, branded code in the form `ANEW-XXXXXXXX`, and sets an expiry 180 days after issue. Previously issued `AS-XXXXX-XXXXX` codes remain valid for retries.
 3. A private Apps Script endpoint checks the shared secret and writes the inquiry, code, category, attribution and delivery states to the `Kódy` tab in the private discount register.
 4. After the row is written, Apps Script emails the code to the visitor and sends the inquiry to `info@anewstyle.cz`.
 5. The page shows the code only after the register confirms the write. It also unlocks the bonus gallery in that browser. If a mail send fails, the code still appears and the sheet marks the failed delivery for follow-up.
 
-The same form submission ID is reused after a network error. Apps Script uses it to return the original code instead of appending a second row. The form stores name, email, optional panel size and version, an optional message, stone/mineral category, gclid/fbclid, source, UTM parameters, landing page, referrer, code and the two email delivery states.
+The same form submission ID is reused after a network error. Apps Script uses it to return the original code instead of appending a second row. Before sending either e-mail, it records `ODESÍLÁ SE`; if a request stops at that point or reports an ambiguous sending error, automatic retries do not send that message again. Check the mailbox and resolve such rows manually. The form stores name, email, optional panel size and version, an optional message, stone/mineral/undecided panel category, gclid/fbclid, source, UTM parameters, landing page, referrer, code and the two email delivery states. The category is written to the existing `Kategorie panelu` column as `Svítící kamenné panely`, `Svítící minerální panely`, or `Zatím nevím`.
 
 ## One-time Google Apps Script setup
 
@@ -32,4 +32,4 @@ Astro's `bun run dev` does not execute Cloudflare Pages Functions. To test the f
 
 ## Sheet fields
 
-The existing columns A–L remain available for the code, discount, status and later manual redemption. The added columns M–AB store the customer's name and message, panel category, advertising attribution, form submission ID and e-mail delivery states. Columns AC and AD store the selected panel size and version; the updated Apps Script adds these headers to an existing sheet the first time it receives a valid inquiry. The spreadsheet time zone is set to `Europe/Prague` for issue and expiry dates.
+The existing columns A–L remain available for the code, discount, status and later manual redemption. Column E (`Sleva (%)`) stores a numeric percentage for the selected version: 5% for SLIM and 7% for BASIC or DELUXE. If the visitor leaves the version undecided, the percentage stays blank until the team confirms the version. The added columns M–AB store the customer's name and message, panel category, advertising attribution, form submission ID and e-mail delivery states. Columns AC and AD store the selected panel size and version; the updated Apps Script adds these headers to an existing sheet the first time it receives a valid inquiry. The spreadsheet time zone is set to `Europe/Prague` for issue and expiry dates.

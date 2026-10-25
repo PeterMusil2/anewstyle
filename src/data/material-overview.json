@@ -27,8 +27,8 @@
   },
   "mineral": {
     "technology": {
-      "cs": "Transparentní, rigidní minerální deska propouští světlo a drží tvar. Její tloušťka je 6 mm.",
-      "en": "A transparent, rigid mineral sheet lets light through and holds its shape. It is 6 mm thick."
+      "cs": "Transparentní, litý designový panel s kamennou texturou a vysokým podílem minerálů, který je pevný a skvěle propouští světlo. Jeho tloušťka je 6 mm.",
+      "en": "A transparent, cast design panel with a stone texture and high mineral content. It is rigid and transmits light exceptionally well. It is 6 mm thick."
     },
     "surfaceShort": {
       "cs": "Hladký povrch v lesklém nebo matném provedení",

@@ -24,9 +24,6 @@ const mineralHref = getPanelPagePath("mineral", lang);
   data-title-mineral={t("meta.titleMineral")}
 >
   <div class="container-page flex items-center justify-between gap-3 py-2.5 sm:py-3">
-    <p class="hidden text-xs font-bold tracking-[0.12em] text-fg-muted uppercase sm:block">
-      {t("price.categoryLabel")}
-    </p>
     {activeCategory ? (
       <nav aria-label={t("price.categoryLabel")} class="grid w-full grid-cols-2 gap-1.5 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
         <a href={stoneHref} aria-current={activeCategory === "stone" ? "page" : undefined} class:list={["flex min-h-10 items-center justify-center border px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase no-underline transition-colors sm:px-4 sm:text-xs", activeCategory === "stone" ? "border-gold bg-gold/12 text-gold-light" : "border-line bg-ink-900 text-fg-soft hover:border-line-strong hover:text-fg"]}>

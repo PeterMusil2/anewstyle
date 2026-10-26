@@ -2,7 +2,7 @@
  * Content the site depends on: what the CMS saves must render.
  */
 import { describe, expect, test } from "bun:test";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import cms from "../src/data/gallery-cms.json";
 import materialOverview from "../src/data/material-overview.json";
 import prices from "../src/data/prices.json";
@@ -14,6 +14,33 @@ import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConst
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
 const publicFile = (path: string) => existsSync(`public${path}`);
+
+describe("hero video", () => {
+  test("home keeps the original loop while the stone branch uses the supplied loop", () => {
+    const header = readFileSync("src/components/header/Header.astro", "utf8");
+    expect(header).toContain('data-home={home ? "true" : "false"}');
+    expect(header).toMatch(/isHome\s*\?\s*"\/videos\/hero-mobile\.mp4"/);
+    expect(header).toMatch(/isHome\s*\?\s*"\/videos\/hero-1280\.mp4"/);
+    expect(header).toContain('"/videos/hero-stone-bomma-v8-mobile.mp4"');
+    expect(header).toContain('"/videos/hero-stone-bomma-v8.mp4"');
+    expect(publicFile("/videos/hero-mobile.mp4")).toBe(true);
+    expect(publicFile("/videos/hero-1280.mp4")).toBe(true);
+    expect(publicFile("/videos/hero-stone-bomma-v8.mp4")).toBe(true);
+    expect(publicFile("/videos/hero-stone-bomma-v8-mobile.mp4")).toBe(true);
+    expect(header).toMatch(/isMineral\s*\?\s*"\/videos\/mineral_before_after_intro_loop_16x9\.mp4"/);
+    expect(header).toMatch(/isMineral\s*\?\s*"\/videos\/hero-mineral-mobile\.mp4"/);
+  });
+
+  test("mineral mobile hero has the AR CTA and its default mineral texture", () => {
+    const header = readFileSync("src/components/header/Header.astro", "utf8");
+    expect(header).toContain('id="headerArButton"');
+    expect(header).toContain("{t('header.btnAr')}");
+    expect(header).toContain('data-texture-path={panelCategory === "mineral" ? "/images/patterns/mineral-2.png" : undefined}');
+    expect(header).toContain('text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl');
+    expect(publicFile("/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb")).toBe(true);
+    expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
+  });
+});
 
 describe("gallery", () => {
   test("every visible CMS entry renders (image set or Cloudinary video)", () => {
@@ -200,6 +227,43 @@ describe("i18n", () => {
     expect(header).toMatch(/<Button href=\{getPanelPagePath\("mineral", lang\)\}[\s\S]*?<\/Button>\s*<p[^>]*>\s*\{t\("header\.mineralMaterial"\)\}/);
     expect(header).toMatch(/<Button href=\{getPanelPagePath\("stone", lang\)\} variant="outline"/);
     expect(header).toMatch(/<Button href=\{getPanelPagePath\("mineral", lang\)\} variant="outline"/);
+    expect(header.match(/class="home-category-button w-full min-h-15 sm:min-h-16"/g)).toHaveLength(2);
+    expect(header.match(/class="home-category-label"/g)).toHaveLength(2);
+    expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
+    expect(header).toContain('"hero-title__label--home": home');
+    const effects = await Bun.file("src/styles/effects.css").text();
+    expect(effects).toContain(".home-category-label,");
+    expect(effects).toContain(".hero-title__label {");
+    expect(effects).toContain(".hero-title__label--home {");
+    expect(effects).toContain("width: max-content");
+    expect(effects).toContain("white-space: nowrap");
+    expect(effects).toContain("inset-inline: 18%");
+    expect(effects).toContain("rgb(0 0 0 / 0.58) 0%");
+    expect(effects).toContain("transparent 74%");
+    expect(effects).toContain(".home-category-button:is(:hover, :focus-visible) .home-category-label::before");
+    expect(effects).toContain("transition: opacity 180ms var(--ease-out-soft)");
+    expect(effects).not.toContain(".home-category-button::before");
+  });
+
+  test("panel hero places a gold home icon under video controls and matches CTA sizes", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+
+    expect(cs["nav.home"]).toBe("Domů");
+    expect(en["nav.home"]).toBe("Home");
+    expect(header).toContain('{!home && panelCategory && (');
+    expect(header).toContain('<Icon name="home" class="size-5" />');
+    expect(header).toContain('aria-label={t("nav.home")}');
+    expect(header).toContain('class="hero-home-link absolute z-10 grid size-11');
+    expect(header).toContain('id="headerMoreButton" class="w-64"');
+    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-64/);
+    expect(nav).not.toContain('<Icon name="home"');
+    const effects = await Bun.file("src/styles/effects.css").text();
+    expect(effects).toContain(".hero-home-link {");
+    expect(effects).toContain("inset-block-start: calc(var(--nav-height) + 1.5rem + 3.25rem)");
+    expect(nav).toContain('const mobileLinks = links');
   });
 
   test("home header keeps FAQ and day-night sections out of the navigation", async () => {

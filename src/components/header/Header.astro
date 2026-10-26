@@ -18,6 +18,7 @@ interface Props {
 
 const { lang = 'cs', pageTitle, pageDescription, home = false, panelCategory } = Astro.props;
 const t = useTranslations(lang);
+const homeHref = lang === "cs" ? "/" : "/en/";
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
@@ -60,6 +61,7 @@ const t = useTranslations(lang);
     class="hero-video pointer-events-none absolute inset-0 -z-20 size-full object-cover"
     id="headerVideo"
     data-panel-category={panelCategory ?? "stone"}
+    data-home={home ? "true" : "false"}
     aria-hidden="true"
     tabindex="-1"
     preload="auto"
@@ -87,13 +89,23 @@ const t = useTranslations(lang);
     <svg class="video-toggle__pause size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" /></svg>
     <svg class="video-toggle__play hidden size-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
   </button>
+  {!home && panelCategory && (
+    <a
+      href={homeHref}
+      aria-label={t("nav.home")}
+      title={t("nav.home")}
+      class="hero-home-link absolute z-10 grid size-11 place-items-center rounded-full border border-gold bg-ink/70 text-gold backdrop-blur-md transition-colors hover:bg-gold hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+    >
+      <Icon name="home" class="size-5" />
+    </a>
+  )}
 
   <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
     <h1 class:list={[
       "hero-title max-w-4xl font-display leading-[0.92] font-black tracking-[0.08em] uppercase",
-      pageTitle ? "text-5xl sm:text-6xl lg:text-7xl" : "text-6xl sm:text-7xl lg:text-[7.5rem]",
+      pageTitle ? "text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl" : "text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]",
     ]}>
-      {pageTitle ?? "ANEW STYLE"}
+      <span class:list={["hero-title__label", { "hero-title__label--home": home }]}>{pageTitle ?? "ANEW STYLE"}</span>
     </h1>
     <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
       {pageDescription ?? t('header.title')}
@@ -101,16 +113,16 @@ const t = useTranslations(lang);
     {home ? (
       <nav aria-label={t("price.categoryLabel")} class="grid w-full max-w-3xl grid-cols-1 gap-3 pt-2 sm:grid-cols-2 sm:gap-4">
         <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("stone", lang)} variant="outline" class="w-full min-h-15 sm:min-h-16">
-            {t("price.categoryStone")}
+          <Button href={getPanelPagePath("stone", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
+            <span class="home-category-label">{t("price.categoryStone")}</span>
           </Button>
           <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
             {t("header.stoneMaterial")}
           </p>
         </div>
         <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("mineral", lang)} variant="outline" class="w-full min-h-15 sm:min-h-16">
-            {t("price.categoryMineral")}
+          <Button href={getPanelPagePath("mineral", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
+            <span class="home-category-label">{t("price.categoryMineral")}</span>
           </Button>
           <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
             {t("header.mineralMaterial")}
@@ -119,7 +131,7 @@ const t = useTranslations(lang);
       </nav>
     ) : (
       <div class="flex flex-wrap items-center gap-4 pt-2">
-        <Button href={panelCategory ? "#products" : "#about"} id="headerMoreButton">
+        <Button href={panelCategory ? "#products" : "#about"} id="headerMoreButton" class="w-64">
           {t('header.btnMore')}
         </Button>
         <Button
@@ -133,22 +145,18 @@ const t = useTranslations(lang);
           {t('header.btnEshop')}
           <Icon name="eshop" class="size-4" />
         </Button>
-        {panelCategory === "mineral" ? (
-          <Button href="#products" variant="ghost" class="lg:hidden!">
-            {t("products.heading")}
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            id="headerArButton"
-            data-loading="false"
-            data-error="false"
-            class="[--spinner-color:var(--color-gold)] lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
-          >
-            {t('header.btnAr')}
-            <Icon name="ar" class="size-5" />
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          id="headerArButton"
+          data-model-path="/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
+          data-texture-path={panelCategory === "mineral" ? "/images/patterns/mineral-2.png" : undefined}
+          data-loading="false"
+          data-error="false"
+          class="w-64 [--spinner-color:var(--color-gold)] lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
+        >
+          {t('header.btnAr')}
+          <Icon name="ar" class="size-5" />
+        </Button>
       </div>
     )}
   </div>
@@ -163,7 +171,7 @@ const t = useTranslations(lang);
 <script>
 
   // AR functionality with proper Android support
-  async function activateARForModel(modelPath: string): Promise<void> {
+  async function activateARForModel(modelPath: string, texturePath?: string): Promise<void> {
     try {
       // model-viewer (three.js) is ~1 MB – load it only when AR is requested.
       await import("@google/model-viewer");
@@ -221,6 +229,18 @@ const t = useTranslations(lang);
         }
       });
 
+      if (texturePath) {
+        const texture = await modelViewer.createTexture(texturePath);
+        if (!texture) throw new Error("Panel texture could not be loaded.");
+        const materials = modelViewer.model?.materials.filter(
+          (material: any) => material.pbrMetallicRoughness.baseColorTexture,
+        ) ?? [];
+        if (!materials.length) throw new Error("The model does not expose a textured panel material.");
+        materials.forEach((material: any) => {
+          material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+        });
+      }
+
       // Wait a bit more to ensure everything is ready
       await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -274,8 +294,17 @@ const t = useTranslations(lang);
     video.controls = false;
 
     const isMineral = video.dataset.panelCategory === "mineral";
-    const videoMobile = isMineral ? "/videos/hero-mineral-mobile.mp4" : "/videos/hero-mobile.mp4";
-    const videoDesktop = isMineral ? "/videos/mineral_before_after_intro_loop_16x9.mp4" : "/videos/hero-1280.mp4";
+    const isHome = video.dataset.home === "true";
+    const videoMobile = isMineral
+      ? "/videos/hero-mineral-mobile.mp4"
+      : isHome
+        ? "/videos/hero-mobile.mp4"
+        : "/videos/hero-stone-bomma-v8-mobile.mp4";
+    const videoDesktop = isMineral
+      ? "/videos/mineral_before_after_intro_loop_16x9.mp4"
+      : isHome
+        ? "/videos/hero-1280.mp4"
+        : "/videos/hero-stone-bomma-v8.mp4";
 
     let userPaused = false;
     let inView = true;
@@ -365,7 +394,8 @@ const t = useTranslations(lang);
 
         // Activate AR
         await activateARForModel(
-          "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
+          arButton.dataset.modelPath ?? "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb",
+          arButton.dataset.texturePath,
         );
 
         // Restore button state

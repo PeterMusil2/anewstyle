@@ -207,6 +207,7 @@ function deliverMessages(sheet, rowNumber, body, emailState, businessState) {
 
   if (!emailSent && !customerDeliveryUncertain) {
     sheet.getRange(rowNumber, 27).setValue("ODESÍLÁ SE");
+    SpreadsheetApp.flush();
     try {
       sendCustomerEmail(submission, body.code, body.expiresAt);
       emailSent = true;
@@ -219,6 +220,7 @@ function deliverMessages(sheet, rowNumber, body, emailState, businessState) {
 
   if (!businessNotified && !businessDeliveryUncertain) {
     sheet.getRange(rowNumber, 28).setValue("ODESÍLÁ SE");
+    SpreadsheetApp.flush();
     try {
       sendBusinessEmail(submission, body.code, body.issuedAt, body.expiresAt, body.discountPolicy);
       businessNotified = true;

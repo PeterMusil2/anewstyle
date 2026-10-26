@@ -215,6 +215,8 @@ describe("contact discount automation", () => {
     expect(script).toContain('sheet.getRange(rowNumber, 28).setValue("ODESLÁNO")');
     expect(script).toMatch(/setValue\("ODESÍLÁ SE"\)[\s\S]*sendCustomerEmail\(/);
     expect(script).toMatch(/setValue\("ODESÍLÁ SE"\)[\s\S]*sendBusinessEmail\(/);
+    expect(script).toMatch(/setValue\("ODESÍLÁ SE"\);\s*SpreadsheetApp\.flush\(\);\s*try\s*\{\s*sendCustomerEmail\(/);
+    expect(script).toMatch(/setValue\("ODESÍLÁ SE"\);\s*SpreadsheetApp\.flush\(\);\s*try\s*\{\s*sendBusinessEmail\(/);
     expect(script).toContain('emailState === "CHYBA – zkontrolovat"');
     expect(script).toContain('businessState === "CHYBA – zkontrolovat"');
   });

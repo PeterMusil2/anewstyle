@@ -38,6 +38,7 @@ const links = panelCategory
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
     ];
+const mobileLinks = links;
 ---
 
 <div class="site-nav fixed inset-x-0 top-0 z-50">
@@ -45,6 +46,7 @@ const links = panelCategory
     <div class="container-wide flex h-(--nav-height) items-center justify-between gap-3 sm:gap-6">
       <a
         href={`${basePath}/`}
+        aria-label={t("nav.home")}
         class="flex min-w-0 shrink items-center gap-2.5 text-fg no-underline sm:gap-3.5"
       >
         <img
@@ -54,11 +56,13 @@ const links = panelCategory
           height="850"
           class="h-10 w-auto shrink-0 lg:h-13"
         />
-        <span class="flex flex-col gap-0.5 xl:max-2xl:sr-only">
+        <span class:list={["flex flex-col gap-0.5", !panelCategory && "xl:max-2xl:sr-only"]}>
           <span class="text-sm font-black tracking-[0.2em] whitespace-nowrap sm:text-base sm:tracking-[0.3em] lg:text-lg">ANEW STYLE</span>
-          <span class="hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block">
-            {t("header.title")}
-          </span>
+          {!panelCategory && (
+            <span class:list={["hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block"]}>
+              {t("header.title")}
+            </span>
+          )}
         </span>
       </a>
 
@@ -99,7 +103,7 @@ const links = panelCategory
   >
     <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
       <ul class="flex flex-col">
-        {links.map((link) => <NavItem {...link} variant="panel" />)}
+        {mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}
       </ul>
       <div class="flex items-center justify-between gap-4">
         <Button href={eshopUrl} variant="outline" rel="external" target="_blank" class="flex-1">

@@ -112,9 +112,17 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
         break;
       }
       if (parsed.error === "code_collision") continue;
+      if (
+        attempt < 2 &&
+        (response.status >= 500 || parsed.error === "busy" || parsed.error === "processing_failed")
+      ) {
+        await retryDelay(attempt);
+        continue;
+      }
       return json({ success: false }, 502);
     } catch {
-      return json({ success: false }, 502);
+      if (attempt === 2) return json({ success: false }, 502);
+      await retryDelay(attempt);
     }
   }
 
@@ -130,3 +138,7 @@ export const onRequestPost = async ({ request, env }: Context): Promise<Response
     businessNotified: result.businessNotified === true,
   });
 };
+
+function retryDelay(attempt: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+}

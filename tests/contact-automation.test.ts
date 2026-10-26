@@ -124,6 +124,52 @@ describe("contact discount automation", () => {
     }
   });
 
+  test("retries an ambiguous upstream failure with the same submission ID", async () => {
+    const originalFetch = globalThis.fetch;
+    const submissionIds: string[] = [];
+    let savedCode = "";
+    globalThis.fetch = (async (_input, init) => {
+      const payload = JSON.parse(String(init?.body)) as {
+        code: string;
+        expiresAt: string;
+        submission: { submissionId: string };
+      };
+      submissionIds.push(payload.submission.submissionId);
+      if (submissionIds.length === 1) {
+        // Model Apps Script saving the row before the response connection drops.
+        savedCode = payload.code;
+        throw new TypeError("connection reset after write");
+      }
+      return new Response(JSON.stringify({
+        success: true,
+        recorded: true,
+        code: savedCode,
+        expiresAt: payload.expiresAt,
+        emailSent: true,
+        businessNotified: true,
+      }), { headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+
+    try {
+      const response = await onRequestPost({
+        request: createRequest(),
+        env: {
+          CONTACT_SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/test-deployment/exec",
+          CONTACT_SHEETS_SHARED_SECRET: "server-only-test-secret",
+        },
+      });
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(response.status).toBe(200);
+      expect(data.success).toBe(true);
+      expect(data.code).toBe(savedCode);
+      expect(submissionIds).toHaveLength(2);
+      expect(submissionIds[0]).toBe(submissionIds[1]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   test("does not reveal a code if logging fails and rejects cross-origin calls", async () => {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = (async () => new Response(JSON.stringify({ success: false, error: "write_failed" }), {

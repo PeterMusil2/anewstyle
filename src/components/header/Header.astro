@@ -1,6 +1,7 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
+import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 import {
   getPanelPagePath,
   useTranslations,
@@ -19,6 +20,7 @@ interface Props {
 const { lang = 'cs', pageTitle, pageDescription, home = false, panelCategory } = Astro.props;
 const t = useTranslations(lang);
 const homeHref = lang === "cs" ? "/" : "/en/";
+const headerUsesRuntimeTexture = panelCategory === "mineral";
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
@@ -145,18 +147,34 @@ const homeHref = lang === "cs" ? "/" : "/en/";
           {t('header.btnEshop')}
           <Icon name="eshop" class="size-4" />
         </Button>
-        <Button
-          variant="outline"
-          id="headerArButton"
-          data-model-path="/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
-          data-texture-path={panelCategory === "mineral" ? "/images/patterns/mineral-2.png" : undefined}
-          data-loading="false"
-          data-error="false"
-          class="w-64 [--spinner-color:var(--color-gold)] lg:hidden! data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
-        >
-          {t('header.btnAr')}
-          <Icon name="ar" class="size-5" />
-        </Button>
+        <div class="w-64 lg:hidden!">
+          <Button
+            variant="outline"
+            id="headerArButton"
+            data-model-path="/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
+            data-texture-path={headerUsesRuntimeTexture ? "/images/patterns/mineral-2.png" : undefined}
+            data-ar-modes={panelArModes(headerUsesRuntimeTexture)}
+            data-ar-placement={PANEL_AR_PLACEMENT}
+            data-loading="true"
+            data-error="false"
+            aria-busy="true"
+            aria-describedby="headerArStatus"
+            disabled
+            class="w-full [--spinner-color:var(--color-gold)] disabled:cursor-not-allowed data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
+          >
+            {t('header.btnAr')}
+            <Icon name="ar" class="size-5" />
+          </Button>
+          <p
+            id="headerArStatus"
+            role="status"
+            aria-live="polite"
+            hidden
+            data-unavailable={t("header.arUnavailable")}
+            data-failed={t("header.arFailed")}
+            class="mt-2 text-xs leading-relaxed font-semibold text-danger"
+          ></p>
+        </div>
       </div>
     )}
   </div>
@@ -169,110 +187,33 @@ const homeHref = lang === "cs" ? "/" : "/en/";
 </header>
 
 <script>
+  import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 
-  // AR functionality with proper Android support
-  async function activateARForModel(modelPath: string, texturePath?: string): Promise<void> {
-    try {
-      // model-viewer (three.js) is ~1 MB – load it only when AR is requested.
-      await import("@google/model-viewer");
+  type ARViewer = HTMLElement & {
+    activateAR: () => Promise<void>;
+    canActivateAR: boolean;
+    createTexture: (source: string) => Promise<any>;
+    loaded: boolean;
+    model?: { materials: any[] };
+    updateComplete?: Promise<boolean>;
+  };
 
-      // Create model-viewer element
-      const modelViewer = document.createElement("model-viewer") as any;
-
-      // Set attributes for AR
-      modelViewer.setAttribute("src", modelPath);
-      modelViewer.setAttribute("ar", "");
-      modelViewer.setAttribute("ar-scale", "auto");
-      modelViewer.setAttribute("ar-modes", "webxr scene-viewer quick-look");
-      modelViewer.setAttribute("camera-controls", "");
-      modelViewer.setAttribute("touch-action", "pan-y");
-      modelViewer.setAttribute("camera-orbit", "0deg 90deg 2.5m");
-      modelViewer.setAttribute("loading", "eager");
-
-      // Position off-screen but keep it accessible for AR
-      modelViewer.style.position = "fixed";
-      modelViewer.style.top = "-1px";
-      modelViewer.style.left = "-1px";
-      modelViewer.style.width = "1px";
-      modelViewer.style.height = "1px";
-      modelViewer.style.opacity = "0";
-      modelViewer.style.pointerEvents = "none";
-      modelViewer.style.zIndex = "-1";
-
-      // Add to DOM
-      document.body.appendChild(modelViewer);
-
-      // Wait for model to load
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error("Model load timeout"));
-        }, 10000);
-
-        const onLoad = () => {
-          clearTimeout(timeout);
-          resolve();
-        };
-
-        const onError = (error: any) => {
-          clearTimeout(timeout);
-          reject(error);
-        };
-
-        // Listen for load events
-        modelViewer.addEventListener("load", onLoad, { once: true });
-        modelViewer.addEventListener("error", onError, { once: true });
-
-        // Also check if already loaded
-        if (modelViewer.loaded) {
-          clearTimeout(timeout);
-          resolve();
-        }
-      });
-
-      if (texturePath) {
-        const texture = await modelViewer.createTexture(texturePath);
-        if (!texture) throw new Error("Panel texture could not be loaded.");
-        const materials = modelViewer.model?.materials.filter(
-          (material: any) => material.pbrMetallicRoughness.baseColorTexture,
-        ) ?? [];
-        if (!materials.length) throw new Error("The model does not expose a textured panel material.");
-        materials.forEach((material: any) => {
-          material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-        });
-      }
-
-      // Wait a bit more to ensure everything is ready
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Activate AR
-      if (typeof modelViewer.activateAR === "function") {
-        modelViewer.activateAR();
-      } else {
-        throw new Error("AR activation not available");
-      }
-
-      // Set up cleanup when AR session ends
-      const cleanup = () => {
-        if (document.body.contains(modelViewer)) {
-          document.body.removeChild(modelViewer);
-        }
+  const waitForModel = (viewer: ARViewer): Promise<void> => {
+    if (viewer.loaded) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const timeout = window.setTimeout(() => finish(new Error("Model load timeout")), 20000);
+      const finish = (error?: Error) => {
+        window.clearTimeout(timeout);
+        viewer.removeEventListener("load", onLoad);
+        viewer.removeEventListener("error", onError);
+        error ? reject(error) : resolve();
       };
-
-      // Listen for AR session end events
-      modelViewer.addEventListener("ar-status", (event: any) => {
-        if (event.detail.status === "not-presenting") {
-          // AR session ended, clean up after a delay
-          setTimeout(cleanup, 1000);
-        }
-      });
-
-      // Fallback cleanup after 30 seconds (in case AR session doesn't end properly)
-      setTimeout(cleanup, 30000);
-    } catch (error) {
-      console.error("Failed to activate AR:", error);
-      throw error;
-    }
-  }
+      const onLoad = () => finish();
+      const onError = () => finish(new Error("Model could not be loaded"));
+      viewer.addEventListener("load", onLoad, { once: true });
+      viewer.addEventListener("error", onError, { once: true });
+    });
+  };
 
   const MOBILE_BREAKPOINT = 560;
   // Use a landscape and portrait loop; the hero is always muted.
@@ -379,41 +320,107 @@ const homeHref = lang === "cs" ? "/" : "/en/";
   function initHeader(): void {
     initHeaderVideo();
 
-    // AR button initialization
-    const arButton = document.querySelector(
-      "#headerArButton"
-    ) as HTMLButtonElement;
-
+    const arButton = document.querySelector<HTMLButtonElement>("#headerArButton");
+    const arStatus = document.querySelector<HTMLElement>("#headerArStatus");
     if (!arButton) return;
 
-    arButton.addEventListener("click", async () => {
+    let arViewer: ARViewer | null = null;
+    let arInitialized = false;
+    const setStatus = (message = "") => {
+      if (!arStatus) return;
+      arStatus.textContent = message;
+      arStatus.hidden = !message;
+    };
+    const setLoading = (loading: boolean) => {
+      arButton.disabled = loading;
+      arButton.setAttribute("data-loading", loading ? "true" : "false");
+      arButton.setAttribute("aria-busy", loading ? "true" : "false");
+    };
+    const showArError = (kind: "unavailable" | "failed") => {
+      setLoading(false);
+      arButton.disabled = !arViewer?.canActivateAR;
+      arButton.setAttribute("data-error", "true");
+      setStatus(arStatus?.dataset[kind] ?? "");
+    };
+
+    const prepareAR = async () => {
+      if (arInitialized) return;
+      arInitialized = true;
       try {
-        // Show loading state
-        arButton.disabled = true;
-        arButton.setAttribute("data-loading", "true");
+        await import("@google/model-viewer");
+        await customElements.whenDefined("model-viewer");
+        const viewer = document.createElement("model-viewer") as ARViewer;
+        const texturePath = arButton.dataset.texturePath;
+        viewer.setAttribute("src", arButton.dataset.modelPath ?? "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
+        viewer.setAttribute("ar", "");
+        viewer.setAttribute("ar-scale", "auto");
+        viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
+        viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes(Boolean(texturePath)));
+        viewer.setAttribute("loading", "eager");
+        viewer.style.cssText = "position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0;pointer-events:none";
+        document.body.appendChild(viewer);
+        arViewer = viewer;
+        await viewer.updateComplete;
+        await waitForModel(viewer);
 
-        // Activate AR
-        await activateARForModel(
-          arButton.dataset.modelPath ?? "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb",
-          arButton.dataset.texturePath,
-        );
+        if (texturePath) {
+          const texture = await viewer.createTexture(texturePath);
+          if (!texture) throw new Error("Panel texture could not be loaded");
+          const materials = viewer.model?.materials.filter(
+            (material) => material.pbrMetallicRoughness.baseColorTexture,
+          ) ?? [];
+          if (!materials.length) throw new Error("The model does not expose a textured panel material");
+          materials.forEach((material) => {
+            material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
+          });
+        }
 
-        // Restore button state
-        arButton.disabled = false;
-        arButton.setAttribute("data-loading", "false");
+        viewer.addEventListener("ar-status", (event: Event) => {
+          const status = (event as CustomEvent<{ status: string }>).detail.status;
+          if (status === "failed") showArError("failed");
+          if (status === "session-started") {
+            arButton.setAttribute("data-error", "false");
+            setStatus();
+          }
+        });
+
+        if (!viewer.canActivateAR) {
+          showArError("unavailable");
+          return;
+        }
+        arButton.setAttribute("data-error", "false");
+        setStatus();
+        setLoading(false);
       } catch (error) {
-        console.error("AR activation failed:", error);
-
-        // Show error state
-        arButton.disabled = false;
-        arButton.setAttribute("data-loading", "false");
-        arButton.setAttribute("data-error", "true");
-
-        // Reset error state after 2 seconds
-        setTimeout(() => {
-          arButton.setAttribute("data-error", "false");
-        }, 2000);
+        console.error("Could not prepare AR:", error);
+        showArError("failed");
       }
+    };
+
+    arButton.addEventListener("click", () => {
+      if (!arViewer?.canActivateAR) {
+        showArError("unavailable");
+        return;
+      }
+      arButton.setAttribute("data-error", "false");
+      setStatus();
+      setLoading(true);
+      // Keep this call synchronous inside the click handler: Scene Viewer and
+      // Quick Look require the original user gesture.
+      void arViewer.activateAR()
+        .catch((error) => {
+          console.error("AR activation failed:", error);
+          showArError("failed");
+        })
+        .finally(() => {
+          if (arViewer?.canActivateAR && arButton.dataset.error !== "true") setLoading(false);
+        });
+    });
+
+    const mobileAR = window.matchMedia("(max-width: 1023px)");
+    if (mobileAR.matches) void prepareAR();
+    mobileAR.addEventListener("change", (event) => {
+      if (event.matches) void prepareAR();
     });
   }
 

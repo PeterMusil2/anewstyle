@@ -7,6 +7,7 @@ import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import PatternStepper from "../product/PatternStepper.astro";
 import { fanStepper, fanStyle, mineralPatternCode } from "../../lib/pattern-fan";
+import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 import {
   useTranslations,
   type Lang,
@@ -158,8 +159,8 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       loading="lazy"
       ar
       ar-scale="auto"
-      ar-placement="wall"
-      ar-modes="webxr scene-viewer quick-look"
+      ar-placement={PANEL_AR_PLACEMENT}
+      ar-modes={panelArModes(true)}
       camera-controls
       touch-action="pan-y"
       interaction-prompt="auto"

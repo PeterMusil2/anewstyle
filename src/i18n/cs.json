@@ -18,6 +18,8 @@
   "header.btnMore": "Chci vědet více",
   "header.btnEshop": "E-shop",
   "header.btnAr": "Zobraz u mě doma",
+  "header.arUnavailable": "AR na tomto zařízení není podporované. 3D náhledy dekorů jsou dostupné níže.",
+  "header.arFailed": "AR se nepodařilo spustit. Zkuste to znovu na telefonu s podporou AR.",
   "header.videoLabel": "Video prezentace Anew Style",
   "header.gotoEshop": "Přejít na e-shop",
   "showcase.titlePart1": "Designové ",

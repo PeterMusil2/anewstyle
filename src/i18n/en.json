@@ -18,6 +18,8 @@
   "header.btnMore": "Show more",
   "header.btnEshop": "E-shop",
   "header.btnAr": "Show on wall",
+  "header.arUnavailable": "AR is not supported on this device. You can still use the 3D pattern previews below.",
+  "header.arFailed": "AR could not be started. Try again on an AR-capable phone.",
   "header.videoLabel": "Anew Style video presentation",
   "header.gotoEshop": "Go to e-shop",
   "showcase.titlePart1": "Luxury ",

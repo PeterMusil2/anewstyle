@@ -2,6 +2,7 @@
 import Picture from "../ui/Picture.astro";
 import Icon from "../icons/Icon.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
+import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 
 interface Props {
   id: number;
@@ -146,8 +147,8 @@ const extraFancyboxItems = [
         reveal="auto"
         ar
         ar-scale="auto"
-        ar-placement="wall"
-        ar-modes="webxr scene-viewer quick-look"
+        ar-placement={PANEL_AR_PLACEMENT}
+        ar-modes={panelArModes(false)}
         camera-controls
         touch-action="pan-y"
         interaction-prompt="auto"
@@ -179,8 +180,8 @@ const extraFancyboxItems = [
         reveal="auto"
         ar
         ar-scale="auto"
-        ar-placement="wall"
-        ar-modes="webxr scene-viewer quick-look"
+        ar-placement={PANEL_AR_PLACEMENT}
+        ar-modes={panelArModes(false)}
         camera-controls
         touch-action="pan-y"
         interaction-prompt="auto"

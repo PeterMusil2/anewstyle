@@ -10,6 +10,7 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
+import { PANEL_AR_PLACEMENT, panelArModes } from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
@@ -35,10 +36,27 @@ describe("hero video", () => {
     const header = readFileSync("src/components/header/Header.astro", "utf8");
     expect(header).toContain('id="headerArButton"');
     expect(header).toContain("{t('header.btnAr')}");
-    expect(header).toContain('data-texture-path={panelCategory === "mineral" ? "/images/patterns/mineral-2.png" : undefined}');
+    expect(header).toContain('const headerUsesRuntimeTexture = panelCategory === "mineral"');
+    expect(header).toContain('data-texture-path={headerUsesRuntimeTexture ? "/images/patterns/mineral-2.png" : undefined}');
     expect(header).toContain('text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl');
     expect(publicFile("/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb")).toBe(true);
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
+  });
+
+  test("panel AR uses wall placement and preserves runtime mineral textures", async () => {
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const productsComponent = await Bun.file("src/components/sections/Products.astro").text();
+
+    expect(PANEL_AR_PLACEMENT).toBe("wall");
+    expect(panelArModes(false)).toBe("webxr scene-viewer quick-look");
+    expect(panelArModes(true)).toBe("webxr quick-look");
+    expect(panelArModes(true)).not.toContain("scene-viewer");
+    expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
+    expect(header).toContain('data-ar-modes={panelArModes(headerUsesRuntimeTexture)}');
+    expect(header).toContain('void arViewer.activateAR()');
+    expect(header).toContain('status === "failed"');
+    expect(header).toContain('role="status"');
+    expect(productsComponent).toContain('ar-modes={panelArModes(true)}');
   });
 });
 
@@ -258,7 +276,8 @@ describe("i18n", () => {
     expect(header).toContain('aria-label={t("nav.home")}');
     expect(header).toContain('class="hero-home-link absolute z-10 grid size-11');
     expect(header).toContain('id="headerMoreButton" class="w-64"');
-    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-64/);
+    expect(header).toContain('<div class="w-64 lg:hidden!">');
+    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-full/);
     expect(nav).not.toContain('<Icon name="home"');
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-home-link {");

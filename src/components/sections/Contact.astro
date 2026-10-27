@@ -22,12 +22,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
   <div class="container-page flex flex-col gap-12">
-      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("nav.contact")} title={t("contact.title")}>
+      <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("nav.contact")} title={t("contact.title")}>
         <p>
           <span>{t("contact.descPart1")}</span>
           <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
         </p>
-        <div class="flex items-center gap-3 pt-2">
+        <div class="flex items-center justify-center gap-3 pt-2">
           <span class="text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("contact.followUs")}</span>
           <a
             href="https://www.facebook.com/profile.php?id=100088855596654"

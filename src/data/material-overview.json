@@ -1,4 +1,32 @@
 {
+  "materialComposition": {
+    "imageAlt": {
+      "cs": "Porovnání skladby transparentní kamenné dýhy se čtyřmi vrstvami a hladkého minerálního panelu.",
+      "en": "Comparison of transparent stone veneer construction with four layers and a smooth mineral panel."
+    }
+  },
+  "sharedConstruction": {
+    "imageHeading": {
+      "cs": "Konstrukce svítícího panelu Anew Style",
+      "en": "Anew Style illuminated panel construction"
+    },
+    "description": {
+      "cs": "Svítící kamenné panely AnewStyle jsou kombinací zajímavých technologií. Spojení tenké vrstvy přírodního kamene nebo transparentní, minerální desky s bočním nasvícením světlovodivé desky s rovnoměrným celoplošným rozptylem světla. Tento způsob nasvícení umožňuje v případě potřeby snadnou výměnu zdroje světla.",
+      "en": "AnewStyle illuminated panels combine several carefully selected technologies. A thin layer of natural stone or a transparent mineral sheet is paired with edge lighting of a light guide plate, which distributes light evenly across the surface. This lighting method also makes it easy to replace the light source when needed."
+    },
+    "imageAlt": {
+      "cs": "Konstrukce svítícího panelu s alternativními čelními vrstvami: kamenná dýha 1A a minerální panel 1B, dále vrstvy 2 až 6.",
+      "en": "Illuminated panel construction with alternative front layers: stone veneer 1A and mineral panel 1B, followed by layers 2 to 6."
+    },
+    "stoneLayer": {
+      "cs": "Transparentní kamenná dýha",
+      "en": "Transparent stone veneer"
+    },
+    "mineralLayer": {
+      "cs": "Transparentní minerální panel",
+      "en": "Transparent mineral panel"
+    }
+  },
   "stone": {
     "technology": {
       "cs": "Lehká, pružná a transparentní dýha z přírodního kamene. Vrstva kamene má tloušťku 2–3 mm.",

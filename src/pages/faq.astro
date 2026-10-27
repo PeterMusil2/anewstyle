@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Faq from "../components/sections/Faq.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/utils";
+import { faqPageStructuredData } from "../lib/structured-data";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const pagePath = lang === "cs" ? "/faq/" : "/en/faq/";
+const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
+---
+
+<Layout
+  title={t("meta.titleFaq")}
+  description={t("meta.descriptionFaq")}
+  metaImageUrl="/images/meta/meta-facebook.webp"
+  pageType="WebPage"
+  breadcrumbs={[
+    { name: lang === "cs" ? "Domů" : "Home", url: lang === "cs" ? "/" : "/en/" },
+    { name: t("faq.heading"), url: pagePath },
+  ]}
+  additionalStructuredData={faqPageStructuredData(lang, pageUrl)}
+>
+  <main id="main" class="pt-(--nav-height)">
+    <Faq id="faq" lang={lang} />
+  </main>
+</Layout>

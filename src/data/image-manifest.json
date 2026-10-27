@@ -1135,6 +1135,46 @@
    ]
   ]
  },
+ "/images/technologies/konstrukce_materialu_panelu.png": {
+  "width": 2530,
+  "height": 905,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_materialu_panelu-1280.webp",
+    1280
+   ]
+  ]
+ },
  "/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png": {
   "width": 1344,
   "height": 1170,
@@ -1211,6 +1251,86 @@
    ],
    [
     "/_img/images/technologies/konstrukce_sviticiho_panelu-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/technologies/konstrukce_sviticiho_panelu.png": {
+  "width": 1053,
+  "height": 607,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1053.avif",
+    1053
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1053.webp",
+    1053
+   ]
+  ]
+ },
+ "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png": {
+  "width": 2530,
+  "height": 905,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral-1280.webp",
     1280
    ]
   ]

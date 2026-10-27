@@ -41,7 +41,7 @@ const questions = faqItems(lang)
 <section id={id} aria-labelledby={`${id}-title`} class="section-y bg-ink">
   <div class="container-page grid gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-24">
     <div class="flex flex-col gap-8 lg:sticky lg:top-[calc(var(--nav-height)+2rem)] lg:self-start">
-      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("faq.title")} title={t("faq.heading")}>
+      <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("faq.title")} title={t("faq.heading")}>
         <p class="text-fg-muted">{t("faq.desc" as TranslationKey)}</p>
       </SectionHeader>
       <Button href={`${pagePath}#contact`} variant="outline" class="self-start">

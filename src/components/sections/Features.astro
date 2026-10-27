@@ -71,32 +71,40 @@ const formattedDescription = (key: TranslationKey) =>
         features.map((feature) => (
           <li
             id={feature.id}
-            class="reveal flex scroll-mt-[calc(var(--nav-height)+1.5rem)] flex-col gap-5 border border-line bg-ink-900 p-7 transition-colors duration-300 target:border-gold hover:border-line-strong"
+            class:list={[
+              "reveal scroll-mt-[calc(var(--nav-height)+1.5rem)] border border-line bg-ink-900 p-5 transition-colors duration-300 target:border-gold hover:border-line-strong sm:p-7",
+              feature.palette && "feature-color-palette",
+            ]}
           >
-            {feature.palette ? (
-              <Palette lang={lang} />
-            ) : feature.icon?.endsWith(".png") ? (
-              <img src={`/images/symbols/${feature.icon}`} alt="" width="48" height="48" loading="lazy" class="size-12 object-contain" />
-            ) : (
-              <span
-                class="block size-12 bg-gold mask-contain mask-center mask-no-repeat"
-                style={`mask-image: url(/images/symbols/${feature.icon}); -webkit-mask-image: url(/images/symbols/${feature.icon});`}
-                aria-hidden="true"
-              />
-            )}
-            <h3 class="text-base font-black tracking-[0.1em] uppercase">
-              {showBoth && feature.mineralLabel ? (
-                <span class="grid gap-2">
-                  <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentStone")}</span>{label(feature.label)}</span>
-                  <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentMineral")}</span>{label(feature.mineralLabel)}</span>
-                </span>
-              ) : panelCategory ? (
-                panelCategory === "mineral" && feature.mineralLabel ? label(feature.mineralLabel) : label(feature.label)
-              ) : feature.mineralLabel ? (
-                <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
-              ) : label(feature.label)}
-            </h3>
-            <div class="text-[0.9375rem] leading-relaxed text-fg-muted">
+            <details class="group/feature">
+              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-4 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
+                {feature.palette ? (
+                  <span class="grid size-12 shrink-0 place-items-center border border-line text-sm font-bold tracking-caps text-gold" aria-hidden="true">RAL</span>
+                ) : feature.icon?.endsWith(".png") ? (
+                  <img src={`/images/symbols/${feature.icon}`} alt="" width="48" height="48" loading="lazy" class="size-12 shrink-0 object-contain" />
+                ) : (
+                  <span
+                    class="block size-12 shrink-0 bg-gold mask-contain mask-center mask-no-repeat"
+                    style={`mask-image: url(/images/symbols/${feature.icon}); -webkit-mask-image: url(/images/symbols/${feature.icon});`}
+                    aria-hidden="true"
+                  />
+                )}
+                <h3 class="min-w-0 flex-1 text-base font-black tracking-[0.1em] uppercase">
+                  {showBoth && feature.mineralLabel ? (
+                    <span class="grid gap-2">
+                      <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentStone")}</span>{label(feature.label)}</span>
+                      <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentMineral")}</span>{label(feature.mineralLabel)}</span>
+                    </span>
+                  ) : panelCategory ? (
+                    panelCategory === "mineral" && feature.mineralLabel ? label(feature.mineralLabel) : label(feature.label)
+                  ) : feature.mineralLabel ? (
+                    <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
+                  ) : label(feature.label)}
+                </h3>
+                <span class="feature-disclosure-indicator grid size-8 shrink-0 place-items-center border border-line text-lg leading-none text-gold" aria-hidden="true" />
+              </summary>
+              <div class="mt-5 border-t border-line pt-5 text-[0.9375rem] leading-relaxed text-fg-muted">
+                {feature.palette && <Palette lang={lang} />}
               {showBoth && feature.combinedDesc ? (
                 <span set:html={formattedDescription(feature.combinedDesc)} />
               ) : showBoth && feature.mineralDesc ? (
@@ -117,10 +125,58 @@ const formattedDescription = (key: TranslationKey) =>
                 </>
               ) : feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}
               {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type={showBoth ? undefined : "stone"} class="mt-2 block text-fg-subtle">{showBoth && <span class="font-semibold text-fg">{t("home.equipmentStone")}:</span>} {t(feature.note)}</em>}
-            </div>
+              </div>
+            </details>
           </li>
         ))
       }
     </ul>
   </div>
 </section>
+
+<style>
+  .feature-color-palette {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+  }
+
+  @media (width >= 40rem) {
+    .feature-color-palette {
+      width: calc((100% - 1.25rem) / 2);
+    }
+  }
+
+  @media (width >= 64rem) {
+    .feature-color-palette {
+      width: calc((100% - 2.5rem) / 3);
+    }
+  }
+
+  @media (width >= 80rem) {
+    .feature-color-palette {
+      width: calc((100% - 3.75rem) / 4);
+    }
+  }
+
+  .feature-disclosure-indicator::before {
+    content: "+";
+  }
+
+  details[open] > summary .feature-disclosure-indicator::before {
+    content: "−";
+  }
+</style>
+
+<script>
+  const openAnchoredFeature = () => {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    const feature = document.getElementById(id);
+    const details = feature?.querySelector("details");
+    if (details instanceof HTMLDetailsElement) details.open = true;
+  };
+
+  openAnchoredFeature();
+  window.addEventListener("hashchange", openAnchoredFeature);
+</script>

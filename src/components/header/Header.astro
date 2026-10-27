@@ -1,8 +1,8 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
+import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
 import {
-  getPanelPagePath,
   useTranslations,
   type Lang,
   type PanelCategory,
@@ -100,37 +100,19 @@ const homeHref = lang === "cs" ? "/" : "/en/";
     </a>
   )}
 
-  <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
+  <div class="container-wide flex flex-col items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center lg:pb-28">
     <h1 class:list={[
       "hero-title max-w-4xl font-display leading-[0.92] font-black tracking-[0.08em] uppercase",
       pageTitle ? "text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl" : "text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]",
     ]}>
       <span class:list={["hero-title__label", { "hero-title__label--home": home }]}>{pageTitle ?? "ANEW STYLE"}</span>
     </h1>
-    <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
+    <p class="max-w-xl text-center text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
       {pageDescription ?? t('header.title')}
     </p>
-    {home ? (
-      <nav aria-label={t("price.categoryLabel")} class="grid w-full max-w-3xl grid-cols-1 gap-3 pt-2 sm:grid-cols-2 sm:gap-4">
-        <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("stone", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
-            <span class="home-category-label">{t("price.categoryStone")}</span>
-          </Button>
-          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
-            {t("header.stoneMaterial")}
-          </p>
-        </div>
-        <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("mineral", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
-            <span class="home-category-label">{t("price.categoryMineral")}</span>
-          </Button>
-          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
-            {t("header.mineralMaterial")}
-          </p>
-        </div>
-      </nav>
-    ) : (
-      <div class="flex flex-wrap items-center gap-4 pt-2">
+    <PanelCategorySwitch lang={lang} activeCategory={panelCategory} />
+    {!home && (
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
         <Button href={panelCategory ? "#products" : "#about"} id="headerMoreButton" class="w-64">
           {t('header.btnMore')}
         </Button>

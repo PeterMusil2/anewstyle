@@ -13,7 +13,7 @@ interface Props {
   class?: string;
 }
 
-const { eyebrow, title, as: Tag = "h2", layout = "split", id, class: className } =
+const { eyebrow, title, as: Tag = "h2", layout = "center", id, class: className } =
   Astro.props as Props;
 const hasIntro = Astro.slots.has("default");
 ---

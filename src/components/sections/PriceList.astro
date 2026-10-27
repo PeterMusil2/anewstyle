@@ -93,15 +93,15 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
 <section id={id} aria-labelledby={`${id}-title`} class="pricing bg-ink-850">
   <div class="price-catalog">
     <div class="container-page flex flex-col gap-4 py-5 lg:gap-5 lg:py-7">
-    <header class="reveal grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end lg:gap-x-16 short:gap-2">
-      <div class="flex flex-col gap-3 sm:gap-4 short:gap-2.5">
+    <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2">
+      <div class="flex flex-col items-center gap-3 text-center sm:gap-4 short:gap-2.5">
         <p class="eyebrow">{t("price.eyebrow")}</p>
         <!-- Same title style as every SectionHeader on the site. -->
         <h2 id={`${id}-title`} class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]">
           {t("price.title")}
         </h2>
       </div>
-      <div class="flex flex-col gap-1 lg:max-w-2xl lg:justify-self-end lg:text-right tiny:hidden">
+      <div class="flex flex-col items-center gap-1 text-center lg:max-w-2xl tiny:hidden">
         <p class="text-[0.9375rem] text-fg-soft lg:text-base">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.desc1")}</p>
       </div>
     </header>

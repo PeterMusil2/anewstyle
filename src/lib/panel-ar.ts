@@ -7,7 +7,16 @@ export const PANEL_AR_PLACEMENT = "wall";
  * use WebXR on Android and auto-generated Quick Look USDZ on iOS.
  */
 export function panelArModes(runtimeTexture: boolean): string {
-  return runtimeTexture ? "webxr quick-look" : "webxr scene-viewer quick-look";
+  // On some Android Chrome builds WebXR is advertised but fails when the
+  // session starts. model-viewer's asynchronous fallback then loses the
+  // original tap, so Scene Viewer must be selected first for baked models.
+  return runtimeTexture ? "webxr quick-look" : "scene-viewer webxr quick-look";
+}
+
+export function mineralArModelPath(texturePath: string): string {
+  const match = texturePath.match(/\/mineral-(\d+)\.[a-z0-9]+$/i);
+  if (!match) throw new Error(`Unsupported mineral texture path: ${texturePath}`);
+  return `/3d/products/Mineral_${match[1].padStart(2, "0")}_3D_vertical.glb`;
 }
 
 type Wait = (milliseconds: number) => Promise<void>;

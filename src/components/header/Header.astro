@@ -1,7 +1,7 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
-import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
+import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 import {
   getPanelPagePath,
   useTranslations,
@@ -20,7 +20,10 @@ interface Props {
 const { lang = 'cs', pageTitle, pageDescription, home = false, panelCategory } = Astro.props;
 const t = useTranslations(lang);
 const homeHref = lang === "cs" ? "/" : "/en/";
-const headerUsesRuntimeTexture = panelCategory === "mineral";
+const headerMineralTexture = "/images/patterns/mineral-2.png";
+const headerModelPath = panelCategory === "mineral"
+  ? mineralArModelPath(headerMineralTexture)
+  : "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb";
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
@@ -151,9 +154,8 @@ const headerUsesRuntimeTexture = panelCategory === "mineral";
           <Button
             variant="outline"
             id="headerArButton"
-            data-model-path="/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb"
-            data-texture-path={headerUsesRuntimeTexture ? "/images/patterns/mineral-2.png" : undefined}
-            data-ar-modes={panelArModes(headerUsesRuntimeTexture)}
+            data-model-path={headerModelPath}
+            data-ar-modes={panelArModes(false)}
             data-ar-placement={PANEL_AR_PLACEMENT}
             data-loading="true"
             data-error="false"

@@ -10,11 +10,30 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
-import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
+import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
 const publicFile = (path: string) => existsSync(`public${path}`);
+
+const readGlb = (path: string) => {
+  const bytes = readFileSync(path);
+  const jsonLength = bytes.readUInt32LE(12);
+  const json = JSON.parse(bytes.subarray(20, 20 + jsonLength).toString("utf8").trimEnd());
+  const binOffset = 20 + jsonLength + 8;
+  return { bytes, json, binOffset };
+};
+
+const embeddedGlbImages = (path: string) => {
+  const { bytes, json, binOffset } = readGlb(path);
+  return json.images.map((image: { bufferView: number; mimeType: string }) => {
+    const view = json.bufferViews[image.bufferView];
+    return {
+      mimeType: image.mimeType,
+      signature: [...bytes.subarray(binOffset + view.byteOffset, binOffset + view.byteOffset + 8)],
+    };
+  });
+};
 
 describe("hero video", () => {
   test("home keeps the original loop while the stone branch uses the supplied loop", () => {
@@ -36,28 +55,56 @@ describe("hero video", () => {
     const header = readFileSync("src/components/header/Header.astro", "utf8");
     expect(header).toContain('id="headerArButton"');
     expect(header).toContain("{t('header.btnAr')}");
-    expect(header).toContain('const headerUsesRuntimeTexture = panelCategory === "mineral"');
-    expect(header).toContain('data-texture-path={headerUsesRuntimeTexture ? "/images/patterns/mineral-2.png" : undefined}');
+    expect(header).toContain('mineralArModelPath(headerMineralTexture)');
     expect(header).toContain('text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl');
     expect(publicFile("/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb")).toBe(true);
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
   });
 
-  test("panel AR uses wall placement and preserves runtime mineral textures", async () => {
+  test("panel AR uses wall placement and Android-compatible baked mineral models", async () => {
     const header = await Bun.file("src/components/header/Header.astro").text();
     const productsComponent = await Bun.file("src/components/sections/Products.astro").text();
 
     expect(PANEL_AR_PLACEMENT).toBe("wall");
-    expect(panelArModes(false)).toBe("webxr scene-viewer quick-look");
+    expect(panelArModes(false)).toBe("scene-viewer webxr quick-look");
     expect(panelArModes(true)).toBe("webxr quick-look");
     expect(panelArModes(true)).not.toContain("scene-viewer");
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
-    expect(header).toContain('data-ar-modes={panelArModes(headerUsesRuntimeTexture)}');
+    expect(header).toContain('data-ar-modes={panelArModes(false)}');
     expect(header).toContain('await waitForArAvailability(');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
-    expect(productsComponent).toContain('ar-modes={panelArModes(true)}');
+    expect(productsComponent).toContain('ar-modes={panelArModes(false)}');
+    expect(productsComponent).toContain('data-ar-model={pattern.arModel}');
+    const sourceModel = readGlb("public/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
+    const sourceImageViews = new Set<number>(
+      sourceModel.json.images.map((image: { bufferView: number }) => image.bufferView),
+    );
+    for (const pattern of products.mineral) {
+      const modelPath = `public${mineralArModelPath(pattern.image)}`;
+      expect(existsSync(modelPath), pattern.image).toBe(true);
+      const images = embeddedGlbImages(modelPath);
+      expect(images.length).toBeGreaterThan(0);
+      for (const image of images) {
+        expect(image.mimeType).toBe("image/png");
+        expect(image.signature).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+      }
+      const bakedModel = readGlb(modelPath);
+      sourceModel.json.bufferViews.forEach((sourceView: { byteOffset: number; byteLength: number }, index: number) => {
+        if (sourceImageViews.has(index)) return;
+        const bakedView = bakedModel.json.bufferViews[index];
+        const sourceBytes = sourceModel.bytes.subarray(
+          sourceModel.binOffset + sourceView.byteOffset,
+          sourceModel.binOffset + sourceView.byteOffset + sourceView.byteLength,
+        );
+        const bakedBytes = bakedModel.bytes.subarray(
+          bakedModel.binOffset + bakedView.byteOffset,
+          bakedModel.binOffset + bakedView.byteOffset + bakedView.byteLength,
+        );
+        expect(bakedBytes.equals(sourceBytes), `${pattern.image} bufferView ${index}`).toBe(true);
+      });
+    }
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

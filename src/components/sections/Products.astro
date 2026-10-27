@@ -7,7 +7,7 @@ import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
 import PatternStepper from "../product/PatternStepper.astro";
 import { fanStepper, fanStyle, mineralPatternCode } from "../../lib/pattern-fan";
-import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
+import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
 import {
   useTranslations,
   type Lang,
@@ -36,6 +36,7 @@ const mineralPatterns = productsData.mineral.map((pattern, index) => ({
   code: mineralPatternCode(pattern.code, index),
   title: pattern.title?.trim() ?? "",
   label: [mineralPatternCode(pattern.code, index), pattern.title?.trim()].filter(Boolean).join(" · "),
+  arModel: mineralArModelPath(pattern.image),
 }));
 
 // Touch stepper start position: the middle card is selected in the HTML, so
@@ -107,7 +108,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
               <button
                 type="button"
                 data-mineral-pattern
-                data-pattern-source={pattern.src}
+                data-ar-model={pattern.arModel}
                 data-pattern-title={pattern.label}
                 class="product-fan-card group relative block aspect-[3/4] w-full cursor-pointer overflow-hidden border text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
                 aria-label={`${pattern.label} — ${t("products.showIn3d")}`}
@@ -160,7 +161,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       ar
       ar-scale="auto"
       ar-placement={PANEL_AR_PLACEMENT}
-      ar-modes={panelArModes(true)}
+      ar-modes={panelArModes(false)}
       camera-controls
       touch-action="pan-y"
       interaction-prompt="auto"
@@ -228,7 +229,6 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   const mineralViewer = document.querySelector<HTMLElement & Record<string, any>>("#mineral-ar-viewer");
   const mineralTitle = document.querySelector<HTMLElement>("#mineral-ar-title");
   const mineralStatus = document.querySelector<HTMLElement>("#mineral-ar-status");
-  const textureCache = new Map<string, any>();
   let textureRequest = 0;
 
   const waitForMineralModel = (): Promise<void> => {
@@ -252,8 +252,8 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   const openMineralPattern = async (button: HTMLButtonElement) => {
     if (!mineralDialog || !mineralViewer || !mineralTitle || !mineralStatus) return;
     const request = ++textureRequest;
-    const source = button.dataset.patternSource;
-    if (!source) return;
+    const arModel = button.dataset.arModel;
+    if (!arModel) return;
 
     mineralTitle.textContent = button.dataset.patternTitle ?? "";
     mineralStatus.textContent = mineralStatus.dataset.loading ?? mineralStatus.textContent ?? "";
@@ -262,29 +262,9 @@ const mineralStepper = fanStepper(mineralPatterns.length);
     try {
       await import("@google/model-viewer");
       await customElements.whenDefined("model-viewer");
-      if (!mineralViewer.getAttribute("src")) {
-        mineralViewer.src = "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb";
-      }
+      if (mineralViewer.getAttribute("src") !== arModel) mineralViewer.src = arModel;
       await waitForMineralModel();
       if (request !== textureRequest) return;
-
-      let texture = textureCache.get(source);
-      if (!texture) {
-        texture = await mineralViewer.createTexture(source);
-        if (!texture) throw new Error("Mineral texture could not be loaded.");
-        textureCache.set(source, texture);
-      }
-
-      const materials = mineralViewer.model?.materials.filter(
-        (item: any) => item.pbrMetallicRoughness.baseColorTexture,
-      ) ?? [];
-      if (!materials.length) {
-        throw new Error("The model does not expose a textured panel material.");
-      }
-      if (request !== textureRequest) return;
-      materials.forEach((material: any) => {
-        material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-      });
       mineralStatus.textContent = mineralStatus.dataset.ready ?? "";
     } catch (error) {
       console.error("Could not prepare the mineral AR preview:", error);

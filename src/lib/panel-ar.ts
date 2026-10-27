@@ -29,12 +29,14 @@ export function androidSceneViewerIntent(modelPath: string, pageUrl: string): st
   const fallbackUrl = new URL(pageUrl);
   fallbackUrl.hash = "model-viewer-no-ar-fallback";
   const parameters = new URLSearchParams({
-    mode: "ar_preferred",
+    mode: "ar_only",
     disable_occlusion: "true",
     enable_vertical_placement: "true",
   });
   parameters.set("file", modelUrl.toString());
-  return `intent://arvr.google.com/scene-viewer/1.2?${parameters.toString()}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(fallbackUrl.toString())};end;`;
+  // Target ARCore directly. The Google Search app is the wider fallback host,
+  // but it can crash independently even when Google Play Services for AR work.
+  return `intent://arvr.google.com/scene-viewer/1.1?${parameters.toString()}#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(fallbackUrl.toString())};end;`;
 }
 
 type Wait = (milliseconds: number) => Promise<void>;

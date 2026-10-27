@@ -124,11 +124,12 @@ describe("hero video", () => {
       "/3d/products/Mineral_02_3D_vertical.glb",
       "https://preview.example/svitici-mineralni-panely/?v=test",
     );
-    expect(intent).toStartWith("intent://arvr.google.com/scene-viewer/1.2?");
-    expect(intent).toContain("mode=ar_preferred");
+    expect(intent).toStartWith("intent://arvr.google.com/scene-viewer/1.1?");
+    expect(intent).toContain("mode=ar_only");
     expect(intent).toContain("enable_vertical_placement=true");
     expect(intent).toContain(encodeURIComponent("https://preview.example/3d/products/Mineral_02_3D_vertical.glb"));
-    expect(intent).toContain("package=com.google.android.googlequicksearchbox");
+    expect(intent).toContain("package=com.google.ar.core");
+    expect(intent).not.toContain("com.google.android.googlequicksearchbox");
     expect(intent).toContain("browser_fallback_url=");
   });
 

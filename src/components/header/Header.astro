@@ -187,7 +187,7 @@ const headerUsesRuntimeTexture = panelCategory === "mineral";
 </header>
 
 <script>
-  import { PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
+  import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../../lib/panel-ar";
 
   type ARViewer = HTMLElement & {
     activateAR: () => Promise<void>;
@@ -384,7 +384,11 @@ const headerUsesRuntimeTexture = panelCategory === "mineral";
           }
         });
 
-        if (!viewer.canActivateAR) {
+        const arAvailable = await waitForArAvailability(
+          () => viewer.canActivateAR,
+          (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds)),
+        );
+        if (!arAvailable) {
           showArError("unavailable");
           return;
         }

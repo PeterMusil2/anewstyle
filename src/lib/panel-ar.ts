@@ -9,3 +9,22 @@ export const PANEL_AR_PLACEMENT = "wall";
 export function panelArModes(runtimeTexture: boolean): string {
   return runtimeTexture ? "webxr quick-look" : "webxr scene-viewer quick-look";
 }
+
+type Wait = (milliseconds: number) => Promise<void>;
+
+/**
+ * model-viewer selects its AR mode asynchronously after updateComplete.
+ * Poll briefly so a transient false does not permanently disable the CTA.
+ */
+export async function waitForArAvailability(
+  canActivate: () => boolean,
+  wait: Wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
+  attempts = 40,
+  intervalMs = 100,
+): Promise<boolean> {
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    if (canActivate()) return true;
+    if (attempt < attempts - 1) await wait(intervalMs);
+  }
+  return false;
+}

@@ -10,7 +10,7 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
-import { PANEL_AR_PLACEMENT, panelArModes } from "../src/lib/panel-ar";
+import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
@@ -53,10 +53,41 @@ describe("hero video", () => {
     expect(panelArModes(true)).not.toContain("scene-viewer");
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
     expect(header).toContain('data-ar-modes={panelArModes(headerUsesRuntimeTexture)}');
+    expect(header).toContain('await waitForArAvailability(');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes(true)}');
+  });
+
+  test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {
+    let checks = 0;
+    let waits = 0;
+    const available = await waitForArAvailability(
+      () => ++checks === 3,
+      async () => { waits += 1; },
+      5,
+      0,
+    );
+
+    expect(available).toBe(true);
+    expect(checks).toBe(3);
+    expect(waits).toBe(2);
+  });
+
+  test("panel AR capability detection stops after the configured timeout", async () => {
+    let checks = 0;
+    let waits = 0;
+    const available = await waitForArAvailability(
+      () => { checks += 1; return false; },
+      async () => { waits += 1; },
+      4,
+      0,
+    );
+
+    expect(available).toBe(false);
+    expect(checks).toBe(4);
+    expect(waits).toBe(3);
   });
 });
 

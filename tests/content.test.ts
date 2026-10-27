@@ -10,7 +10,14 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
-import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
+import {
+  androidSceneViewerIntent,
+  isAndroidUserAgent,
+  mineralArModelPath,
+  PANEL_AR_PLACEMENT,
+  panelArModes,
+  waitForArAvailability,
+} from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
@@ -72,11 +79,13 @@ describe("hero video", () => {
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
     expect(header).toContain('data-ar-modes={panelArModes(false)}');
     expect(header).toContain('await waitForArAvailability(');
+    expect(header).toContain('window.location.href = androidSceneViewerIntent(modelPath, window.location.href)');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes(false)}');
     expect(productsComponent).toContain('data-ar-model={pattern.arModel}');
+    expect(productsComponent).toContain('event.stopPropagation()');
     const sourceModel = readGlb("public/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
     const sourceImageViews = new Set<number>(
       sourceModel.json.images.map((image: { bufferView: number }) => image.bufferView),
@@ -105,6 +114,22 @@ describe("hero video", () => {
         expect(bakedBytes.equals(sourceBytes), `${pattern.image} bufferView ${index}`).toBe(true);
       });
     }
+  });
+
+  test("Android Chrome launches Scene Viewer directly from the original tap", () => {
+    expect(isAndroidUserAgent("Mozilla/5.0 (Linux; Android 16; SM-S942B) AppleWebKit Chrome/144 Mobile")).toBe(true);
+    expect(isAndroidUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X)")).toBe(false);
+
+    const intent = androidSceneViewerIntent(
+      "/3d/products/Mineral_02_3D_vertical.glb",
+      "https://preview.example/svitici-mineralni-panely/?v=test",
+    );
+    expect(intent).toStartWith("intent://arvr.google.com/scene-viewer/1.2?");
+    expect(intent).toContain("mode=ar_preferred");
+    expect(intent).toContain("enable_vertical_placement=true");
+    expect(intent).toContain(encodeURIComponent("https://preview.example/3d/products/Mineral_02_3D_vertical.glb"));
+    expect(intent).toContain("package=com.google.android.googlequicksearchbox");
+    expect(intent).toContain("browser_fallback_url=");
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

@@ -19,6 +19,24 @@ export function mineralArModelPath(texturePath: string): string {
   return `/3d/products/Mineral_${match[1].padStart(2, "0")}_3D_vertical.glb`;
 }
 
+export function isAndroidUserAgent(userAgent: string): boolean {
+  return /Android/i.test(userAgent);
+}
+
+export function androidSceneViewerIntent(modelPath: string, pageUrl: string): string {
+  const modelUrl = new URL(modelPath, pageUrl);
+  modelUrl.hash = "";
+  const fallbackUrl = new URL(pageUrl);
+  fallbackUrl.hash = "model-viewer-no-ar-fallback";
+  const parameters = new URLSearchParams({
+    mode: "ar_preferred",
+    disable_occlusion: "true",
+    enable_vertical_placement: "true",
+  });
+  parameters.set("file", modelUrl.toString());
+  return `intent://arvr.google.com/scene-viewer/1.2?${parameters.toString()}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(fallbackUrl.toString())};end;`;
+}
+
 type Wait = (milliseconds: number) => Promise<void>;
 
 /**

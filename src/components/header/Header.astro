@@ -189,7 +189,13 @@ const headerModelPath = panelCategory === "mineral"
 </header>
 
 <script>
-  import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../../lib/panel-ar";
+  import {
+    androidSceneViewerIntent,
+    isAndroidUserAgent,
+    PANEL_AR_PLACEMENT,
+    panelArModes,
+    waitForArAvailability,
+  } from "../../lib/panel-ar";
 
   type ARViewer = HTMLElement & {
     activateAR: () => Promise<void>;
@@ -328,6 +334,7 @@ const headerModelPath = panelCategory === "mineral"
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
+    const useAndroidSceneViewer = isAndroidUserAgent(navigator.userAgent);
     const setStatus = (message = "") => {
       if (!arStatus) return;
       arStatus.textContent = message;
@@ -404,6 +411,17 @@ const headerModelPath = panelCategory === "mineral"
     };
 
     arButton.addEventListener("click", () => {
+      if (useAndroidSceneViewer) {
+        const modelPath = arButton.dataset.modelPath;
+        if (!modelPath) {
+          showArError("failed");
+          return;
+        }
+        arButton.setAttribute("data-error", "false");
+        setStatus();
+        window.location.href = androidSceneViewerIntent(modelPath, window.location.href);
+        return;
+      }
       if (!arViewer?.canActivateAR) {
         showArError("unavailable");
         return;
@@ -424,9 +442,14 @@ const headerModelPath = panelCategory === "mineral"
     });
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
-    if (mobileAR.matches) void prepareAR();
+    if (mobileAR.matches) {
+      if (useAndroidSceneViewer) setLoading(false);
+      else void prepareAR();
+    }
     mobileAR.addEventListener("change", (event) => {
-      if (event.matches) void prepareAR();
+      if (!event.matches) return;
+      if (useAndroidSceneViewer) setLoading(false);
+      else void prepareAR();
     });
   }
 

@@ -361,7 +361,7 @@ const headerModelPath = panelCategory === "mineral"
         viewer.setAttribute("loading", "eager");
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
         // surface; a 1×1 hidden renderer can fail to start on Android Chrome.
-        viewer.style.cssText = "position:fixed;inset:0;width:100vw;height:100svh;opacity:0;pointer-events:none;z-index:-1";
+        viewer.style.cssText = "position:fixed;inset:0;width:100vw;height:100svh;pointer-events:none;z-index:-1";
         document.body.appendChild(viewer);
         arViewer = viewer;
         await viewer.updateComplete;

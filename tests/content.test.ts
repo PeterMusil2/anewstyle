@@ -73,6 +73,7 @@ describe("hero video", () => {
     expect(header).toContain('data-ar-modes={panelArModes()}');
     expect(header).toContain('await waitForArAvailability(');
     expect(header).toContain('width:100vw;height:100svh');
+    expect(header).not.toContain('height:100svh;opacity:0');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');

@@ -10,14 +10,7 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
-import {
-  androidSceneViewerIntent,
-  isAndroidUserAgent,
-  mineralArModelPath,
-  PANEL_AR_PLACEMENT,
-  panelArModes,
-  waitForArAvailability,
-} from "../src/lib/panel-ar";
+import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
@@ -71,21 +64,22 @@ describe("hero video", () => {
   test("panel AR uses wall placement and Android-compatible baked mineral models", async () => {
     const header = await Bun.file("src/components/header/Header.astro").text();
     const productsComponent = await Bun.file("src/components/sections/Products.astro").text();
+    const cardComponent = await Bun.file("src/components/product/Card.astro").text();
 
     expect(PANEL_AR_PLACEMENT).toBe("wall");
-    expect(panelArModes(false)).toBe("scene-viewer webxr quick-look");
-    expect(panelArModes(true)).toBe("webxr quick-look");
-    expect(panelArModes(true)).not.toContain("scene-viewer");
+    expect(panelArModes()).toBe("webxr quick-look");
+    expect(panelArModes()).not.toContain("scene-viewer");
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
-    expect(header).toContain('data-ar-modes={panelArModes(false)}');
+    expect(header).toContain('data-ar-modes={panelArModes()}');
     expect(header).toContain('await waitForArAvailability(');
-    expect(header).toContain('window.location.href = androidSceneViewerIntent(modelPath, window.location.href)');
+    expect(header).toContain('width:100vw;height:100svh');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
-    expect(productsComponent).toContain('ar-modes={panelArModes(false)}');
+    expect(productsComponent).toContain('ar-modes={panelArModes()}');
+    expect(cardComponent).toContain('ar-modes={panelArModes()}');
+    expect(cardComponent).not.toContain("scene-viewer");
     expect(productsComponent).toContain('data-ar-model={pattern.arModel}');
-    expect(productsComponent).toContain('event.stopPropagation()');
     const sourceModel = readGlb("public/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
     const sourceImageViews = new Set<number>(
       sourceModel.json.images.map((image: { bufferView: number }) => image.bufferView),
@@ -114,23 +108,6 @@ describe("hero video", () => {
         expect(bakedBytes.equals(sourceBytes), `${pattern.image} bufferView ${index}`).toBe(true);
       });
     }
-  });
-
-  test("Android Chrome launches Scene Viewer directly from the original tap", () => {
-    expect(isAndroidUserAgent("Mozilla/5.0 (Linux; Android 16; SM-S942B) AppleWebKit Chrome/144 Mobile")).toBe(true);
-    expect(isAndroidUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X)")).toBe(false);
-
-    const intent = androidSceneViewerIntent(
-      "/3d/products/Mineral_02_3D_vertical.glb",
-      "https://preview.example/svitici-mineralni-panely/?v=test",
-    );
-    expect(intent).toStartWith("intent://arvr.google.com/scene-viewer/1.1?");
-    expect(intent).toContain("mode=ar_only");
-    expect(intent).toContain("enable_vertical_placement=true");
-    expect(intent).toContain(encodeURIComponent("https://preview.example/3d/products/Mineral_02_3D_vertical.glb"));
-    expect(intent).toContain("package=com.google.ar.core");
-    expect(intent).not.toContain("com.google.android.googlequicksearchbox");
-    expect(intent).toContain("browser_fallback_url=");
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

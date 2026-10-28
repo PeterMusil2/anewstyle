@@ -155,7 +155,7 @@ const headerModelPath = panelCategory === "mineral"
             variant="outline"
             id="headerArButton"
             data-model-path={headerModelPath}
-            data-ar-modes={panelArModes(false)}
+            data-ar-modes={panelArModes()}
             data-ar-placement={PANEL_AR_PLACEMENT}
             data-loading="true"
             data-error="false"
@@ -189,13 +189,7 @@ const headerModelPath = panelCategory === "mineral"
 </header>
 
 <script>
-  import {
-    androidSceneViewerIntent,
-    isAndroidUserAgent,
-    PANEL_AR_PLACEMENT,
-    panelArModes,
-    waitForArAvailability,
-  } from "../../lib/panel-ar";
+  import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../../lib/panel-ar";
 
   type ARViewer = HTMLElement & {
     activateAR: () => Promise<void>;
@@ -334,7 +328,6 @@ const headerModelPath = panelCategory === "mineral"
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
-    const useAndroidSceneViewer = isAndroidUserAgent(navigator.userAgent);
     const setStatus = (message = "") => {
       if (!arStatus) return;
       arStatus.textContent = message;
@@ -364,9 +357,11 @@ const headerModelPath = panelCategory === "mineral"
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
         viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
-        viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes(Boolean(texturePath)));
+        viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes());
         viewer.setAttribute("loading", "eager");
-        viewer.style.cssText = "position:fixed;top:-1px;left:-1px;width:1px;height:1px;opacity:0;pointer-events:none";
+        // WebXR presents the viewer's renderer. Give it a real viewport-sized
+        // surface; a 1×1 hidden renderer can fail to start on Android Chrome.
+        viewer.style.cssText = "position:fixed;inset:0;width:100vw;height:100svh;opacity:0;pointer-events:none;z-index:-1";
         document.body.appendChild(viewer);
         arViewer = viewer;
         await viewer.updateComplete;
@@ -411,17 +406,6 @@ const headerModelPath = panelCategory === "mineral"
     };
 
     arButton.addEventListener("click", () => {
-      if (useAndroidSceneViewer) {
-        const modelPath = arButton.dataset.modelPath;
-        if (!modelPath) {
-          showArError("failed");
-          return;
-        }
-        arButton.setAttribute("data-error", "false");
-        setStatus();
-        window.location.href = androidSceneViewerIntent(modelPath, window.location.href);
-        return;
-      }
       if (!arViewer?.canActivateAR) {
         showArError("unavailable");
         return;
@@ -442,14 +426,9 @@ const headerModelPath = panelCategory === "mineral"
     });
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
-    if (mobileAR.matches) {
-      if (useAndroidSceneViewer) setLoading(false);
-      else void prepareAR();
-    }
+    if (mobileAR.matches) void prepareAR();
     mobileAR.addEventListener("change", (event) => {
-      if (!event.matches) return;
-      if (useAndroidSceneViewer) setLoading(false);
-      else void prepareAR();
+      if (event.matches) void prepareAR();
     });
   }
 

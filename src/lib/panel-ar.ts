@@ -2,41 +2,18 @@
 export const PANEL_AR_PLACEMENT = "wall";
 
 /**
- * Android Scene Viewer downloads the original GLB again, so scene-graph
- * texture swaps are lost there. Runtime-textured mineral panels therefore
- * use WebXR on Android and auto-generated Quick Look USDZ on iOS.
+ * Keep Android AR inside the browser. Scene Viewer is intentionally excluded:
+ * it is hosted by the Google app, which can crash even when ARCore itself is
+ * healthy. iOS continues to use Quick Look.
  */
-export function panelArModes(runtimeTexture: boolean): string {
-  // On some Android Chrome builds WebXR is advertised but fails when the
-  // session starts. model-viewer's asynchronous fallback then loses the
-  // original tap, so Scene Viewer must be selected first for baked models.
-  return runtimeTexture ? "webxr quick-look" : "scene-viewer webxr quick-look";
+export function panelArModes(): string {
+  return "webxr quick-look";
 }
 
 export function mineralArModelPath(texturePath: string): string {
   const match = texturePath.match(/\/mineral-(\d+)\.[a-z0-9]+$/i);
   if (!match) throw new Error(`Unsupported mineral texture path: ${texturePath}`);
   return `/3d/products/Mineral_${match[1].padStart(2, "0")}_3D_vertical.glb`;
-}
-
-export function isAndroidUserAgent(userAgent: string): boolean {
-  return /Android/i.test(userAgent);
-}
-
-export function androidSceneViewerIntent(modelPath: string, pageUrl: string): string {
-  const modelUrl = new URL(modelPath, pageUrl);
-  modelUrl.hash = "";
-  const fallbackUrl = new URL(pageUrl);
-  fallbackUrl.hash = "model-viewer-no-ar-fallback";
-  const parameters = new URLSearchParams({
-    mode: "ar_only",
-    disable_occlusion: "true",
-    enable_vertical_placement: "true",
-  });
-  parameters.set("file", modelUrl.toString());
-  // Target ARCore directly. The Google Search app is the wider fallback host,
-  // but it can crash independently even when Google Play Services for AR work.
-  return `intent://arvr.google.com/scene-viewer/1.1?${parameters.toString()}#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(fallbackUrl.toString())};end;`;
 }
 
 type Wait = (milliseconds: number) => Promise<void>;

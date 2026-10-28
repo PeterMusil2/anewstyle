@@ -161,7 +161,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       ar
       ar-scale="auto"
       ar-placement={PANEL_AR_PLACEMENT}
-      ar-modes={panelArModes(false)}
+      ar-modes={panelArModes()}
       camera-controls
       touch-action="pan-y"
       interaction-prompt="auto"
@@ -194,8 +194,6 @@ const mineralStepper = fanStepper(mineralPatterns.length);
 </dialog>}
 
 <script>
-  import { androidSceneViewerIntent, isAndroidUserAgent } from "../../lib/panel-ar";
-
   // The 3D viewer is bundled locally and fetched on the first card click only.
   const ensureModelViewerLoaded = (): void => {
     void import("@google/model-viewer");
@@ -231,7 +229,6 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   const mineralViewer = document.querySelector<HTMLElement & Record<string, any>>("#mineral-ar-viewer");
   const mineralTitle = document.querySelector<HTMLElement>("#mineral-ar-title");
   const mineralStatus = document.querySelector<HTMLElement>("#mineral-ar-status");
-  const mineralArButton = mineralViewer?.querySelector<HTMLButtonElement>("[slot='ar-button']");
   let textureRequest = 0;
 
   const waitForMineralModel = (): Promise<void> => {
@@ -279,14 +276,6 @@ const mineralStepper = fanStepper(mineralPatterns.length);
 
   document.querySelectorAll<HTMLButtonElement>("[data-mineral-pattern]").forEach((button) => {
     button.addEventListener("click", () => void openMineralPattern(button));
-  });
-  mineralArButton?.addEventListener("click", (event) => {
-    if (!isAndroidUserAgent(navigator.userAgent)) return;
-    const modelPath = mineralViewer?.getAttribute("src");
-    if (!modelPath) return;
-    event.preventDefault();
-    event.stopPropagation();
-    window.location.href = androidSceneViewerIntent(modelPath, window.location.href);
   });
   document.querySelector<HTMLButtonElement>("[data-mineral-dialog-close]")?.addEventListener("click", () => {
     mineralDialog?.close();

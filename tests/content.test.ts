@@ -14,6 +14,7 @@ import {
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArModelPath,
+  panelArPlacementForDevice,
   panelArViewerStyle,
   safariArUrl,
   samsungInternetArIntent,
@@ -196,6 +197,19 @@ describe("hero video", () => {
     expect(safariArUrl("https://example.com/panely/?v=test#products")).toBe(
       "x-safari-https://example.com/panely/?v=test&ar-handoff=1&ar-browser=safari",
     );
+  });
+
+  test("Quick Look uses a reliable floor anchor while Android keeps wall placement", async () => {
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile Safari/604.1";
+    const ipadDesktopMode = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15";
+    const android = "Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36";
+
+    expect(panelArPlacementForDevice(iphone)).toBe("floor");
+    expect(panelArPlacementForDevice(ipadDesktopMode, 5)).toBe("floor");
+    expect(panelArPlacementForDevice(ipadDesktopMode, 0)).toBe("wall");
+    expect(panelArPlacementForDevice(android, 5)).toBe("wall");
+    expect(header).toContain("panelArPlacementForDevice(window.navigator.userAgent, window.navigator.maxTouchPoints)");
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

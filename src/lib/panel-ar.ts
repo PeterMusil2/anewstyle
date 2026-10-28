@@ -2,6 +2,17 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
+/**
+ * Quick Look can leave a wall-anchored object invisible while it searches for
+ * a sufficiently textured vertical plane. A horizontal anchor is more
+ * reliable on iOS; the panel geometry itself remains upright.
+ */
+export function panelArPlacementForDevice(userAgent: string, maxTouchPoints = 0): "floor" | "wall" {
+  const iosDevice = /iP(?:hone|ad|od)/i.test(userAgent)
+    || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
+  return iosDevice ? "floor" : PANEL_AR_PLACEMENT;
+}
+
 export function panelArModelPath(modelPath: string, landscape: boolean): string {
   if (!landscape) return modelPath;
   if (!modelPath.includes("_vertical")) {

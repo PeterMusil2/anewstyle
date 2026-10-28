@@ -25,7 +25,7 @@
   "header.arHandoffTitle": "Your panel is ready",
   "header.arHandoffHint": "Choose the panel orientation, then start augmented reality.",
   "header.arHandoffSamsungHint": "Choose the panel orientation, then start augmented reality in Samsung Internet.",
-  "header.arHandoffSafariHint": "Choose the panel orientation, then start augmented reality in Safari.",
+  "header.arHandoffSafariHint": "Choose the panel orientation and start AR. When the camera opens, point the phone at the floor first; the panel will appear upright and can be moved towards the wall.",
   "header.arContinue": "Start AR",
   "header.arOrientation": "Panel orientation",
   "header.arPortrait": "Portrait",

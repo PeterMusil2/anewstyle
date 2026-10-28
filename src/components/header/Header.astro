@@ -230,9 +230,9 @@ const headerModelPath = panelCategory === "mineral"
 
 <script>
   import {
-    PANEL_AR_PLACEMENT,
     panelArModes,
     panelArModelPath,
+    panelArPlacementForDevice,
     panelArViewerStyle,
     safariArUrl,
     samsungInternetArIntent,
@@ -456,7 +456,10 @@ const headerModelPath = panelCategory === "mineral"
         viewer.setAttribute("src", panelArModelPath(portraitModelPath, selectedLandscape()));
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
-        viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
+        viewer.setAttribute(
+          "ar-placement",
+          panelArPlacementForDevice(window.navigator.userAgent, window.navigator.maxTouchPoints),
+        );
         viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes());
         viewer.setAttribute("loading", "eager");
         // WebXR presents the viewer's renderer. Give it a real viewport-sized

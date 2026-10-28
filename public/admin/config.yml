@@ -293,7 +293,7 @@ collections:
         widget: string
 - name: materials
   label: Materiály panelů
-  description: Společné srovnání na úvodní stránce – technologie, tloušťka, hmotnost a povrch svítících kamenných a minerálních panelů.
+  description: Přehled vlastností materiálů na úvodní stránce a kartách „Svítící panel v kostce“ na obou podstránkách.
   editor:
     preview: false
   files:
@@ -390,6 +390,20 @@ collections:
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }
+      - name: consumption
+        label: Spotřeba
+        widget: object
+        hint: Údaj na kartě Spotřeba v sekci „Svítící kamenný panel v kostce“.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: luminance
+        label: Svítivost
+        widget: object
+        hint: Údaj na kartě Svítivost v sekci „Svítící kamenný panel v kostce“.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
       - name: surface
         label: Povrch a údržba
         widget: object
@@ -433,6 +447,20 @@ collections:
         label: Hmotnost od velikosti L
         widget: object
         hint: Údaj v porovnání vlastností na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: consumption
+        label: Spotřeba
+        widget: object
+        hint: Údaj na kartě Spotřeba v sekci „Svítící minerální panel v kostce“.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: luminance
+        label: Svítivost
+        widget: object
+        hint: Údaj na kartě Svítivost v sekci „Svítící minerální panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }

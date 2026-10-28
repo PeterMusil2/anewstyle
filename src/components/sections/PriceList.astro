@@ -96,7 +96,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
     <div class="container-page flex flex-col gap-4 py-5 lg:gap-5 lg:py-7">
     <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2">
       <div class="flex flex-col items-center gap-3 text-center sm:gap-4 short:gap-2.5">
-        <p class="eyebrow">{t("price.eyebrow")}</p>
+        <p class="eyebrow">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.eyebrow")}</p>
         <!-- Same title style as every SectionHeader on the site. -->
         <h2 id={`${id}-title`} class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]">
           {t("price.title")}
@@ -361,7 +361,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
   <div class="container-page grid gap-4 pt-10 pb-20 md:grid-cols-2 md:gap-5 lg:pt-14 lg:pb-30">
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("price.customTitle")}</h3>
-        <p class="text-base leading-relaxed text-fg-soft">{t("price.customDesc")}</p>
+        <p class="text-base leading-relaxed text-fg-soft">{panelCategory === "mineral" ? t("price.customDescMineral") : t("price.customDesc")}</p>
         <Button href={contactPath} variant="link" class="self-start">{t("price.customCta")} →</Button>
       </div>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">

@@ -48,6 +48,14 @@
       "cs": "Velikost L: od 15 kg (SLIM)",
       "en": "Size L: from 15 kg (SLIM)"
     },
+    "consumption": {
+      "cs": "Od 74W u velikosti L.",
+      "en": "From 74 W for size L."
+    },
+    "luminance": {
+      "cs": "Jas (luminance) od 200 cd/m2, podle kresby kamene",
+      "en": "Luminance from 200 cd/m², depending on the stone pattern."
+    },
     "surface": {
       "cs": "Reliéfní přírodní povrch ošetřený nano impregnací. Je odolný proti vlhkosti, ale není určený pro přímý kontakt s tekoucí vodou.",
       "en": "Natural textured surface treated with nano impregnation. Moisture-resistant, but not designed for direct contact with running water."
@@ -73,6 +81,14 @@
     "weight": {
       "cs": "Velikost L: od 25 kg (SLIM)",
       "en": "Size L: from 25 kg (SLIM)"
+    },
+    "consumption": {
+      "cs": "Od 35W u velikosti L.",
+      "en": "From 35 W for size L."
+    },
+    "luminance": {
+      "cs": "Jas (luminance) od 500 cd/m2, podle propustnosti vzoru minerálního panelu",
+      "en": "Luminance from 500 cd/m², depending on the mineral panel's light transmission."
     },
     "surface": {
       "cs": "Hladký povrch v lesklém nebo matném provedení bez nutnosti impregnace. Je odolný proti vlhkosti.",

@@ -30,11 +30,11 @@ const mineralImages = [
 ];
 ---
 
-<section id="about" aria-labelledby="about-title" class="showcase section-y relative isolate overflow-hidden bg-ink text-fg">
+<section aria-labelledby="about-title" class="showcase section-y relative isolate overflow-hidden bg-ink text-fg">
   <div class="container-page flex flex-col gap-8 lg:gap-10">
-    <SectionHeader id="about-title" layout="center" eyebrow={t("nav.light")} title={t("home.showcaseTitle")}>
-      <p>{t("home.showcaseIntro")}</p>
-    </SectionHeader>
+    <div id="about">
+      <SectionHeader id="about-title" layout="center" eyebrow={t("nav.light")} title={t("home.showcaseTitle")} />
+    </div>
 
     <div class="home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-4 sm:gap-5">
       <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:gap-7">
@@ -99,3 +99,12 @@ const mineralImages = [
     </div>
   </div>
 </section>
+
+<style>
+  @media (width < 40rem) {
+    :global(#about-title) {
+      font-size: clamp(1.5rem, 7vw, 1.75rem);
+      line-height: 1.05;
+    }
+  }
+</style>

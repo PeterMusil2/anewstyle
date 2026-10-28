@@ -107,26 +107,23 @@ const homeHref = lang === "cs" ? "/" : "/en/";
     ]}>
       <span class:list={["hero-title__label", { "hero-title__label--home": home }]}>{pageTitle ?? "ANEW STYLE"}</span>
     </h1>
-    <p class="max-w-xl text-center text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
+    <p class="hero-subtitle max-w-xl text-center text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
       {pageDescription ?? t('header.title')}
     </p>
     <PanelCategorySwitch lang={lang} activeCategory={panelCategory} />
+    <Button
+      href="https://www.anewstyle-eshop.cz"
+      variant="ghost"
+      rel="external"
+      target="_blank"
+      title={t('header.gotoEshop')}
+      class="w-64 justify-center max-md:hidden!"
+    >
+      {t('header.btnEshop')}
+      <Icon name="eshop" class="size-4" />
+    </Button>
     {!home && (
-      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-        <Button href={panelCategory ? "#products" : "#about"} id="headerMoreButton" class="w-64">
-          {t('header.btnMore')}
-        </Button>
-        <Button
-          href="https://www.anewstyle-eshop.cz"
-          variant="ghost"
-          rel="external"
-          target="_blank"
-          title={t('header.gotoEshop')}
-          class="max-lg:hidden!"
-        >
-          {t('header.btnEshop')}
-          <Icon name="eshop" class="size-4" />
-        </Button>
+      <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!">
         <Button
           variant="outline"
           id="headerArButton"

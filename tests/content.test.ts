@@ -100,7 +100,7 @@ describe("panel patterns", () => {
 describe("home material overview", () => {
   test("uses one bilingual composition image for the stone veneer and mineral panel", async () => {
     const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-    const cs = "Transparentní, litý designový panel s kamennou texturou a vysokým podílem minerálů, který je pevný a skvěle propouští světlo. Jeho tloušťka je 6 mm.";
+    const cs = "Transparentní, litý designový panel s vysokým podílem minerálů a hladkým povrchem, o tloušťce 6 mm.";
     const image = "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png";
 
     expect(materialOverview.mineral.technology.cs).toBe(cs);
@@ -257,13 +257,23 @@ describe("i18n", () => {
     expect(switcher).toContain('getPanelPagePath("mineral", lang)');
     expect(switcher).toContain('label: t("nav.allPanels")');
     expect(switcher).toContain('active: !activeCategory');
+    expect(switcher).toContain('const learnMoreHref = "#panel-material"');
+    expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
+    expect(switcher).toContain('activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang)');
+    expect(switcher).toContain('const allPanelsHref = activeCategory ? homePath : `${homePath}#about`');
+    expect(switcher).toContain('{ href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory }');
+    expect(switcher).toContain('{active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
+    expect(cs["header.btnMore"]).toBe("Chci vědět víc");
+    expect(en["header.btnMore"]).toBe("Learn more");
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');
     expect(switcher).toContain('aria-current={active ? "page" : undefined}');
     expect(switcher).toContain('grid-cols-1 gap-2 sm:grid-cols-3');
     expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
     expect(header).toContain('"hero-title__label--home": home');
     expect(header).toContain("items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center");
-    expect(header).toContain("flex flex-wrap items-center justify-center gap-4 pt-2");
+    expect(header).toContain('<PanelCategorySwitch lang={lang} activeCategory={panelCategory} />');
+    expect(header).toContain('class="w-64 justify-center max-md:hidden!"');
+    expect(header).toContain('class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!"');
     const sectionHeader = await Bun.file("src/components/ui/SectionHeader.astro").text();
     expect(sectionHeader).toContain('layout = "center"');
     expect(sectionHeader).toContain('layout === "center" && "mx-auto flex max-w-3xl flex-col items-center gap-5 text-center"');
@@ -276,9 +286,8 @@ describe("i18n", () => {
     expect(effects).toContain(".hero-title__label--home {");
     expect(effects).toContain("width: max-content");
     expect(effects).toContain("white-space: nowrap");
-    expect(effects).toContain("inset-inline: 18%");
-    expect(effects).toContain("rgb(0 0 0 / 0.58) 0%");
-    expect(effects).toContain("transparent 74%");
+    expect(effects).toContain("color-mix(in srgb, var(--color-fg) 40%, transparent)");
+    expect(effects).toContain("0 0 0.34em rgb(36 32 26 / 0.42)");
   });
 
   test("panel hero places a gold home icon under video controls and matches CTA sizes", async () => {
@@ -293,7 +302,7 @@ describe("i18n", () => {
     expect(header).toContain('<Icon name="home" class="size-5" />');
     expect(header).toContain('aria-label={t("nav.home")}');
     expect(header).toContain('class="hero-home-link absolute z-10 grid size-11');
-    expect(header).toContain('id="headerMoreButton" class="w-64"');
+    expect(header).not.toContain('id="headerMoreButton"');
     expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-64/);
     expect(nav).not.toContain('<Icon name="home"');
     const effects = await Bun.file("src/styles/effects.css").text();

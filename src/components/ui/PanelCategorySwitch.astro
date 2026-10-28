@@ -15,10 +15,12 @@ interface Props {
 const { lang = "cs", activeCategory } = Astro.props;
 const t = useTranslations(lang);
 const homePath = lang === "cs" ? "/" : "/en/";
+const learnMoreHref = "#panel-material";
+const allPanelsHref = activeCategory ? homePath : `${homePath}#about`;
 const options = [
-  { href: getPanelPagePath("stone", lang), label: t("price.categoryStone"), active: activeCategory === "stone" },
-  { href: getPanelPagePath("mineral", lang), label: t("price.categoryMineral"), active: activeCategory === "mineral" },
-  { href: `${homePath}#about`, label: t("nav.allPanels"), active: !activeCategory },
+  { href: activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang), label: t("price.categoryStone"), active: activeCategory === "stone" },
+  { href: activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang), label: t("price.categoryMineral"), active: activeCategory === "mineral" },
+  { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory },
 ];
 ---
 
@@ -28,9 +30,47 @@ const options = [
       href={href}
       variant={active ? "primary" : "outline"}
       aria-current={active ? "page" : undefined}
-      class="min-h-12 w-full whitespace-normal px-2 py-2 text-[0.625rem] leading-tight sm:px-3 sm:text-xs"
+      class:list={[
+        "panel-switch__button min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-2 py-2 text-[0.625rem] leading-tight sm:px-3 sm:text-xs",
+        { "panel-switch__button--active": active, "panel-switch__button--inactive": !active },
+      ]}
     >
-      {label}
+      <span class:list={["panel-switch__label", { "panel-switch__label--inactive": !active }]}>{label}</span>
+      {active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}
     </Button>
   ))}
 </nav>
+
+<style>
+  .panel-switch__button {
+    transition:
+      box-shadow 180ms ease-out,
+      border-color 200ms ease-out,
+      background-color 200ms ease-out,
+      color 200ms ease-out;
+  }
+
+  .panel-switch__button--inactive {
+    box-shadow:
+      0 0 0.45rem color-mix(in srgb, var(--color-gold) 30%, transparent),
+      0 0 0.9rem color-mix(in srgb, var(--color-gold) 12%, transparent);
+  }
+
+  .panel-switch__button--active {
+    box-shadow:
+      0 0 0.6rem color-mix(in srgb, var(--color-gold) 46%, transparent),
+      0 0 1.2rem color-mix(in srgb, var(--color-gold) 20%, transparent);
+  }
+
+  .panel-switch__label--inactive {
+    text-shadow:
+      0 0 0.12em rgb(0 0 0 / 0.95),
+      0.06em 0.08em 0.12em rgb(0 0 0 / 0.9),
+      0 0 0.28em rgb(0 0 0 / 0.65);
+    transition: text-shadow 180ms ease-out;
+  }
+
+  :global(.panel-page-switch a:is(:hover, :focus-visible, :active)) .panel-switch__label--inactive {
+    text-shadow: none;
+  }
+</style>

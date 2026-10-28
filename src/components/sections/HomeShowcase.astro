@@ -37,19 +37,6 @@ const mineralImages = [
     </div>
 
     <div class="home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-4 sm:gap-5">
-      <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:gap-7">
-        <div class="flex min-w-0 flex-col items-center gap-1.5">
-          <h3 class="sr-only">{t("price.categoryStone")}</h3>
-          <Button href={stoneHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openStone")}</Button>
-          <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.stoneMaterial")}</p>
-        </div>
-        <div class="flex min-w-0 flex-col items-center gap-1.5">
-          <h3 class="sr-only">{t("price.categoryMineral")}</h3>
-          <Button href={mineralHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openMineral")}</Button>
-          <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.mineralMaterial")}</p>
-        </div>
-      </div>
-
       <fieldset class="mx-auto flex w-full max-w-2xl flex-col gap-2">
         <legend class="mb-1 text-center text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("showcase.stateLabel")}</legend>
         <div class="grid grid-cols-3 border border-line-strong">
@@ -64,8 +51,8 @@ const mineralImages = [
       </fieldset>
 
       <div class="grid grid-cols-2 items-stretch gap-3 sm:gap-5 lg:gap-7">
-        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-2.5 sm:p-4 lg:p-6" aria-label={t("price.categoryStone")}>
-          <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
+        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-1 sm:p-4 lg:p-6" aria-label={t("price.categoryStone")}>
+          <div class="showcase__stage home-showcase-stage relative aspect-[1024/1000] w-full bg-transparent">
             <div class="showcase__stone-states absolute inset-0">
               {stoneImages.map((image) => (
                 <Picture src={image.src} alt={`${t("price.categoryStone")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 45vw, 100vw" data-state={image.state} class="absolute inset-0 size-full object-contain" />
@@ -77,22 +64,30 @@ const mineralImages = [
               ))}
             </div>
           </div>
+          <div class="flex min-w-0 flex-col items-center gap-1.5">
+            <Button href={stoneHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openStone")}</Button>
+            <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.stoneMaterial")}</p>
+          </div>
         </article>
 
-        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-2.5 sm:p-4 lg:p-6" aria-label={t("price.categoryMineral")}>
-          <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
+        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-1 sm:p-4 lg:p-6" aria-label={t("price.categoryMineral")}>
+          <div class="showcase__stage home-showcase-stage relative aspect-[1024/1000] w-full bg-transparent">
             <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center">
               <div class="showcase__mineral-reflection" aria-hidden="true">
                 {mineralImages.map((image) => (
                   <Picture src={image.src} alt="" sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
                 ))}
               </div>
-              <div class="showcase__mineral-panel overflow-hidden border border-line-strong bg-ink-900">
+              <div class="showcase__mineral-panel overflow-hidden border border-transparent bg-transparent">
                 {mineralImages.map((image) => (
                   <Picture src={image.src} alt={`${t("price.categoryMineral")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
                 ))}
               </div>
             </div>
+          </div>
+          <div class="flex min-w-0 flex-col items-center gap-1.5">
+            <Button href={mineralHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openMineral")}</Button>
+            <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.mineralMaterial")}</p>
           </div>
         </article>
       </div>
@@ -101,7 +96,73 @@ const mineralImages = [
 </section>
 
 <style>
+  /* Keep the visible stone and mineral panel faces the same size after
+     accounting for the stone image's 90-degree rotation. */
+  :global(.home-showcase-stage .showcase__stone-states [data-state]) {
+    top: 53%;
+    width: 100.65%;
+    height: 51.55%;
+  }
+
+  :global(.home-showcase-stage .showcase__mineral-panel) {
+    top: 53%;
+    width: 53.7%;
+    height: 104.85%;
+    transform: translate(-50%, -50%);
+  }
+
+  :global(.home-showcase-stage .showcase__mineral-reflection) {
+    top: 110.5%;
+    width: 53.7%;
+    height: 104.85%;
+  }
+
+  :global(.home-showcase-stage .showcase__stone-reflection) {
+    top: 108.3%;
+    width: 51.55%;
+    height: 100.65%;
+  }
+
+  :global(.home-showcase-stage) {
+    margin-block-end: 38%;
+  }
+
+  :global(.home-showcase-stage .showcase__mineral-reflection) {
+    background: transparent;
+    border: 0;
+  }
+
   @media (width < 40rem) {
+    :global(.home-showcase-stage) {
+      margin-block-end: 62%;
+      overflow: visible;
+    }
+
+    :global(.home-showcase-stage .showcase__stone-states [data-state]) {
+      top: 62%;
+      width: 118.1%;
+      height: 59.04%;
+    }
+
+    :global(.home-showcase-stage .showcase__mineral-panel) {
+      top: 62%;
+      width: 61.5%;
+      height: 123%;
+      transform: translate(-50%, -50%);
+    }
+
+    :global(.home-showcase-stage .showcase__mineral-reflection) {
+      top: 128.5%;
+      width: 61.5%;
+      height: 123%;
+    }
+
+    :global(.home-showcase-stage .showcase__stone-reflection) {
+      top: 126%;
+      width: 59.04%;
+      height: 118.1%;
+    }
+
     :global(#about-title) {
       font-size: clamp(1.5rem, 7vw, 1.75rem);
       line-height: 1.05;

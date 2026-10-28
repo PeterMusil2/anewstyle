@@ -424,7 +424,7 @@ describe("home lighting comparison", () => {
     expect(en["home.showcaseStateHint"]).toBeUndefined();
   });
 
-  test("places both panel links above the state control instead of below the images", async () => {
+  test("places each panel link and material caption below its image", async () => {
     const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
     const mobileButtonStyles = "whitespace-normal! leading-tight max-sm:text-[0.625rem]!";
     const stoneButtonAt = component.indexOf('<Button href={stoneHref}');
@@ -434,13 +434,36 @@ describe("home lighting comparison", () => {
 
     expect(stoneButtonAt).toBeGreaterThan(-1);
     expect(mineralButtonAt).toBeGreaterThan(stoneButtonAt);
-    expect(mineralButtonAt).toBeLessThan(controlsAt);
     expect(controlsAt).toBeLessThan(panelsAt);
-    expect(component.slice(panelsAt)).not.toContain('<Button href={stoneHref}');
-    expect(component.slice(panelsAt)).not.toContain('<Button href={mineralHref}');
-    expect(component.slice(stoneButtonAt, controlsAt)).toContain(mobileButtonStyles);
-    expect(component.slice(stoneButtonAt, controlsAt)).toContain("home.openStone");
-    expect(component.slice(stoneButtonAt, controlsAt)).toContain("home.openMineral");
+    expect(panelsAt).toBeLessThan(stoneButtonAt);
+    expect(stoneButtonAt).toBeLessThan(mineralButtonAt);
+    expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain(mobileButtonStyles);
+    expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain("home.openStone");
+    expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain("header.stoneMaterial");
+    expect(component.slice(mineralButtonAt)).toContain("home.openMineral");
+    expect(component.slice(mineralButtonAt)).toContain("header.mineralMaterial");
+    expect(component).toMatch(/margin-block-end: 62%;\s+overflow: visible;/);
+    expect(component).toMatch(/width: 118\.1%;\s+height: 59\.04%;/);
+    expect(component).toMatch(/top: 62%;\s+width: 118\.1%;/);
+    expect(component).toMatch(/top: 126%;\s+width: 59\.04%;/);
+  });
+
+  test("keeps showcase panels close in size and preserves the reflection gap", async () => {
+    const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
+
+    expect(component).toMatch(/width: 100\.65%;\s+height: 51\.55%;/);
+    expect(component).toMatch(/width: 53\.7%;\s+height: 104\.85%;/);
+    expect(component).toMatch(/width: 118\.1%;\s+height: 59\.04%;/);
+    expect(component).toMatch(/width: 61\.5%;\s+height: 123%;/);
+    expect(component).toContain("transform: translate(-50%, -50%);");
+    expect(component).toMatch(/\.showcase__stone-states \[data-state\]\) \{\s+top: 53%;/);
+    expect(component).toContain("top: 110.5%;");
+    expect(component).toContain("top: 108.3%;");
+    expect(component).toContain("top: 128.5%;");
+    expect(component).toContain("top: 126%;");
+    expect(component).toContain("border border-transparent bg-transparent");
+    expect(component).toMatch(/\.showcase__mineral-reflection\) \{\s+background: transparent;\s+border: 0;/);
+    expect(component).not.toContain("bg-ink ring-1 ring-line");
   });
 });
 
@@ -580,6 +603,8 @@ describe("i18n", () => {
     expect(switcher).toContain('getPanelPagePath("mineral", lang)');
     expect(switcher).toContain('label: t("nav.allPanels")');
     expect(switcher).toContain('active: !activeCategory');
+    expect(switcher).toContain('"panel-switch__label",');
+    expect(switcher).toContain('font-size: clamp(0.9rem, 1.1vw, 1rem)');
     expect(switcher).toContain('const learnMoreHref = "#panel-material"');
     expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
     expect(switcher).toContain('activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang)');
@@ -589,7 +614,8 @@ describe("i18n", () => {
     expect(switcher).toContain('active: activeCategory === "stone"');
     expect(switcher).toContain('active: activeCategory === "mineral"');
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');
-    expect(switcher).toContain('{active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
+    expect(switcher).toContain('{active && <span class="panel-switch__cta font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
+    expect(switcher).toContain('font-size: clamp(0.8125rem, 1vw, 0.9375rem)');
     expect(cs["header.btnMore"]).toBe("Chci vědět víc");
     expect(en["header.btnMore"]).toBe("Learn more");
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');

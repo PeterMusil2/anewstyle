@@ -36,8 +36,11 @@ const options = [allPanelsOption, ...panelOptions];
         { "panel-switch__button--active": active, "panel-switch__button--inactive": !active },
       ]}
     >
-      <span class:list={["panel-switch__label", { "panel-switch__label--inactive": !active }]}>{label}</span>
-      {active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}
+      <span class:list={[
+        "panel-switch__label",
+        { "panel-switch__label--inactive": !active },
+      ]}>{label}</span>
+      {active && <span class="panel-switch__cta font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}
     </Button>
   ))}
 </nav>
@@ -69,6 +72,17 @@ const options = [allPanelsOption, ...panelOptions];
       0.06em 0.08em 0.12em rgb(0 0 0 / 0.9),
       0 0 0.28em rgb(0 0 0 / 0.65);
     transition: text-shadow 180ms ease-out;
+  }
+
+  .panel-switch__label {
+    max-width: 100%;
+    font-size: clamp(0.9rem, 1.1vw, 1rem);
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .panel-switch__cta {
+    font-size: clamp(0.8125rem, 1vw, 0.9375rem);
   }
 
   :global(.panel-page-switch a:is(:hover, :focus-visible, :active)) .panel-switch__label--inactive {

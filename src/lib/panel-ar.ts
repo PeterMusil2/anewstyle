@@ -1,5 +1,9 @@
-/** Shared AR configuration for wall-mounted illuminated panels. */
-export const PANEL_AR_PLACEMENT = "wall";
+/**
+ * Android WebXR detects horizontal planes much more reliably than vertical
+ * ones on affected Samsung/Chrome combinations. The model itself stays
+ * upright, so floor anchoring remains a useful room-scale fallback.
+ */
+export const PANEL_AR_PLACEMENT = "floor";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
 /**

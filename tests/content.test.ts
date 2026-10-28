@@ -68,12 +68,12 @@ describe("hero video", () => {
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
   });
 
-  test("panel AR uses wall placement and Android-compatible baked mineral models", async () => {
+  test("panel AR uses reliable floor anchoring and Android-compatible baked models", async () => {
     const header = await Bun.file("src/components/header/Header.astro").text();
     const productsComponent = await Bun.file("src/components/sections/Products.astro").text();
     const cardComponent = await Bun.file("src/components/product/Card.astro").text();
 
-    expect(PANEL_AR_PLACEMENT).toBe("wall");
+    expect(PANEL_AR_PLACEMENT).toBe("floor");
     expect(panelArModes()).toBe("webxr quick-look");
     expect(panelArModes()).not.toContain("scene-viewer");
     expect(STONE_AR_MODEL_PATH).toContain("_unlit.glb");

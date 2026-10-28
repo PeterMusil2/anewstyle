@@ -230,9 +230,11 @@ const headerModelPath = panelCategory === "mineral"
 
 <script>
   import {
+    isAppleQuickLookDevice,
     panelArModes,
     panelArModelPath,
     panelArPlacementForDevice,
+    panelArQuickLookModelPath,
     panelArViewerStyle,
     safariArUrl,
     samsungInternetArIntent,
@@ -396,6 +398,10 @@ const headerModelPath = panelCategory === "mineral"
       window.location.search,
     );
     const needsBrowserHandoff = openInSamsungInternet || openInSafari;
+    const appleQuickLook = isAppleQuickLookDevice(
+      window.navigator.userAgent,
+      window.navigator.maxTouchPoints,
+    );
 
     if (handoffStatus) {
       const hint = requestedBrowser === "safari"
@@ -454,6 +460,9 @@ const headerModelPath = panelCategory === "mineral"
         const texturePath = arButton.dataset.texturePath;
         const portraitModelPath = arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH;
         viewer.setAttribute("src", panelArModelPath(portraitModelPath, selectedLandscape()));
+        if (appleQuickLook) {
+          viewer.setAttribute("ios-src", panelArQuickLookModelPath(portraitModelPath, selectedLandscape()));
+        }
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
         viewer.setAttribute(
@@ -486,6 +495,9 @@ const headerModelPath = panelCategory === "mineral"
 
         loadSelectedModel = async () => {
           const nextPath = panelArModelPath(portraitModelPath, selectedLandscape());
+          if (appleQuickLook) {
+            viewer.setAttribute("ios-src", panelArQuickLookModelPath(portraitModelPath, selectedLandscape()));
+          }
           if (viewer.getAttribute("src") === nextPath && viewer.loaded) return;
           setLoading(true);
           try {

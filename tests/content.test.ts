@@ -10,11 +10,13 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import {
+  isAppleQuickLookDevice,
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArModelPath,
   panelArPlacementForDevice,
+  panelArQuickLookModelPath,
   panelArViewerStyle,
   safariArUrl,
   samsungInternetArIntent,
@@ -209,7 +211,35 @@ describe("hero video", () => {
     expect(panelArPlacementForDevice(ipadDesktopMode, 5)).toBe("floor");
     expect(panelArPlacementForDevice(ipadDesktopMode, 0)).toBe("wall");
     expect(panelArPlacementForDevice(android, 5)).toBe("wall");
+    expect(isAppleQuickLookDevice(iphone)).toBe(true);
+    expect(isAppleQuickLookDevice(ipadDesktopMode, 5)).toBe(true);
+    expect(isAppleQuickLookDevice(android, 5)).toBe(false);
     expect(header).toContain("panelArPlacementForDevice(window.navigator.userAgent, window.navigator.maxTouchPoints)");
+  });
+
+  test("Safari Quick Look receives prebuilt USDZ models for both panel orientations", async () => {
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const headers = await Bun.file("public/_headers").text();
+    const modelPaths = [
+      panelArQuickLookModelPath(STONE_AR_MODEL_PATH, false),
+      panelArQuickLookModelPath(STONE_AR_MODEL_PATH, true),
+      panelArQuickLookModelPath(mineralArModelPath("/images/patterns/mineral-2.png"), false),
+      panelArQuickLookModelPath(mineralArModelPath("/images/patterns/mineral-2.png"), true),
+    ];
+
+    expect(modelPaths).toEqual([
+      "/3d/products/Rockfoil_DARKGOLD_AR_vertical_quicklook.usdz",
+      "/3d/products/Rockfoil_DARKGOLD_AR_horizontal_quicklook.usdz",
+      "/3d/products/Mineral_02_3D_vertical_quicklook.usdz",
+      "/3d/products/Mineral_02_3D_horizontal_quicklook.usdz",
+    ]);
+    for (const modelPath of modelPaths) {
+      const bytes = readFileSync(`public${modelPath}`);
+      expect(bytes.byteLength).toBeGreaterThan(100_000);
+      expect(bytes.subarray(0, 4).toString("hex")).toBe("504b0304");
+    }
+    expect(header).toContain('viewer.setAttribute("ios-src", panelArQuickLookModelPath');
+    expect(headers).toContain("Content-Type: model/vnd.usdz+zip");
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

@@ -7,10 +7,13 @@ export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_u
  * a sufficiently textured vertical plane. A horizontal anchor is more
  * reliable on iOS; the panel geometry itself remains upright.
  */
-export function panelArPlacementForDevice(userAgent: string, maxTouchPoints = 0): "floor" | "wall" {
-  const iosDevice = /iP(?:hone|ad|od)/i.test(userAgent)
+export function isAppleQuickLookDevice(userAgent: string, maxTouchPoints = 0): boolean {
+  return /iP(?:hone|ad|od)/i.test(userAgent)
     || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
-  return iosDevice ? "floor" : PANEL_AR_PLACEMENT;
+}
+
+export function panelArPlacementForDevice(userAgent: string, maxTouchPoints = 0): "floor" | "wall" {
+  return isAppleQuickLookDevice(userAgent, maxTouchPoints) ? "floor" : PANEL_AR_PLACEMENT;
 }
 
 export function panelArModelPath(modelPath: string, landscape: boolean): string {
@@ -19,6 +22,13 @@ export function panelArModelPath(modelPath: string, landscape: boolean): string 
     throw new Error(`AR model has no landscape variant: ${modelPath}`);
   }
   return modelPath.replace("_vertical", "_horizontal");
+}
+
+/** A prebuilt USDZ avoids fragile GLB conversion inside Safari Quick Look. */
+export function panelArQuickLookModelPath(modelPath: string, landscape: boolean): string {
+  return panelArModelPath(modelPath, landscape)
+    .replace(/_unlit\.glb$/i, "_quicklook.usdz")
+    .replace(/\.glb$/i, "_quicklook.usdz");
 }
 
 const SAMSUNG_INTERNET_PACKAGE = "com.sec.android.app.sbrowser";

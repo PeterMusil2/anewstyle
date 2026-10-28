@@ -468,6 +468,14 @@ describe("home lighting comparison", () => {
 });
 
 describe("home section rhythm", () => {
+  test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
+    const component = await Bun.file("src/components/sections/Showcase.astro").text();
+
+    expect(component).toContain("@media (width >= 64rem)");
+    expect(component).toContain("padding-block: clamp(2.5rem, 7svh, 5rem);");
+    expect(component).toContain("block-size: min(55svh, 38rem);");
+  });
+
   test("uses slightly tighter spacing and alternating brand surfaces on the shared home page", async () => {
     const files = [
       ["src/components/sections/HomeShowcase.astro", "home-section-y home-section-divider relative isolate overflow-hidden bg-ink"],
@@ -604,6 +612,9 @@ describe("i18n", () => {
     expect(switcher).toContain('label: t("nav.allPanels")');
     expect(switcher).toContain('active: !activeCategory');
     expect(switcher).toContain('"panel-switch__label",');
+    expect(switcher).toContain("white-space: normal;");
+    expect(switcher).toContain("display: block;");
+    expect(switcher).toContain("text-wrap: balance;");
     expect(switcher).toContain('font-size: clamp(0.9rem, 1.1vw, 1rem)');
     expect(switcher).toContain('const learnMoreHref = "#panel-material"');
     expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
@@ -620,7 +631,8 @@ describe("i18n", () => {
     expect(en["header.btnMore"]).toBe("Learn more");
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');
     expect(switcher).toContain('aria-current={active ? "page" : undefined}');
-    expect(switcher).toContain('grid-cols-1 gap-2 sm:grid-cols-3');
+    expect(switcher).toContain('max-w-6xl grid-cols-1 gap-3 sm:grid-cols-3');
+    expect(switcher).toContain('min-h-[5.25rem] w-full flex-col gap-1 whitespace-normal px-4 py-3');
     expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
     expect(header).toContain('"hero-title__label--home": home');
     expect(header).toContain("items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center");

@@ -25,14 +25,14 @@ const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active
 const options = [allPanelsOption, ...panelOptions];
 ---
 
-<nav aria-label={t("nav.panelPages")} class="panel-page-switch grid w-full max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3">
+<nav aria-label={t("nav.panelPages")} class="panel-page-switch grid w-full max-w-6xl grid-cols-1 gap-3 sm:grid-cols-3">
   {options.map(({ href, label, active }) => (
     <Button
       href={href}
       variant={active ? "primary" : "outline"}
       aria-current={active ? "page" : undefined}
       class:list={[
-        "panel-switch__button min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-2 py-2 text-[0.625rem] leading-tight sm:px-3 sm:text-xs",
+        "panel-switch__button min-h-[5.25rem] w-full flex-col gap-1 whitespace-normal px-4 py-3 text-[0.625rem] leading-tight sm:px-5 sm:text-xs",
         { "panel-switch__button--active": active, "panel-switch__button--inactive": !active },
       ]}
     >
@@ -47,6 +47,7 @@ const options = [allPanelsOption, ...panelOptions];
 
 <style>
   .panel-switch__button {
+    white-space: normal;
     transition:
       box-shadow 180ms ease-out,
       border-color 200ms ease-out,
@@ -75,10 +76,12 @@ const options = [allPanelsOption, ...panelOptions];
   }
 
   .panel-switch__label {
+    display: block;
     max-width: 100%;
     font-size: clamp(0.9rem, 1.1vw, 1rem);
     line-height: 1.15;
     text-align: center;
+    text-wrap: balance;
   }
 
   .panel-switch__cta {

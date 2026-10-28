@@ -240,6 +240,8 @@ describe("feature disclosures", () => {
 
     expect(component).toContain("features.map((feature)");
     expect(component).toContain('<details class="group/feature">');
+    expect(component).toContain('<h3 class="min-w-0 flex-1 text-sm leading-snug font-black tracking-[0.06em] uppercase">');
+    expect(component).toContain('items-center gap-3 rounded-sm text-fg');
     expect(component).not.toContain("<details open=");
     expect(component).not.toContain("feature-color-palette");
     const palette = await Bun.file("src/components/palette/Palette.astro").text();

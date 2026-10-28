@@ -76,7 +76,7 @@ const formattedDescription = (key: TranslationKey) =>
             ]}
           >
             <details class="group/feature">
-              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-4 rounded-sm text-fg transition-colors hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
+              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-sm text-fg transition-colors hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
                 {feature.palette ? (
                   <span class="grid size-12 shrink-0 place-items-center border border-line text-sm font-bold tracking-caps text-gold" aria-hidden="true">RAL</span>
                 ) : feature.icon?.endsWith(".png") ? (
@@ -88,7 +88,7 @@ const formattedDescription = (key: TranslationKey) =>
                     aria-hidden="true"
                   />
                 )}
-                <h3 class="min-w-0 flex-1 text-base font-black tracking-[0.1em] uppercase">
+                <h3 class="min-w-0 flex-1 text-sm leading-snug font-black tracking-[0.06em] uppercase">
                   {showBoth && feature.mineralLabel ? (
                     <span class="grid gap-2">
                       <span><span class="mb-0.5 block text-[0.625rem] tracking-caps text-gold">{t("home.equipmentStone")}</span>{label(feature.label)}</span>

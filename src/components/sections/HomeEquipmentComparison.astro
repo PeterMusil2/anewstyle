@@ -59,21 +59,21 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
   t(`price.feature${key}${category === "mineral" ? "Mineral" : ""}Short` as TranslationKey);
 ---
 
-<section id="equipment-comparison" aria-labelledby="equipment-comparison-title" class="section-y bg-ink">
+<section id="equipment-comparison" aria-labelledby="equipment-comparison-title" class="home-section-y home-section-divider bg-ink-800">
   <div class="container-page flex flex-col gap-8 lg:gap-10">
-    <SectionHeader id="equipment-comparison-title" layout="center" eyebrow={t("nav.comparison")} title={t("price.compareTitle")}>
+    <SectionHeader id="equipment-comparison-title" layout="center" eyebrow={t("home.chapterComparison")} title={t("price.compareTitle")}>
       <p>{t("price.compareHint")}</p>
     </SectionHeader>
 
-    <table class="w-full table-fixed border-separate border-spacing-0 text-left">
+    <table class="w-full table-fixed border-separate border-spacing-0 border border-line-strong text-left">
       <caption class="sr-only">{t("price.compareTitle")}</caption>
       <thead>
         <tr>
-          <th scope="col" class="w-[52%] border-t border-b border-t-gold border-b-line bg-ink-900 px-3 py-3 text-[0.6875rem] font-bold tracking-caps text-fg-muted uppercase sm:px-5 sm:py-4 sm:text-xs">
+          <th scope="col" class="w-[52%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-3 py-3 text-[0.6875rem] font-bold tracking-caps text-fg uppercase sm:px-5 sm:py-4 sm:text-xs">
             {t("features.title")}
           </th>
           {tiers.map((tier) => (
-            <th scope="col" class="w-[16%] border-t border-b border-t-gold border-b-line bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
+            <th scope="col" class="w-[16%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
               <span class="block text-[0.625rem] font-black tracking-[0.08em] text-gold uppercase sm:text-sm sm:tracking-[0.16em]">{tier.title}</span>
             </th>
           ))}
@@ -82,7 +82,7 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
       {groups.map((group) => (
         <tbody>
           <tr>
-            <th colspan="4" scope="colgroup" class="px-3 pt-6 pb-2 text-[0.6875rem] font-extrabold tracking-caps text-gold uppercase sm:px-5 sm:text-xs">
+            <th colspan="4" scope="colgroup" class="border-t border-line-strong bg-ink-850 px-3 py-3 text-[0.6875rem] font-extrabold tracking-caps text-gold uppercase sm:px-5 sm:text-xs">
               {t(group.title)}
             </th>
           </tr>
@@ -90,7 +90,7 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
             const meta = featureMeta[key];
             const hasMaterialVariants = MINERAL_FEATURE_KEYS.has(key);
             return (
-              <tr class="transition-colors hover:bg-ink-900">
+              <tr class="transition-colors odd:bg-ink-850/50 hover:bg-ink-900">
                 <th scope="row" class="border-b border-line px-3 py-3 font-normal sm:px-5 sm:py-3.5">
                   {hasMaterialVariants ? (
                     <div class="grid gap-2 text-[0.8125rem] leading-snug sm:text-sm">

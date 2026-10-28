@@ -1,90 +1,77 @@
 ---
+import Button from "./Button.astro";
 import {
   getPanelPagePath,
   useTranslations,
   type Lang,
+  type PanelCategory,
 } from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
-  activeCategory?: "stone" | "mineral";
+  activeCategory?: PanelCategory;
 }
 
 const { lang = "cs", activeCategory } = Astro.props;
 const t = useTranslations(lang);
-const stoneHref = getPanelPagePath("stone", lang);
-const mineralHref = getPanelPagePath("mineral", lang);
+const homePath = lang === "cs" ? "/" : "/en/";
+const learnMoreHref = "#panel-material";
+const allPanelsHref = activeCategory ? homePath : `${homePath}#about`;
+const panelOptions = [
+  { href: activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang), label: t("price.categoryStone"), active: activeCategory === "stone" },
+  { href: activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang), label: t("price.categoryMineral"), active: activeCategory === "mineral" },
+];
+const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory };
+const options = [allPanelsOption, ...panelOptions];
 ---
 
-<div
-  class="panel-type-bar"
-  role="region"
-  aria-label={t("price.categoryLabel")}
-  data-title-stone={t("meta.title")}
-  data-title-mineral={t("meta.titleMineral")}
->
-  <div class="container-page flex items-center justify-between gap-3 py-2.5 sm:py-3">
-    {activeCategory ? (
-      <nav aria-label={t("price.categoryLabel")} class="grid w-full grid-cols-2 gap-1.5 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
-        <a href={stoneHref} aria-current={activeCategory === "stone" ? "page" : undefined} class:list={["flex min-h-10 items-center justify-center border px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase no-underline transition-colors sm:px-4 sm:text-xs", activeCategory === "stone" ? "border-gold bg-gold/12 text-gold-light" : "border-line bg-ink-900 text-fg-soft hover:border-line-strong hover:text-fg"]}>
-          {t("price.categoryStone")}
-        </a>
-        <a href={mineralHref} aria-current={activeCategory === "mineral" ? "page" : undefined} class:list={["flex min-h-10 items-center justify-center border px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase no-underline transition-colors sm:px-4 sm:text-xs", activeCategory === "mineral" ? "border-gold bg-gold/12 text-gold-light" : "border-line bg-ink-900 text-fg-soft hover:border-line-strong hover:text-fg"]}>
-          {t("price.categoryMineral")}
-        </a>
-      </nav>
-    ) : (
-      <div class="flex w-full flex-col gap-2 sm:ml-auto sm:w-auto sm:min-w-[32rem]">
-        <fieldset class="grid w-full grid-cols-2 gap-1.5">
-          <legend class="sr-only">{t("price.categoryLabel")}</legend>
-          <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
-            <input type="radio" name="panel-category" value="stone" data-panel-category-input checked class="sr-only" />
-            {t("price.categoryStone")}
-          </label>
-          <label class="flex min-h-10 cursor-pointer items-center justify-center border border-line bg-ink-900 px-2 text-center text-[0.625rem] leading-tight font-extrabold tracking-[0.06em] uppercase transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-4 sm:text-xs">
-            <input type="radio" name="panel-category" value="mineral" data-panel-category-input class="sr-only" />
-            {t("price.categoryMineral")}
-          </label>
-        </fieldset>
-        <nav aria-label={t("price.categoryLabel")} class="flex justify-end gap-4 text-[0.625rem] font-bold tracking-caps text-fg-subtle uppercase">
-          <a class="text-inherit underline decoration-gold/50 underline-offset-4 hover:text-gold" href={stoneHref}>{t("price.categoryStone")}</a>
-          <a class="text-inherit underline decoration-gold/50 underline-offset-4 hover:text-gold" href={mineralHref}>{t("price.categoryMineral")}</a>
-        </nav>
-      </div>
-    )}
-  </div>
-</div>
-
-<script>
-  const categorySelector = 'input[name="panel-category"]';
-  const categoryBar = document.querySelector<HTMLElement>(".panel-type-bar");
-  const syncPanelCategory = (value: string) => {
-    document.documentElement.dataset.panelCategory = value;
-    const title = value === "mineral"
-      ? categoryBar?.dataset.titleMineral
-      : categoryBar?.dataset.titleStone;
-    if (title) document.title = title;
-  };
-
-  const initial = document.querySelector<HTMLInputElement>(categorySelector + ":checked");
-  if (initial) syncPanelCategory(initial.value);
-
-  document.addEventListener("change", (event) => {
-    const input = event.target;
-    if (input instanceof HTMLInputElement && input.matches(categorySelector)) {
-      syncPanelCategory(input.value);
-    }
-  });
-</script>
+<nav aria-label={t("nav.panelPages")} class="panel-page-switch grid w-full max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3">
+  {options.map(({ href, label, active }) => (
+    <Button
+      href={href}
+      variant={active ? "primary" : "outline"}
+      aria-current={active ? "page" : undefined}
+      class:list={[
+        "panel-switch__button min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-2 py-2 text-[0.625rem] leading-tight sm:px-3 sm:text-xs",
+        { "panel-switch__button--active": active, "panel-switch__button--inactive": !active },
+      ]}
+    >
+      <span class:list={["panel-switch__label", { "panel-switch__label--inactive": !active }]}>{label}</span>
+      {active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}
+    </Button>
+  ))}
+</nav>
 
 <style>
-  .panel-type-bar {
-    position: sticky;
-    inset-block-start: var(--nav-height);
-    z-index: 40;
-    border-block-end: 1px solid var(--color-line);
-    background: color-mix(in srgb, var(--color-ink-900) 92%, transparent);
-    color: var(--color-fg);
-    backdrop-filter: blur(14px);
+  .panel-switch__button {
+    transition:
+      box-shadow 180ms ease-out,
+      border-color 200ms ease-out,
+      background-color 200ms ease-out,
+      color 200ms ease-out;
+  }
+
+  .panel-switch__button--inactive {
+    box-shadow:
+      0 0 0.45rem color-mix(in srgb, var(--color-gold) 30%, transparent),
+      0 0 0.9rem color-mix(in srgb, var(--color-gold) 12%, transparent);
+  }
+
+  .panel-switch__button--active {
+    box-shadow:
+      0 0 0.6rem color-mix(in srgb, var(--color-gold) 46%, transparent),
+      0 0 1.2rem color-mix(in srgb, var(--color-gold) 20%, transparent);
+  }
+
+  .panel-switch__label--inactive {
+    text-shadow:
+      0 0 0.12em rgb(0 0 0 / 0.95),
+      0.06em 0.08em 0.12em rgb(0 0 0 / 0.9),
+      0 0 0.28em rgb(0 0 0 / 0.65);
+    transition: text-shadow 180ms ease-out;
+  }
+
+  :global(.panel-page-switch a:is(:hover, :focus-visible, :active)) .panel-switch__label--inactive {
+    text-shadow: none;
   }
 </style>

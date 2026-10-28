@@ -301,6 +301,56 @@ collections:
     label: Přehled materiálů
     file: src/data/material-overview.json
     fields:
+    - name: materialComposition
+      label: Skladba materiálů panelů
+      widget: object
+      fields:
+      - name: imageAlt
+        label: Alternativní text obrázku
+        widget: object
+        hint: Popis společného obrázku kamenné dýhy a minerálního panelu v sekci Technologie na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+    - name: sharedConstruction
+      label: Společná konstrukce panelu
+      widget: object
+      fields:
+      - name: imageHeading
+        label: Nadpis obrázku
+        widget: object
+        hint: Nadpis překrytý přes obrázek společné konstrukce v sekci Technologie na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: description
+        label: Společný popis konstrukce
+        widget: object
+        hint: Text pod společným obrázkem konstrukce v sekci Technologie na úvodní stránce.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: imageAlt
+        label: Alternativní text obrázku
+        widget: object
+        hint: Popis společného obrázku konstrukce pro čtečky obrazovky v sekci Technologie.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: stoneLayer
+        label: Vrstva 1A – kamenná dýha
+        widget: object
+        hint: Popis vrstvy 1A pod společným obrázkem konstrukce v sekci Technologie.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
+      - name: mineralLayer
+        label: Vrstva 1B – minerální panel
+        widget: object
+        hint: Popis vrstvy 1B pod společným obrázkem konstrukce v sekci Technologie.
+        fields:
+        - { name: cs, label: Česky, widget: string }
+        - { name: en, label: English, widget: string }
     - name: stone
       label: Svítící kamenné panely
       widget: object

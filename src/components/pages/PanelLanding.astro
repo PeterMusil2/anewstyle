@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Header from "../header/Header.astro";
-import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
 import Products from "../sections/Products.astro";
 import PriceList from "../sections/PriceList.astro";
 import {
@@ -26,6 +25,7 @@ const title = t(category === "stone" ? "meta.title" : "meta.titleMineral");
 const description = t(category === "stone" ? "meta.descriptionStone" : "meta.descriptionMineral");
 const pagePath = getPanelPagePath(category, lang);
 const homePath = lang === "cs" ? "/" : "/en/";
+const basePath = lang === "cs" ? "" : "/en";
 const material = getMaterialOverview(lang)[category];
 const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
 ---
@@ -48,17 +48,17 @@ const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
     pageDescription={t("header.title")}
     panelCategory={category}
   />
-  <PanelCategorySwitch lang={lang} activeCategory={category} />
   <main id="main">
-    <section id="panel-material" aria-labelledby="panel-material-title" class="border-b border-line bg-ink">
+    <section id="panel-material" aria-labelledby="panel-material-title" class="home-section-divider bg-ink">
       <div class="container-page grid gap-7 py-8 sm:py-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-center lg:gap-12">
-        <div class="flex flex-col gap-3">
-          <p class="eyebrow">{t("panelPage.materialEyebrow")}</p>
-          <h2 id="panel-material-title" class="text-2xl font-black tracking-tight text-fg sm:text-3xl">{t("panelPage.materialTitle")}</h2>
+        <div class="flex flex-col items-center gap-3 text-center">
+          <h2 id="panel-material-title" class="text-center text-2xl font-black tracking-tight text-fg sm:text-3xl">
+            {t(category === "stone" ? "panelPage.stoneMaterialTitle" : "panelPage.mineralMaterialTitle")}
+          </h2>
           <p class="text-sm leading-relaxed text-fg-soft">{material.technology}</p>
-          <nav aria-label={t("panelPage.materialTitle")} class="flex flex-wrap gap-x-5 gap-y-2 pt-1 text-sm font-bold">
+          <nav aria-label={t("nav.features")} class="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-1 text-center text-sm font-bold">
             <a href={`${homePath}#features`} class="text-gold underline-offset-4 hover:underline focus-visible:underline">{t("panelPage.sharedFeaturesLink")}</a>
-            <a href={`${homePath}#faq`} class="text-gold underline-offset-4 hover:underline focus-visible:underline">{t("panelPage.sharedFaqLink")}</a>
+            <a href={`${basePath}/faq/`} class="text-gold underline-offset-4 hover:underline focus-visible:underline">{t("panelPage.sharedFaqLink")}</a>
           </nav>
         </div>
         <dl class="grid gap-3 sm:grid-cols-2">

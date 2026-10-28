@@ -30,9 +30,9 @@ const scenes = [
 ] as const;
 ---
 
-<section id="day-night" aria-labelledby="day-night-title" class="section-y bg-ink-850">
+<section id="day-night" aria-labelledby="day-night-title" class="home-section-y home-section-divider bg-ink">
   <div class="container-wide flex flex-col gap-10 lg:gap-14">
-    <SectionHeader id="day-night-title" layout="center" eyebrow={`${t("slider.titleDay")} · ${t("slider.titleNight")}`} title={t("home.dayNightTitle")}>
+    <SectionHeader id="day-night-title" layout="center" eyebrow={t("home.chapterDayNight")} title={t("home.dayNightTitle")}>
       <p>{t("home.dayNightIntro")}</p>
     </SectionHeader>
 
@@ -46,7 +46,7 @@ const scenes = [
       ))}
     </fieldset>
 
-    <figure class="mx-auto w-full max-w-6xl border border-line bg-ink p-3 sm:p-5">
+    <figure class="mx-auto w-full max-w-6xl border border-line bg-ink-850 p-3 sm:p-5">
       <figcaption class="mb-3 text-xs font-extrabold tracking-[0.12em] text-gold uppercase">
         {scenes.map((scene) => <span data-scene-label={scene.category}>{t(scene.title)}</span>)}
       </figcaption>

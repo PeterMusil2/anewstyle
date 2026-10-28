@@ -9,7 +9,6 @@ import prices from "../src/data/prices.json";
 import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
-import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
 import {
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
@@ -247,6 +246,19 @@ describe("price list", () => {
 });
 
 describe("panel patterns", () => {
+  test("stone pattern hint explains click-to-preview and AR placement", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(cs["products.stoneFanHint"]).toBe("Kliknutím na vybraný vzor kamene otevřete jeho 3D náhled a na kompatibilním telefonu také jeho umístění do Vašeho interiéru.");
+    expect(en["products.stoneFanHint"]).toContain("place it in your interior using AR");
+  });
+
+  test("stone pattern note explains that individual stock pieces cannot yet be shown in AR", () => {
+    expect(products.notes.stone.cs).toContain("jednotlivé aktuálně skladové kusy zatím v AR zobrazit neumíme");
+    expect(products.notes.stone.en).toContain("for now, we cannot show every individual in-stock piece in AR");
+  });
+
   test("stone patterns have a title and a photo", () => {
     expect(products.items.length).toBeGreaterThan(0);
     for (const item of products.items) {
@@ -265,71 +277,147 @@ describe("panel patterns", () => {
 });
 
 describe("home material overview", () => {
-  test("uses the requested bilingual mineral copy and the supplied stone-veneer diagram", async () => {
+  test("uses one bilingual composition image for the stone veneer and mineral panel", async () => {
     const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-    const cs = "Transparentní, litý designový panel s kamennou texturou a vysokým podílem minerálů, který je pevný a skvěle propouští světlo. Jeho tloušťka je 6 mm.";
+    const cs = "Transparentní, litý designový panel s vysokým podílem minerálů a hladkým povrchem, o tloušťce 6 mm.";
+    const image = "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png";
 
     expect(materialOverview.mineral.technology.cs).toBe(cs);
     expect(materialOverview.mineral.technology.en).toContain("cast design panel");
-    expect(component).toContain("/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png");
-    expect(publicFile("/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png")).toBe(true);
+    expect(component.match(/<Picture src="\/images\/technologies\/konstrukce_sviticiho_panelu_kamenna_dyha-mineral\.png"/g)).toHaveLength(1);
+    expect(component).not.toContain("/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png");
+    expect(component).not.toContain("/images/technologies/mineral-perspective.png");
+    expect(publicFile(image)).toBe(true);
+    expect(materialOverview.materialComposition.imageAlt.cs).toContain("kamenné dýhy");
   });
 
-  test("renders all stone construction numbers as overlay labels matching the mineral diagram", async () => {
+  test("renders one shared construction image and preserves the two alternative front layers and layers 2–6", async () => {
     const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
+    const image = "/images/technologies/konstrukce_sviticiho_panelu.png";
 
-    expect(stoneConstructionMarkers.map(({ number }) => number)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(stoneConstructionMarkers.every(({ x, y }) => x > 0 && x < 100 && y > 0 && y < 100)).toBe(true);
-    expect(component).toContain("konstrukce_sviticiho_panelu_matna2.png");
-    expect(publicFile("/images/technologies/konstrukce_sviticiho_panelu_matna2.png")).toBe(true);
-    expect(component).toContain("stoneConstructionMarkers");
-    for (const [index, marker] of stoneConstructionMarkers.slice(0, 4).entries()) {
-      const mineralMarker = mineralConstructionMarkers[index];
-      expect(marker.x).toBeCloseTo(scaleConstructionMarkerPosition(mineralMarker.x, 1.18));
-      expect(marker.y).toBeCloseTo(scaleConstructionMarkerPosition(mineralMarker.y, 1.18));
+    expect(component.match(/<Picture src="\/images\/technologies\/konstrukce_sviticiho_panelu\.png"/g)).toHaveLength(1);
+    expect(component).not.toContain("konstrukce_sviticiho_panelu_matna2.png");
+    expect(component).not.toContain("konstrukce_sviticiho_mineralniho_panelu.png");
+    expect(publicFile(image)).toBe(true);
+    expect(materialOverview.sharedConstruction.stoneLayer.cs).toBe("Transparentní kamenná dýha");
+    expect(materialOverview.sharedConstruction.mineralLayer.cs).toBe("Transparentní minerální panel");
+    expect(materialOverview.sharedConstruction.description.cs).toBe("Svítící kamenné panely AnewStyle jsou kombinací zajímavých technologií. Spojení tenké vrstvy přírodního kamene nebo transparentní, minerální desky s bočním nasvícením světlovodivé desky s rovnoměrným celoplošným rozptylem světla. Tento způsob nasvícení umožňuje v případě potřeby snadnou výměnu zdroje světla.");
+    expect(component).toContain('{ number: "1A", label: localized(sharedConstruction.stoneLayer');
+    expect(component).toContain('{ number: "1B", label: localized(sharedConstruction.mineralLayer');
+    for (const number of ["2", "3", "4", "5", "6"]) expect(component).toContain(`number: "${number}"`);
+    expect(materialOverview.sharedConstruction.imageHeading.cs).toBe("Konstrukce svítícího panelu Anew Style");
+  });
+
+  test("overlays the four composition callouts in the supplied diagram positions", async () => {
+    const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
+    expect(component).toContain("compositionMarkers.map((marker)");
+    for (const marker of [
+      '{ number: "1", x: 37.3, y: 4.5 }',
+      '{ number: "2", x: 41.5, y: 6.7 }',
+      '{ number: "3", x: 45.2, y: 12.5 }',
+      '{ number: "4", x: 47.5, y: 22.8 }',
+    ]) expect(component).toContain(marker);
+  });
+});
+
+describe("home lighting comparison", () => {
+  test("keeps the shared state control directly above both panels without the redundant hint", async () => {
+    const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    const controlsAt = component.indexOf('name="home-showcase-state"');
+    const panelsAt = component.indexOf("class=\"grid grid-cols-2 items-stretch");
+
+    expect(controlsAt).toBeGreaterThan(-1);
+    expect(panelsAt).toBeGreaterThan(controlsAt);
+    expect(component).toContain("home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-4");
+    expect(component).not.toContain("home.showcaseStateHint");
+    expect(cs["home.showcaseStateHint"]).toBeUndefined();
+    expect(en["home.showcaseStateHint"]).toBeUndefined();
+  });
+
+  test("places both panel links above the state control instead of below the images", async () => {
+    const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
+    const mobileButtonStyles = "whitespace-normal! leading-tight max-sm:text-[0.625rem]!";
+    const stoneButtonAt = component.indexOf('<Button href={stoneHref}');
+    const mineralButtonAt = component.indexOf('<Button href={mineralHref}');
+    const controlsAt = component.indexOf('name="home-showcase-state"');
+    const panelsAt = component.indexOf("class=\"grid grid-cols-2 items-stretch");
+
+    expect(stoneButtonAt).toBeGreaterThan(-1);
+    expect(mineralButtonAt).toBeGreaterThan(stoneButtonAt);
+    expect(mineralButtonAt).toBeLessThan(controlsAt);
+    expect(controlsAt).toBeLessThan(panelsAt);
+    expect(component.slice(panelsAt)).not.toContain('<Button href={stoneHref}');
+    expect(component.slice(panelsAt)).not.toContain('<Button href={mineralHref}');
+    expect(component.slice(stoneButtonAt, controlsAt)).toContain(mobileButtonStyles);
+    expect(component.slice(stoneButtonAt, controlsAt)).toContain("home.openStone");
+    expect(component.slice(stoneButtonAt, controlsAt)).toContain("home.openMineral");
+  });
+});
+
+describe("home section rhythm", () => {
+  test("uses slightly tighter spacing and alternating brand surfaces on the shared home page", async () => {
+    const files = [
+      ["src/components/sections/HomeShowcase.astro", "home-section-y home-section-divider relative isolate overflow-hidden bg-ink"],
+      ["src/components/sections/MaterialOverview.astro", "home-section-y home-section-divider bg-ink-800"],
+      ["src/components/sections/Features.astro", "home-section-y home-section-divider bg-ink"],
+      ["src/components/sections/HomeEquipmentComparison.astro", "home-section-y home-section-divider bg-ink-800"],
+      ["src/components/sections/HomeDayNight.astro", "home-section-y home-section-divider bg-ink"],
+      ["src/components/sections/Contact.astro", "home-section-y home-section-divider bg-ink-800"],
+    ] as const;
+
+    for (const [path, classes] of files) {
+      expect(await Bun.file(path).text()).toContain(classes);
     }
+
+    const styles = await Bun.file("src/styles/global.css").text();
+    expect(styles).toContain("@utility home-section-y {");
+    expect(styles).toContain("padding-block: 4.25rem;");
+    expect(styles).toContain("padding-block: 6.5rem;");
+    expect(styles).toContain(".home-section-divider::before {");
+
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    expect(cs["home.chapterLight"]).toBe("01 · Rozsviť mě");
+    expect(cs["home.chapterContact"]).toBe("06 · Kontakt");
+    expect(en["home.chapterLight"]).toBe("01 · Light it up");
+    expect(en["home.chapterContact"]).toBe("06 · Contact");
+    expect(await Bun.file("src/components/sections/HomeEquipmentComparison.astro").text()).toContain("home-section-divider bg-ink-800");
+    expect(await Bun.file("src/components/sections/Contact.astro").text()).toContain("sm:bg-ink-850");
   });
+});
 
-  test("enlarges the mineral construction diagram and labels all six layers", async () => {
-    const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
+describe("panel landing visual rhythm", () => {
+  test("stone and mineral branches share the alternating surface and divider treatment", async () => {
+    const landing = await Bun.file("src/components/pages/PanelLanding.astro").text();
+    const products = await Bun.file("src/components/sections/Products.astro").text();
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
 
-    expect(mineralConstructionMarkers.map(({ number }) => number)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(mineralConstructionMarkers.every(({ x, y }) => x > 0 && x < 100 && y > 0 && y < 100)).toBe(true);
-    expect(component).toContain("scale: 1.18");
-    expect(component).toContain("mineralConstructionMarkers");
-    expect(component).toContain("/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png");
-    expect(publicFile("/images/technologies/konstrukce_sviticiho_mineralniho_panelu.png")).toBe(true);
+    expect(landing).toContain('id="panel-material" aria-labelledby="panel-material-title" class="home-section-divider bg-ink"');
+    expect(products).toContain('class="home-section-y home-section-divider overflow-x-clip bg-ink-800"');
+    expect(priceList).toContain('class="pricing home-section-divider bg-ink"');
   });
+});
 
-  test("keeps mineral diagram labels the same size while aligning them to the enlarged image", async () => {
-    const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-    const alignedMineralPositions = mineralConstructionMarkers.map(({ x, y }) => [
-      scaleConstructionMarkerPosition(x, 1.18),
-      scaleConstructionMarkerPosition(y, 1.18),
-    ]);
+describe("feature disclosures", () => {
+  test("uses native expandable cards on the shared home page and preserves anchor targets", async () => {
+    const component = await Bun.file("src/components/sections/Features.astro").text();
 
-    expect(alignedMineralPositions[0][0]).toBeCloseTo(97);
-    expect(alignedMineralPositions.map(([, y]) => y)).toEqual([
-      expect.closeTo(4),
-      expect.closeTo(30),
-      expect.closeTo(47),
-      expect.closeTo(59),
-      expect.closeTo(94),
-      expect.closeTo(83),
-    ]);
-    expect(scaleConstructionMarkerPosition(50, 1.18)).toBe(50);
-    expect(component).toContain("pointer-events-none absolute inset-0");
-    expect(component).toContain("w-[calc(100%+1.5rem)] max-w-[24.5rem]");
-    expect(component).toContain("w-[calc(100%-1.5rem)]");
-    expect(component).toContain("scaleConstructionMarkerPosition(marker.x, item.scale)");
-    expect(component).toContain("grid size-6");
-  });
-
-  test("covers the baked 1–4 badges with the shared overlay labels", async () => {
-    const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-
-    expect(component).toContain("pointer-events-none absolute inset-0");
-    expect(component).toContain("stoneConstructionMarkers");
+    expect(component).toContain("features.map((feature)");
+    expect(component).toContain('<details class="group/feature">');
+    expect(component).toContain('<h3 class="min-w-0 flex-1 text-sm leading-snug font-black tracking-[0.06em] uppercase">');
+    expect(component).toContain('items-center gap-3 rounded-sm text-fg');
+    expect(component).not.toContain("<details open=");
+    expect(component).not.toContain("feature-color-palette");
+    const palette = await Bun.file("src/components/palette/Palette.astro").text();
+    expect(palette).toContain('<ul class="flex h-12 items-center gap-3"');
+    expect(component).toContain("feature-disclosure-indicator");
+    expect(component).toContain('if (!feature?.matches("li[id]")) return;');
+    expect(component).toContain("border-line-strong bg-ink-900");
+    expect(component).toContain("border-gold/70 bg-gold/10");
+    expect(component).toContain("openAnchoredFeature();");
+    expect(component).toContain("window.addEventListener(\"hashchange\", openAnchoredFeature)");
   });
 });
 
@@ -381,35 +469,54 @@ describe("i18n", () => {
     }
   });
 
-  test("home panel choices show each material description below its button", async () => {
+  test("panel page switch shows all three destinations and marks the current page", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
     const header = await Bun.file("src/components/header/Header.astro").text();
+    const switcher = await Bun.file("src/components/ui/PanelCategorySwitch.astro").text();
 
-    expect(cs["header.stoneMaterial"]).toBe("Transparentní kamenná dýha 2-3 mm");
-    expect(cs["header.mineralMaterial"]).toBe("Transparentní minerální deska 6 mm");
-    expect(en["header.stoneMaterial"]).toBe("Transparent stone veneer 2–3 mm");
-    expect(en["header.mineralMaterial"]).toBe("Transparent mineral sheet 6 mm");
-    expect(header).toMatch(/<Button href=\{getPanelPagePath\("stone", lang\)\}[\s\S]*?<\/Button>\s*<p[^>]*>\s*\{t\("header\.stoneMaterial"\)\}/);
-    expect(header).toMatch(/<Button href=\{getPanelPagePath\("mineral", lang\)\}[\s\S]*?<\/Button>\s*<p[^>]*>\s*\{t\("header\.mineralMaterial"\)\}/);
-    expect(header).toMatch(/<Button href=\{getPanelPagePath\("stone", lang\)\} variant="outline"/);
-    expect(header).toMatch(/<Button href=\{getPanelPagePath\("mineral", lang\)\} variant="outline"/);
-    expect(header.match(/class="home-category-button w-full min-h-15 sm:min-h-16"/g)).toHaveLength(2);
-    expect(header.match(/class="home-category-label"/g)).toHaveLength(2);
+    expect(cs["nav.allPanels"]).toBe("Vše o panelech Anew Style");
+    expect(en["nav.allPanels"]).toBe("All about Anew Style panels");
+    expect(header).toContain('<PanelCategorySwitch lang={lang} activeCategory={panelCategory} />');
+    expect(switcher).toContain('getPanelPagePath("stone", lang)');
+    expect(switcher).toContain('getPanelPagePath("mineral", lang)');
+    expect(switcher).toContain('label: t("nav.allPanels")');
+    expect(switcher).toContain('active: !activeCategory');
+    expect(switcher).toContain('const learnMoreHref = "#panel-material"');
+    expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
+    expect(switcher).toContain('activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang)');
+    expect(switcher).toContain('const allPanelsHref = activeCategory ? homePath : `${homePath}#about`');
+    expect(switcher).toContain('const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory }');
+    expect(switcher).toMatch(/const options = \[allPanelsOption, \.\.\.panelOptions\]/);
+    expect(switcher).toContain('active: activeCategory === "stone"');
+    expect(switcher).toContain('active: activeCategory === "mineral"');
+    expect(switcher).toContain('variant={active ? "primary" : "outline"}');
+    expect(switcher).toContain('{active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
+    expect(cs["header.btnMore"]).toBe("Chci vědět víc");
+    expect(en["header.btnMore"]).toBe("Learn more");
+    expect(switcher).toContain('variant={active ? "primary" : "outline"}');
+    expect(switcher).toContain('aria-current={active ? "page" : undefined}');
+    expect(switcher).toContain('grid-cols-1 gap-2 sm:grid-cols-3');
     expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
     expect(header).toContain('"hero-title__label--home": home');
+    expect(header).toContain("items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center");
+    expect(header).toContain('<PanelCategorySwitch lang={lang} activeCategory={panelCategory} />');
+    expect(header).toContain('class="w-64 justify-center max-md:hidden!"');
+    expect(header).toContain('class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!"');
+    const sectionHeader = await Bun.file("src/components/ui/SectionHeader.astro").text();
+    expect(sectionHeader).toContain('layout = "center"');
+    expect(sectionHeader).toContain('layout === "center" && "mx-auto flex max-w-3xl flex-col items-center gap-5 text-center"');
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+    expect(priceList).toContain('class="reveal flex flex-col items-center gap-3 text-center short:gap-2"');
+    const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
+    expect(panelLanding).toContain('class="flex flex-col items-center gap-3 text-center"');
     const effects = await Bun.file("src/styles/effects.css").text();
-    expect(effects).toContain(".home-category-label,");
     expect(effects).toContain(".hero-title__label {");
     expect(effects).toContain(".hero-title__label--home {");
     expect(effects).toContain("width: max-content");
     expect(effects).toContain("white-space: nowrap");
-    expect(effects).toContain("inset-inline: 18%");
-    expect(effects).toContain("rgb(0 0 0 / 0.58) 0%");
-    expect(effects).toContain("transparent 74%");
-    expect(effects).toContain(".home-category-button:is(:hover, :focus-visible) .home-category-label::before");
-    expect(effects).toContain("transition: opacity 180ms var(--ease-out-soft)");
-    expect(effects).not.toContain(".home-category-button::before");
+    expect(effects).toContain("color-mix(in srgb, var(--color-fg) 40%, transparent)");
+    expect(effects).toContain("0 0 0.34em rgb(36 32 26 / 0.42)");
   });
 
   test("panel hero places a gold home icon under video controls and matches CTA sizes", async () => {
@@ -424,9 +531,8 @@ describe("i18n", () => {
     expect(header).toContain('<Icon name="home" class="size-5" />');
     expect(header).toContain('aria-label={t("nav.home")}');
     expect(header).toContain('class="hero-home-link absolute z-10 grid size-11');
-    expect(header).toContain('id="headerMoreButton" class="w-64"');
-    expect(header).toContain('<div class="w-64 lg:hidden!">');
-    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-full/);
+    expect(header).not.toContain('id="headerMoreButton"');
+    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-64/);
     expect(nav).not.toContain('<Icon name="home"');
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-home-link {");
@@ -434,10 +540,24 @@ describe("i18n", () => {
     expect(nav).toContain('const mobileLinks = links');
   });
 
-  test("home header keeps FAQ and day-night sections out of the navigation", async () => {
+  test("FAQ has a dedicated localized page and menu links", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const home = await Bun.file("src/components/pages/HomeLanding.astro").text();
+    const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
+    const faqPage = await Bun.file("src/pages/faq.astro").text();
+    const enFaqPage = await Bun.file("src/pages/en/faq.astro").text();
+    const schema = await Bun.file("src/lib/structured-data.ts").text();
+
     expect(nav).not.toContain('text: t("nav.dayNight")');
-    expect(nav).not.toContain('text: t("nav.faq")');
+    expect(nav.match(/href: `\$\{basePath\}\/faq\/`, text: t\("nav\.faq"\)/g)).toHaveLength(2);
+    expect(home).not.toContain('<Faq id="faq"');
+    expect(home).not.toContain("<Faq ");
+    expect(panelLanding).toContain("/faq/");
+    expect(faqPage).toContain('<Faq id="faq" lang={lang} />');
+    expect(enFaqPage).toContain('<Faq id="faq" lang={lang} />');
+    expect(faqPage).toContain('t("meta.titleFaq")');
+    expect(enFaqPage).toContain('t("meta.titleFaq")');
+    expect(schema).toContain('export function faqPageStructuredData');
   });
 
   test("comparison table shows concise linked thickness values in both languages", async () => {
@@ -451,6 +571,48 @@ describe("i18n", () => {
     expect(comparison).toContain("thicknessValueLabel(key, \"mineral\")");
     expect(comparison).toContain("aria-label={featureLabel(key, \"stone\")}");
     expect(comparison).toContain("aria-label={featureLabel(key, \"mineral\")}");
+    expect(comparison).toContain("border border-line-strong text-left");
+    expect(comparison).toContain("border-t border-line-strong bg-ink-850");
+    expect(comparison).toContain("odd:bg-ink-850/50 hover:bg-ink-900");
+  });
+
+  test("contact form choices and submit action have clear high-contrast states", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact.match(/border-line-bold bg-ink-900 px-/g)?.length).toBe(3);
+    expect(contact.match(/has-checked:bg-gold has-checked:text-ink/g)?.length).toBe(3);
+    expect(contact).toContain('class="contact-form__submit self-start shadow-glow');
+  });
+
+  test("contact form keeps mobile size and version choices compact with unknown centered below", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact).toContain('class="grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2"');
+    expect(contact).toContain('size === "" && "col-span-4 mx-auto w-fit min-w-36');
+    expect(contact).toContain('class="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2"');
+    expect(contact).toContain('version === "" && "col-span-3 mx-auto w-fit min-w-36');
+    expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
+    expect(contact).toContain('class="grid grid-cols-2 gap-2 sm:gap-5"');
+    expect(contact).toContain('rows="2"');
+  });
+
+  test("contact section moves its heading closer to the header when opened by an inquiry link", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact).toContain('class="contact-section home-section-y home-section-divider bg-ink-800"');
+    expect(contact).toContain(".contact-section:target {");
+    expect(contact).toContain("padding-block-start: 1rem;");
+  });
+
+  test("showroom keeps its phone while panel branch showroom CTA links to e-mail", async () => {
+    const contactSection = await Bun.file("src/components/sections/Contact.astro").text();
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(contactSection).toContain('href="tel:+420601221551"');
+    expect(contactSection).toContain('<Icon name="phone" class="size-5" />');
+    expect(priceList).toContain('href={`mailto:${contact.email}`}');
+    expect(priceList).toContain("{contact.email} →");
+    expect(priceList).not.toContain('href="tel:+420601221551"');
   });
 
   test("contact confirmation explains the tracked discount code terms", async () => {

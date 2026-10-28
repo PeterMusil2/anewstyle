@@ -149,8 +149,8 @@ export function panelPageStructuredData(
   ];
 }
 
-/** Shared FAQ on the home comparison page, with both material answers where they differ. */
-export function homePageStructuredData(lang: Lang, pageUrl: string): Record<string, unknown>[] {
+/** Shared FAQ page, with both material answers where they differ. */
+export function faqPageStructuredData(lang: Lang, pageUrl: string): Record<string, unknown>[] {
   const stoneLabel = lang === "cs" ? "Svítící kamenné panely" : "Illuminated stone panels";
   const mineralLabel = lang === "cs" ? "Svítící minerální panely" : "Illuminated mineral panels";
   const faqPage = {

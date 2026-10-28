@@ -30,68 +30,81 @@ const mineralImages = [
 ];
 ---
 
-<section id="about" aria-labelledby="about-title" class="showcase section-y relative isolate overflow-hidden bg-ink text-fg">
-  <div class="container-page flex flex-col gap-10 lg:gap-14">
-    <SectionHeader id="about-title" layout="center" eyebrow={t("nav.light")} title={t("home.showcaseTitle")}>
-      <p>{t("home.showcaseIntro")}</p>
-    </SectionHeader>
+<section aria-labelledby="about-title" class="showcase home-section-y home-section-divider relative isolate overflow-hidden bg-ink text-fg">
+  <div class="container-page flex flex-col gap-8 lg:gap-10">
+    <div id="about">
+      <SectionHeader id="about-title" layout="center" eyebrow={t("home.chapterLight")} title={t("home.showcaseTitle")} />
+    </div>
 
-    <fieldset class="mx-auto flex w-full max-w-2xl flex-col gap-3">
-      <legend class="mb-1 text-center text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("showcase.stateLabel")}</legend>
-      <div class="grid grid-cols-3 border border-line-strong">
-        {states.map((state) => (
-          <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center gap-1.5 px-2 py-3 text-center text-[0.8125rem] font-bold text-fg-soft transition-colors duration-200 not-last:border-r not-last:border-line-strong hover:text-fg has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:-outline-offset-4 has-focus-visible:outline-gold sm:flex-row sm:gap-2.5">
-            <input type="radio" name="home-showcase-state" value={state.value} checked={state.value === "panel"} class="sr-only" />
-            <Icon name={state.icon} class="size-5" />
-            <span>{state.label}</span>
-          </label>
-        ))}
+    <div class="home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-4 sm:gap-5">
+      <div class="grid grid-cols-2 gap-3 sm:gap-5 lg:gap-7">
+        <div class="flex min-w-0 flex-col items-center gap-1.5">
+          <h3 class="sr-only">{t("price.categoryStone")}</h3>
+          <Button href={stoneHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openStone")}</Button>
+          <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.stoneMaterial")}</p>
+        </div>
+        <div class="flex min-w-0 flex-col items-center gap-1.5">
+          <h3 class="sr-only">{t("price.categoryMineral")}</h3>
+          <Button href={mineralHref} variant="outline" class="min-h-12 w-full max-w-sm justify-center px-2 text-center text-xs whitespace-normal! leading-tight max-sm:text-[0.625rem]! sm:px-4 sm:text-sm">{t("home.openMineral")}</Button>
+          <p class="mt-1 text-center text-xs text-fg-muted sm:text-sm">{t("header.mineralMaterial")}</p>
+        </div>
       </div>
-      <p class="text-center text-sm text-fg-muted">{t("home.showcaseStateHint")}</p>
-    </fieldset>
 
-    <div class="grid items-stretch gap-5 lg:grid-cols-2 lg:gap-7">
-      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-4 sm:p-6">
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <h3 class="text-base font-black tracking-[0.1em] text-gold uppercase sm:text-lg">{t("price.categoryStone")}</h3>
-          <p class="text-sm text-fg-muted">{t("header.stoneMaterial")}</p>
+      <fieldset class="mx-auto flex w-full max-w-2xl flex-col gap-2">
+        <legend class="mb-1 text-center text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("showcase.stateLabel")}</legend>
+        <div class="grid grid-cols-3 border border-line-strong">
+          {states.map((state) => (
+            <label class="flex min-h-14 cursor-pointer flex-col items-center justify-center gap-1.5 px-2 py-3 text-center text-[0.8125rem] font-bold text-fg-soft transition-colors duration-200 not-last:border-r not-last:border-line-strong hover:text-fg has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:-outline-offset-4 has-focus-visible:outline-gold sm:flex-row sm:gap-2.5">
+              <input type="radio" name="home-showcase-state" value={state.value} checked={state.value === "panel"} class="sr-only" />
+              <Icon name={state.icon} class="size-5" />
+              <span>{state.label}</span>
+            </label>
+          ))}
         </div>
-        <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
-          <div class="showcase__stone-states absolute inset-0">
-            {stoneImages.map((image) => (
-              <Picture src={image.src} alt={`${t("price.categoryStone")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 45vw, 100vw" data-state={image.state} class="absolute inset-0 size-full object-contain" />
-            ))}
-          </div>
-          <div class="showcase__stone-reflection" aria-hidden="true">
-            {stoneImages.map((image) => (
-              <Picture src={image.src} alt="" sizes="(min-width: 64rem) 45vw, 100vw" data-state={image.state} class="showcase__stone-reflection-image" />
-            ))}
-          </div>
-        </div>
-        <Button href={stoneHref} variant="outline" class="mt-auto self-start">{t("home.openStone")}</Button>
-      </article>
+      </fieldset>
 
-      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-4 sm:p-6">
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-          <h3 class="text-base font-black tracking-[0.1em] text-gold uppercase sm:text-lg">{t("price.categoryMineral")}</h3>
-          <p class="text-sm text-fg-muted">{t("header.mineralMaterial")}</p>
-        </div>
-        <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
-          <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center">
-            <div class="showcase__mineral-reflection" aria-hidden="true">
-              {mineralImages.map((image) => (
-                <Picture src={image.src} alt="" sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
+      <div class="grid grid-cols-2 items-stretch gap-3 sm:gap-5 lg:gap-7">
+        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-2.5 sm:p-4 lg:p-6" aria-label={t("price.categoryStone")}>
+          <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
+            <div class="showcase__stone-states absolute inset-0">
+              {stoneImages.map((image) => (
+                <Picture src={image.src} alt={`${t("price.categoryStone")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 45vw, 100vw" data-state={image.state} class="absolute inset-0 size-full object-contain" />
               ))}
             </div>
-            <div class="showcase__mineral-panel overflow-hidden border border-line-strong bg-ink-900">
-              {mineralImages.map((image) => (
-                <Picture src={image.src} alt={`${t("price.categoryMineral")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
+            <div class="showcase__stone-reflection" aria-hidden="true">
+              {stoneImages.map((image) => (
+                <Picture src={image.src} alt="" sizes="(min-width: 64rem) 45vw, 100vw" data-state={image.state} class="showcase__stone-reflection-image" />
               ))}
             </div>
           </div>
-        </div>
-        <Button href={mineralHref} variant="outline" class="mt-auto self-start">{t("home.openMineral")}</Button>
-      </article>
+        </article>
+
+        <article class="flex min-w-0 flex-col gap-3 border border-line bg-ink-900 p-2.5 sm:p-4 lg:p-6" aria-label={t("price.categoryMineral")}>
+          <div class="showcase__stage relative aspect-[1024/1000] w-full overflow-hidden bg-ink ring-1 ring-line">
+            <div class="showcase__mineral-showcase absolute inset-0 grid place-items-center">
+              <div class="showcase__mineral-reflection" aria-hidden="true">
+                {mineralImages.map((image) => (
+                  <Picture src={image.src} alt="" sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
+                ))}
+              </div>
+              <div class="showcase__mineral-panel overflow-hidden border border-line-strong bg-ink-900">
+                {mineralImages.map((image) => (
+                  <Picture src={image.src} alt={`${t("price.categoryMineral")} – ${states.find((state) => state.value === image.state)?.label ?? ""}`} sizes="(min-width: 64rem) 18vw, 45vw" data-state={image.state} class="showcase__mineral-texture size-full object-cover" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
     </div>
   </div>
 </section>
+
+<style>
+  @media (width < 40rem) {
+    :global(#about-title) {
+      font-size: clamp(1.5rem, 7vw, 1.75rem);
+      line-height: 1.05;
+    }
+  }
+</style>

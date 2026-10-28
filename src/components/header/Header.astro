@@ -1,6 +1,7 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
+import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
 import {
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
@@ -8,7 +9,6 @@ import {
   STONE_AR_MODEL_PATH,
 } from "../../lib/panel-ar";
 import {
-  getPanelPagePath,
   useTranslations,
   type Lang,
   type PanelCategory,
@@ -110,78 +110,55 @@ const headerModelPath = panelCategory === "mineral"
     </a>
   )}
 
-  <div class="container-wide flex flex-col gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 lg:pb-28">
+  <div class="container-wide flex flex-col items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center lg:pb-28">
     <h1 class:list={[
       "hero-title max-w-4xl font-display leading-[0.92] font-black tracking-[0.08em] uppercase",
       pageTitle ? "text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl" : "text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]",
     ]}>
       <span class:list={["hero-title__label", { "hero-title__label--home": home }]}>{pageTitle ?? "ANEW STYLE"}</span>
     </h1>
-    <p class="max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
+    <p class="hero-subtitle max-w-xl text-center text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
       {pageDescription ?? t('header.title')}
     </p>
-    {home ? (
-      <nav aria-label={t("price.categoryLabel")} class="grid w-full max-w-3xl grid-cols-1 gap-3 pt-2 sm:grid-cols-2 sm:gap-4">
-        <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("stone", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
-            <span class="home-category-label">{t("price.categoryStone")}</span>
-          </Button>
-          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
-            {t("header.stoneMaterial")}
-          </p>
-        </div>
-        <div class="flex flex-col items-center gap-2.5">
-          <Button href={getPanelPagePath("mineral", lang)} variant="outline" class="home-category-button w-full min-h-15 sm:min-h-16">
-            <span class="home-category-label">{t("price.categoryMineral")}</span>
-          </Button>
-          <p class="px-1 text-center text-sm leading-relaxed text-fg-soft">
-            {t("header.mineralMaterial")}
-          </p>
-        </div>
-      </nav>
-    ) : (
-      <div class="flex flex-wrap items-center gap-4 pt-2">
-        <Button href={panelCategory ? "#products" : "#about"} id="headerMoreButton" class="w-64">
-          {t('header.btnMore')}
-        </Button>
+    <PanelCategorySwitch lang={lang} activeCategory={panelCategory} />
+    <Button
+      href="https://www.anewstyle-eshop.cz"
+      variant="ghost"
+      rel="external"
+      target="_blank"
+      title={t('header.gotoEshop')}
+      class="w-64 justify-center max-md:hidden!"
+    >
+      {t('header.btnEshop')}
+      <Icon name="eshop" class="size-4" />
+    </Button>
+    {!home && (
+      <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!">
         <Button
-          href="https://www.anewstyle-eshop.cz"
-          variant="ghost"
-          rel="external"
-          target="_blank"
-          title={t('header.gotoEshop')}
-          class="max-lg:hidden!"
+          variant="outline"
+          id="headerArButton"
+          data-model-path={headerModelPath}
+          data-ar-modes={panelArModes()}
+          data-ar-placement={PANEL_AR_PLACEMENT}
+          data-loading="true"
+          data-error="false"
+          aria-busy="true"
+          aria-describedby="headerArStatus"
+          disabled
+          class="w-64 [--spinner-color:var(--color-gold)] lg:hidden! disabled:cursor-not-allowed data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
         >
-          {t('header.btnEshop')}
-          <Icon name="eshop" class="size-4" />
+          {t('header.btnAr')}
+          <Icon name="ar" class="size-5" />
         </Button>
-        <div class="w-64 lg:hidden!">
-          <Button
-            variant="outline"
-            id="headerArButton"
-            data-model-path={headerModelPath}
-            data-ar-modes={panelArModes()}
-            data-ar-placement={PANEL_AR_PLACEMENT}
-            data-loading="true"
-            data-error="false"
-            aria-busy="true"
-            aria-describedby="headerArStatus"
-            disabled
-            class="w-full [--spinner-color:var(--color-gold)] disabled:cursor-not-allowed data-[error=true]:border-danger data-[error=true]:bg-danger data-[loading=true]:cursor-wait data-[loading=true]:opacity-70"
-          >
-            {t('header.btnAr')}
-            <Icon name="ar" class="size-5" />
-          </Button>
-          <p
-            id="headerArStatus"
-            role="status"
-            aria-live="polite"
-            hidden
-            data-unavailable={t("header.arUnavailable")}
-            data-failed={t("header.arFailed")}
-            class="mt-2 text-xs leading-relaxed font-semibold text-danger"
-          ></p>
-        </div>
+        <p
+          id="headerArStatus"
+          role="status"
+          aria-live="polite"
+          hidden
+          data-unavailable={t("header.arUnavailable")}
+          data-failed={t("header.arFailed")}
+          class="absolute top-full mt-2 w-64 text-center text-xs leading-relaxed font-semibold text-danger"
+        ></p>
       </div>
     )}
   </div>

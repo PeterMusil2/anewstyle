@@ -120,6 +120,7 @@ export const GET: APIRoute = () => {
     `- [Svítící minerální panely / Illuminated mineral panels (cs)](${cs.pages.mineralPanels}) · [en](${en.pages.mineralPanels})`,
     `- [Ceník / Price list](${cs.pages.priceList}) · [en](${en.pages.priceList})`,
     `- [Galerie / Gallery](${cs.pages.gallery}) · [en](${en.pages.gallery})`,
+    `- [Časté dotazy / FAQ](${SITE_URL}/faq/) · [en](${SITE_URL}/en/faq/)`,
     `- [Návody / Manuals](${cs.pages.manual}) · [en](${en.pages.manual})`,
     `- [E-shop](${cs.contact.eshop})`,
     "",

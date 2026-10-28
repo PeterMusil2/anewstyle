@@ -10,6 +10,7 @@ import { MINERAL_FEATURE_KEYS, priceFor, type PanelCategory, type SizeKey } from
 import Button from "../ui/Button.astro";
 import ScaleFigure from "../ui/ScaleFigure.astro";
 import Icon from "../icons/Icon.astro";
+import { contact } from "../../lib/site-data";
 import {
   useTranslations,
   type Lang,
@@ -90,18 +91,18 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
   category === "mineral" ? tier.mineralPrice : tier.price;
 ---
 
-<section id={id} aria-labelledby={`${id}-title`} class="pricing bg-ink-850">
+<section id={id} aria-labelledby={`${id}-title`} class="pricing home-section-divider bg-ink">
   <div class="price-catalog">
     <div class="container-page flex flex-col gap-4 py-5 lg:gap-5 lg:py-7">
-    <header class="reveal grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-end lg:gap-x-16 short:gap-2">
-      <div class="flex flex-col gap-3 sm:gap-4 short:gap-2.5">
+    <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2">
+      <div class="flex flex-col items-center gap-3 text-center sm:gap-4 short:gap-2.5">
         <p class="eyebrow">{t("price.eyebrow")}</p>
         <!-- Same title style as every SectionHeader on the site. -->
         <h2 id={`${id}-title`} class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]">
           {t("price.title")}
         </h2>
       </div>
-      <div class="flex flex-col gap-1 lg:max-w-2xl lg:justify-self-end lg:text-right tiny:hidden">
+      <div class="flex flex-col items-center gap-1 text-center lg:max-w-2xl tiny:hidden">
         <p class="text-[0.9375rem] text-fg-soft lg:text-base">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.desc1")}</p>
       </div>
     </header>
@@ -366,7 +367,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.showroomDesc")}</p>
-        <Button href="tel:+420601221551" variant="link" class="self-start tracking-[0.06em]!">+420 601 221 551 →</Button>
+        <Button href={`mailto:${contact.email}`} variant="link" class="self-start">{contact.email} →</Button>
       </div>
   </div>
   </div>

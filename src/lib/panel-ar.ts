@@ -16,10 +16,12 @@ export function shouldOpenArInSamsungInternet(userAgent: string, search: string)
 export function samsungInternetArIntent(currentUrl: string): string {
   const destination = new URL(currentUrl);
   destination.searchParams.delete("ar-direct");
+  destination.searchParams.delete("ar-handoff");
   destination.hash = "";
 
   const fallback = new URL(destination);
   fallback.searchParams.set("ar-direct", "1");
+  destination.searchParams.set("ar-handoff", "1");
   const scheme = destination.protocol.replace(":", "");
 
   return `intent://${destination.host}${destination.pathname}${destination.search}`

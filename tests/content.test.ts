@@ -90,6 +90,9 @@ describe("hero video", () => {
     expect(header).toContain('status === "not-presenting"');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('window.location.href = samsungInternetArIntent(window.location.href)');
+    expect(header).toContain('id="arHandoffOverlay"');
+    expect(header).toContain('id="arHandoffButton"');
+    expect(header).toContain('handoffButton?.addEventListener("click", activatePreparedAR)');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes()}');
@@ -147,7 +150,7 @@ describe("hero video", () => {
     expect(shouldOpenArInSamsungInternet("Mozilla/5.0 (iPhone)", "")).toBe(false);
 
     const intent = samsungInternetArIntent("https://example.com/panely/?v=test#products");
-    expect(intent).toStartWith("intent://example.com/panely/?v=test#Intent;scheme=https;");
+    expect(intent).toStartWith("intent://example.com/panely/?v=test&ar-handoff=1#Intent;scheme=https;");
     expect(intent).toContain("package=com.sec.android.app.sbrowser");
     expect(intent).toContain(encodeURIComponent("https://example.com/panely/?v=test&ar-direct=1"));
   });

@@ -193,6 +193,36 @@ const headerModelPath = panelCategory === "mineral"
   </div>
 </header>
 
+<div
+  id="arHandoffOverlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="arHandoffTitle"
+  hidden
+  class="scheme-dark-protected fixed inset-0 z-[2147483646] flex items-center justify-center bg-ink px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-fg [&[hidden]]:hidden!"
+>
+  <div class="flex w-full max-w-sm flex-col items-center gap-6 text-center">
+    <Icon name="ar" class="size-12 text-gold" />
+    <div class="space-y-3">
+      <h2 id="arHandoffTitle" class="font-display text-3xl font-black tracking-wide uppercase">
+        {t("header.arHandoffTitle")}
+      </h2>
+      <p id="arHandoffStatus" role="status" aria-live="polite" class="text-base leading-relaxed text-fg-soft">
+        {t("header.arHandoffHint")}
+      </p>
+    </div>
+    <Button
+      id="arHandoffButton"
+      disabled
+      aria-busy="true"
+      class="w-full min-h-15 [--spinner-color:var(--color-ink)]"
+    >
+      {t("header.arContinue")}
+      <Icon name="ar" class="size-5" />
+    </Button>
+  </div>
+</div>
+
 <script>
   import {
     PANEL_AR_PLACEMENT,
@@ -337,8 +367,12 @@ const headerModelPath = panelCategory === "mineral"
 
     const arButton = document.querySelector<HTMLButtonElement>("#headerArButton");
     const arStatus = document.querySelector<HTMLElement>("#headerArStatus");
+    const handoffOverlay = document.querySelector<HTMLElement>("#arHandoffOverlay");
+    const handoffButton = document.querySelector<HTMLButtonElement>("#arHandoffButton");
+    const handoffStatus = document.querySelector<HTMLElement>("#arHandoffStatus");
     if (!arButton) return;
 
+    const handoffRequested = new URLSearchParams(window.location.search).get("ar-handoff") === "1";
     const openInSamsungInternet = shouldOpenArInSamsungInternet(
       window.navigator.userAgent,
       window.location.search,
@@ -346,6 +380,13 @@ const headerModelPath = panelCategory === "mineral"
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
+    const setHandoffVisible = (visible: boolean) => {
+      if (!handoffRequested || !handoffOverlay) return;
+      handoffOverlay.hidden = !visible;
+      document.documentElement.style.overflow = visible ? "hidden" : "";
+      if (visible && handoffButton && !handoffButton.disabled) handoffButton.focus();
+    };
+    setHandoffVisible(true);
     const setStatus = (message = "") => {
       if (!arStatus) return;
       arStatus.textContent = message;
@@ -355,6 +396,10 @@ const headerModelPath = panelCategory === "mineral"
       arButton.disabled = loading;
       arButton.setAttribute("data-loading", loading ? "true" : "false");
       arButton.setAttribute("aria-busy", loading ? "true" : "false");
+      if (handoffButton) {
+        handoffButton.disabled = loading;
+        handoffButton.setAttribute("aria-busy", loading ? "true" : "false");
+      }
     };
     const showArError = (kind: "unavailable" | "failed") => {
       if (arViewer) arViewer.style.cssText = panelArViewerStyle(false);
@@ -362,6 +407,8 @@ const headerModelPath = panelCategory === "mineral"
       arButton.disabled = !arViewer?.canActivateAR;
       arButton.setAttribute("data-error", "true");
       setStatus(arStatus?.dataset[kind] ?? "");
+      if (handoffStatus) handoffStatus.textContent = arStatus?.dataset[kind] ?? "";
+      setHandoffVisible(true);
     };
 
     const prepareAR = async () => {
@@ -408,6 +455,7 @@ const headerModelPath = panelCategory === "mineral"
           if (status === "not-presenting") {
             viewer.style.cssText = panelArViewerStyle(false);
             setLoading(false);
+            setHandoffVisible(true);
           }
         });
 
@@ -422,18 +470,14 @@ const headerModelPath = panelCategory === "mineral"
         arButton.setAttribute("data-error", "false");
         setStatus();
         setLoading(false);
+        if (handoffRequested) window.requestAnimationFrame(() => handoffButton?.focus());
       } catch (error) {
         console.error("Could not prepare AR:", error);
         showArError("failed");
       }
     };
 
-    arButton.addEventListener("click", () => {
-      if (openInSamsungInternet) {
-        setLoading(true);
-        window.location.href = samsungInternetArIntent(window.location.href);
-        return;
-      }
+    const activatePreparedAR = () => {
       if (!arViewer?.canActivateAR) {
         showArError("unavailable");
         return;
@@ -441,6 +485,7 @@ const headerModelPath = panelCategory === "mineral"
       arButton.setAttribute("data-error", "false");
       setStatus();
       setLoading(true);
+      setHandoffVisible(false);
       arViewer.style.cssText = panelArViewerStyle(true);
       // Keep this call synchronous inside the click handler: Scene Viewer and
       // Quick Look require the original user gesture.
@@ -452,7 +497,17 @@ const headerModelPath = panelCategory === "mineral"
         .finally(() => {
           if (arViewer?.canActivateAR && arButton.dataset.error !== "true") setLoading(false);
         });
+    };
+
+    arButton.addEventListener("click", () => {
+      if (openInSamsungInternet) {
+        setLoading(true);
+        window.location.href = samsungInternetArIntent(window.location.href);
+        return;
+      }
+      activatePreparedAR();
     });
+    handoffButton?.addEventListener("click", activatePreparedAR);
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
     if (mobileAR.matches) {

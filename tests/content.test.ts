@@ -14,6 +14,8 @@ import {
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
+  panelArOrientation,
+  panelArRoll,
   panelArViewerStyle,
   samsungInternetArIntent,
   shouldOpenArInSamsungInternet,
@@ -93,6 +95,8 @@ describe("hero video", () => {
     expect(header).toContain('id="arHandoffOverlay"');
     expect(header).toContain('id="arHandoffButton"');
     expect(header).toContain('handoffButton?.addEventListener("click", activatePreparedAR)');
+    expect(header).toContain('id="arRotationControlsTemplate"');
+    expect(header).toContain('viewer.setAttribute("orientation", panelArOrientation(panelRoll))');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes()}');
@@ -136,6 +140,14 @@ describe("hero video", () => {
         expect(bakedBytes.equals(sourceBytes), `${pattern.image} bufferView ${index}`).toBe(true);
       });
     }
+  });
+
+  test("AR rotation controls turn the panel within the wall plane and wrap cleanly", () => {
+    expect(panelArRoll(0, -1)).toBe(-15);
+    expect(panelArRoll(0, 1)).toBe(15);
+    expect(panelArRoll(175, 1, 10)).toBe(-175);
+    expect(panelArRoll(-175, -1, 10)).toBe(175);
+    expect(panelArOrientation(30)).toBe("30deg 0deg 0deg");
   });
 
   test("affected Android browsers hand AR off to Samsung Internet without a fallback loop", () => {

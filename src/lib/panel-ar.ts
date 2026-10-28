@@ -2,6 +2,15 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
+export function panelArRoll(currentDegrees: number, direction: -1 | 1, stepDegrees = 15): number {
+  const next = currentDegrees + direction * stepDegrees;
+  return ((next + 180) % 360 + 360) % 360 - 180;
+}
+
+export function panelArOrientation(rollDegrees: number): string {
+  return `${rollDegrees}deg 0deg 0deg`;
+}
+
 const SAMSUNG_INTERNET_PACKAGE = "com.sec.android.app.sbrowser";
 
 export function shouldOpenArInSamsungInternet(userAgent: string, search: string): boolean {

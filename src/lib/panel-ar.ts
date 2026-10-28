@@ -10,6 +10,18 @@ export function panelArModes(): string {
   return "webxr quick-look";
 }
 
+/**
+ * WebXR renders from the model-viewer host. Keep the preloaded host behind the
+ * page, but promote it before activateAR() so Android Chrome can present its
+ * canvas and the built-in exit control.
+ */
+export function panelArViewerStyle(active: boolean): string {
+  const interaction = active
+    ? "pointer-events:auto;z-index:2147483647"
+    : "pointer-events:none;z-index:-1";
+  return `position:fixed;inset:0;width:100vw;height:100svh;${interaction}`;
+}
+
 export function mineralArModelPath(texturePath: string): string {
   const match = texturePath.match(/\/mineral-(\d+)\.[a-z0-9]+$/i);
   if (!match) throw new Error(`Unsupported mineral texture path: ${texturePath}`);

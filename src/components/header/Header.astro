@@ -1,7 +1,11 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
-import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes } from "../../lib/panel-ar";
+import {
+  mineralArModelPath,
+  PANEL_AR_PLACEMENT,
+  panelArModes,
+} from "../../lib/panel-ar";
 import {
   getPanelPagePath,
   useTranslations,
@@ -189,7 +193,12 @@ const headerModelPath = panelCategory === "mineral"
 </header>
 
 <script>
-  import { PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../../lib/panel-ar";
+  import {
+    PANEL_AR_PLACEMENT,
+    panelArModes,
+    panelArViewerStyle,
+    waitForArAvailability,
+  } from "../../lib/panel-ar";
 
   type ARViewer = HTMLElement & {
     activateAR: () => Promise<void>;
@@ -339,6 +348,7 @@ const headerModelPath = panelCategory === "mineral"
       arButton.setAttribute("aria-busy", loading ? "true" : "false");
     };
     const showArError = (kind: "unavailable" | "failed") => {
+      if (arViewer) arViewer.style.cssText = panelArViewerStyle(false);
       setLoading(false);
       arButton.disabled = !arViewer?.canActivateAR;
       arButton.setAttribute("data-error", "true");
@@ -361,7 +371,7 @@ const headerModelPath = panelCategory === "mineral"
         viewer.setAttribute("loading", "eager");
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
         // surface; a 1×1 hidden renderer can fail to start on Android Chrome.
-        viewer.style.cssText = "position:fixed;inset:0;width:100vw;height:100svh;pointer-events:none;z-index:-1";
+        viewer.style.cssText = panelArViewerStyle(false);
         document.body.appendChild(viewer);
         arViewer = viewer;
         await viewer.updateComplete;
@@ -385,6 +395,10 @@ const headerModelPath = panelCategory === "mineral"
           if (status === "session-started") {
             arButton.setAttribute("data-error", "false");
             setStatus();
+          }
+          if (status === "not-presenting") {
+            viewer.style.cssText = panelArViewerStyle(false);
+            setLoading(false);
           }
         });
 
@@ -413,6 +427,7 @@ const headerModelPath = panelCategory === "mineral"
       arButton.setAttribute("data-error", "false");
       setStatus();
       setLoading(true);
+      arViewer.style.cssText = panelArViewerStyle(true);
       // Keep this call synchronous inside the click handler: Scene Viewer and
       // Quick Look require the original user gesture.
       void arViewer.activateAR()

@@ -10,7 +10,13 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import { mineralConstructionMarkers, scaleConstructionMarkerPosition, stoneConstructionMarkers } from "../src/lib/construction-diagram";
-import { mineralArModelPath, PANEL_AR_PLACEMENT, panelArModes, waitForArAvailability } from "../src/lib/panel-ar";
+import {
+  mineralArModelPath,
+  PANEL_AR_PLACEMENT,
+  panelArModes,
+  panelArViewerStyle,
+  waitForArAvailability,
+} from "../src/lib/panel-ar";
 
 const toNumber = (value: string) => Number(value.replace(/\s/g, ""));
 const SIZES = ["l", "xl", "xxl", "xxxl"] as const;
@@ -69,11 +75,15 @@ describe("hero video", () => {
     expect(PANEL_AR_PLACEMENT).toBe("wall");
     expect(panelArModes()).toBe("webxr quick-look");
     expect(panelArModes()).not.toContain("scene-viewer");
+    expect(panelArViewerStyle(false)).toContain("pointer-events:none;z-index:-1");
+    expect(panelArViewerStyle(true)).toContain("pointer-events:auto;z-index:2147483647");
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
     expect(header).toContain('data-ar-modes={panelArModes()}');
     expect(header).toContain('await waitForArAvailability(');
-    expect(header).toContain('width:100vw;height:100svh');
+    expect(panelArViewerStyle(false)).toContain('width:100vw;height:100svh');
     expect(header).not.toContain('height:100svh;opacity:0');
+    expect(header).toContain('arViewer.style.cssText = panelArViewerStyle(true)');
+    expect(header).toContain('status === "not-presenting"');
     expect(header).toContain('void arViewer.activateAR()');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');

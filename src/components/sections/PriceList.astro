@@ -10,6 +10,7 @@ import { MINERAL_FEATURE_KEYS, priceFor, type PanelCategory, type SizeKey } from
 import Button from "../ui/Button.astro";
 import ScaleFigure from "../ui/ScaleFigure.astro";
 import Icon from "../icons/Icon.astro";
+import { contact } from "../../lib/site-data";
 import {
   useTranslations,
   type Lang,
@@ -90,7 +91,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
   category === "mineral" ? tier.mineralPrice : tier.price;
 ---
 
-<section id={id} aria-labelledby={`${id}-title`} class="pricing bg-ink-850">
+<section id={id} aria-labelledby={`${id}-title`} class="pricing home-section-divider bg-ink">
   <div class="price-catalog">
     <div class="container-page flex flex-col gap-4 py-5 lg:gap-5 lg:py-7">
     <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2">
@@ -366,7 +367,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
       <div class="flex flex-col gap-3 border border-line bg-ink-900 p-7 md:p-8">
         <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
         <p class="text-base leading-relaxed text-fg-soft">{t("price.showroomDesc")}</p>
-        <Button href="tel:+420601221551" variant="link" class="self-start tracking-[0.06em]!">+420 601 221 551 →</Button>
+        <Button href={`mailto:${contact.email}`} variant="link" class="self-start">{contact.email} →</Button>
       </div>
   </div>
   </div>

@@ -80,6 +80,19 @@ describe("price list", () => {
 });
 
 describe("panel patterns", () => {
+  test("stone pattern hint explains click-to-preview and AR placement", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(cs["products.stoneFanHint"]).toBe("Kliknutím na vybraný vzor kamene otevřete jeho 3D náhled a na kompatibilním telefonu také jeho umístění do Vašeho interiéru.");
+    expect(en["products.stoneFanHint"]).toContain("place it in your interior using AR");
+  });
+
+  test("stone pattern note explains that individual stock pieces cannot yet be shown in AR", () => {
+    expect(products.notes.stone.cs).toContain("jednotlivé aktuálně skladové kusy zatím v AR zobrazit neumíme");
+    expect(products.notes.stone.en).toContain("for now, we cannot show every individual in-stock piece in AR");
+  });
+
   test("stone patterns have a title and a photo", () => {
     expect(products.items.length).toBeGreaterThan(0);
     for (const item of products.items) {
@@ -177,6 +190,50 @@ describe("home lighting comparison", () => {
   });
 });
 
+describe("home section rhythm", () => {
+  test("uses slightly tighter spacing and alternating brand surfaces on the shared home page", async () => {
+    const files = [
+      ["src/components/sections/HomeShowcase.astro", "home-section-y home-section-divider relative isolate overflow-hidden bg-ink"],
+      ["src/components/sections/MaterialOverview.astro", "home-section-y home-section-divider bg-ink-800"],
+      ["src/components/sections/Features.astro", "home-section-y home-section-divider bg-ink"],
+      ["src/components/sections/HomeEquipmentComparison.astro", "home-section-y home-section-divider bg-ink-800"],
+      ["src/components/sections/HomeDayNight.astro", "home-section-y home-section-divider bg-ink"],
+      ["src/components/sections/Contact.astro", "home-section-y home-section-divider bg-ink-800"],
+    ] as const;
+
+    for (const [path, classes] of files) {
+      expect(await Bun.file(path).text()).toContain(classes);
+    }
+
+    const styles = await Bun.file("src/styles/global.css").text();
+    expect(styles).toContain("@utility home-section-y {");
+    expect(styles).toContain("padding-block: 4.25rem;");
+    expect(styles).toContain("padding-block: 6.5rem;");
+    expect(styles).toContain(".home-section-divider::before {");
+
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    expect(cs["home.chapterLight"]).toBe("01 · Rozsviť mě");
+    expect(cs["home.chapterContact"]).toBe("06 · Kontakt");
+    expect(en["home.chapterLight"]).toBe("01 · Light it up");
+    expect(en["home.chapterContact"]).toBe("06 · Contact");
+    expect(await Bun.file("src/components/sections/HomeEquipmentComparison.astro").text()).toContain("home-section-divider bg-ink-800");
+    expect(await Bun.file("src/components/sections/Contact.astro").text()).toContain("sm:bg-ink-850");
+  });
+});
+
+describe("panel landing visual rhythm", () => {
+  test("stone and mineral branches share the alternating surface and divider treatment", async () => {
+    const landing = await Bun.file("src/components/pages/PanelLanding.astro").text();
+    const products = await Bun.file("src/components/sections/Products.astro").text();
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(landing).toContain('id="panel-material" aria-labelledby="panel-material-title" class="home-section-divider bg-ink"');
+    expect(products).toContain('class="home-section-y home-section-divider overflow-x-clip bg-ink-800"');
+    expect(priceList).toContain('class="pricing home-section-divider bg-ink"');
+  });
+});
+
 describe("feature disclosures", () => {
   test("uses native expandable cards on the shared home page and preserves anchor targets", async () => {
     const component = await Bun.file("src/components/sections/Features.astro").text();
@@ -191,6 +248,8 @@ describe("feature disclosures", () => {
     const palette = await Bun.file("src/components/palette/Palette.astro").text();
     expect(palette).toContain('<ul class="flex h-12 items-center gap-3"');
     expect(component).toContain("feature-disclosure-indicator");
+    expect(component).toContain("border-line-strong bg-ink-900");
+    expect(component).toContain("border-gold/70 bg-gold/10");
     expect(component).toContain("openAnchoredFeature();");
     expect(component).toContain("window.addEventListener(\"hashchange\", openAnchoredFeature)");
   });
@@ -342,6 +401,48 @@ describe("i18n", () => {
     expect(comparison).toContain("thicknessValueLabel(key, \"mineral\")");
     expect(comparison).toContain("aria-label={featureLabel(key, \"stone\")}");
     expect(comparison).toContain("aria-label={featureLabel(key, \"mineral\")}");
+    expect(comparison).toContain("border border-line-strong text-left");
+    expect(comparison).toContain("border-t border-line-strong bg-ink-850");
+    expect(comparison).toContain("odd:bg-ink-850/50 hover:bg-ink-900");
+  });
+
+  test("contact form choices and submit action have clear high-contrast states", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact.match(/border-line-bold bg-ink-900 px-/g)?.length).toBe(3);
+    expect(contact.match(/has-checked:bg-gold has-checked:text-ink/g)?.length).toBe(3);
+    expect(contact).toContain('class="contact-form__submit self-start shadow-glow');
+  });
+
+  test("contact form keeps mobile size and version choices compact with unknown centered below", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact).toContain('class="grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2"');
+    expect(contact).toContain('size === "" && "col-span-4 mx-auto w-fit min-w-36');
+    expect(contact).toContain('class="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2"');
+    expect(contact).toContain('version === "" && "col-span-3 mx-auto w-fit min-w-36');
+    expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
+    expect(contact).toContain('class="grid grid-cols-2 gap-2 sm:gap-5"');
+    expect(contact).toContain('rows="2"');
+  });
+
+  test("contact section moves its heading closer to the header when opened by an inquiry link", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+
+    expect(contact).toContain('class="contact-section home-section-y home-section-divider bg-ink-800"');
+    expect(contact).toContain(".contact-section:target {");
+    expect(contact).toContain("padding-block-start: 1rem;");
+  });
+
+  test("showroom keeps its phone while panel branch showroom CTA links to e-mail", async () => {
+    const contactSection = await Bun.file("src/components/sections/Contact.astro").text();
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(contactSection).toContain('href="tel:+420601221551"');
+    expect(contactSection).toContain('<Icon name="phone" class="size-5" />');
+    expect(priceList).toContain('href={`mailto:${contact.email}`}');
+    expect(priceList).toContain("{contact.email} →");
+    expect(priceList).not.toContain('href="tel:+420601221551"');
   });
 
   test("contact confirmation explains the tracked discount code terms", async () => {

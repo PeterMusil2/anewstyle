@@ -75,6 +75,14 @@ const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
             <dd class="mt-2 text-sm leading-relaxed font-semibold text-fg">{material.weight}</dd>
           </div>
           <div class="border border-line bg-ink-850 p-4 sm:p-5">
+            <dt class="text-xs font-extrabold tracking-caps text-fg-muted uppercase">{t("panelPage.materialConsumption")}</dt>
+            <dd class="mt-2 text-sm leading-relaxed font-semibold text-fg">{material.consumption}</dd>
+          </div>
+          <div class="border border-line bg-ink-850 p-4 sm:p-5">
+            <dt class="text-xs font-extrabold tracking-caps text-fg-muted uppercase">{t("panelPage.materialLuminance")}</dt>
+            <dd class="mt-2 text-sm leading-relaxed font-semibold text-fg">{material.luminance}</dd>
+          </div>
+          <div class="border border-line bg-ink-850 p-4 sm:p-5">
             <dt class="text-xs font-extrabold tracking-caps text-fg-muted uppercase">{t("panelPage.materialSurface")}</dt>
             <dd class="mt-2 text-sm leading-relaxed font-semibold text-fg">{material.surfaceShort}</dd>
           </div>

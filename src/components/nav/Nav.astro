@@ -1,5 +1,6 @@
 ---
 import NavItem from "./NavItem.astro";
+import PriceNavItem from "./PriceNavItem.astro";
 import LangSwitch from "../langSwitch/LangSwitch.astro";
 import ThemeToggle from "../theme/ThemeToggle.astro";
 import Button from "../ui/Button.astro";
@@ -21,25 +22,24 @@ const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
 const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
+const homeLinks = [
+  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
+  { href: `${basePath}/#features`, text: t("nav.features") },
+  { href: `${basePath}/#contact`, text: t("nav.contact") },
+  { href: `${basePath}/gallery/`, text: t("nav.gallery") },
+  { href: `${basePath}/manual/`, text: t("nav.manual") },
+];
+
 const links = panelCategory
   ? [
       { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
-      { href: `${getPanelPagePath(panelCategory, lang)}#price-list`, text: t("nav.price"), accent: true },
       { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") },
-      { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-      { href: `${basePath}/faq/`, text: t("nav.faq") },
-      { href: `${basePath}/manual/`, text: t("nav.manual") },
       { href: `${basePath}/?panel=${panelCategory}#contact`, text: t("nav.contact") },
-    ]
-  : [
-      { href: "#about", text: t("nav.light"), accent: true },
-      { href: "#technologies", text: t("nav.technologies") },
-      { href: "#features", text: t("nav.features") },
-      { href: "#contact", text: t("nav.contact") },
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/faq/`, text: t("nav.faq") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
-    ];
+    ]
+  : homeLinks;
 const mobileLinks = links;
 ---
 
@@ -68,8 +68,19 @@ const mobileLinks = links;
         </span>
       </a>
 
-      <ul class="hidden items-center gap-5 xl:flex 2xl:gap-8">
-        {links.map((link) => <NavItem {...link} />)}
+      <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
+        {panelCategory ? (
+          <>
+            {links.map((link) => <NavItem {...link} />)}
+            <PriceNavItem lang={lang} />
+          </>
+        ) : (
+          <>
+            {homeLinks.slice(0, 4).map((link) => <NavItem {...link} />)}
+            {homeLinks.slice(4).map((link) => <NavItem {...link} />)}
+            <PriceNavItem lang={lang} />
+          </>
+        )}
       </ul>
 
       <div class="flex items-center gap-2 sm:gap-3">
@@ -89,7 +100,7 @@ const mobileLinks = links;
         <button
           type="button"
           popovertarget="mobile-menu"
-          class="inline-flex size-11 cursor-pointer items-center justify-center border border-line-bold text-fg transition-colors hover:border-gold hover:text-gold xl:hidden"
+          class="inline-flex size-11 cursor-pointer items-center justify-center border border-line-bold text-fg transition-colors hover:border-gold hover:text-gold min-[1200px]:hidden"
           aria-label={t("nav.openMenu")}
         >
           <Icon name="menu" class="size-5" />
@@ -101,11 +112,22 @@ const mobileLinks = links;
   <div
     id="mobile-menu"
     popover
-    class="pop-panel fixed inset-x-0 top-(--nav-height) bottom-auto m-0 max-h-[calc(100dvh-var(--nav-height))] w-full overflow-y-auto border-b border-line-strong bg-ink-900 text-fg xl:hidden"
+    class="pop-panel fixed inset-x-0 top-(--nav-height) bottom-auto m-0 max-h-[calc(100dvh-var(--nav-height))] w-full overflow-y-auto border-b border-line-strong bg-ink-900 text-fg min-[1200px]:hidden"
   >
     <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
       <ul class="flex flex-col">
-        {mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}
+        {panelCategory ? (
+          <>
+            {mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}
+            <PriceNavItem lang={lang} variant="panel" />
+          </>
+        ) : (
+          <>
+            {homeLinks.slice(0, 4).map((link) => <NavItem {...link} variant="panel" />)}
+            {homeLinks.slice(4).map((link) => <NavItem {...link} variant="panel" />)}
+            <PriceNavItem lang={lang} variant="panel" />
+          </>
+        )}
       </ul>
       <div class="flex items-center justify-between gap-4">
         <Button href={eshopUrl} variant="outline" rel="external" target="_blank" class="flex-1">

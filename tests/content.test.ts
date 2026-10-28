@@ -341,6 +341,94 @@ describe("home material overview", () => {
   });
 });
 
+describe("panel landing material cards", () => {
+  test("shows category-specific consumption and luminance cards on both panel pages", async () => {
+    const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
+    const materialOverview = await Bun.file("src/data/material-overview.json").json();
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(panelLanding).toContain("{material.consumption}");
+    expect(panelLanding).toContain("{material.luminance}");
+    expect(materialOverview.stone.consumption.cs).toBe("Od 74W u velikosti L.");
+    expect(materialOverview.stone.luminance.cs).toBe("Jas (luminance) od 200 cd/m2, podle kresby kamene");
+    expect(materialOverview.mineral.consumption.cs).toBe("Od 35W u velikosti L.");
+    expect(materialOverview.mineral.luminance.cs).toBe("Jas (luminance) od 500 cd/m2, podle propustnosti vzoru minerálního panelu");
+    expect(cs["panelPage.materialConsumption"]).toBe("Spotřeba");
+    expect(cs["panelPage.materialLuminance"]).toBe("Svítivost");
+    expect(en["panelPage.materialConsumption"]).toBe("Power consumption");
+    expect(en["panelPage.materialLuminance"]).toBe("Luminance");
+  });
+});
+
+describe("price navigation", () => {
+  test("offers both category price lists from home and panel navigation", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const priceNav = await Bun.file("src/components/nav/PriceNavItem.astro").text();
+    const normalizedNav = nav.replace(/\r\n/g, "\n");
+
+    expect(nav).toContain("<PriceNavItem lang={lang} />");
+    expect(nav).toContain('<PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav).toContain('{links.map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
+    expect(normalizedNav).toContain('{mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav).toContain('{homeLinks.slice(4).map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
+    expect(normalizedNav).toContain('{homeLinks.slice(4).map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav).not.toContain('href: `${getPanelPagePath(panelCategory, lang)}#price-list`');
+    expect(priceNav).toContain('getPanelPagePath("stone", lang)}#price-list');
+    expect(priceNav).toContain('getPanelPagePath("mineral", lang)}#price-list');
+    expect(priceNav).toContain('t("nav.priceStone")');
+    expect(priceNav).toContain('t("nav.priceMineral")');
+    expect(priceNav).toContain("data-nav-link");
+    expect(priceNav).toContain('"price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-gold uppercase');
+    expect(priceNav).toContain('variant === "panel" && "min-h-14 border-b border-line text-[0.8125rem] tracking-[0.12em]"');
+    expect(priceNav).toContain('variant === "panel" && "min-h-12 border-b border-line px-3 text-base last:border-b-0"');
+  });
+
+  test("switches to the desktop navigation at the preview's desktop width", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+
+    expect(nav).toContain('class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8"');
+    expect(nav).toContain('hover:text-gold min-[1200px]:hidden"');
+    expect(nav).toContain('text-fg min-[1200px]:hidden"');
+  });
+});
+
+describe("price list category labels", () => {
+  test("shows the specific panel category in each branch instead of the generic label", async () => {
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(priceList).toContain('{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.eyebrow")}');
+  });
+
+  test("mineral custom-size offer uses the concise custom production description", async () => {
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(priceList).toContain('{panelCategory === "mineral" ? t("price.customDescMineral") : t("price.customDesc")}');
+    expect(cs["price.customDescMineral"]).toBe("Nabízíme zákaznickou výrobu na míru.");
+    expect(en["price.customDescMineral"]).toBe("We offer custom-made production.");
+  });
+});
+
+describe("homepage navigation", () => {
+  test("omits the showcase and FAQ links while retaining them in panel navigation", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const homeLinks = nav.slice(nav.indexOf("const homeLinks = ["), nav.indexOf("const links = panelCategory"));
+    const panelLinks = nav.slice(nav.indexOf("const links = panelCategory"), nav.indexOf("const mobileLinks"));
+
+    expect(homeLinks).not.toContain('href: "#about"');
+    expect(homeLinks).not.toContain('t("nav.faq")');
+    expect(homeLinks).toContain('t("nav.technologies")');
+    expect(homeLinks).toContain('t("nav.features")');
+    expect(homeLinks).toContain('t("nav.contact")');
+    expect(homeLinks).toContain('href: `${basePath}/#technologies`');
+    expect(homeLinks).toContain('href: `${basePath}/#features`');
+    expect(homeLinks).toContain('href: `${basePath}/#contact`');
+    expect(panelLinks).toContain('t("nav.faq")');
+  });
+});
+
 describe("home lighting comparison", () => {
   test("keeps the shared state control directly above both panels without the redundant hint", async () => {
     const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
@@ -400,10 +488,20 @@ describe("home section rhythm", () => {
 
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
-    expect(cs["home.chapterLight"]).toBe("01 · Rozsviť mě");
-    expect(cs["home.chapterContact"]).toBe("06 · Kontakt");
-    expect(en["home.chapterLight"]).toBe("01 · Light it up");
-    expect(en["home.chapterContact"]).toBe("06 · Contact");
+    const chapterKeys = [
+      "home.chapterLight",
+      "home.chapterTechnology",
+      "home.chapterFeatures",
+      "home.chapterComparison",
+      "home.chapterDayNight",
+      "home.chapterContact",
+    ];
+    for (const key of chapterKeys) {
+      expect(cs[key]).not.toMatch(/^\d+\s*·/);
+      expect(en[key]).not.toMatch(/^\d+\s*·/);
+    }
+    expect(cs["home.chapterLight"]).toBe("Rozsviť mě");
+    expect(en["home.chapterLight"]).toBe("Light it up");
     expect(await Bun.file("src/components/sections/HomeEquipmentComparison.astro").text()).toContain("home-section-divider bg-ink-800");
     expect(await Bun.file("src/components/sections/Contact.astro").text()).toContain("sm:bg-ink-850");
   });
@@ -536,7 +634,7 @@ describe("i18n", () => {
     expect(effects).toContain(".hero-title__label--home {");
     expect(effects).toContain("width: max-content");
     expect(effects).toContain("white-space: nowrap");
-    expect(effects).toContain("color-mix(in srgb, var(--color-fg) 40%, transparent)");
+    expect(effects).toContain("color-mix(in srgb, var(--color-fg) 55%, transparent)");
     expect(effects).toContain("0 0 0.34em rgb(36 32 26 / 0.42)");
   });
 
@@ -570,7 +668,7 @@ describe("i18n", () => {
     const schema = await Bun.file("src/lib/structured-data.ts").text();
 
     expect(nav).not.toContain('text: t("nav.dayNight")');
-    expect(nav.match(/href: `\$\{basePath\}\/faq\/`, text: t\("nav\.faq"\)/g)).toHaveLength(2);
+    expect(nav.match(/href: `\$\{basePath\}\/faq\/`, text: t\("nav\.faq"\)/g)).toHaveLength(1);
     expect(home).not.toContain('<Faq id="faq"');
     expect(home).not.toContain("<Faq ");
     expect(panelLanding).toContain("/faq/");

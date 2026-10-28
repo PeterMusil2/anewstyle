@@ -261,7 +261,7 @@
   }
 
   .hero-title__label {
-    color: color-mix(in srgb, var(--color-fg) 40%, transparent);
+    color: color-mix(in srgb, var(--color-fg) 55%, transparent);
     text-shadow:
       0 0 0.16em rgb(36 32 26 / 0.78),
       0 0 0.34em rgb(36 32 26 / 0.42);

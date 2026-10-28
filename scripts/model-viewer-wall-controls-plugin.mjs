@@ -21,7 +21,7 @@ function customizeArRenderer(code) {
     ],
     [
       "this.goalYaw = 0;",
-      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveStepApplied = false;\n        this.perspectiveTapDirection = 0;",
+      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.perspectiveStartYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveTouchStartX = 0;\n        this.perspectiveMoved = false;\n        this.perspectiveTapDirection = 0;",
     ],
     [
       "this.goalYaw = scene.yaw;\n        this.goalScale = 1;",
@@ -40,14 +40,12 @@ function customizeArRenderer(code) {
       `const { axes } = this.inputSource.gamepad;
                 const perspectiveDirection = this.placeOnWall ?
                     this.menuPanel?.rotationArcPointIntersection(
-                        scene, arScreenPoint.set(axes[0], axes[1])) ?? 0 : 0;
+                        scene, arScreenPoint.set(axes[0], -axes[1])) ?? 0 : 0;
                 if (perspectiveDirection !== 0) {
-                    const nextYaw = this.goalPerspectiveYaw +
-                        perspectiveDirection * Math.PI / 12;
-                    this.goalPerspectiveYaw = Math.max(
-                        -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
                     this.isPerspectiveRotating = true;
-                    this.perspectiveStepApplied = true;
+                    this.perspectiveStartYaw = this.goalPerspectiveYaw;
+                    this.perspectiveTouchStartX = axes[0];
+                    this.perspectiveMoved = false;
                     this.perspectiveTapDirection = perspectiveDirection;
                     this.menuPanel.setRotationActive(true);
                     this.menuPanel.show = true;
@@ -100,8 +98,13 @@ function customizeArRenderer(code) {
       `this.onSelectEnd = () => {
             this.isTranslating = false;`,
       `this.onSelectEnd = () => {
+            if (this.isPerspectiveRotating && !this.perspectiveMoved) {
+                const nextYaw = this.goalPerspectiveYaw +
+                    this.perspectiveTapDirection * Math.PI / 12;
+                this.goalPerspectiveYaw = Math.max(
+                    -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
+            }
             this.isPerspectiveRotating = false;
-            this.perspectiveStepApplied = false;
             this.perspectiveTapDirection = 0;
             this.menuPanel?.setRotationActive(false);
             this.isTranslating = false;`,
@@ -111,28 +114,38 @@ function customizeArRenderer(code) {
         // Robust two-finger gesture handling`,
       `const scale = scene.scenePivot.scale.x;
         if (this.placeOnWall && fingers.length === 1 &&
-            !this.perspectiveStepApplied) {
+            !this.isPerspectiveRotating) {
             const finger = fingers[0];
             const axes = finger.inputSource.gamepad.axes;
             const perspectiveDirection = this.menuPanel?.rotationArcPointIntersection(
-                scene, arScreenPoint.set(axes[0], axes[1])) ?? 0;
+                scene, arScreenPoint.set(axes[0], -axes[1])) ?? 0;
             if (!this.isPerspectiveRotating && perspectiveDirection !== 0) {
                 this.inputSource = finger.inputSource;
                 this.isTranslating = false;
                 this.isRotating = false;
                 this.isPerspectiveRotating = true;
-                this.perspectiveStepApplied = true;
+                this.perspectiveStartYaw = this.goalPerspectiveYaw;
+                this.perspectiveTouchStartX = axes[0];
+                this.perspectiveMoved = false;
                 this.perspectiveTapDirection = perspectiveDirection;
-                const nextYaw = this.goalPerspectiveYaw +
-                    perspectiveDirection * Math.PI / 12;
-                this.goalPerspectiveYaw = Math.max(
-                    -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
                 this.menuPanel.setRotationActive(true);
                 this.menuPanel.show = true;
                 return;
             }
         }
-        if (this.isPerspectiveRotating) {
+        if (this.isPerspectiveRotating && fingers.length > 0) {
+            const activeFinger = fingers.find(
+                finger => finger.inputSource === this.inputSource) ?? fingers[0];
+            const currentX = activeFinger.inputSource.gamepad.axes[0];
+            const displacement = currentX - this.perspectiveTouchStartX;
+            if (Math.abs(displacement) > 0.012) {
+                this.perspectiveMoved = true;
+            }
+            if (this.perspectiveMoved) {
+                const nextYaw = this.perspectiveStartYaw + displacement * 2.4;
+                this.goalPerspectiveYaw = Math.max(
+                    -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
+            }
             return;
         }
         // Robust two-finger gesture handling`,

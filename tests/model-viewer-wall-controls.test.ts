@@ -23,7 +23,7 @@ describe("model-viewer wall perspective control", () => {
     expect(renderer).toContain("this.menuPanel.setPerspectiveRotationControl()");
     expect(renderer).toContain("rotationArcPointIntersection");
     expect(renderer).toContain("this.goalYaw + (this.placeOnWall ? this.goalPerspectiveYaw : 0)");
-    expect(renderer).toContain("perspectiveDirection * Math.PI / 12");
+    expect(renderer).toContain("this.perspectiveTapDirection * Math.PI / 12");
     expect(menu).toContain("ROTATION_GIZMO_ICON_SVG");
     expect(menu).toContain("SpatialRotationGizmo");
     expect(menu).toContain("new PlaneGeometry(0.28, 0.175)");
@@ -34,17 +34,22 @@ describe("model-viewer wall perspective control", () => {
     expect(menu).toContain("placementBoxSize.y * 0.55");
   });
 
-  test("applies exactly one deterministic step per press and recovers missed starts", () => {
+  test("maps WebXR touch coordinates to the visible gizmo instead of a mirrored area", () => {
+    const renderer = customizeModelViewerAr(rendererSource, rendererId)!.code;
+    expect(renderer).toContain("arScreenPoint.set(axes[0], -axes[1])");
+    expect(renderer).not.toContain("arScreenPoint.set(axes[0], axes[1])");
+  });
+
+  test("supports direct dragging, tap steps, and recovers missed starts", () => {
     const renderer = customizeModelViewerAr(rendererSource, rendererId)!.code;
     const menu = customizeModelViewerAr(menuSource, menuId)!.code;
-    expect(renderer).toContain("!this.perspectiveStepApplied");
+    expect(renderer).toContain("this.perspectiveStartYaw = this.goalPerspectiveYaw");
+    expect(renderer).toContain("const displacement = currentX - this.perspectiveTouchStartX");
+    expect(renderer).toContain("this.perspectiveStartYaw + displacement * 2.4");
     expect(renderer).toContain("this.inputSource = finger.inputSource");
-    expect(renderer).toContain("this.perspectiveStepApplied = true");
-    expect(renderer).toContain("this.perspectiveStepApplied = false");
+    expect(renderer).toContain("this.isPerspectiveRotating && !this.perspectiveMoved");
     expect(renderer).toContain("this.menuPanel.setRotationActive(true)");
     expect(renderer).toContain("this.menuPanel?.setRotationActive(false)");
-    expect(renderer).not.toContain("perspectiveTouchStartX");
-    expect(renderer).not.toContain("perspectiveMoved");
     expect(menu).toContain("setRotationActive(active)");
   });
 

@@ -17,11 +17,11 @@ function customizeArRenderer(code) {
     ],
     [
       "const hitPosition = new Vector3();",
-      "const hitPosition = new Vector3();\nconst arScreenPoint = new Vector2();",
+      "const hitPosition = new Vector3();\nconst arScreenPoint = new Vector2();\nconst AR_CONTROLS_IDLE_MS = 3000;",
     ],
     [
       "this.goalYaw = 0;",
-      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.perspectiveStartYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveTouchStartX = 0;\n        this.perspectiveMoved = false;\n        this.perspectiveTapDirection = 0;",
+      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.perspectiveStartYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveTouchStartX = 0;\n        this.perspectiveMoved = false;\n        this.perspectiveTapDirection = 0;\n        this.arControlsHideAt = 0;\n        this.arControlsHidden = false;\n        this.isRevealingArControls = false;",
     ],
     [
       "this.goalYaw = scene.yaw;\n        this.goalScale = 1;",
@@ -69,6 +69,8 @@ function customizeArRenderer(code) {
             this.menuPanel = new XRMenuPanel();
             if (this.xrMode === XRMode.SCREEN_SPACE && this.placeOnWall) {
                 this.menuPanel.setPerspectiveRotationControl();
+                this.arControlsHidden = false;
+                this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
             }
             this.presentedScene.add(this.menuPanel);
             this.menuPanel.updatePosition(this.presentedScene.getCamera(), this.placementBox);`,
@@ -82,6 +84,8 @@ function customizeArRenderer(code) {
       `this.menuPanel = new XRMenuPanel();
         if (this.xrMode === XRMode.SCREEN_SPACE && this.placeOnWall) {
             this.menuPanel.setPerspectiveRotationControl();
+            this.arControlsHidden = false;
+            this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
         }
         scene.add(this.menuPanel);
         this.menuPanel.updatePosition(scene.getCamera(), this.placementBox); // Position the menu panel`,
@@ -95,9 +99,29 @@ function customizeArRenderer(code) {
         const angle = scene.scenePivot.quaternion.angleTo(quaternion);`,
     ],
     [
+      `const box = this.placementBox;
+            if (fingers.length === 1) {`,
+      `const box = this.placementBox;
+            if (this.placeOnWall && this.arControlsHidden) {
+                this.arControlsHidden = false;
+                this.isRevealingArControls = true;
+                this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
+                this.menuPanel.show = true;
+                return;
+            }
+            if (fingers.length === 1) {`,
+    ],
+    [
       `this.onSelectEnd = () => {
             this.isTranslating = false;`,
       `this.onSelectEnd = () => {
+            if (this.isRevealingArControls) {
+                this.isRevealingArControls = false;
+                this.inputSource = null;
+                this.placementBox.show = false;
+                this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
+                return;
+            }
             if (this.isPerspectiveRotating && !this.perspectiveMoved) {
                 const nextYaw = this.goalPerspectiveYaw +
                     this.perspectiveTapDirection * Math.PI / 12;
@@ -107,12 +131,16 @@ function customizeArRenderer(code) {
             this.isPerspectiveRotating = false;
             this.perspectiveTapDirection = 0;
             this.menuPanel?.setRotationActive(false);
+            if (this.placeOnWall) {
+                this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
+            }
             this.isTranslating = false;`,
     ],
     [
       `const scale = scene.scenePivot.scale.x;
         // Robust two-finger gesture handling`,
       `const scale = scene.scenePivot.scale.x;
+        if (this.isRevealingArControls) return;
         if (this.placeOnWall && fingers.length === 1 &&
             !this.isPerspectiveRotating) {
             const finger = fingers[0];
@@ -149,6 +177,26 @@ function customizeArRenderer(code) {
             return;
         }
         // Robust two-finger gesture handling`,
+    ],
+    [
+      `if (this.menuPanel) {
+            this.menuPanel.updateOpacity(delta);`,
+      `if (this.menuPanel) {
+            if (this.placeOnWall && this.menuPanel.perspectiveRotationControl) {
+                const controlsAreActive = this.isTranslating || this.isRotating ||
+                    this.isTwoHandInteraction || this.isPerspectiveRotating ||
+                    this.isRevealingArControls;
+                if (controlsAreActive) {
+                    this.arControlsHidden = false;
+                    this.arControlsHideAt = performance.now() + AR_CONTROLS_IDLE_MS;
+                    this.menuPanel.show = true;
+                } else if (!this.arControlsHidden &&
+                    performance.now() >= this.arControlsHideAt) {
+                    this.arControlsHidden = true;
+                    this.menuPanel.show = false;
+                }
+            }
+            this.menuPanel.updateOpacity(delta);`,
     ],
   ];
   for (const [source, replacement] of edits) {

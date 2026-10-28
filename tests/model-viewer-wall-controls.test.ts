@@ -53,6 +53,16 @@ describe("model-viewer wall perspective control", () => {
     expect(menu).toContain("setRotationActive(active)");
   });
 
+  test("auto-hides the gizmo for a clean system screenshot", () => {
+    const renderer = customizeModelViewerAr(rendererSource, rendererId)!.code;
+    expect(renderer).toContain("const AR_CONTROLS_IDLE_MS = 3000");
+    expect(renderer).toContain("this.arControlsHidden = true");
+    expect(renderer).toContain("this.menuPanel.show = false");
+    expect(renderer).toContain("performance.now() >= this.arControlsHideAt");
+    expect(renderer).toContain("this.isRevealingArControls = true");
+    expect(renderer).toContain("if (this.isRevealingArControls) return");
+  });
+
   test("is limited to model-viewer AR modules and fails loudly on drift", () => {
     expect(customizeModelViewerAr("export {};", "/src/app.js")).toBeNull();
     expect(modelViewerWallControlsPlugin().enforce).toBe("pre");

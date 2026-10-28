@@ -471,9 +471,8 @@ describe("home section rhythm", () => {
   test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
     const component = await Bun.file("src/components/sections/Showcase.astro").text();
 
-    expect(component).toContain("@media (width >= 64rem)");
-    expect(component).toContain("padding-block: clamp(2.5rem, 7svh, 5rem);");
-    expect(component).toContain("block-size: min(55svh, 38rem);");
+    expect(component).toContain("lg:py-[clamp(2.5rem,7svh,5rem)]");
+    expect(component).toContain("lg:aspect-auto lg:h-[min(55svh,38rem)]");
   });
 
   test("uses slightly tighter spacing and alternating brand surfaces on the shared home page", async () => {

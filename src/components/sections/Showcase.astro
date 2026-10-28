@@ -26,7 +26,7 @@ const states = [
 <section
   id={id}
   aria-labelledby={`${id}-title`}
-  class="showcase section-y relative isolate overflow-hidden bg-ink text-fg"
+  class="showcase section-y relative isolate overflow-hidden bg-ink text-fg lg:py-[clamp(2.5rem,7svh,5rem)]"
 >
   <div
     class="absolute inset-y-0 right-0 -z-10 w-full bg-[radial-gradient(45%_60%_at_70%_50%,rgb(163_140_82/0.14),transparent_70%)]"
@@ -84,7 +84,7 @@ const states = [
       theme it melts into the section; in the light theme it reads as a framed
       display.
     -->
-    <div class="reveal relative aspect-[1024/1000] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line">
+    <div class="reveal relative aspect-[1024/1000] w-full overflow-hidden showcase__stage bg-black ring-1 ring-line lg:aspect-auto lg:h-[min(55svh,38rem)]">
       {(!panelCategory || panelCategory === "stone") && <div class="showcase__stone-states absolute inset-0" data-panel-type="stone">
         {
           states.map((state) => (
@@ -143,15 +143,3 @@ const states = [
   </div>
 </section>
 
-<style>
-  @media (width >= 64rem) {
-    .showcase {
-      padding-block: clamp(2.5rem, 7svh, 5rem);
-    }
-
-    .showcase__stage {
-      block-size: min(55svh, 38rem);
-      aspect-ratio: auto;
-    }
-  }
-</style>

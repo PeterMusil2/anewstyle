@@ -1,10 +1,31 @@
-/**
- * Android WebXR detects horizontal planes much more reliably than vertical
- * ones on affected Samsung/Chrome combinations. The model itself stays
- * upright, so floor anchoring remains a useful room-scale fallback.
- */
-export const PANEL_AR_PLACEMENT = "floor";
+/** Shared AR configuration for wall-mounted illuminated panels. */
+export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
+
+const SAMSUNG_INTERNET_PACKAGE = "com.sec.android.app.sbrowser";
+
+export function shouldOpenArInSamsungInternet(userAgent: string, search: string): boolean {
+  const directFallback = new URLSearchParams(search).get("ar-direct") === "1";
+  return /Android/i.test(userAgent) && !/SamsungBrowser/i.test(userAgent) && !directFallback;
+}
+
+/**
+ * Open the same HTTPS page in Samsung Internet. If the app is unavailable,
+ * Chrome returns to a one-shot direct WebXR fallback instead of looping.
+ */
+export function samsungInternetArIntent(currentUrl: string): string {
+  const destination = new URL(currentUrl);
+  destination.searchParams.delete("ar-direct");
+  destination.hash = "";
+
+  const fallback = new URL(destination);
+  fallback.searchParams.set("ar-direct", "1");
+  const scheme = destination.protocol.replace(":", "");
+
+  return `intent://${destination.host}${destination.pathname}${destination.search}`
+    + `#Intent;scheme=${scheme};package=${SAMSUNG_INTERNET_PACKAGE};`
+    + `S.browser_fallback_url=${encodeURIComponent(fallback.toString())};end`;
+}
 
 /**
  * Keep Android AR inside the browser. Scene Viewer is intentionally excluded:

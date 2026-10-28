@@ -15,6 +15,8 @@ import {
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArViewerStyle,
+  samsungInternetArIntent,
+  shouldOpenArInSamsungInternet,
   STONE_AR_MODEL_PATH,
   waitForArAvailability,
 } from "../src/lib/panel-ar";
@@ -68,12 +70,12 @@ describe("hero video", () => {
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
   });
 
-  test("panel AR uses reliable floor anchoring and Android-compatible baked models", async () => {
+  test("panel AR uses wall anchoring and Android-compatible baked models", async () => {
     const header = await Bun.file("src/components/header/Header.astro").text();
     const productsComponent = await Bun.file("src/components/sections/Products.astro").text();
     const cardComponent = await Bun.file("src/components/product/Card.astro").text();
 
-    expect(PANEL_AR_PLACEMENT).toBe("floor");
+    expect(PANEL_AR_PLACEMENT).toBe("wall");
     expect(panelArModes()).toBe("webxr quick-look");
     expect(panelArModes()).not.toContain("scene-viewer");
     expect(STONE_AR_MODEL_PATH).toContain("_unlit.glb");
@@ -87,6 +89,7 @@ describe("hero video", () => {
     expect(header).toContain('arViewer.style.cssText = panelArViewerStyle(true)');
     expect(header).toContain('status === "not-presenting"');
     expect(header).toContain('void arViewer.activateAR()');
+    expect(header).toContain('window.location.href = samsungInternetArIntent(window.location.href)');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes()}');
@@ -130,6 +133,23 @@ describe("hero video", () => {
         expect(bakedBytes.equals(sourceBytes), `${pattern.image} bufferView ${index}`).toBe(true);
       });
     }
+  });
+
+  test("affected Android browsers hand AR off to Samsung Internet without a fallback loop", () => {
+    const chromeAndroid = "Mozilla/5.0 (Linux; Android 16; K) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36";
+    const bingAndroid = `${chromeAndroid} EdgA/140.0`;
+    const samsungInternet = `${chromeAndroid} SamsungBrowser/29.0`;
+
+    expect(shouldOpenArInSamsungInternet(chromeAndroid, "?v=test")).toBe(true);
+    expect(shouldOpenArInSamsungInternet(bingAndroid, "?v=test")).toBe(true);
+    expect(shouldOpenArInSamsungInternet(samsungInternet, "?v=test")).toBe(false);
+    expect(shouldOpenArInSamsungInternet(chromeAndroid, "?v=test&ar-direct=1")).toBe(false);
+    expect(shouldOpenArInSamsungInternet("Mozilla/5.0 (iPhone)", "")).toBe(false);
+
+    const intent = samsungInternetArIntent("https://example.com/panely/?v=test#products");
+    expect(intent).toStartWith("intent://example.com/panely/?v=test#Intent;scheme=https;");
+    expect(intent).toContain("package=com.sec.android.app.sbrowser");
+    expect(intent).toContain(encodeURIComponent("https://example.com/panely/?v=test&ar-direct=1"));
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

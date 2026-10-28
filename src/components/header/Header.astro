@@ -198,6 +198,8 @@ const headerModelPath = panelCategory === "mineral"
     PANEL_AR_PLACEMENT,
     panelArModes,
     panelArViewerStyle,
+    samsungInternetArIntent,
+    shouldOpenArInSamsungInternet,
     STONE_AR_MODEL_PATH,
     waitForArAvailability,
   } from "../../lib/panel-ar";
@@ -337,6 +339,11 @@ const headerModelPath = panelCategory === "mineral"
     const arStatus = document.querySelector<HTMLElement>("#headerArStatus");
     if (!arButton) return;
 
+    const openInSamsungInternet = shouldOpenArInSamsungInternet(
+      window.navigator.userAgent,
+      window.location.search,
+    );
+
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
     const setStatus = (message = "") => {
@@ -422,6 +429,11 @@ const headerModelPath = panelCategory === "mineral"
     };
 
     arButton.addEventListener("click", () => {
+      if (openInSamsungInternet) {
+        setLoading(true);
+        window.location.href = samsungInternetArIntent(window.location.href);
+        return;
+      }
       if (!arViewer?.canActivateAR) {
         showArError("unavailable");
         return;
@@ -443,9 +455,12 @@ const headerModelPath = panelCategory === "mineral"
     });
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
-    if (mobileAR.matches) void prepareAR();
+    if (mobileAR.matches) {
+      if (openInSamsungInternet) setLoading(false);
+      else void prepareAR();
+    }
     mobileAR.addEventListener("change", (event) => {
-      if (event.matches) void prepareAR();
+      if (event.matches && !openInSamsungInternet) void prepareAR();
     });
   }
 

@@ -2,8 +2,12 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
-export function panelArOrientation(rollDegrees: number): string {
-  return `${rollDegrees}deg 0deg 0deg`;
+export function panelArModelPath(modelPath: string, landscape: boolean): string {
+  if (!landscape) return modelPath;
+  if (!modelPath.includes("_vertical")) {
+    throw new Error(`AR model has no landscape variant: ${modelPath}`);
+  }
+  return modelPath.replace("_vertical", "_horizontal");
 }
 
 const SAMSUNG_INTERNET_PACKAGE = "com.sec.android.app.sbrowser";

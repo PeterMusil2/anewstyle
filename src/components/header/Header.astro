@@ -248,7 +248,7 @@ const headerModelPath = panelCategory === "mineral"
   import {
     PANEL_AR_PLACEMENT,
     panelArModes,
-    panelArOrientation,
+    panelArModelPath,
     panelArViewerStyle,
     samsungInternetArIntent,
     shouldOpenArInSamsungInternet,
@@ -407,12 +407,8 @@ const headerModelPath = panelCategory === "mineral"
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
     let useOrientationStep = handoffRequested;
-    const selectedOrientation = () => Number(
-      orientationInputs.find((input) => input.checked)?.value ?? 0,
-    );
-    const applyOrientation = () => {
-      arViewer?.setAttribute("orientation", panelArOrientation(selectedOrientation()));
-    };
+    const selectedLandscape = () => orientationInputs.find((input) => input.checked)?.value === "90";
+    let loadSelectedModel: (() => Promise<void>) | null = null;
     const setHandoffVisible = (visible: boolean) => {
       if (!useOrientationStep || !handoffOverlay) return;
       handoffOverlay.hidden = !visible;
@@ -433,6 +429,7 @@ const headerModelPath = panelCategory === "mineral"
         handoffButton.disabled = loading;
         handoffButton.setAttribute("aria-busy", loading ? "true" : "false");
       }
+      orientationInputs.forEach((input) => { input.disabled = loading; });
     };
     const showArError = (kind: "unavailable" | "failed") => {
       if (arViewer) arViewer.style.cssText = panelArViewerStyle(false);
@@ -447,18 +444,19 @@ const headerModelPath = panelCategory === "mineral"
     const prepareAR = async () => {
       if (arInitialized) return;
       arInitialized = true;
+      setLoading(true);
       try {
         await import("@google/model-viewer");
         await customElements.whenDefined("model-viewer");
         const viewer = document.createElement("model-viewer") as ARViewer;
         const texturePath = arButton.dataset.texturePath;
-        viewer.setAttribute("src", arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH);
+        const portraitModelPath = arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH;
+        viewer.setAttribute("src", panelArModelPath(portraitModelPath, selectedLandscape()));
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
         viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
         viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes());
         viewer.setAttribute("loading", "eager");
-        viewer.setAttribute("orientation", panelArOrientation(selectedOrientation()));
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
         // surface; a 1×1 hidden renderer can fail to start on Android Chrome.
         viewer.style.cssText = panelArViewerStyle(false);
@@ -467,7 +465,8 @@ const headerModelPath = panelCategory === "mineral"
         await viewer.updateComplete;
         await waitForModel(viewer);
 
-        if (texturePath) {
+        const applyTexture = async () => {
+          if (!texturePath) return;
           const texture = await viewer.createTexture(texturePath);
           if (!texture) throw new Error("Panel texture could not be loaded");
           const materials = viewer.model?.materials.filter(
@@ -477,7 +476,27 @@ const headerModelPath = panelCategory === "mineral"
           materials.forEach((material) => {
             material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
           });
-        }
+        };
+        await applyTexture();
+
+        loadSelectedModel = async () => {
+          const nextPath = panelArModelPath(portraitModelPath, selectedLandscape());
+          if (viewer.getAttribute("src") === nextPath && viewer.loaded) return;
+          setLoading(true);
+          try {
+            const loaded = new Promise<void>((resolve, reject) => {
+              viewer.addEventListener("load", () => resolve(), { once: true });
+              viewer.addEventListener("error", () => reject(new Error("Model could not be loaded")), { once: true });
+            });
+            viewer.setAttribute("src", nextPath);
+            await loaded;
+            await applyTexture();
+            setLoading(false);
+          } catch (error) {
+            console.error("Could not change AR orientation:", error);
+            showArError("failed");
+          }
+        };
 
         viewer.addEventListener("ar-status", (event: Event) => {
           const status = (event as CustomEvent<{ status: string }>).detail.status;
@@ -547,7 +566,7 @@ const headerModelPath = panelCategory === "mineral"
       activatePreparedAR();
     });
     handoffButton?.addEventListener("click", activatePreparedAR);
-    orientationInputs.forEach((input) => input.addEventListener("change", applyOrientation));
+    orientationInputs.forEach((input) => input.addEventListener("change", () => { void loadSelectedModel?.(); }));
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
     if (mobileAR.matches) {

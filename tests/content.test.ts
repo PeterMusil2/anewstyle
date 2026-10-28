@@ -14,7 +14,7 @@ import {
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
-  panelArOrientation,
+  panelArModelPath,
   panelArViewerStyle,
   samsungInternetArIntent,
   shouldOpenArInSamsungInternet,
@@ -96,8 +96,8 @@ describe("hero video", () => {
     expect(header).toContain('handoffButton?.addEventListener("click", activatePreparedAR)');
     expect(header).toContain('name="arOrientation" value="0" checked');
     expect(header).toContain('name="arOrientation" value="90"');
-    expect(header).toContain('viewer.setAttribute("orientation", panelArOrientation(selectedOrientation()))');
-    expect(header).toContain('orientationInputs.forEach((input) => input.addEventListener("change", applyOrientation))');
+    expect(header).toContain('panelArModelPath(portraitModelPath, selectedLandscape())');
+    expect(header).toContain('orientationInputs.forEach((input) => input.addEventListener("change", () => { void loadSelectedModel?.(); }))');
     expect(header).not.toContain('id="arRotationControlsTemplate"');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
@@ -144,9 +144,21 @@ describe("hero video", () => {
     }
   });
 
-  test("AR orientation choices keep the panel aligned with the wall", () => {
-    expect(panelArOrientation(0)).toBe("0deg 0deg 0deg");
-    expect(panelArOrientation(90)).toBe("90deg 0deg 0deg");
+  test("AR orientation choices use physically rotated wall models", () => {
+    expect(panelArModelPath(STONE_AR_MODEL_PATH, false)).toBe(STONE_AR_MODEL_PATH);
+    expect(panelArModelPath(STONE_AR_MODEL_PATH, true)).toContain("_horizontal_unlit.glb");
+    expect(() => panelArModelPath("/model.glb", true)).toThrow();
+
+    const portraitPaths = [STONE_AR_MODEL_PATH, ...products.mineral.map((pattern) => mineralArModelPath(pattern.image))];
+    for (const portraitPath of portraitPaths) {
+      const landscapePath = panelArModelPath(portraitPath, true);
+      expect(publicFile(landscapePath), landscapePath).toBe(true);
+      const landscapeModel = readGlb(`public${landscapePath}`).json;
+      const root = landscapeModel.nodes[landscapeModel.scenes[landscapeModel.scene ?? 0].nodes[0]];
+      expect(root.name).toBe("AR landscape orientation");
+      expect(root.rotation).toEqual([0, 0, Math.SQRT1_2, Math.SQRT1_2]);
+      expect(root.children.length).toBeGreaterThan(0);
+    }
   });
 
   test("affected Android browsers hand AR off to Samsung Internet without a fallback loop", () => {

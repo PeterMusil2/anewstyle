@@ -21,7 +21,7 @@ function customizeArRenderer(code) {
     ],
     [
       "this.goalYaw = 0;",
-      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.perspectiveStartYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveTouchStartX = 0;\n        this.perspectiveMoved = false;\n        this.perspectiveTapDirection = 0;",
+      "this.goalYaw = 0;\n        this.goalPerspectiveYaw = 0;\n        this.isPerspectiveRotating = false;\n        this.perspectiveStepApplied = false;\n        this.perspectiveTapDirection = 0;",
     ],
     [
       "this.goalYaw = scene.yaw;\n        this.goalScale = 1;",
@@ -42,10 +42,12 @@ function customizeArRenderer(code) {
                     this.menuPanel?.rotationArcPointIntersection(
                         scene, arScreenPoint.set(axes[0], axes[1])) ?? 0 : 0;
                 if (perspectiveDirection !== 0) {
+                    const nextYaw = this.goalPerspectiveYaw +
+                        perspectiveDirection * Math.PI / 12;
+                    this.goalPerspectiveYaw = Math.max(
+                        -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
                     this.isPerspectiveRotating = true;
-                    this.perspectiveStartYaw = this.goalPerspectiveYaw;
-                    this.perspectiveTouchStartX = axes[0];
-                    this.perspectiveMoved = false;
+                    this.perspectiveStepApplied = true;
                     this.perspectiveTapDirection = perspectiveDirection;
                     this.menuPanel.setRotationActive(true);
                     this.menuPanel.show = true;
@@ -98,13 +100,8 @@ function customizeArRenderer(code) {
       `this.onSelectEnd = () => {
             this.isTranslating = false;`,
       `this.onSelectEnd = () => {
-            if (this.isPerspectiveRotating && !this.perspectiveMoved) {
-                const nextYaw = this.goalPerspectiveYaw +
-                    this.perspectiveTapDirection * Math.PI / 12;
-                this.goalPerspectiveYaw = Math.max(
-                    -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
-            }
             this.isPerspectiveRotating = false;
+            this.perspectiveStepApplied = false;
             this.perspectiveTapDirection = 0;
             this.menuPanel?.setRotationActive(false);
             this.isTranslating = false;`,
@@ -113,7 +110,8 @@ function customizeArRenderer(code) {
       `const scale = scene.scenePivot.scale.x;
         // Robust two-finger gesture handling`,
       `const scale = scene.scenePivot.scale.x;
-        if (this.placeOnWall && fingers.length === 1) {
+        if (this.placeOnWall && fingers.length === 1 &&
+            !this.perspectiveStepApplied) {
             const finger = fingers[0];
             const axes = finger.inputSource.gamepad.axes;
             const perspectiveDirection = this.menuPanel?.rotationArcPointIntersection(
@@ -123,27 +121,18 @@ function customizeArRenderer(code) {
                 this.isTranslating = false;
                 this.isRotating = false;
                 this.isPerspectiveRotating = true;
-                this.perspectiveStartYaw = this.goalPerspectiveYaw;
-                this.perspectiveTouchStartX = axes[0];
-                this.perspectiveMoved = false;
+                this.perspectiveStepApplied = true;
                 this.perspectiveTapDirection = perspectiveDirection;
-                this.menuPanel.setRotationActive(true);
-                this.menuPanel.show = true;
-            }
-        }
-        if (this.isPerspectiveRotating && fingers.length > 0) {
-            const activeFinger = fingers.find(
-                finger => finger.inputSource === this.inputSource) ?? fingers[0];
-            const currentX = activeFinger.inputSource.gamepad.axes[0];
-            if (Math.abs(currentX - this.perspectiveTouchStartX) > 0.012) {
-                this.perspectiveMoved = true;
-            }
-            if (this.perspectiveMoved) {
-                const nextYaw = this.perspectiveStartYaw +
-                    (currentX - this.perspectiveTouchStartX) * 2.4;
+                const nextYaw = this.goalPerspectiveYaw +
+                    perspectiveDirection * Math.PI / 12;
                 this.goalPerspectiveYaw = Math.max(
                     -Math.PI * 0.42, Math.min(Math.PI * 0.42, nextYaw));
+                this.menuPanel.setRotationActive(true);
+                this.menuPanel.show = true;
+                return;
             }
+        }
+        if (this.isPerspectiveRotating) {
             return;
         }
         // Robust two-finger gesture handling`,
@@ -177,18 +166,26 @@ function customizeXrMenu(code) {
         this.rotationGizmo.position.set(0, 0, BUTTON_CONFIG.zOffset);
         this.rotationGizmo.visible = false;
         this.add(this.rotationGizmo);
-        const touchMaterial = new MeshBasicMaterial({
+        const touchMaterialConfig = {
             transparent: true,
             opacity: 0,
             colorWrite: false,
             depthWrite: false
-        });
-        this.rotationTouchTarget = new Mesh(
-            new PlaneGeometry(0.38, 0.24), touchMaterial);
-        this.rotationTouchTarget.name = 'SpatialRotationTouchTarget';
-        this.rotationTouchTarget.position.set(0, 0, BUTTON_CONFIG.zOffset + 0.001);
-        this.rotationTouchTarget.visible = false;
-        this.add(this.rotationTouchTarget);
+        };
+        this.rotationLeftTarget = new Mesh(
+            new PlaneGeometry(0.19, 0.24),
+            new MeshBasicMaterial(touchMaterialConfig));
+        this.rotationLeftTarget.name = 'SpatialRotationLeftTarget';
+        this.rotationLeftTarget.position.set(-0.095, 0, BUTTON_CONFIG.zOffset + 0.001);
+        this.rotationLeftTarget.visible = false;
+        this.add(this.rotationLeftTarget);
+        this.rotationRightTarget = new Mesh(
+            new PlaneGeometry(0.19, 0.24),
+            new MeshBasicMaterial(touchMaterialConfig));
+        this.rotationRightTarget.name = 'SpatialRotationRightTarget';
+        this.rotationRightTarget.position.set(0.095, 0, BUTTON_CONFIG.zOffset + 0.001);
+        this.rotationRightTarget.visible = false;
+        this.add(this.rotationRightTarget);
     }`,
     ],
     [
@@ -210,15 +207,14 @@ function customizeXrMenu(code) {
         this.exitButton.visible = false;
         this.toggleButton.visible = false;
         this.rotationGizmo.visible = true;
-        this.rotationTouchTarget.visible = true;
+        this.rotationLeftTarget.visible = true;
+        this.rotationRightTarget.visible = true;
     }
     rotationArcPointIntersection(scene, ndcPosition) {
-        if (!this.perspectiveRotationControl ||
-            scene.hitFromPoint(ndcPosition, this.rotationTouchTarget) == null) return 0;
-        const arcCenter = new Vector3();
-        this.rotationGizmo.getWorldPosition(arcCenter);
-        arcCenter.project(scene.getCamera());
-        return ndcPosition.x < arcCenter.x ? -1 : 1;
+        if (!this.perspectiveRotationControl) return 0;
+        if (scene.hitFromPoint(ndcPosition, this.rotationLeftTarget) != null) return -1;
+        if (scene.hitFromPoint(ndcPosition, this.rotationRightTarget) != null) return 1;
+        return 0;
     }
     setRotationActive(active) {
         if (!this.perspectiveRotationControl) return;

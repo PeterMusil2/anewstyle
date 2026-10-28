@@ -211,6 +211,27 @@ const headerModelPath = panelCategory === "mineral"
         {t("header.arHandoffHint")}
       </p>
     </div>
+    <fieldset class="w-full space-y-3">
+      <legend class="text-sm font-extrabold tracking-caps text-gold uppercase">
+        {t("header.arOrientation")}
+      </legend>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex min-h-16 cursor-pointer items-center justify-center gap-3 border border-line bg-ink-900 px-3 py-3 text-sm font-bold text-fg-soft transition-colors has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+          <input type="radio" name="arOrientation" value="0" checked class="size-5 shrink-0 accent-gold" />
+          <span class="flex items-center gap-2">
+            <span aria-hidden="true" class="block h-8 w-5 border-2 border-current"></span>
+            {t("header.arPortrait")}
+          </span>
+        </label>
+        <label class="flex min-h-16 cursor-pointer items-center justify-center gap-3 border border-line bg-ink-900 px-3 py-3 text-sm font-bold text-fg-soft transition-colors has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+          <input type="radio" name="arOrientation" value="90" class="size-5 shrink-0 accent-gold" />
+          <span class="flex items-center gap-2">
+            <span aria-hidden="true" class="block h-5 w-8 border-2 border-current"></span>
+            {t("header.arLandscape")}
+          </span>
+        </label>
+      </div>
+    </fieldset>
     <Button
       id="arHandoffButton"
       disabled
@@ -223,38 +244,11 @@ const headerModelPath = panelCategory === "mineral"
   </div>
 </div>
 
-<template id="arRotationControlsTemplate">
-  <div
-    slot="exit-webxr-ar-button"
-    data-ar-rotation-controls
-    class="contents"
-  >
-    <button
-      type="button"
-      data-ar-exit
-      aria-label={t("products.arClose")}
-      class="pointer-events-auto fixed top-[max(1rem,env(safe-area-inset-top))] right-4 z-10 grid size-14 place-items-center rounded-full border border-gold bg-ink/90 text-gold shadow-lg backdrop-blur-md transition-colors active:bg-gold active:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-    >
-      <Icon name="close-bold" class="size-6" />
-    </button>
-    <button
-      type="button"
-      data-ar-rotate
-      aria-label={t("header.arRotateQuarter")}
-      class="pointer-events-auto fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 z-10 flex min-h-14 -translate-x-1/2 touch-manipulation items-center gap-3 whitespace-nowrap rounded-full border border-gold bg-gold px-6 text-sm font-extrabold tracking-caps text-ink uppercase shadow-lg transition-colors active:bg-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-    >
-      <Icon name="360" class="size-6" />
-      {t("header.arRotate")}
-    </button>
-  </div>
-</template>
-
 <script>
   import {
     PANEL_AR_PLACEMENT,
     panelArModes,
     panelArOrientation,
-    panelArRoll,
     panelArViewerStyle,
     samsungInternetArIntent,
     shouldOpenArInSamsungInternet,
@@ -398,9 +392,13 @@ const headerModelPath = panelCategory === "mineral"
     const handoffOverlay = document.querySelector<HTMLElement>("#arHandoffOverlay");
     const handoffButton = document.querySelector<HTMLButtonElement>("#arHandoffButton");
     const handoffStatus = document.querySelector<HTMLElement>("#arHandoffStatus");
+    const orientationInputs = Array.from(
+      document.querySelectorAll<HTMLInputElement>('input[name="arOrientation"]'),
+    );
     if (!arButton) return;
 
     const handoffRequested = new URLSearchParams(window.location.search).get("ar-handoff") === "1";
+    const isSamsungInternet = /SamsungBrowser/i.test(window.navigator.userAgent);
     const openInSamsungInternet = shouldOpenArInSamsungInternet(
       window.navigator.userAgent,
       window.location.search,
@@ -408,8 +406,15 @@ const headerModelPath = panelCategory === "mineral"
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
+    let useOrientationStep = handoffRequested;
+    const selectedOrientation = () => Number(
+      orientationInputs.find((input) => input.checked)?.value ?? 0,
+    );
+    const applyOrientation = () => {
+      arViewer?.setAttribute("orientation", panelArOrientation(selectedOrientation()));
+    };
     const setHandoffVisible = (visible: boolean) => {
-      if (!handoffRequested || !handoffOverlay) return;
+      if (!useOrientationStep || !handoffOverlay) return;
       handoffOverlay.hidden = !visible;
       document.documentElement.style.overflow = visible ? "hidden" : "";
       if (visible && handoffButton && !handoffButton.disabled) handoffButton.focus();
@@ -453,16 +458,7 @@ const headerModelPath = panelCategory === "mineral"
         viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
         viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes());
         viewer.setAttribute("loading", "eager");
-        const rotationTemplate = document.querySelector<HTMLTemplateElement>("#arRotationControlsTemplate");
-        if (rotationTemplate) viewer.appendChild(rotationTemplate.content.cloneNode(true));
-        let panelRoll = 0;
-        viewer.querySelector<HTMLButtonElement>("[data-ar-rotate]")?.addEventListener("click", (event) => {
-          // The controls live in model-viewer's guaranteed WebXR exit slot.
-          // Keep rotation taps from bubbling to the slot's exit handler.
-          event.stopPropagation();
-          panelRoll = panelArRoll(panelRoll);
-          viewer.setAttribute("orientation", panelArOrientation(panelRoll));
-        });
+        viewer.setAttribute("orientation", panelArOrientation(selectedOrientation()));
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
         // surface; a 1×1 hidden renderer can fail to start on Android Chrome.
         viewer.style.cssText = panelArViewerStyle(false);
@@ -543,9 +539,15 @@ const headerModelPath = panelCategory === "mineral"
         window.location.href = samsungInternetArIntent(window.location.href);
         return;
       }
+      if (isSamsungInternet) {
+        useOrientationStep = true;
+        setHandoffVisible(true);
+        return;
+      }
       activatePreparedAR();
     });
     handoffButton?.addEventListener("click", activatePreparedAR);
+    orientationInputs.forEach((input) => input.addEventListener("change", applyOrientation));
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
     if (mobileAR.matches) {

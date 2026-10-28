@@ -15,7 +15,6 @@ import {
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArOrientation,
-  panelArRoll,
   panelArViewerStyle,
   samsungInternetArIntent,
   shouldOpenArInSamsungInternet,
@@ -95,11 +94,11 @@ describe("hero video", () => {
     expect(header).toContain('id="arHandoffOverlay"');
     expect(header).toContain('id="arHandoffButton"');
     expect(header).toContain('handoffButton?.addEventListener("click", activatePreparedAR)');
-    expect(header).toContain('id="arRotationControlsTemplate"');
-    expect(header).toContain('slot="exit-webxr-ar-button"');
-    expect(header).toContain('data-ar-rotate');
-    expect(header).toContain('event.stopPropagation()');
-    expect(header).toContain('viewer.setAttribute("orientation", panelArOrientation(panelRoll))');
+    expect(header).toContain('name="arOrientation" value="0" checked');
+    expect(header).toContain('name="arOrientation" value="90"');
+    expect(header).toContain('viewer.setAttribute("orientation", panelArOrientation(selectedOrientation()))');
+    expect(header).toContain('orientationInputs.forEach((input) => input.addEventListener("change", applyOrientation))');
+    expect(header).not.toContain('id="arRotationControlsTemplate"');
     expect(header).toContain('status === "failed"');
     expect(header).toContain('role="status"');
     expect(productsComponent).toContain('ar-modes={panelArModes()}');
@@ -145,11 +144,8 @@ describe("hero video", () => {
     }
   });
 
-  test("AR rotation controls turn the panel within the wall plane and wrap cleanly", () => {
-    expect(panelArRoll(0)).toBe(90);
-    expect(panelArRoll(90)).toBe(-180);
-    expect(panelArRoll(-180)).toBe(-90);
-    expect(panelArRoll(-90)).toBe(0);
+  test("AR orientation choices keep the panel aligned with the wall", () => {
+    expect(panelArOrientation(0)).toBe("0deg 0deg 0deg");
     expect(panelArOrientation(90)).toBe("90deg 0deg 0deg");
   });
 

@@ -17,11 +17,12 @@ const t = useTranslations(lang);
 const homePath = lang === "cs" ? "/" : "/en/";
 const learnMoreHref = "#panel-material";
 const allPanelsHref = activeCategory ? homePath : `${homePath}#about`;
-const options = [
+const panelOptions = [
   { href: activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang), label: t("price.categoryStone"), active: activeCategory === "stone" },
   { href: activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang), label: t("price.categoryMineral"), active: activeCategory === "mineral" },
-  { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory },
 ];
+const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory };
+const options = [allPanelsOption, ...panelOptions];
 ---
 
 <nav aria-label={t("nav.panelPages")} class="panel-page-switch grid w-full max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3">

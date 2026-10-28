@@ -241,13 +241,11 @@ describe("feature disclosures", () => {
     expect(component).toContain("features.map((feature)");
     expect(component).toContain('<details class="group/feature">');
     expect(component).not.toContain("<details open=");
-    expect(component).toContain('feature.palette && "feature-color-palette"');
-    expect(component).toContain("grid-column: 1 / -1;");
-    expect(component).toContain("justify-self: center;");
-    expect(component).toContain("width: calc((100% - 3.75rem) / 4);");
+    expect(component).not.toContain("feature-color-palette");
     const palette = await Bun.file("src/components/palette/Palette.astro").text();
     expect(palette).toContain('<ul class="flex h-12 items-center gap-3"');
     expect(component).toContain("feature-disclosure-indicator");
+    expect(component).toContain('if (!feature?.matches("li[id]")) return;');
     expect(component).toContain("border-line-strong bg-ink-900");
     expect(component).toContain("border-gold/70 bg-gold/10");
     expect(component).toContain("openAnchoredFeature();");
@@ -320,7 +318,11 @@ describe("i18n", () => {
     expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
     expect(switcher).toContain('activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang)');
     expect(switcher).toContain('const allPanelsHref = activeCategory ? homePath : `${homePath}#about`');
-    expect(switcher).toContain('{ href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory }');
+    expect(switcher).toContain('const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory }');
+    expect(switcher).toMatch(/const options = \[allPanelsOption, \.\.\.panelOptions\]/);
+    expect(switcher).toContain('active: activeCategory === "stone"');
+    expect(switcher).toContain('active: activeCategory === "mineral"');
+    expect(switcher).toContain('variant={active ? "primary" : "outline"}');
     expect(switcher).toContain('{active && <span class="text-[0.625rem] font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
     expect(cs["header.btnMore"]).toBe("Chci vědět víc");
     expect(en["header.btnMore"]).toBe("Learn more");

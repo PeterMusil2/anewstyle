@@ -73,7 +73,6 @@ const formattedDescription = (key: TranslationKey) =>
             id={feature.id}
             class:list={[
               "reveal scroll-mt-[calc(var(--nav-height)+1.5rem)] border border-line-strong bg-ink-900 p-5 transition-colors duration-300 target:border-gold hover:border-gold/70 sm:p-7",
-              feature.palette && "feature-color-palette",
             ]}
           >
             <details class="group/feature">
@@ -135,30 +134,6 @@ const formattedDescription = (key: TranslationKey) =>
 </section>
 
 <style>
-  .feature-color-palette {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: 100%;
-  }
-
-  @media (width >= 40rem) {
-    .feature-color-palette {
-      width: calc((100% - 1.25rem) / 2);
-    }
-  }
-
-  @media (width >= 64rem) {
-    .feature-color-palette {
-      width: calc((100% - 2.5rem) / 3);
-    }
-  }
-
-  @media (width >= 80rem) {
-    .feature-color-palette {
-      width: calc((100% - 3.75rem) / 4);
-    }
-  }
-
   .feature-disclosure-indicator::before {
     content: "+";
   }
@@ -173,6 +148,7 @@ const formattedDescription = (key: TranslationKey) =>
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (!id) return;
     const feature = document.getElementById(id);
+    if (!feature?.matches("li[id]")) return;
     const details = feature?.querySelector("details");
     if (details instanceof HTMLDetailsElement) details.open = true;
   };

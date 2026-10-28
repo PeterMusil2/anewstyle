@@ -225,24 +225,27 @@ const headerModelPath = panelCategory === "mineral"
 
 <template id="arRotationControlsTemplate">
   <div
+    slot="exit-webxr-ar-button"
     data-ar-rotation-controls
-    role="group"
-    aria-label={t("header.arRotate")}
-    class="pointer-events-auto fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-full border border-gold bg-ink/90 p-1 text-gold shadow-lg backdrop-blur-md"
+    class="contents"
   >
-    <span class="px-3 text-xs font-extrabold tracking-caps uppercase">{t("header.arRotate")}</span>
     <button
       type="button"
-      data-ar-rotate="-1"
-      aria-label={t("header.arRotateLeft")}
-      class="grid size-14 place-items-center rounded-full border border-gold text-sm font-black transition-colors hover:bg-gold hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:bg-gold-light active:text-ink"
-    >−15°</button>
+      data-ar-exit
+      aria-label={t("products.arClose")}
+      class="pointer-events-auto fixed top-[max(1rem,env(safe-area-inset-top))] right-4 z-10 grid size-14 place-items-center rounded-full border border-gold bg-ink/90 text-gold shadow-lg backdrop-blur-md transition-colors active:bg-gold active:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+    >
+      <Icon name="close-bold" class="size-6" />
+    </button>
     <button
       type="button"
-      data-ar-rotate="1"
-      aria-label={t("header.arRotateRight")}
-      class="grid size-14 place-items-center rounded-full border border-gold text-sm font-black transition-colors hover:bg-gold hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg active:bg-gold-light active:text-ink"
-    >+15°</button>
+      data-ar-rotate
+      aria-label={t("header.arRotateQuarter")}
+      class="pointer-events-auto fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-1/2 z-10 flex min-h-14 -translate-x-1/2 touch-manipulation items-center gap-3 whitespace-nowrap rounded-full border border-gold bg-gold px-6 text-sm font-extrabold tracking-caps text-ink uppercase shadow-lg transition-colors active:bg-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+    >
+      <Icon name="360" class="size-6" />
+      {t("header.arRotate")}
+    </button>
   </div>
 </template>
 
@@ -453,12 +456,12 @@ const headerModelPath = panelCategory === "mineral"
         const rotationTemplate = document.querySelector<HTMLTemplateElement>("#arRotationControlsTemplate");
         if (rotationTemplate) viewer.appendChild(rotationTemplate.content.cloneNode(true));
         let panelRoll = 0;
-        viewer.querySelectorAll<HTMLButtonElement>("[data-ar-rotate]").forEach((button) => {
-          button.addEventListener("click", () => {
-            const direction = button.dataset.arRotate === "-1" ? -1 : 1;
-            panelRoll = panelArRoll(panelRoll, direction);
-            viewer.setAttribute("orientation", panelArOrientation(panelRoll));
-          });
+        viewer.querySelector<HTMLButtonElement>("[data-ar-rotate]")?.addEventListener("click", (event) => {
+          // The controls live in model-viewer's guaranteed WebXR exit slot.
+          // Keep rotation taps from bubbling to the slot's exit handler.
+          event.stopPropagation();
+          panelRoll = panelArRoll(panelRoll);
+          viewer.setAttribute("orientation", panelArOrientation(panelRoll));
         });
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
         // surface; a 1×1 hidden renderer can fail to start on Android Chrome.

@@ -2,8 +2,8 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
-export function panelArRoll(currentDegrees: number, direction: -1 | 1, stepDegrees = 15): number {
-  const next = currentDegrees + direction * stepDegrees;
+export function panelArRoll(currentDegrees: number, stepDegrees = 90): number {
+  const next = currentDegrees + stepDegrees;
   return ((next + 180) % 360 + 360) % 360 - 180;
 }
 

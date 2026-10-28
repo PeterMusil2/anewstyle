@@ -1,5 +1,6 @@
 /** Shared AR configuration for wall-mounted illuminated panels. */
 export const PANEL_AR_PLACEMENT = "wall";
+export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
 /**
  * Keep Android AR inside the browser. Scene Viewer is intentionally excluded:

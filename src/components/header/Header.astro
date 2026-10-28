@@ -5,6 +5,7 @@ import {
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
+  STONE_AR_MODEL_PATH,
 } from "../../lib/panel-ar";
 import {
   getPanelPagePath,
@@ -27,7 +28,7 @@ const homeHref = lang === "cs" ? "/" : "/en/";
 const headerMineralTexture = "/images/patterns/mineral-2.png";
 const headerModelPath = panelCategory === "mineral"
   ? mineralArModelPath(headerMineralTexture)
-  : "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb";
+  : STONE_AR_MODEL_PATH;
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
@@ -197,6 +198,7 @@ const headerModelPath = panelCategory === "mineral"
     PANEL_AR_PLACEMENT,
     panelArModes,
     panelArViewerStyle,
+    STONE_AR_MODEL_PATH,
     waitForArAvailability,
   } from "../../lib/panel-ar";
 
@@ -363,7 +365,7 @@ const headerModelPath = panelCategory === "mineral"
         await customElements.whenDefined("model-viewer");
         const viewer = document.createElement("model-viewer") as ARViewer;
         const texturePath = arButton.dataset.texturePath;
-        viewer.setAttribute("src", arButton.dataset.modelPath ?? "/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
+        viewer.setAttribute("src", arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH);
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
         viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);

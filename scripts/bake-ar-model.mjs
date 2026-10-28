@@ -77,6 +77,10 @@ json.images.forEach((image, index) => {
   image.mimeType = "image/png";
   image.name = `mineral-ar-${index + 1}`;
 });
+json.extensionsUsed = [...new Set([...(json.extensionsUsed ?? []), "KHR_materials_unlit"])];
+json.materials.forEach((material) => {
+  material.extensions = { ...(material.extensions ?? {}), KHR_materials_unlit: {} };
+});
 json.buffers[0].byteLength = rebuiltBin.byteLength;
 
 const encodedJson = new TextEncoder().encode(JSON.stringify(json));

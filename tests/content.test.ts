@@ -15,6 +15,7 @@ import {
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArViewerStyle,
+  STONE_AR_MODEL_PATH,
   waitForArAvailability,
 } from "../src/lib/panel-ar";
 
@@ -63,7 +64,7 @@ describe("hero video", () => {
     expect(header).toContain("{t('header.btnAr')}");
     expect(header).toContain('mineralArModelPath(headerMineralTexture)');
     expect(header).toContain('text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl');
-    expect(publicFile("/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb")).toBe(true);
+    expect(publicFile(STONE_AR_MODEL_PATH)).toBe(true);
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
   });
 
@@ -75,6 +76,7 @@ describe("hero video", () => {
     expect(PANEL_AR_PLACEMENT).toBe("wall");
     expect(panelArModes()).toBe("webxr quick-look");
     expect(panelArModes()).not.toContain("scene-viewer");
+    expect(STONE_AR_MODEL_PATH).toContain("_unlit.glb");
     expect(panelArViewerStyle(false)).toContain("pointer-events:none;z-index:-1");
     expect(panelArViewerStyle(true)).toContain("pointer-events:auto;z-index:2147483647");
     expect(header).toContain('data-ar-placement={PANEL_AR_PLACEMENT}');
@@ -92,6 +94,11 @@ describe("hero video", () => {
     expect(cardComponent).not.toContain("scene-viewer");
     expect(productsComponent).toContain('data-ar-model={pattern.arModel}');
     const sourceModel = readGlb("public/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
+    const stoneArModel = readGlb(`public${STONE_AR_MODEL_PATH}`);
+    expect(stoneArModel.json.extensionsUsed).toContain("KHR_materials_unlit");
+    expect(stoneArModel.json.materials.every(
+      (material: { extensions?: Record<string, unknown> }) => material.extensions?.KHR_materials_unlit,
+    )).toBe(true);
     const sourceImageViews = new Set<number>(
       sourceModel.json.images.map((image: { bufferView: number }) => image.bufferView),
     );
@@ -105,6 +112,10 @@ describe("hero video", () => {
         expect(image.signature).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
       }
       const bakedModel = readGlb(modelPath);
+      expect(bakedModel.json.extensionsUsed).toContain("KHR_materials_unlit");
+      expect(bakedModel.json.materials.every(
+        (material: { extensions?: Record<string, unknown> }) => material.extensions?.KHR_materials_unlit,
+      )).toBe(true);
       sourceModel.json.bufferViews.forEach((sourceView: { byteOffset: number; byteLength: number }, index: number) => {
         if (sourceImageViews.has(index)) return;
         const bakedView = bakedModel.json.bufferViews[index];

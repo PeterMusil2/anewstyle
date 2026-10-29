@@ -24,3 +24,13 @@ const { href, text, accent = false, variant = "bar" } = Astro.props;
     {text}
   </a>
 </li>
+
+<style>
+  a[data-active="true"] {
+    color: var(--color-gold);
+  }
+
+  a[data-active="true"]:is(:hover, :focus-visible) {
+    color: var(--color-gold-light);
+  }
+</style>

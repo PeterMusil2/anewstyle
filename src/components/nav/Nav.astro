@@ -149,9 +149,39 @@ const mobileLinks = links;
 </div>
 
 <script>
-  // Following an in-page link should also close the mobile menu popover.
   const menu = document.getElementById("mobile-menu");
   menu?.querySelectorAll("[data-nav-link]").forEach((link) => {
     link.addEventListener("click", () => menu.hidePopover());
   });
+
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>(".site-nav [data-nav-link]");
+  const normalizePath = (path: string) => path.replace(/\/+$/, "") || "/";
+
+  const updateActiveNavLinks = () => {
+    navLinks.forEach((link) => {
+      const targetUrl = new URL(link.href, window.location.href);
+      const samePage = normalizePath(targetUrl.pathname) === normalizePath(window.location.pathname);
+      const target = targetUrl.hash ? document.getElementById(decodeURIComponent(targetUrl.hash.slice(1))) : null;
+      let active = samePage && !targetUrl.hash;
+
+      if (samePage && target) {
+        const { top, bottom } = target.getBoundingClientRect();
+        active = top <= window.innerHeight * 0.55 && bottom >= window.innerHeight * 0.35;
+      }
+
+      if (active) {
+        link.dataset.active = "true";
+        link.setAttribute("aria-current", targetUrl.hash ? "location" : "page");
+      } else {
+        delete link.dataset.active;
+        link.removeAttribute("aria-current");
+      }
+    });
+  };
+
+  updateActiveNavLinks();
+  window.addEventListener("scroll", updateActiveNavLinks, { passive: true });
+  window.addEventListener("resize", updateActiveNavLinks, { passive: true });
+  window.addEventListener("hashchange", updateActiveNavLinks);
+  window.addEventListener("popstate", updateActiveNavLinks);
 </script>

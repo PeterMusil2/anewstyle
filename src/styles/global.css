@@ -137,6 +137,32 @@
   border-block-start: 1px solid var(--color-line-strong);
 }
 
+/* Keep anchored section headings close to the top edge, like the contact target. */
+main > section[id]:not(#panel-material):not(.pricing):target,
+main > section:has(#about:target) {
+  padding-block-start: 1rem;
+}
+
+main > section#panel-material:target,
+main > section.pricing:target {
+  padding-block-start: 0;
+}
+
+main > section#panel-material:target > .container-page {
+  padding-block-start: 1rem;
+}
+
+main > section.pricing:target > .price-catalog > .container-page:first-child {
+  padding-block-start: 1rem;
+}
+
+/* Standalone content pages enter at the top without a fragment target. */
+main > section#gallery,
+main > section#manual,
+main > section.faq-standalone {
+  padding-block-start: 1rem;
+}
+
 .home-section-divider::before {
   position: absolute;
   inset-block-start: -1px;

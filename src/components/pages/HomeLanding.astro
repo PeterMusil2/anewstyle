@@ -6,6 +6,7 @@ import MaterialOverview from "../sections/MaterialOverview.astro";
 import Features from "../sections/Features.astro";
 import HomeEquipmentComparison from "../sections/HomeEquipmentComparison.astro";
 import HomeDayNight from "../sections/HomeDayNight.astro";
+import Faq from "../sections/Faq.astro";
 import Contact from "../sections/Contact.astro";
 import { getLangFromUrl, useTranslations, type Lang } from "../../i18n/utils";
 
@@ -30,6 +31,7 @@ const t = useTranslations(lang);
     <Features id="features" lang={lang} showBoth />
     <HomeEquipmentComparison lang={lang} />
     <HomeDayNight lang={lang} />
+    <Faq id="faq" lang={lang} />
     <Contact id="contact" lang={lang} />
   </main>
 </Layout>

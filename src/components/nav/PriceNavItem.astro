@@ -17,8 +17,9 @@ const options = [
 <li class:list={["price-nav-item", variant === "bar" && "relative"]}>
   <details class="group">
     <summary
+      data-price-nav-trigger
       class:list={[
-        "price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-gold uppercase transition-colors hover:text-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold [&::-webkit-details-marker]:hidden",
+        "price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-fg-soft uppercase transition-colors hover:text-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold [&::-webkit-details-marker]:hidden",
         variant === "bar" && "min-h-11 whitespace-nowrap text-[0.8125rem] tracking-[0.12em]",
         variant === "panel" && "min-h-14 border-b border-line text-[0.8125rem] tracking-[0.12em]",
       ]}
@@ -37,6 +38,7 @@ const options = [
         <a
           href={href}
           data-nav-link
+          data-price-nav-option
           class:list={[
             "flex items-center text-fg-soft no-underline transition-colors hover:bg-ink-800 hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold",
             variant === "bar" && "min-h-12 px-4 text-sm",
@@ -50,9 +52,66 @@ const options = [
   </details>
 </li>
 
+<script>
+  const priceSection = document.getElementById("price-list");
+  const priceTriggers = document.querySelectorAll<HTMLElement>("[data-price-nav-trigger]");
+  const priceOptions = document.querySelectorAll<HTMLAnchorElement>("[data-price-nav-option]");
+
+  if (priceSection && priceTriggers.length) {
+    const updateActivePriceNav = () => {
+      const { top, bottom } = priceSection.getBoundingClientRect();
+      const active = top <= window.innerHeight * 0.55 && bottom >= window.innerHeight * 0.35;
+
+      priceTriggers.forEach((trigger) => {
+        if (active) {
+          trigger.dataset.active = "true";
+          trigger.setAttribute("aria-current", "location");
+        } else {
+          delete trigger.dataset.active;
+          trigger.removeAttribute("aria-current");
+        }
+      });
+
+      priceOptions.forEach((option) => {
+        const optionUrl = new URL(option.href, window.location.href);
+        const optionActive = active && optionUrl.pathname.replace(/\/+$/, "") === window.location.pathname.replace(/\/+$/, "");
+
+        if (optionActive) {
+          option.dataset.active = "true";
+          option.setAttribute("aria-current", "location");
+        } else {
+          delete option.dataset.active;
+          option.removeAttribute("aria-current");
+        }
+      });
+    };
+
+    updateActivePriceNav();
+    window.addEventListener("scroll", updateActivePriceNav, { passive: true });
+    window.addEventListener("resize", updateActivePriceNav, { passive: true });
+    window.addEventListener("hashchange", updateActivePriceNav);
+  }
+</script>
+
 <style>
+  .price-nav-item__trigger[data-active="true"] {
+    color: var(--color-gold);
+  }
+
+  .price-nav-item__trigger[data-active="true"]:is(:hover, :focus-visible) {
+    color: var(--color-gold-light);
+  }
+
   .price-nav-item__menu {
     display: none;
+  }
+
+  .price-nav-item__menu a[data-active="true"] {
+    color: var(--color-gold);
+  }
+
+  .price-nav-item__menu a[data-active="true"]:is(:hover, :focus-visible) {
+    color: var(--color-gold-light);
   }
 
   details[open] > .price-nav-item__menu {

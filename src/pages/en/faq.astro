@@ -22,6 +22,6 @@ const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
   additionalStructuredData={faqPageStructuredData(lang, pageUrl)}
 >
   <main id="main" class="pt-(--nav-height)">
-    <Faq id="faq" lang={lang} />
+    <Faq id="faq" lang={lang} standalone />
   </main>
 </Layout>

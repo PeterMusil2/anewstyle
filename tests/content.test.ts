@@ -358,9 +358,29 @@ describe("price navigation", () => {
     expect(priceNav).toContain('t("nav.priceStone")');
     expect(priceNav).toContain('t("nav.priceMineral")');
     expect(priceNav).toContain("data-nav-link");
-    expect(priceNav).toContain('"price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-gold uppercase');
+    expect(priceNav).toContain('"price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-fg-soft uppercase');
+    expect(priceNav).toContain('trigger.setAttribute("aria-current", "location")');
+    expect(priceNav).toContain('.price-nav-item__trigger[data-active="true"]');
+    expect(priceNav).toContain("data-price-nav-option");
+    expect(priceNav).toContain('option.setAttribute("aria-current", "location")');
+    expect(priceNav).toContain('.price-nav-item__menu a[data-active="true"]');
+    expect(priceNav).toContain('.price-nav-item__menu a[data-active="true"]:is(:hover, :focus-visible)');
+    expect(priceNav).toContain('.price-nav-item__trigger[data-active="true"]:is(:hover, :focus-visible)');
+    expect(priceNav).toContain('hover:text-gold-light');
     expect(priceNav).toContain('variant === "panel" && "min-h-14 border-b border-line text-[0.8125rem] tracking-[0.12em]"');
     expect(priceNav).toContain('variant === "panel" && "min-h-12 border-b border-line px-3 text-base last:border-b-0"');
+  });
+
+  test("keeps the active navigation destination gold while retaining hover styling", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const navItem = await Bun.file("src/components/nav/NavItem.astro").text();
+
+    expect(nav).toContain('document.querySelectorAll<HTMLAnchorElement>(".site-nav [data-nav-link]")');
+    expect(nav).toContain('link.setAttribute("aria-current", targetUrl.hash ? "location" : "page")');
+    expect(nav).toContain('window.addEventListener("scroll", updateActiveNavLinks, { passive: true })');
+    expect(navItem).toContain('a[data-active="true"]');
+    expect(navItem).toContain('a[data-active="true"]:is(:hover, :focus-visible)');
+    expect(navItem).toContain("hover:text-gold-light");
   });
 
   test("switches to the desktop navigation at the preview's desktop width", async () => {
@@ -468,6 +488,19 @@ describe("home lighting comparison", () => {
 });
 
 describe("home section rhythm", () => {
+  test("reduces top spacing for anchored sections on home and both panel routes", async () => {
+    const styles = await Bun.file("src/styles/global.css").text();
+
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
+    expect(styles).toContain("main > section:has(#about:target)");
+    expect(styles).toContain("padding-block-start: 1rem;");
+    expect(styles).toContain("main > section#panel-material:target > .container-page");
+    expect(styles).toContain("main > section.pricing:target > .price-catalog > .container-page:first-child");
+    expect(styles).toContain("main > section#gallery,");
+    expect(styles).toContain("main > section#manual,");
+    expect(styles).toContain("main > section.faq-standalone {");
+  });
+
   test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
     const component = await Bun.file("src/components/sections/Showcase.astro").text();
 
@@ -550,6 +583,16 @@ describe("feature disclosures", () => {
 });
 
 describe("FAQ", () => {
+  test("uses a centered heading and a compact, responsive native accordion grid", async () => {
+    const faq = await Bun.file("src/components/sections/Faq.astro").text();
+
+    expect(faq).toContain('layout="center" eyebrow={t("faq.title")}');
+    expect(faq).toContain("grid items-start gap-3 md:grid-cols-2 md:gap-4 lg:gap-5");
+    expect(faq).toContain('name="faq"');
+    expect(faq).not.toContain("open={index === 0}");
+    expect(faq).toContain('standalone ? "section-y bg-ink faq-standalone" : "home-section-y home-section-divider bg-ink"');
+  });
+
   test("every question has an answer in both languages", () => {
     for (const lang of ["cs", "en"] as const) {
       for (const item of faqItems(lang)) {
@@ -675,7 +718,7 @@ describe("i18n", () => {
     expect(nav).toContain('const mobileLinks = links');
   });
 
-  test("FAQ has a dedicated localized page and menu links", async () => {
+  test("FAQ appears after day/night on home and has dedicated localized pages", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
     const home = await Bun.file("src/components/pages/HomeLanding.astro").text();
     const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
@@ -685,11 +728,12 @@ describe("i18n", () => {
 
     expect(nav).not.toContain('text: t("nav.dayNight")');
     expect(nav.match(/href: `\$\{basePath\}\/faq\/`, text: t\("nav\.faq"\)/g)).toHaveLength(1);
-    expect(home).not.toContain('<Faq id="faq"');
-    expect(home).not.toContain("<Faq ");
+    expect(home).toContain('import Faq from "../sections/Faq.astro";');
+    expect(home.indexOf("<HomeDayNight lang={lang} />")).toBeLessThan(home.indexOf('<Faq id="faq" lang={lang} />'));
+    expect(home.indexOf('<Faq id="faq" lang={lang} />')).toBeLessThan(home.indexOf('<Contact id="contact"'));
     expect(panelLanding).toContain("/faq/");
-    expect(faqPage).toContain('<Faq id="faq" lang={lang} />');
-    expect(enFaqPage).toContain('<Faq id="faq" lang={lang} />');
+    expect(faqPage).toContain('<Faq id="faq" lang={lang} standalone />');
+    expect(enFaqPage).toContain('<Faq id="faq" lang={lang} standalone />');
     expect(faqPage).toContain('t("meta.titleFaq")');
     expect(enFaqPage).toContain('t("meta.titleFaq")');
     expect(schema).toContain('export function faqPageStructuredData');
@@ -733,10 +777,11 @@ describe("i18n", () => {
 
   test("contact section moves its heading closer to the header when opened by an inquiry link", async () => {
     const contact = await Bun.file("src/components/sections/Contact.astro").text();
+    const styles = await Bun.file("src/styles/global.css").text();
 
     expect(contact).toContain('class="contact-section home-section-y home-section-divider bg-ink-800"');
-    expect(contact).toContain(".contact-section:target {");
-    expect(contact).toContain("padding-block-start: 1rem;");
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
+    expect(styles).toContain("padding-block-start: 1rem;");
   });
 
   test("showroom keeps its phone while panel branch showroom CTA links to e-mail", async () => {

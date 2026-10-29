@@ -349,9 +349,11 @@ describe("price navigation", () => {
     expect(nav).toContain("<PriceNavItem lang={lang} />");
     expect(nav).toContain('<PriceNavItem lang={lang} variant="panel" />');
     expect(normalizedNav).toContain('{links.map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
-    expect(normalizedNav).toContain('{mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
-    expect(normalizedNav).toContain('{homeLinks.slice(4).map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
-    expect(normalizedNav).toContain('{homeLinks.slice(4).map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav).toContain('{links.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav).toContain('{homeLinks.map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
+    expect(normalizedNav).toContain('{homeLinks.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(nav).toContain('<InfoNavItem lang={lang} />');
+    expect(nav).toContain('<InfoNavItem lang={lang} variant="panel" />');
     expect(normalizedNav).not.toContain('href: `${getPanelPagePath(panelCategory, lang)}#price-list`');
     expect(priceNav).toContain('getPanelPagePath("stone", lang)}#price-list');
     expect(priceNav).toContain('getPanelPagePath("mineral", lang)}#price-list');
@@ -411,20 +413,48 @@ describe("price list category labels", () => {
 });
 
 describe("homepage navigation", () => {
-  test("omits the showcase and FAQ links while retaining them in panel navigation", async () => {
+  test("keeps core links visible and groups supporting pages under Information", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
     const homeLinks = nav.slice(nav.indexOf("const homeLinks = ["), nav.indexOf("const links = panelCategory"));
-    const panelLinks = nav.slice(nav.indexOf("const links = panelCategory"), nav.indexOf("const mobileLinks"));
+    const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
 
     expect(homeLinks).not.toContain('href: "#about"');
     expect(homeLinks).not.toContain('t("nav.faq")');
     expect(homeLinks).toContain('t("nav.technologies")');
     expect(homeLinks).toContain('t("nav.features")');
-    expect(homeLinks).toContain('t("nav.contact")');
     expect(homeLinks).toContain('href: `${basePath}/#technologies`');
     expect(homeLinks).toContain('href: `${basePath}/#features`');
-    expect(homeLinks).toContain('href: `${basePath}/#contact`');
-    expect(panelLinks).toContain('t("nav.faq")');
+    expect(nav).toContain('text: t("nav.contact")');
+    expect(infoNav).toContain('t("nav.gallery")');
+    expect(infoNav).toContain('t("nav.faq")');
+    expect(infoNav).toContain('t("nav.manual")');
+    expect(infoNav).toContain('href: `${basePath}/#faq`');
+  });
+
+  test("matches mobile dropdown headings to nav typography and auto-closes desktop menus", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const panelSwitch = await Bun.file("src/components/nav/PanelNavSwitch.astro").text();
+    const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
+    const priceNav = await Bun.file("src/components/nav/PriceNavItem.astro").text();
+
+    for (const component of [panelSwitch, infoNav]) {
+      expect(component).toContain("font-family: var(--font-sans);");
+      expect(component).toContain("font-size: 1rem;");
+      expect(component).toContain("font-weight: 700;");
+      expect(component).toContain("letter-spacing: var(--tracking-caps);");
+    }
+    expect(nav).toContain('(min-width: 1200px) and (hover: hover) and (pointer: fine)');
+    expect(nav).toContain('menu?.querySelectorAll<HTMLDetailsElement>("details")');
+    expect(nav).toContain('menu?.addEventListener("click"');
+    expect(nav).toContain('target.closest("[data-nav-link]")');
+    expect(nav).toContain('menu?.addEventListener("toggle"');
+    expect(nav).toContain('menu.matches(":popover-open")');
+    expect(nav).toContain('details.addEventListener("pointerenter"');
+    expect(nav).toContain('details.addEventListener("pointerleave"');
+    expect(nav).toContain('window.addEventListener("scroll"');
+    expect(nav).toContain('details.addEventListener("focusout"');
+    expect(nav).toContain('event.key === "Escape"');
+    expect(priceNav).not.toContain('"absolute inset-inline-start-0 top-full z-50 mt-2');
   });
 });
 
@@ -499,6 +529,23 @@ describe("home section rhythm", () => {
     expect(styles).toContain("main > section#gallery,");
     expect(styles).toContain("main > section#manual,");
     expect(styles).toContain("main > section.faq-standalone {");
+  });
+
+  test("keeps the same tight top spacing on all requested shared sections", async () => {
+    const styles = await Bun.file("src/styles/global.css").text();
+
+    for (const selector of [
+      "main > section:has(#about)",
+      "main > section#technologies",
+      "main > section#features",
+      "main > section#day-night",
+      "main > section#faq",
+      "main > section#contact",
+      "main > section#products",
+      "main > section#equipment-comparison",
+    ]) {
+      expect(styles).toContain(selector);
+    }
   });
 
   test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
@@ -697,6 +744,24 @@ describe("i18n", () => {
     expect(effects).toContain("0 0 0.34em rgb(36 32 26 / 0.42)");
   });
 
+  test("persistent panel navigation offers home, stone, and mineral destinations", async () => {
+    const component = await Bun.file("src/components/nav/PanelNavSwitch.astro").text();
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+
+    expect(component).toContain('href: homePath, label: t("nav.allPanels"), active: isHomePage');
+    expect(component).toContain('getPanelPagePath("stone", lang)');
+    expect(component).toContain('getPanelPagePath("mineral", lang)');
+    expect(component).toContain('aria-current={active ? "page" : undefined}');
+    expect(nav).toContain('<PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />');
+    expect(nav).toContain('variant="panel"');
+    expect(cs["nav.panels"]).toBe("Svítící panely");
+    expect(en["nav.panels"]).toBe("Illuminated panels");
+    expect(cs["nav.info"]).toBe("Informace");
+    expect(en["nav.info"]).toBe("Information");
+  });
+
   test("panel hero places a gold home icon under video controls and matches CTA sizes", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
@@ -715,7 +780,7 @@ describe("i18n", () => {
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-home-link {");
     expect(effects).toContain("inset-block-start: calc(var(--nav-height) + 1.5rem + 3.25rem)");
-    expect(nav).toContain('const mobileLinks = links');
+    expect(nav).toContain('const contactLink = {');
   });
 
   test("FAQ appears after day/night on home and has dedicated localized pages", async () => {
@@ -727,7 +792,9 @@ describe("i18n", () => {
     const schema = await Bun.file("src/lib/structured-data.ts").text();
 
     expect(nav).not.toContain('text: t("nav.dayNight")');
-    expect(nav.match(/href: `\$\{basePath\}\/faq\/`, text: t\("nav\.faq"\)/g)).toHaveLength(1);
+    const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
+    expect(infoNav).toContain('{ href: `${basePath}/#faq`, label: t("nav.faq") }');
+    expect(infoNav).not.toContain('{ href: `${basePath}/faq/`, label: t("nav.faq") }');
     expect(home).toContain('import Faq from "../sections/Faq.astro";');
     expect(home.indexOf("<HomeDayNight lang={lang} />")).toBeLessThan(home.indexOf('<Faq id="faq" lang={lang} />'));
     expect(home.indexOf('<Faq id="faq" lang={lang} />')).toBeLessThan(home.indexOf('<Contact id="contact"'));

@@ -1,0 +1,130 @@
+---
+import { useTranslations, type Lang } from "../../i18n/utils";
+
+interface Props {
+  lang: Lang;
+  variant?: "bar" | "panel";
+}
+
+const { lang, variant = "bar" } = Astro.props;
+const t = useTranslations(lang);
+const basePath = lang === "cs" ? "" : "/en";
+const links = [
+  { href: `${basePath}/gallery/`, label: t("nav.gallery") },
+  { href: `${basePath}/#faq`, label: t("nav.faq") },
+  { href: `${basePath}/manual/`, label: t("nav.manual") },
+];
+---
+
+<li class:list={["info-nav-item", `info-nav-item--${variant}`]}>
+  <details>
+    <summary aria-label={t("nav.info")}>
+      <span>{t("nav.info")}</span>
+      <span aria-hidden="true" class="info-nav-item__chevron"></span>
+    </summary>
+    <ul class="info-nav-item__menu">
+      {links.map(({ href, label }) => (
+        <li>
+          <a href={href} data-nav-link>{label}</a>
+        </li>
+      ))}
+    </ul>
+  </details>
+</li>
+
+<style>
+  .info-nav-item { position: relative; }
+  .info-nav-item summary {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    color: var(--color-fg-soft);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    list-style: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 180ms ease-out;
+  }
+  .info-nav-item summary::-webkit-details-marker { display: none; }
+  .info-nav-item summary:hover,
+  .info-nav-item summary:focus-visible,
+  .info-nav-item details[open] > summary { color: var(--color-gold-light); }
+  .info-nav-item summary[data-active="true"] { color: var(--color-gold); }
+  .info-nav-item summary:focus-visible,
+  .info-nav-item__menu a:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+  .info-nav-item__chevron {
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    border-inline-end: 1px solid currentColor;
+    border-block-end: 1px solid currentColor;
+    rotate: 45deg;
+    transition: rotate 180ms ease-out;
+  }
+  .info-nav-item details[open] > summary .info-nav-item__chevron { rotate: 225deg; }
+  .info-nav-item__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-ink-900);
+    padding: 0.5rem;
+  }
+  .info-nav-item__menu a {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    padding-inline: 0.75rem;
+    color: var(--color-fg-soft);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background-color 180ms ease-out, color 180ms ease-out;
+  }
+  .info-nav-item__menu a:hover,
+  .info-nav-item__menu a:focus-visible {
+    background: var(--color-ink-850);
+    color: var(--color-gold-light);
+  }
+  .info-nav-item__menu a[data-active="true"] { color: var(--color-gold); }
+  .info-nav-item__menu a[data-active="true"]:is(:hover, :focus-visible) { color: var(--color-gold-light); }
+  .info-nav-item--bar .info-nav-item__menu {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    min-inline-size: 12rem;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
+  }
+  .info-nav-item--panel { border-block-end: 1px solid var(--color-line); }
+  .info-nav-item--panel summary {
+    min-height: 3.5rem;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    line-height: inherit;
+    text-transform: uppercase;
+  }
+  .info-nav-item--panel .info-nav-item__menu {
+    border: 0;
+    border-block-start: 1px solid var(--color-line);
+    padding: 0.5rem 0 0.75rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .info-nav-item summary,
+    .info-nav-item__chevron,
+    .info-nav-item__menu a { transition: none; }
+  }
+</style>

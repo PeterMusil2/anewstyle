@@ -156,6 +156,18 @@ main > section.pricing:target > .price-catalog > .container-page:first-child {
   padding-block-start: 1rem;
 }
 
+/* Keep the first heading close to the section edge throughout the shared page. */
+main > section:has(#about),
+main > section#technologies,
+main > section#features,
+main > section#day-night,
+main > section#faq,
+main > section#contact,
+main > section#products,
+main > section#equipment-comparison {
+  padding-block-start: 1rem;
+}
+
 /* Standalone content pages enter at the top without a fragment target. */
 main > section#gallery,
 main > section#manual,

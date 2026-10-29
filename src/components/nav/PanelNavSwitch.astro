@@ -1,0 +1,181 @@
+---
+import {
+  getPanelPagePath,
+  useTranslations,
+  type Lang,
+  type PanelCategory,
+} from "../../i18n/utils";
+
+interface Props {
+  lang: Lang;
+  panelCategory?: PanelCategory;
+  isHomePage: boolean;
+  variant?: "bar" | "panel";
+}
+
+const { lang, panelCategory, isHomePage, variant = "bar" } = Astro.props;
+const t = useTranslations(lang);
+const homePath = lang === "cs" ? "/" : "/en/";
+const options = [
+  { href: homePath, label: t("nav.allPanels"), active: isHomePage },
+  { href: getPanelPagePath("stone", lang), label: t("price.categoryStone"), active: panelCategory === "stone" },
+  { href: getPanelPagePath("mineral", lang), label: t("price.categoryMineral"), active: panelCategory === "mineral" },
+];
+---
+
+<li class:list={["panel-nav-switch", `panel-nav-switch--${variant}`]}>
+  <details>
+    <summary
+      aria-label={t("nav.panelPages")}
+      data-active={isHomePage || panelCategory ? "true" : undefined}
+    >
+      <span>{t("nav.panels")}</span>
+      <span aria-hidden="true" class="panel-nav-switch__chevron"></span>
+    </summary>
+    <ul class="panel-nav-switch__menu">
+      {options.map(({ href, label, active }) => (
+        <li>
+          <a href={href} data-nav-link aria-current={active ? "page" : undefined}>
+            {label}
+            {active && <span class="panel-nav-switch__current">{t("nav.currentPage")}</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </details>
+</li>
+
+<style>
+  .panel-nav-switch summary {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    color: var(--color-fg-soft);
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    list-style: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 180ms ease-out;
+  }
+
+  .panel-nav-switch summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .panel-nav-switch summary:hover,
+  .panel-nav-switch summary:focus-visible,
+  .panel-nav-switch details[open] > summary,
+  .panel-nav-switch summary[data-active="true"] {
+    color: var(--color-gold-light);
+  }
+
+  .panel-nav-switch summary:focus-visible,
+  .panel-nav-switch__menu a:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  .panel-nav-switch__chevron {
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+    border-inline-end: 1px solid currentColor;
+    border-block-end: 1px solid currentColor;
+    rotate: 45deg;
+    transition: rotate 180ms ease-out;
+  }
+
+  .panel-nav-switch details[open] > summary .panel-nav-switch__chevron {
+    rotate: 225deg;
+  }
+
+  .panel-nav-switch__menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-ink-900);
+    padding: 0.5rem;
+  }
+
+  .panel-nav-switch__menu a {
+    display: flex;
+    min-height: 2.75rem;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    padding-inline: 0.75rem;
+    color: var(--color-fg-soft);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.35;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: background-color 180ms ease-out, color 180ms ease-out;
+  }
+
+  .panel-nav-switch__menu a:hover,
+  .panel-nav-switch__menu a:focus-visible {
+    background: var(--color-ink-850);
+    color: var(--color-gold-light);
+  }
+
+  .panel-nav-switch__menu a[aria-current="page"] {
+    background: color-mix(in srgb, var(--color-gold) 18%, var(--color-ink-900));
+    color: var(--color-gold);
+  }
+
+  .panel-nav-switch__current {
+    color: var(--color-gold-light);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+  }
+
+  .panel-nav-switch--bar {
+    position: relative;
+  }
+
+  .panel-nav-switch--bar .panel-nav-switch__menu {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    min-inline-size: 15rem;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
+  }
+
+  .panel-nav-switch--panel {
+    border-block-end: 1px solid var(--color-line);
+  }
+
+  .panel-nav-switch--panel summary {
+    min-height: 3.5rem;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    line-height: inherit;
+    text-transform: uppercase;
+  }
+
+  .panel-nav-switch--panel .panel-nav-switch__menu {
+    border: 0;
+    border-block-start: 1px solid var(--color-line);
+    padding: 0.5rem 0 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel-nav-switch summary,
+    .panel-nav-switch__chevron,
+    .panel-nav-switch__menu a {
+      transition: none;
+    }
+  }
+</style>

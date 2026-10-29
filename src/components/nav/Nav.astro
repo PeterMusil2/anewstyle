@@ -1,5 +1,7 @@
 ---
 import NavItem from "./NavItem.astro";
+import InfoNavItem from "./InfoNavItem.astro";
+import PanelNavSwitch from "./PanelNavSwitch.astro";
 import PriceNavItem from "./PriceNavItem.astro";
 import LangSwitch from "../langSwitch/LangSwitch.astro";
 import ThemeToggle from "../theme/ThemeToggle.astro";
@@ -20,27 +22,27 @@ const { lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 
 const basePath = lang === "cs" ? "" : "/en";
+const normalizedPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isHomePage = normalizedPath === (lang === "cs" ? "/" : "/en");
 const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
 const homeLinks = [
   { href: `${basePath}/#technologies`, text: t("nav.technologies") },
   { href: `${basePath}/#features`, text: t("nav.features") },
-  { href: `${basePath}/#contact`, text: t("nav.contact") },
-  { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-  { href: `${basePath}/manual/`, text: t("nav.manual") },
 ];
 
 const links = panelCategory
   ? [
       { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
-      { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") },
-      { href: `${basePath}/?panel=${panelCategory}#contact`, text: t("nav.contact") },
-      { href: `${basePath}/gallery/`, text: t("nav.gallery") },
-      { href: `${basePath}/faq/`, text: t("nav.faq") },
-      { href: `${basePath}/manual/`, text: t("nav.manual") },
     ]
   : homeLinks;
-const mobileLinks = links;
+const comparisonLink = panelCategory
+  ? { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") }
+  : undefined;
+const contactLink = {
+  href: panelCategory ? `${basePath}/?panel=${panelCategory}#contact` : `${basePath}/#contact`,
+  text: t("nav.contact"),
+};
 ---
 
 <div class="site-nav fixed inset-x-0 top-0 z-50">
@@ -69,16 +71,21 @@ const mobileLinks = links;
       </a>
 
       <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
+        <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />
         {panelCategory ? (
           <>
             {links.map((link) => <NavItem {...link} />)}
             <PriceNavItem lang={lang} />
+            {comparisonLink && <NavItem {...comparisonLink} />}
+            <NavItem {...contactLink} />
+            <InfoNavItem lang={lang} />
           </>
         ) : (
           <>
-            {homeLinks.slice(0, 4).map((link) => <NavItem {...link} />)}
-            {homeLinks.slice(4).map((link) => <NavItem {...link} />)}
+            {homeLinks.map((link) => <NavItem {...link} />)}
             <PriceNavItem lang={lang} />
+            <NavItem {...contactLink} />
+            <InfoNavItem lang={lang} />
           </>
         )}
       </ul>
@@ -116,16 +123,21 @@ const mobileLinks = links;
   >
     <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
       <ul class="flex flex-col">
+        <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} variant="panel" />
         {panelCategory ? (
           <>
-            {mobileLinks.map((link) => <NavItem {...link} variant="panel" />)}
+            {links.map((link) => <NavItem {...link} variant="panel" />)}
             <PriceNavItem lang={lang} variant="panel" />
+            {comparisonLink && <NavItem {...comparisonLink} variant="panel" />}
+            <NavItem {...contactLink} variant="panel" />
+            <InfoNavItem lang={lang} variant="panel" />
           </>
         ) : (
           <>
-            {homeLinks.slice(0, 4).map((link) => <NavItem {...link} variant="panel" />)}
-            {homeLinks.slice(4).map((link) => <NavItem {...link} variant="panel" />)}
+            {homeLinks.map((link) => <NavItem {...link} variant="panel" />)}
             <PriceNavItem lang={lang} variant="panel" />
+            <NavItem {...contactLink} variant="panel" />
+            <InfoNavItem lang={lang} variant="panel" />
           </>
         )}
       </ul>
@@ -150,9 +162,64 @@ const mobileLinks = links;
 
 <script>
   const menu = document.getElementById("mobile-menu");
-  menu?.querySelectorAll("[data-nav-link]").forEach((link) => {
-    link.addEventListener("click", () => menu.hidePopover());
+  const mobileDropdowns = menu?.querySelectorAll<HTMLDetailsElement>("details") ?? [];
+  const closeMobileDropdowns = () => mobileDropdowns.forEach((details) => { details.open = false; });
+
+  menu?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const clickedDropdown = target.closest("details");
+    mobileDropdowns.forEach((details) => {
+      if (details !== clickedDropdown) details.open = false;
+    });
+
+    if (target.closest("[data-nav-link]")) {
+      closeMobileDropdowns();
+      menu.hidePopover();
+    }
   });
+
+  menu?.addEventListener("toggle", () => {
+    if (!menu.matches(":popover-open")) closeMobileDropdowns();
+  });
+
+  const desktopHover = window.matchMedia("(min-width: 1200px) and (hover: hover) and (pointer: fine)");
+  const desktopDropdowns = document.querySelectorAll<HTMLDetailsElement>(
+    ".site-nav__bar .panel-nav-switch--bar details, .site-nav__bar .info-nav-item--bar details, .site-nav__bar .price-nav-item details",
+  );
+  const closeDesktopDropdowns = () => desktopDropdowns.forEach((details) => { details.open = false; });
+
+  desktopDropdowns.forEach((details) => {
+    const summary = details.querySelector("summary");
+
+    details.addEventListener("pointerenter", (event) => {
+      if (desktopHover.matches && event.pointerType === "mouse") details.open = true;
+    });
+    details.addEventListener("pointerleave", (event) => {
+      if (desktopHover.matches && event.pointerType === "mouse") details.open = false;
+    });
+    summary?.addEventListener("click", (event) => {
+      if (desktopHover.matches && event.detail > 0) {
+        event.preventDefault();
+        details.open = true;
+      }
+    });
+    details.addEventListener("focusout", (event) => {
+      if (!details.contains(event.relatedTarget as Node | null)) details.open = false;
+    });
+    details.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        details.open = false;
+        summary?.focus();
+      }
+    });
+  });
+
+  window.addEventListener("scroll", () => {
+    if (desktopHover.matches) closeDesktopDropdowns();
+  }, { passive: true });
+  desktopHover.addEventListener("change", closeDesktopDropdowns);
 
   const navLinks = document.querySelectorAll<HTMLAnchorElement>(".site-nav [data-nav-link]");
   const normalizePath = (path: string) => path.replace(/\/+$/, "") || "/";
@@ -176,6 +243,13 @@ const mobileLinks = links;
         delete link.dataset.active;
         link.removeAttribute("aria-current");
       }
+    });
+
+    document.querySelectorAll<HTMLDetailsElement>(".site-nav .info-nav-item details").forEach((details) => {
+      const summary = details.querySelector("summary");
+      const hasActiveDestination = details.querySelector('[data-nav-link][data-active="true"]');
+      if (hasActiveDestination) summary?.setAttribute("data-active", "true");
+      else summary?.removeAttribute("data-active");
     });
   };
 

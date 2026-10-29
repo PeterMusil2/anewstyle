@@ -51,7 +51,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
     <SectionHeader
       id={`${id}-title`}
       eyebrow={t("products.title")}
-      title={t("products.heading")}
+      title={t(panelCategory === "mineral" ? "products.headingMineral" : "products.heading")}
     >
       {(!panelCategory || panelCategory === "stone") && <p data-panel-type="stone">
         <span>{t("products.descPart2")}</span><strong class="font-bold text-gold">{t("products.descPart3")}</strong><span>{t("products.descPart4")}</span>

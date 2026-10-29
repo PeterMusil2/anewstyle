@@ -246,6 +246,18 @@ describe("price list", () => {
 });
 
 describe("panel patterns", () => {
+  test("labels the product patterns section as stone patterns", async () => {
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    const component = await Bun.file("src/components/sections/Products.astro").text();
+
+    expect(cs["products.heading"]).toBe("Vzory kamene");
+    expect(en["products.heading"]).toBe("Stone patterns");
+    expect(cs["products.headingMineral"]).toBe("Vzory panelů");
+    expect(en["products.headingMineral"]).toBe("Panel patterns");
+    expect(component).toContain('t(panelCategory === "mineral" ? "products.headingMineral" : "products.heading")');
+  });
+
   test("stone pattern hint explains click-to-preview and AR placement", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();

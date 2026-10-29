@@ -606,6 +606,16 @@ describe("panel landing visual rhythm", () => {
     expect(products).toContain('class="home-section-y home-section-divider overflow-x-clip bg-ink-800"');
     expect(priceList).toContain('class="pricing home-section-divider bg-ink"');
   });
+
+  test("centers the material overview and all six property cards in both panel branches", async () => {
+    const landing = await Bun.file("src/components/pages/PanelLanding.astro").text();
+
+    expect(landing).toContain('class="container-page flex flex-col items-center gap-7 py-8 sm:py-10"');
+    expect(landing).toContain('class="flex max-w-3xl flex-col items-center gap-3 text-center"');
+    expect(landing).toContain('class="grid w-full max-w-5xl gap-3 sm:grid-cols-2"');
+    expect(landing.match(/<dt class="text-center /g)).toHaveLength(6);
+    expect(landing.match(/<dd class="mt-2 text-center /g)).toHaveLength(6);
+  });
 });
 
 describe("feature disclosures", () => {
@@ -734,7 +744,7 @@ describe("i18n", () => {
     const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
     expect(priceList).toContain('class="reveal flex flex-col items-center gap-3 text-center short:gap-2"');
     const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
-    expect(panelLanding).toContain('class="flex flex-col items-center gap-3 text-center"');
+    expect(panelLanding).toContain('class="flex max-w-3xl flex-col items-center gap-3 text-center"');
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-title__label {");
     expect(effects).toContain(".hero-title__label--home {");

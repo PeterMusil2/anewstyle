@@ -132,10 +132,11 @@ const headerModelPath = panelCategory === "mineral"
       {t('header.btnEshop')}
       <Icon name="eshop" class="size-4" />
     </Button>
-    {!home && (
+    {(home || panelCategory) && (
       <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!">
         <Button
           variant="outline"
+          size="sm"
           id="headerArButton"
           data-model-path={headerModelPath}
           data-ar-modes={panelArModes()}

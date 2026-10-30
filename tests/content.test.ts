@@ -847,6 +847,8 @@ describe("i18n", () => {
     expect(switcher).toContain('active: activeCategory === "stone"');
     expect(switcher).toContain('active: activeCategory === "mineral"');
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');
+    expect(switcher).toContain('min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-4 py-2');
+    expect(switcher).toContain('sm:min-h-[5.25rem]');
     expect(switcher).toContain('{active && <span class="panel-switch__cta font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
     expect(switcher).toContain('font-size: clamp(0.8125rem, 1vw, 0.9375rem)');
     expect(cs["header.btnMore"]).toBe("Chci vědět víc");
@@ -854,7 +856,8 @@ describe("i18n", () => {
     expect(switcher).toContain('variant={active ? "primary" : "outline"}');
     expect(switcher).toContain('aria-current={active ? "page" : undefined}');
     expect(switcher).toContain('max-w-6xl grid-cols-1 gap-3 sm:grid-cols-3');
-    expect(switcher).toContain('min-h-[5.25rem] w-full flex-col gap-1 whitespace-normal px-4 py-3');
+    expect(switcher).toContain('min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-4 py-2');
+    expect(switcher).toContain('sm:min-h-[5.25rem]');
     expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
     expect(header).toContain('"hero-title__label--home": home');
     expect(header).toContain("items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center");
@@ -932,11 +935,15 @@ describe("i18n", () => {
     expect(cs["nav.home"]).toBe("Domů");
     expect(en["nav.home"]).toBe("Home");
     expect(header).toContain('{!home && panelCategory && (');
+    expect(header).toContain('{(home || panelCategory) && (');
+    expect(header).toContain('const headerModelPath = panelCategory === "mineral"');
+    expect(header).toContain(': STONE_AR_MODEL_PATH;');
+    expect(header).toMatch(/size="sm"\s+id="headerArButton"/);
     expect(header).toContain('<Icon name="home" class="size-5" />');
     expect(header).toContain('aria-label={t("nav.home")}');
     expect(header).toContain('class="hero-home-link absolute z-10 grid size-11');
     expect(header).not.toContain('id="headerMoreButton"');
-    expect(header).toMatch(/<Button\s+variant="outline"\s+id="headerArButton"[\s\S]*?class="w-64/);
+    expect(header).toMatch(/<Button\s+variant="outline"\s+size="sm"\s+id="headerArButton"[\s\S]*?class="w-64/);
     expect(nav).not.toContain('<Icon name="home"');
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-home-link {");

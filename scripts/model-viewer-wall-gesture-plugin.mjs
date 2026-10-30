@@ -8,6 +8,27 @@ const WALL_ROTATION_EDITS = [
     source: "this.goalYaw += angle - this.lastAngle;",
     replacement: "if (!this.placeOnWall) { this.goalYaw += angle - this.lastAngle; }",
   },
+  {
+    source: `if (hitPosition != null) {
+                    this.isTranslating = true;
+                    this.lastDragPosition.copy(hitPosition);
+                }
+                else if (this.placeOnWall === false) {`,
+    replacement: `if (hitPosition != null) {
+                    this.isTranslating = true;
+                    this.lastDragPosition.copy(hitPosition);
+                }
+                else if (this.placeOnWall && fingers[0].results.length > 0) {
+                    const wallPosition = this.getHitPoint(fingers[0].results[0]);
+                    if (wallPosition != null) {
+                        this.goalPosition.copy(wallPosition);
+                        this.lastDragPosition.copy(wallPosition);
+                        this.isTranslating = true;
+                        box.show = true;
+                    }
+                }
+                else if (this.placeOnWall === false) {`,
+  },
 ];
 
 export function suppressModelViewerWallRotation(code, id) {
@@ -26,9 +47,10 @@ export function suppressModelViewerWallRotation(code, id) {
 
 /**
  * model-viewer already aligns wall content to the detected surface normal and
- * lets one finger move it over that surface. Keep that automatic alignment and
- * pinch scaling, but suppress manual yaw so the panel cannot be pulled away
- * from the wall by an accidental two-finger twist.
+ * lets one finger move it over that surface. A tap outside the model now uses
+ * the detected wall hit as a new anchor, so placement does not depend on the
+ * initial centre-screen hit. Keep pinch scaling, but suppress manual yaw so an
+ * accidental two-finger twist cannot pull the panel away from the wall.
  */
 export function modelViewerWallGesturePlugin() {
   return {

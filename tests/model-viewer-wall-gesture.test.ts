@@ -26,6 +26,20 @@ describe("model-viewer wall gestures", () => {
     expect(result!.code).toContain("this.setScale(separation)");
   });
 
+  test("a single tap on a detected wall anchors the panel at that point", () => {
+    const source = readFileSync(
+      "node_modules/@google/model-viewer/lib/three-components/ARRenderer.js",
+      "utf8",
+    );
+    const code = suppressModelViewerWallRotation(source, rendererId)!.code;
+
+    expect(code).toContain("this.placeOnWall && fingers[0].results.length > 0");
+    expect(code).toContain("const wallPosition = this.getHitPoint(fingers[0].results[0]);");
+    expect(code).toContain("this.goalPosition.copy(wallPosition);");
+    expect(code).toContain("this.lastDragPosition.copy(wallPosition);");
+    expect(code).toContain("this.isTranslating = true;");
+  });
+
   test("the Astro build uses the simple wall gesture plugin without a rotation gizmo", () => {
     const config = readFileSync("astro.config.mjs", "utf8");
     expect(config).toContain('import { modelViewerWallGesturePlugin } from "./scripts/model-viewer-wall-gesture-plugin.mjs";');

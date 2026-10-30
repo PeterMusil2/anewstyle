@@ -10,12 +10,17 @@ import products from "../src/data/products.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import {
+  isAppleQuickLookDevice,
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
   panelArModelPath,
+  panelArPlacementForDevice,
+  panelArQuickLookModelPath,
   panelArViewerStyle,
+  safariArUrl,
   samsungInternetArIntent,
+  shouldOpenArInSafari,
   shouldOpenArInSamsungInternet,
   STONE_AR_MODEL_PATH,
   waitForArAvailability,
@@ -89,9 +94,12 @@ describe("hero video", () => {
     expect(header).toContain('arViewer.style.cssText = panelArViewerStyle(true)');
     expect(header).toContain('status === "not-presenting"');
     expect(header).toContain('void arViewer.activateAR()');
+    expect(header).toContain('window.location.href = safariArUrl(window.location.href)');
     expect(header).toContain('window.location.href = samsungInternetArIntent(window.location.href)');
     expect(header).toContain('id="arHandoffOverlay"');
     expect(header).toContain('id="arHandoffButton"');
+    expect(header).toContain('data-safari={t("header.arHandoffSafariHint")}');
+    expect(header).toContain('data-samsung={t("header.arHandoffSamsungHint")}');
     expect(header).toContain('handoffButton?.addEventListener("click", activatePreparedAR)');
     expect(header).toContain('name="arOrientation" value="0" checked');
     expect(header).toContain('name="arOrientation" value="90"');
@@ -172,9 +180,66 @@ describe("hero video", () => {
     expect(shouldOpenArInSamsungInternet("Mozilla/5.0 (iPhone)", "")).toBe(false);
 
     const intent = samsungInternetArIntent("https://example.com/panely/?v=test#products");
-    expect(intent).toStartWith("intent://example.com/panely/?v=test&ar-handoff=1#Intent;scheme=https;");
+    expect(intent).toStartWith("intent://example.com/panely/?v=test&ar-handoff=1&ar-browser=samsung#Intent;scheme=https;");
     expect(intent).toContain("package=com.sec.android.app.sbrowser");
     expect(intent).toContain(encodeURIComponent("https://example.com/panely/?v=test&ar-direct=1"));
+  });
+
+  test("Chrome and the Google app on iOS hand AR off to Safari without looping", () => {
+    const chromeIos = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 CriOS/140.0 Mobile/15E148 Safari/604.1";
+    const googleAppIos = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 GSA/384.0 Mobile/15E148 Safari/604.1";
+    const safariIos = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 Version/18.6 Mobile/15E148 Safari/604.1";
+
+    expect(shouldOpenArInSafari(chromeIos, "?v=test")).toBe(true);
+    expect(shouldOpenArInSafari(googleAppIos, "?v=test")).toBe(true);
+    expect(shouldOpenArInSafari(safariIos, "?v=test")).toBe(false);
+    expect(shouldOpenArInSafari(chromeIos, "?v=test&ar-browser=safari")).toBe(false);
+    expect(shouldOpenArInSafari(chromeIos, "?v=test&ar-direct=1")).toBe(false);
+
+    expect(safariArUrl("https://example.com/panely/?v=test#products")).toBe(
+      "x-safari-https://example.com/panely/?v=test&ar-handoff=1&ar-browser=safari",
+    );
+  });
+
+  test("Quick Look uses a reliable floor anchor while Android keeps wall placement", async () => {
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile Safari/604.1";
+    const ipadDesktopMode = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) AppleWebKit/605.1.15 Version/18.0 Safari/605.1.15";
+    const android = "Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140 Mobile Safari/537.36";
+
+    expect(panelArPlacementForDevice(iphone)).toBe("floor");
+    expect(panelArPlacementForDevice(ipadDesktopMode, 5)).toBe("floor");
+    expect(panelArPlacementForDevice(ipadDesktopMode, 0)).toBe("wall");
+    expect(panelArPlacementForDevice(android, 5)).toBe("wall");
+    expect(isAppleQuickLookDevice(iphone)).toBe(true);
+    expect(isAppleQuickLookDevice(ipadDesktopMode, 5)).toBe(true);
+    expect(isAppleQuickLookDevice(android, 5)).toBe(false);
+    expect(header).toContain("panelArPlacementForDevice(window.navigator.userAgent, window.navigator.maxTouchPoints)");
+  });
+
+  test("Safari Quick Look receives prebuilt USDZ models for both panel orientations", async () => {
+    const header = await Bun.file("src/components/header/Header.astro").text();
+    const headers = await Bun.file("public/_headers").text();
+    const modelPaths = [
+      panelArQuickLookModelPath(STONE_AR_MODEL_PATH, false),
+      panelArQuickLookModelPath(STONE_AR_MODEL_PATH, true),
+      panelArQuickLookModelPath(mineralArModelPath("/images/patterns/mineral-2.png"), false),
+      panelArQuickLookModelPath(mineralArModelPath("/images/patterns/mineral-2.png"), true),
+    ];
+
+    expect(modelPaths).toEqual([
+      "/3d/products/Rockfoil_DARKGOLD_AR_vertical_quicklook.usdz",
+      "/3d/products/Rockfoil_DARKGOLD_AR_horizontal_quicklook.usdz",
+      "/3d/products/Mineral_02_3D_vertical_quicklook.usdz",
+      "/3d/products/Mineral_02_3D_horizontal_quicklook.usdz",
+    ]);
+    for (const modelPath of modelPaths) {
+      const bytes = readFileSync(`public${modelPath}`);
+      expect(bytes.byteLength).toBeGreaterThan(100_000);
+      expect(bytes.subarray(0, 4).toString("hex")).toBe("504b0304");
+    }
+    expect(header).toContain('viewer.setAttribute("ios-src", panelArQuickLookModelPath');
+    expect(headers).toContain("Content-Type: model/vnd.usdz+zip");
   });
 
   test("panel AR waits for model-viewer to finish asynchronous capability detection", async () => {

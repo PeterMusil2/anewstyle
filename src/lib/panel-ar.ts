@@ -2,6 +2,20 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
+/**
+ * Quick Look can leave a wall-anchored object invisible while it searches for
+ * a sufficiently textured vertical plane. A horizontal anchor is more
+ * reliable on iOS; the panel geometry itself remains upright.
+ */
+export function isAppleQuickLookDevice(userAgent: string, maxTouchPoints = 0): boolean {
+  return /iP(?:hone|ad|od)/i.test(userAgent)
+    || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
+}
+
+export function panelArPlacementForDevice(userAgent: string, maxTouchPoints = 0): "floor" | "wall" {
+  return isAppleQuickLookDevice(userAgent, maxTouchPoints) ? "floor" : PANEL_AR_PLACEMENT;
+}
+
 export function panelArModelPath(modelPath: string, landscape: boolean): string {
   if (!landscape) return modelPath;
   if (!modelPath.includes("_vertical")) {
@@ -10,11 +24,27 @@ export function panelArModelPath(modelPath: string, landscape: boolean): string 
   return modelPath.replace("_vertical", "_horizontal");
 }
 
+/** A prebuilt USDZ avoids fragile GLB conversion inside Safari Quick Look. */
+export function panelArQuickLookModelPath(modelPath: string, landscape: boolean): string {
+  return panelArModelPath(modelPath, landscape)
+    .replace(/_unlit\.glb$/i, "_quicklook.usdz")
+    .replace(/\.glb$/i, "_quicklook.usdz");
+}
+
 const SAMSUNG_INTERNET_PACKAGE = "com.sec.android.app.sbrowser";
+
+const handoffTarget = (search: string) => new URLSearchParams(search).get("ar-browser");
 
 export function shouldOpenArInSamsungInternet(userAgent: string, search: string): boolean {
   const directFallback = new URLSearchParams(search).get("ar-direct") === "1";
   return /Android/i.test(userAgent) && !/SamsungBrowser/i.test(userAgent) && !directFallback;
+}
+
+/** Chrome and the Google app on iOS cannot launch model-viewer Quick Look. */
+export function shouldOpenArInSafari(userAgent: string, search: string): boolean {
+  const directFallback = new URLSearchParams(search).get("ar-direct") === "1";
+  const googleBrowser = /(?:CriOS|GSA)\//i.test(userAgent);
+  return googleBrowser && handoffTarget(search) !== "safari" && !directFallback;
 }
 
 /**
@@ -25,16 +55,36 @@ export function samsungInternetArIntent(currentUrl: string): string {
   const destination = new URL(currentUrl);
   destination.searchParams.delete("ar-direct");
   destination.searchParams.delete("ar-handoff");
+  destination.searchParams.delete("ar-browser");
   destination.hash = "";
 
   const fallback = new URL(destination);
   fallback.searchParams.set("ar-direct", "1");
   destination.searchParams.set("ar-handoff", "1");
+  destination.searchParams.set("ar-browser", "samsung");
   const scheme = destination.protocol.replace(":", "");
 
   return `intent://${destination.host}${destination.pathname}${destination.search}`
     + `#Intent;scheme=${scheme};package=${SAMSUNG_INTERNET_PACKAGE};`
     + `S.browser_fallback_url=${encodeURIComponent(fallback.toString())};end`;
+}
+
+/**
+ * Open the same page in Safari, where model-viewer can hand the panel to
+ * Quick Look. x-safari-http(s) is an iOS application URL scheme, so this must
+ * run synchronously from the user's AR-button click.
+ */
+export function safariArUrl(currentUrl: string): string {
+  const destination = new URL(currentUrl);
+  destination.searchParams.delete("ar-direct");
+  destination.searchParams.delete("ar-handoff");
+  destination.searchParams.delete("ar-browser");
+  destination.searchParams.set("ar-handoff", "1");
+  destination.searchParams.set("ar-browser", "safari");
+  destination.hash = "";
+
+  const scheme = destination.protocol === "http:" ? "x-safari-http" : "x-safari-https";
+  return `${scheme}://${destination.host}${destination.pathname}${destination.search}`;
 }
 
 /**

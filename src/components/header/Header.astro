@@ -184,7 +184,14 @@ const headerModelPath = panelCategory === "mineral"
       <h2 id="arHandoffTitle" class="font-display text-3xl font-black tracking-wide uppercase">
         {t("header.arHandoffTitle")}
       </h2>
-      <p id="arHandoffStatus" role="status" aria-live="polite" class="text-base leading-relaxed text-fg-soft">
+      <p
+        id="arHandoffStatus"
+        role="status"
+        aria-live="polite"
+        data-samsung={t("header.arHandoffSamsungHint")}
+        data-safari={t("header.arHandoffSafariHint")}
+        class="text-base leading-relaxed text-fg-soft"
+      >
         {t("header.arHandoffHint")}
       </p>
     </div>
@@ -223,11 +230,15 @@ const headerModelPath = panelCategory === "mineral"
 
 <script>
   import {
-    PANEL_AR_PLACEMENT,
+    isAppleQuickLookDevice,
     panelArModes,
     panelArModelPath,
+    panelArPlacementForDevice,
+    panelArQuickLookModelPath,
     panelArViewerStyle,
+    safariArUrl,
     samsungInternetArIntent,
+    shouldOpenArInSafari,
     shouldOpenArInSamsungInternet,
     STONE_AR_MODEL_PATH,
     waitForArAvailability,
@@ -374,12 +385,32 @@ const headerModelPath = panelCategory === "mineral"
     );
     if (!arButton) return;
 
-    const handoffRequested = new URLSearchParams(window.location.search).get("ar-handoff") === "1";
+    const query = new URLSearchParams(window.location.search);
+    const handoffRequested = query.get("ar-handoff") === "1";
+    const requestedBrowser = query.get("ar-browser");
     const isSamsungInternet = /SamsungBrowser/i.test(window.navigator.userAgent);
     const openInSamsungInternet = shouldOpenArInSamsungInternet(
       window.navigator.userAgent,
       window.location.search,
     );
+    const openInSafari = shouldOpenArInSafari(
+      window.navigator.userAgent,
+      window.location.search,
+    );
+    const needsBrowserHandoff = openInSamsungInternet || openInSafari;
+    const appleQuickLook = isAppleQuickLookDevice(
+      window.navigator.userAgent,
+      window.navigator.maxTouchPoints,
+    );
+
+    if (handoffStatus) {
+      const hint = requestedBrowser === "safari"
+        ? handoffStatus.dataset.safari
+        : requestedBrowser === "samsung"
+          ? handoffStatus.dataset.samsung
+          : undefined;
+      if (hint) handoffStatus.textContent = hint;
+    }
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
@@ -429,9 +460,15 @@ const headerModelPath = panelCategory === "mineral"
         const texturePath = arButton.dataset.texturePath;
         const portraitModelPath = arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH;
         viewer.setAttribute("src", panelArModelPath(portraitModelPath, selectedLandscape()));
+        if (appleQuickLook) {
+          viewer.setAttribute("ios-src", panelArQuickLookModelPath(portraitModelPath, selectedLandscape()));
+        }
         viewer.setAttribute("ar", "");
         viewer.setAttribute("ar-scale", "auto");
-        viewer.setAttribute("ar-placement", arButton.dataset.arPlacement ?? PANEL_AR_PLACEMENT);
+        viewer.setAttribute(
+          "ar-placement",
+          panelArPlacementForDevice(window.navigator.userAgent, window.navigator.maxTouchPoints),
+        );
         viewer.setAttribute("ar-modes", arButton.dataset.arModes ?? panelArModes());
         viewer.setAttribute("loading", "eager");
         // WebXR presents the viewer's renderer. Give it a real viewport-sized
@@ -458,6 +495,9 @@ const headerModelPath = panelCategory === "mineral"
 
         loadSelectedModel = async () => {
           const nextPath = panelArModelPath(portraitModelPath, selectedLandscape());
+          if (appleQuickLook) {
+            viewer.setAttribute("ios-src", panelArQuickLookModelPath(portraitModelPath, selectedLandscape()));
+          }
           if (viewer.getAttribute("src") === nextPath && viewer.loaded) return;
           setLoading(true);
           try {
@@ -530,6 +570,11 @@ const headerModelPath = panelCategory === "mineral"
     };
 
     arButton.addEventListener("click", () => {
+      if (openInSafari) {
+        setLoading(true);
+        window.location.href = safariArUrl(window.location.href);
+        return;
+      }
       if (openInSamsungInternet) {
         setLoading(true);
         window.location.href = samsungInternetArIntent(window.location.href);
@@ -547,11 +592,11 @@ const headerModelPath = panelCategory === "mineral"
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
     if (mobileAR.matches) {
-      if (openInSamsungInternet) setLoading(false);
+      if (needsBrowserHandoff) setLoading(false);
       else void prepareAR();
     }
     mobileAR.addEventListener("change", (event) => {
-      if (event.matches && !openInSamsungInternet) void prepareAR();
+      if (event.matches && !needsBrowserHandoff) void prepareAR();
     });
   }
 

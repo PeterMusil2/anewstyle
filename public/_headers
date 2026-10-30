@@ -55,6 +55,10 @@ https://:version.:project.pages.dev/*
 /3d/*
   Cache-Control: public, max-age=2592000, stale-while-revalidate=86400
 
+/3d/products/*.usdz
+  Content-Type: model/vnd.usdz+zip
+  Content-Disposition: inline
+
 /downloads/*
   Cache-Control: public, max-age=604800
 

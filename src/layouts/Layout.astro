@@ -69,6 +69,28 @@ const ENABLE_GTM = true;
 <!doctype html>
   <html lang={lang} data-panel-category={panelCategory}>
   <head>
+    {import.meta.env.DEV && (
+      <script is:inline>
+        // Remove a production preview's worker/cache before showing live dev files.
+        if ("serviceWorker" in navigator) {
+          const cleanupKey = "anewstyle-dev-preview-cleaned-v1";
+          if (!sessionStorage.getItem(cleanupKey)) {
+            Promise.all([
+              navigator.serviceWorker.getRegistrations(),
+              caches.keys(),
+            ]).then(async ([registrations, cacheNames]) => {
+              if (registrations.length === 0 && cacheNames.length === 0) return;
+              await Promise.all([
+                ...registrations.map((registration) => registration.unregister()),
+                ...cacheNames.map((cacheName) => caches.delete(cacheName)),
+              ]);
+              sessionStorage.setItem(cleanupKey, "1");
+              location.reload();
+            }).catch(() => {});
+          }
+        }
+      </script>
+    )}
     <meta charset="utf-8" />
     <meta
       name="viewport"

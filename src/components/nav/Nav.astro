@@ -48,22 +48,20 @@ const contactLink = {
           height="850"
           class="h-10 w-auto shrink-0 lg:h-13"
         />
-        <span class:list={["flex flex-col gap-0.5", !panelCategory && "xl:max-2xl:sr-only"]}>
+        <span class="flex flex-col gap-0.5">
           <span class="text-sm font-black tracking-[0.2em] whitespace-nowrap sm:text-base sm:tracking-[0.3em] lg:text-lg">ANEW STYLE</span>
-          {!panelCategory && (
-            <span class:list={["hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block"]}>
-              {t("header.title")}
-            </span>
-          )}
+          <span class="hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block">
+            {t("header.title")}
+          </span>
         </span>
       </a>
 
       <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />
         {homeLinks.map((link) => <NavItem {...link} />)}
+        <InfoNavItem lang={lang} />
         <PriceNavItem lang={lang} />
         <NavItem {...contactLink} />
-        <InfoNavItem lang={lang} />
       </ul>
 
       <div class="flex items-center gap-2 sm:gap-3">
@@ -101,9 +99,9 @@ const contactLink = {
       <ul class="flex flex-col">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} variant="panel" />
         {homeLinks.map((link) => <NavItem {...link} variant="panel" />)}
+        <InfoNavItem lang={lang} variant="panel" />
         <PriceNavItem lang={lang} variant="panel" />
         <NavItem {...contactLink} variant="panel" />
-        <InfoNavItem lang={lang} variant="panel" />
       </ul>
       <div class="flex items-center justify-between gap-4">
         <Button href={eshopUrl} variant="outline" rel="external" target="_blank" class="flex-1">

@@ -830,6 +830,34 @@ describe("i18n", () => {
     expect(en["nav.info"]).toBe("Information");
   });
 
+  test("brand tagline is present in the desktop navigation on every page type", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+
+    expect(nav).toContain('{t("header.title")}');
+    expect(nav).toContain('class="hidden text-[0.625rem] tracking-[0.18em] text-fg-muted uppercase sm:block xl:hidden 2xl:block"');
+    expect(nav).not.toContain("!panelCategory &&");
+  });
+
+  test("desktop and mobile navigation use the requested panel, sections, info, price, contact order", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const menus = [
+      nav.match(/<ul class="hidden items-center gap-3 min-\[1200px\]:flex 2xl:gap-8">([\s\S]*?)<\/ul>/)?.[1],
+      nav.match(/<ul class="flex flex-col">([\s\S]*?)<\/ul>/)?.[1],
+    ];
+
+    for (const menu of menus) {
+      expect(menu).toBeDefined();
+      const positions = [
+        menu!.indexOf("<PanelNavSwitch"),
+        menu!.indexOf("{homeLinks.map"),
+        menu!.indexOf("<InfoNavItem"),
+        menu!.indexOf("<PriceNavItem"),
+        menu!.indexOf("<NavItem {...contactLink"),
+      ];
+      expect(positions.every((position, index) => position >= 0 && (index === 0 || positions[index - 1]! < position))).toBe(true);
+    }
+  });
+
   test("panel hero places a gold home icon under video controls and matches CTA sizes", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();

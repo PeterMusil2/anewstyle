@@ -8,7 +8,7 @@ import {
 const rendererId = "C:/project/node_modules/@google/model-viewer/lib/three-components/ARRenderer.js";
 
 describe("model-viewer wall gestures", () => {
-  test("wall placement keeps pinch scaling but suppresses unstable yaw", () => {
+  test("wall placement keeps automatic alignment, dragging and pinch scaling", () => {
     const source = readFileSync(
       "node_modules/@google/model-viewer/lib/three-components/ARRenderer.js",
       "utf8",
@@ -16,9 +16,21 @@ describe("model-viewer wall gestures", () => {
     const result = suppressModelViewerWallRotation(source, rendererId);
 
     expect(result).not.toBeNull();
+    expect(result!.code).toContain(
+      "this.goalYaw = Math.atan2(hitMatrix.elements[4], hitMatrix.elements[6]);",
+    );
+    expect(result!.code).toContain("if (this.placeOnWall) {");
+    expect(result!.code).toContain("this.goalPosition.copy(hitPoint);");
     expect(result!.code).toContain("if (!this.placeOnWall) { this.goalYaw += deltaYaw; }");
     expect(result!.code).toContain("if (!this.placeOnWall) { this.goalYaw += angle - this.lastAngle; }");
     expect(result!.code).toContain("this.setScale(separation)");
+  });
+
+  test("the Astro build uses the simple wall gesture plugin without a rotation gizmo", () => {
+    const config = readFileSync("astro.config.mjs", "utf8");
+    expect(config).toContain('import { modelViewerWallGesturePlugin } from "./scripts/model-viewer-wall-gesture-plugin.mjs";');
+    expect(config).toContain("modelViewerWallGesturePlugin()");
+    expect(config).not.toContain("modelViewerWallControlsPlugin()");
   });
 
   test("the transform is limited to model-viewer's AR renderer", () => {

@@ -25,9 +25,10 @@ export function suppressModelViewerWallRotation(code, id) {
 }
 
 /**
- * model-viewer rotates two-finger wall gestures around world Y, which tilts a
- * wall panel away from its anchor and then snaps it back. Keep pinch scaling,
- * but suppress that unstable yaw only for wall placement.
+ * model-viewer already aligns wall content to the detected surface normal and
+ * lets one finger move it over that surface. Keep that automatic alignment and
+ * pinch scaling, but suppress manual yaw so the panel cannot be pulled away
+ * from the wall by an accidental two-finger twist.
  */
 export function modelViewerWallGesturePlugin() {
   return {

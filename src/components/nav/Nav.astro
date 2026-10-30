@@ -7,11 +7,7 @@ import LangSwitch from "../langSwitch/LangSwitch.astro";
 import ThemeToggle from "../theme/ThemeToggle.astro";
 import Button from "../ui/Button.astro";
 import Icon from "../icons/Icon.astro";
-import {
-  getPanelPagePath,
-  useTranslations,
-  type Lang,
-} from "../../i18n/utils";
+import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
   lang?: Lang;
@@ -31,14 +27,6 @@ const homeLinks = [
   { href: `${basePath}/#features`, text: t("nav.features") },
 ];
 
-const links = panelCategory
-  ? [
-      { href: `${getPanelPagePath(panelCategory, lang)}#products`, text: t("nav.products") },
-    ]
-  : homeLinks;
-const comparisonLink = panelCategory
-  ? { href: `${basePath}/#equipment-comparison`, text: t("nav.comparison") }
-  : undefined;
 const contactLink = {
   href: panelCategory ? `${basePath}/?panel=${panelCategory}#contact` : `${basePath}/#contact`,
   text: t("nav.contact"),
@@ -72,22 +60,10 @@ const contactLink = {
 
       <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />
-        {panelCategory ? (
-          <>
-            {links.map((link) => <NavItem {...link} />)}
-            <PriceNavItem lang={lang} />
-            {comparisonLink && <NavItem {...comparisonLink} />}
-            <NavItem {...contactLink} />
-            <InfoNavItem lang={lang} />
-          </>
-        ) : (
-          <>
-            {homeLinks.map((link) => <NavItem {...link} />)}
-            <PriceNavItem lang={lang} />
-            <NavItem {...contactLink} />
-            <InfoNavItem lang={lang} />
-          </>
-        )}
+        {homeLinks.map((link) => <NavItem {...link} />)}
+        <PriceNavItem lang={lang} />
+        <NavItem {...contactLink} />
+        <InfoNavItem lang={lang} />
       </ul>
 
       <div class="flex items-center gap-2 sm:gap-3">
@@ -124,22 +100,10 @@ const contactLink = {
     <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
       <ul class="flex flex-col">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} variant="panel" />
-        {panelCategory ? (
-          <>
-            {links.map((link) => <NavItem {...link} variant="panel" />)}
-            <PriceNavItem lang={lang} variant="panel" />
-            {comparisonLink && <NavItem {...comparisonLink} variant="panel" />}
-            <NavItem {...contactLink} variant="panel" />
-            <InfoNavItem lang={lang} variant="panel" />
-          </>
-        ) : (
-          <>
-            {homeLinks.map((link) => <NavItem {...link} variant="panel" />)}
-            <PriceNavItem lang={lang} variant="panel" />
-            <NavItem {...contactLink} variant="panel" />
-            <InfoNavItem lang={lang} variant="panel" />
-          </>
-        )}
+        {homeLinks.map((link) => <NavItem {...link} variant="panel" />)}
+        <PriceNavItem lang={lang} variant="panel" />
+        <NavItem {...contactLink} variant="panel" />
+        <InfoNavItem lang={lang} variant="panel" />
       </ul>
       <div class="flex items-center justify-between gap-4">
         <Button href={eshopUrl} variant="outline" rel="external" target="_blank" class="flex-1">
@@ -164,15 +128,39 @@ const contactLink = {
   const menu = document.getElementById("mobile-menu");
   const mobileDropdowns = menu?.querySelectorAll<HTMLDetailsElement>("details") ?? [];
   const closeMobileDropdowns = () => mobileDropdowns.forEach((details) => { details.open = false; });
+  const mobileHover = window.matchMedia("(max-width: 1199px) and (hover: hover) and (pointer: fine)");
+  const closeMobileDropdownTree = (root: HTMLDetailsElement) => {
+    mobileDropdowns.forEach((details) => {
+      if (details === root || root.contains(details)) details.open = false;
+    });
+  };
+
+  mobileDropdowns.forEach((details) => {
+    details.addEventListener("pointerleave", (event) => {
+      if (mobileHover.matches && event.pointerType === "mouse") closeMobileDropdownTree(details);
+    });
+  });
 
   menu?.addEventListener("click", (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
     const clickedDropdown = target.closest("details");
-    mobileDropdowns.forEach((details) => {
-      if (details !== clickedDropdown) details.open = false;
-    });
+    const clickedSummary = target.closest("summary");
+    if (!clickedDropdown) {
+      closeMobileDropdowns();
+    } else {
+      const clickedDirectSummary = clickedDropdown.querySelector(":scope > summary");
+      const clickedParentSummary = clickedSummary === clickedDirectSummary;
+      mobileDropdowns.forEach((details) => {
+        if (details === clickedDropdown || details.contains(clickedDropdown)) return;
+        if (clickedDropdown.contains(details)) {
+          if (clickedParentSummary) details.open = false;
+          return;
+        }
+        details.open = false;
+      });
+    }
 
     if (target.closest("[data-nav-link]")) {
       closeMobileDropdowns();

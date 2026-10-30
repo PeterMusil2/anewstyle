@@ -253,8 +253,10 @@ describe("panel patterns", () => {
 
     expect(cs["products.heading"]).toBe("Vzory kamene");
     expect(en["products.heading"]).toBe("Stone patterns");
-    expect(cs["products.headingMineral"]).toBe("Vzory panelů");
-    expect(en["products.headingMineral"]).toBe("Panel patterns");
+    expect(cs["products.headingMineral"]).toBe("Vzory minerálních panelů");
+    expect(en["products.headingMineral"]).toBe("Mineral panel patterns");
+    expect(cs["products.title"]).toBe("Povrchy");
+    expect(en["products.title"]).toBe("Surfaces");
     expect(component).toContain('t(panelCategory === "mineral" ? "products.headingMineral" : "products.heading")');
   });
 
@@ -360,10 +362,9 @@ describe("price navigation", () => {
 
     expect(nav).toContain("<PriceNavItem lang={lang} />");
     expect(nav).toContain('<PriceNavItem lang={lang} variant="panel" />');
-    expect(normalizedNav).toContain('{links.map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
-    expect(normalizedNav).toContain('{links.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
-    expect(normalizedNav).toContain('{homeLinks.map((link) => <NavItem {...link} />)}\n            <PriceNavItem lang={lang} />');
-    expect(normalizedNav).toContain('{homeLinks.map((link) => <NavItem {...link} variant="panel" />)}\n            <PriceNavItem lang={lang} variant="panel" />');
+    expect(normalizedNav.match(/\{homeLinks\.map\(\(link\) => <NavItem \{\.\.\.link\}(?: variant="panel")? \/>\)\}/g)).toHaveLength(2);
+    expect(normalizedNav).not.toContain("comparisonLink");
+    expect(normalizedNav).not.toContain('t("nav.products")');
     expect(nav).toContain('<InfoNavItem lang={lang} />');
     expect(nav).toContain('<InfoNavItem lang={lang} variant="panel" />');
     expect(normalizedNav).not.toContain('href: `${getPanelPagePath(panelCategory, lang)}#price-list`');
@@ -371,6 +372,12 @@ describe("price navigation", () => {
     expect(priceNav).toContain('getPanelPagePath("mineral", lang)}#price-list');
     expect(priceNav).toContain('t("nav.priceStone")');
     expect(priceNav).toContain('t("nav.priceMineral")');
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    expect(cs["nav.priceStone"]).toBe("Svítící kamenné panely");
+    expect(cs["nav.priceMineral"]).toBe("Svítící minerální panely");
+    expect(en["nav.priceStone"]).toBe("Illuminated stone panels");
+    expect(en["nav.priceMineral"]).toBe("Illuminated mineral panels");
     expect(priceNav).toContain("data-nav-link");
     expect(priceNav).toContain('"price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-fg-soft uppercase');
     expect(priceNav).toContain('trigger.setAttribute("aria-current", "location")');
@@ -427,7 +434,7 @@ describe("price list category labels", () => {
 describe("homepage navigation", () => {
   test("keeps core links visible and groups supporting pages under Information", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
-    const homeLinks = nav.slice(nav.indexOf("const homeLinks = ["), nav.indexOf("const links = panelCategory"));
+    const homeLinks = nav.slice(nav.indexOf("const homeLinks = ["), nav.indexOf("const contactLink ="));
     const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
 
     expect(homeLinks).not.toContain('href: "#about"');
@@ -441,6 +448,18 @@ describe("homepage navigation", () => {
     expect(infoNav).toContain('t("nav.faq")');
     expect(infoNav).toContain('t("nav.manual")');
     expect(infoNav).toContain('href: `${basePath}/#faq`');
+    expect(infoNav).toContain('getPanelPagePath("stone", lang)}#products`');
+    expect(infoNav).toContain('getPanelPagePath("mineral", lang)}#products`');
+    expect(infoNav).toContain('t("nav.surfaceStone")');
+    expect(infoNav).toContain('t("nav.surfaceMineral")');
+    const cs = await Bun.file("src/i18n/cs.json").json();
+    const en = await Bun.file("src/i18n/en.json").json();
+    expect(cs["nav.products"]).toBe("Povrchy");
+    expect(cs["nav.surfaceStone"]).toBe("Kamenné");
+    expect(cs["nav.surfaceMineral"]).toBe("Minerální");
+    expect(en["nav.products"]).toBe("Surfaces");
+    expect(en["nav.surfaceStone"]).toBe("Stone");
+    expect(en["nav.surfaceMineral"]).toBe("Mineral");
   });
 
   test("matches mobile dropdown headings to nav typography and auto-closes desktop menus", async () => {
@@ -457,7 +476,15 @@ describe("homepage navigation", () => {
     }
     expect(nav).toContain('(min-width: 1200px) and (hover: hover) and (pointer: fine)');
     expect(nav).toContain('menu?.querySelectorAll<HTMLDetailsElement>("details")');
+    expect(nav).toContain('const mobileHover = window.matchMedia("(max-width: 1199px) and (hover: hover) and (pointer: fine)")');
+    expect(nav).toContain('const closeMobileDropdownTree = (root: HTMLDetailsElement)');
+    expect(nav).toContain('details.addEventListener("pointerleave", (event) =>');
+    expect(nav).toContain('if (mobileHover.matches && event.pointerType === "mouse") closeMobileDropdownTree(details);');
     expect(nav).toContain('menu?.addEventListener("click"');
+    expect(nav).toContain('target.closest("summary")');
+    expect(nav).toContain('clickedDropdown.querySelector(":scope > summary")');
+    expect(nav).toContain('details.contains(clickedDropdown)');
+    expect(nav).toContain('clickedDropdown.contains(details)');
     expect(nav).toContain('target.closest("[data-nav-link]")');
     expect(nav).toContain('menu?.addEventListener("toggle"');
     expect(nav).toContain('menu.matches(":popover-open")');
@@ -467,6 +494,25 @@ describe("homepage navigation", () => {
     expect(nav).toContain('details.addEventListener("focusout"');
     expect(nav).toContain('event.key === "Escape"');
     expect(priceNav).not.toContain('"absolute inset-inline-start-0 top-full z-50 mt-2');
+  });
+
+  test("uses one desktop and mobile menu on home and both panel pages", async () => {
+    const nav = await Bun.file("src/components/nav/Nav.astro").text();
+    const desktopStart = nav.indexOf('<ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">');
+    const desktop = nav.slice(desktopStart, nav.indexOf("</ul>", desktopStart));
+    const mobileStart = nav.indexOf('<ul class="flex flex-col">');
+    const mobile = nav.slice(mobileStart, nav.indexOf("</ul>", mobileStart));
+
+    for (const menu of [desktop, mobile]) {
+      expect(menu).toContain("<PanelNavSwitch");
+      expect(menu).toContain("{homeLinks.map((link) => <NavItem");
+      expect(menu).toContain("<PriceNavItem");
+      expect(menu).toContain("<NavItem {...contactLink}");
+      expect(menu).toContain("<InfoNavItem");
+      expect(menu).not.toContain("comparisonLink");
+      expect(menu).not.toContain('t("nav.products")');
+    }
+    expect(nav).not.toContain("const links = panelCategory");
   });
 });
 

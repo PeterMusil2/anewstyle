@@ -1,5 +1,5 @@
 ---
-import { useTranslations, type Lang } from "../../i18n/utils";
+import { getPanelPagePath, useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
   lang: Lang;
@@ -14,6 +14,10 @@ const links = [
   { href: `${basePath}/#faq`, label: t("nav.faq") },
   { href: `${basePath}/manual/`, label: t("nav.manual") },
 ];
+const surfaces = [
+  { href: `${getPanelPagePath("stone", lang)}#products`, label: t("nav.surfaceStone") },
+  { href: `${getPanelPagePath("mineral", lang)}#products`, label: t("nav.surfaceMineral") },
+];
 ---
 
 <li class:list={["info-nav-item", `info-nav-item--${variant}`]}>
@@ -23,6 +27,21 @@ const links = [
       <span aria-hidden="true" class="info-nav-item__chevron"></span>
     </summary>
     <ul class="info-nav-item__menu">
+      <li class="info-nav-item__surface-item">
+        <details class="info-nav-item__surface-switch">
+          <summary>
+            <span>{t("nav.products")}</span>
+            <span aria-hidden="true" class="info-nav-item__chevron"></span>
+          </summary>
+          <ul class="info-nav-item__submenu">
+            {surfaces.map(({ href, label }) => (
+              <li>
+                <a href={href} data-nav-link>{label}</a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </li>
       {links.map(({ href, label }) => (
         <li>
           <a href={href} data-nav-link>{label}</a>
@@ -99,11 +118,39 @@ const links = [
   }
   .info-nav-item__menu a[data-active="true"] { color: var(--color-gold); }
   .info-nav-item__menu a[data-active="true"]:is(:hover, :focus-visible) { color: var(--color-gold-light); }
+  .info-nav-item__surface-item { position: relative; }
+  .info-nav-item__surface-switch > summary {
+    min-height: 2.75rem;
+    justify-content: space-between;
+    padding-inline: 0.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+  }
+  .info-nav-item__surface-switch > summary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+  .info-nav-item__submenu {
+    display: none;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+  }
+  .info-nav-item__surface-switch[open] > .info-nav-item__submenu { display: flex; }
+  .info-nav-item__surface-switch[open] > summary .info-nav-item__chevron { rotate: 225deg; }
   .info-nav-item--bar .info-nav-item__menu {
     position: absolute;
     inset-block-start: 100%;
-    inset-inline-start: 0;
+    inset-inline-end: 0;
     min-inline-size: 12rem;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
+  }
+  .info-nav-item--bar .info-nav-item__submenu {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 100%;
+    min-inline-size: 12rem;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-ink-900);
+    padding: 0.5rem;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
   }
   .info-nav-item--panel { border-block-end: 1px solid var(--color-line); }
@@ -122,6 +169,20 @@ const links = [
     border-block-start: 1px solid var(--color-line);
     padding: 0.5rem 0 0.75rem;
   }
+  .info-nav-item--panel .info-nav-item__surface-switch > summary {
+    min-height: 2.75rem;
+    padding-inline: 0.75rem 0;
+    font-size: 0.875rem;
+  }
+  .info-nav-item--panel .info-nav-item__submenu {
+    position: static;
+    border: 0;
+    border-inline-start: 1px solid var(--color-line);
+    background: transparent;
+    padding: 0 0 0.25rem 0.75rem;
+    box-shadow: none;
+  }
+  .info-nav-item--panel .info-nav-item__submenu a { min-height: 2.5rem; }
   @media (prefers-reduced-motion: reduce) {
     .info-nav-item summary,
     .info-nav-item__chevron,

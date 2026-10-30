@@ -1,7 +1,7 @@
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-import { modelViewerWallGesturePlugin } from "./scripts/model-viewer-wall-gesture-plugin.mjs";
+import { modelViewerWallControlsPlugin } from "./scripts/model-viewer-wall-controls-plugin.mjs";
 
 const site = "https://anewstyle.cz/";
 const manualPdfUrls = {
@@ -129,6 +129,6 @@ export default defineConfig({
     inlineStylesheets: "always",
   },
   vite: {
-    plugins: [tailwindcss(), adminIndexInDev, modelViewerWallGesturePlugin()],
+    plugins: [tailwindcss(), adminIndexInDev, modelViewerWallControlsPlugin()],
   },
 });

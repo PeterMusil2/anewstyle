@@ -1062,6 +1062,9 @@ describe("i18n", () => {
     expect(contact).toContain('class="col-span-2 flex min-w-0 flex-col');
     expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
     expect(contact).toContain('rows="2"');
+    // The message box is twice as tall on mobile (min-h-32 ≈ 128 px instead of ~64 px); from `sm` up it is unchanged.
+    expect(contact).toContain('class="min-h-32 resize-y border border-field');
+    expect(contact).toContain("sm:min-h-13 sm:px-4 sm:py-3.5");
     // "Zatím nevím" is the empty first value of size and version, so nothing is required.
     expect(contact).toContain('<option value="" selected>');
     expect(contact).toContain('["", "SLIM", "BASIC", "DELUXE"]');

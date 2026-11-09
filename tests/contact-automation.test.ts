@@ -381,4 +381,44 @@ describe("contact discount automation", () => {
     // The skip comes before any Gmail send.
     expect(script.indexOf("body.deliverMail === false")).toBeLessThan(script.indexOf("sendCustomerEmail(submission, body.code"));
   });
+
+  test("mandatory fields are marked, validated inline and highlight on hover", async () => {
+    const component = await Bun.file("src/components/sections/Contact.astro").text();
+    const css = await Bun.file("src/styles/effects.css").text();
+    const cs = JSON.parse(await Bun.file("src/i18n/cs.json").text());
+    const en = JSON.parse(await Bun.file("src/i18n/en.json").text());
+
+    // Name and e-mail carry a visible * plus a screen-reader "required"; the optional message does not.
+    expect(component.match(/<span class="text-gold" aria-hidden="true">\*<\/span><span class="sr-only"> \(\{t\("contact\.formRequired"\)\}\)<\/span>/g)?.length).toBe(2);
+    expect(component).toContain('{t("contact.formMessage")}');
+    expect(component).not.toMatch(/formMessage"\)\}[^<]*\*/);
+
+    // Inline messages live under the field and are wired to it for assistive tech.
+    for (const field of ["fullname", "email"]) {
+      expect(component).toContain(`aria-describedby="err-${field}"`);
+      expect(component).toContain(`id="err-${field}" data-error-for="${field}" hidden`);
+    }
+    expect(component).toContain('data-err-fullname={t("contact.formErrName")}');
+    expect(component).toContain('data-err-email={t("contact.formErrEmail")}');
+    // Native bubbles are gone; the script validates on blur, live while invalid, and on submit.
+    expect(component).not.toContain("reportValidity");
+    expect(component).toContain("const validateField = (name: FieldName): boolean");
+    expect(component).toContain('field.addEventListener("blur"');
+    expect(component).toContain('if (field.getAttribute("aria-invalid") === "true") validateField(name);');
+    expect(component).toContain("fieldNames.filter((name) => !validateField(name))");
+
+    // Visual states: gold hover, red invalid (label too), green valid.
+    expect(component.match(/hover:border-gold focus:border-gold/g)?.length).toBe(3);
+    expect(component).toContain("aria-invalid:border-danger");
+    expect(component).toContain("not-placeholder-shown:user-valid:border-success");
+    expect(component).toContain("has-[[aria-invalid=true]]:text-danger");
+    const control = css.slice(css.indexOf(".select-field__control {"));
+    expect(control).toMatch(/&:hover \{\s*border-color: var\(--color-gold\);/);
+
+    for (const lang of [cs, en]) {
+      for (const key of ["contact.formRequired", "contact.formErrName", "contact.formErrEmail"]) {
+        expect(String(lang[key]).length).toBeGreaterThan(3);
+      }
+    }
+  });
 });

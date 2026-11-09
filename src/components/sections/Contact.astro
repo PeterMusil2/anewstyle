@@ -70,6 +70,8 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         data-panel-category={panelCategory}
         action="/api/contact"
         method="POST"
+        data-err-fullname={t("contact.formErrName")}
+        data-err-email={t("contact.formErrEmail")}
         novalidate
         toolname="anewstyle_inquiry"
         tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : panelCategory === "stone" ? "illuminated stone panels" : "illuminated stone panels, illuminated mineral panels, or undecided"}): name, e-mail, optional panel size and version, and an optional message. The visitor confirms and submits it.`}
@@ -96,31 +98,38 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         />
 
         <div class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-5 sm:gap-y-5">
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
-            {t("contact.formName")}
+          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
+            <span>{t("contact.formName")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
             <input
               type="text"
               name="fullname"
               id="contact-fullname"
               required
+              minlength="2"
+              maxlength="120"
+              aria-describedby="err-fullname"
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
               toolparamdescription="Full name of the person asking"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger sm:min-h-13 sm:px-4"
+              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
             />
+            <span id="err-fullname" data-error-for="fullname" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
           </label>
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
-            {t("contact.formEmail")}
+          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
+            <span>{t("contact.formEmail")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
             <input
               type="email"
               name="email"
               required
+              maxlength="254"
+              aria-describedby="err-email"
               autocomplete="email"
               inputmode="email"
               placeholder={t("contact.formEmailPlaceholder")}
               toolparamdescription="E-mail address for the reply"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger sm:min-h-13 sm:px-4"
+              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
             />
+            <span id="err-email" data-error-for="email" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
           </label>
 
           <p class="col-span-2 -mb-1 text-xs leading-snug text-fg-muted">{t("contact.formChoiceHint")}</p>
@@ -181,7 +190,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             rows="2"
             placeholder={t("contact.formMessagePlaceholder")}
             toolparamdescription="Optional question or additional request"
-            class="min-h-11 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
+            class="min-h-11 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
         </label>
 
         <div class="flex flex-col gap-2 pt-0.5 sm:flex-row sm:items-center sm:gap-4 sm:pt-1">
@@ -388,6 +397,43 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       }
     };
 
+    /*
+     * Inline validation. A field is checked when the visitor leaves it after
+     * typing, re-checked live while it shows an error (so the message clears the
+     * moment it is fixed), and every field is checked on submit.
+     */
+    type FieldName = "fullname" | "email";
+    const rules: Record<FieldName, (value: string) => boolean> = {
+      fullname: (value) => value.trim().length > 1,
+      email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()),
+    };
+    const fieldNames = Object.keys(rules) as FieldName[];
+    const getField = (name: FieldName) => form.querySelector<HTMLInputElement>(`[name="${name}"]`);
+    const validateField = (name: FieldName): boolean => {
+      const field = getField(name);
+      if (!field) return true;
+      const valid = rules[name](field.value);
+      const errorEl = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      field.setAttribute("aria-invalid", valid ? "false" : "true");
+      if (errorEl) {
+        errorEl.textContent = valid ? "" : form.dataset[name === "fullname" ? "errFullname" : "errEmail"] ?? "";
+        errorEl.hidden = valid;
+      }
+      return valid;
+    };
+    const dirty = new Set<FieldName>();
+    for (const name of fieldNames) {
+      const field = getField(name);
+      if (!field) continue;
+      field.addEventListener("input", () => {
+        dirty.add(name);
+        if (field.getAttribute("aria-invalid") === "true") validateField(name);
+      });
+      field.addEventListener("blur", () => {
+        if (dirty.has(name)) validateField(name);
+      });
+    }
+
     fillAttributionFields();
     const status = form.querySelector<HTMLElement>(".contact-form__status");
     const submitBtn = form.querySelector<HTMLButtonElement>(
@@ -420,7 +466,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      // Inline messages under each field (no native bubbles); focus the first invalid one.
+      const invalid = fieldNames.filter((name) => !validateField(name));
+      if (invalid.length) {
+        getField(invalid[0])?.focus();
+        return;
+      }
       const panelCategoryField = form.querySelector<HTMLInputElement>(
         'input[name="panel_category"]',
       );
@@ -469,6 +520,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         if (response.ok && data.success && data.code) {
           setStatus("success", successMessage);
           form.reset();
+          dirty.clear();
+          for (const name of fieldNames) {
+            getField(name)?.removeAttribute("aria-invalid");
+            const errorEl = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+            if (errorEl) errorEl.hidden = true;
+          }
           if (categorySelect) categorySelect.value = submittedPanelCategory;
           if (panelCategoryField) panelCategoryField.value = submittedPanelCategory;
           delete form.dataset.submissionId;

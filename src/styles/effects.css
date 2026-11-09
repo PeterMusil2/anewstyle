@@ -746,7 +746,7 @@
     text-overflow: ellipsis;
 
     &:hover {
-      border-color: var(--color-line-bold);
+      border-color: var(--color-gold);
     }
 
     &:focus-visible {

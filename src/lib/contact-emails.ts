@@ -53,7 +53,9 @@ export function buildCustomerMail(
   const name = oneLine(submission.name);
   const expiry = formatExpiry(expiresAt);
 
-  const subject = english ? "Your personal ANEW STYLE discount code" : "Váš osobní slevový kód ANEW STYLE";
+  // Same pattern as the Vila SCALA auto-reply ("Děkujeme za zprávu — <site>"), so the two sites
+  // sharing one Resend team are easy to tell apart. The discount code is in the body.
+  const subject = english ? "Thank you for your message — ANEW STYLE" : "Děkujeme za zprávu — ANEW STYLE";
   const text = english
     ? `Hello ${name},\n\nthank you for your inquiry. Your personal discount code is ${code}. It is valid until ${expiry} and can be used once: 5% for SLIM or 7% for BASIC and DELUXE. Mention it when requesting a quote or during a consultation.\n\nANEW STYLE`
     : `Dobrý den ${name},\n\nděkujeme za vaši poptávku. Váš osobní slevový kód je ${code}. Platí do ${expiry} a lze jej uplatnit jednou: 5 % pro SLIM nebo 7 % pro BASIC a DELUXE. Uveďte jej při poptávce nebo konzultaci.\n\nANEW STYLE`;
@@ -131,7 +133,7 @@ export function buildBusinessMail(
     from,
     to: [to],
     reply_to: `${name.replace(/[<>",]/g, "")} <${submission.email}>`,
-    subject: `Nová poptávka a slevový kód – ${name}`,
+    subject: `Dotaz z webu ANEW STYLE — ${name}`,
     text,
     html,
     tags: [MAIL_SITE_TAG, { name: "type", value: "business" }],

@@ -363,6 +363,9 @@ describe("contact discount automation", () => {
     expect(business.html).not.toContain("<img");
     expect(business.html).toContain("&#60;img");
     expect(business.subject).not.toMatch(/[\r\n]/);
+    // Subjects name the site, so mails of ANEW STYLE and Vila SCALA never look alike in Resend.
+    expect(business.subject.startsWith("Dotaz z webu ANEW STYLE — ")).toBe(true);
+    expect(customer.subject).toBe("Děkujeme za zprávu — ANEW STYLE");
     expect(customer.text).toContain("22.04.2027");
     expect(formatExpiry("2027-04-22")).toBe("22.04.2027");
   });
@@ -370,7 +373,7 @@ describe("contact discount automation", () => {
   test("English visitors get the English code e-mail", () => {
     const parsed = parseContactSubmission({ ...validSubmission(), locale: "en" })!;
     const mail = buildCustomerMail(parsed, "ANEW-AAAAAAAA", "2027-04-22", DEFAULT_MAIL_FROM);
-    expect(mail.subject).toBe("Your personal ANEW STYLE discount code");
+    expect(mail.subject).toBe("Thank you for your message — ANEW STYLE");
     expect(mail.text).toContain("valid until 22.04.2027");
   });
 

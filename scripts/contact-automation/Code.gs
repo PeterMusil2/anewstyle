@@ -199,6 +199,15 @@ function findCodeRow(sheet, code) {
 }
 
 function deliverMessages(sheet, rowNumber, body, emailState, businessState) {
+  // The Pages function sends the e-mails through Resend and says so with
+  // deliverMail: false. Record that in the sheet and send nothing from Gmail.
+  // (Older function versions omit the field, which keeps the Gmail behaviour.)
+  if (body.deliverMail === false) {
+    if (!emailState) sheet.getRange(rowNumber, 27).setValue("RESEND");
+    if (!businessState) sheet.getRange(rowNumber, 28).setValue("RESEND");
+    return { emailSent: false, businessNotified: false };
+  }
+
   const submission = body.submission;
   let emailSent = emailState === "ODESLÁNO";
   let businessNotified = businessState === "ODESLÁNO";

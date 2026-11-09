@@ -26,6 +26,20 @@ The same form submission ID is reused after a network error. Apps Script uses it
 
 If `anewstyle.brno@gmail.com` is the account used to deploy the Apps Script, customer messages will be sent from that account with the display name **ANEW STYLE**. The business notification goes to `info@anewstyle.cz`.
 
+## E-mails through Resend (instead of Gmail)
+
+By default Apps Script sends both e-mails from Gmail. Once the Pages function has a Resend key, **it** sends them through Resend and Apps Script only records the inquiry. Without the key nothing changes, so the switch is safe to deploy.
+
+1. **Resend** (team `anewstyle.brno`, region Ireland): domain `anewstyle.cz` is verified with three DNS records in the Cloudflare zone (`resend._domainkey` TXT, `send` and `rsend` CNAME, all DNS only). The existing Email Routing MX and SPF records are left alone; Resend's optional receiving MX is not added.
+2. **Redeploy Apps Script first.** Copy the current `scripts/contact-automation/Code.gs` into the project and deploy a new version of the web app. The new code honours `deliverMail: false` and writes `RESEND` into the two delivery-state cells instead of sending from Gmail. If the key is live while the old script is still deployed, every inquiry is e-mailed twice.
+3. **Cloudflare Pages → `anewstyle` → Variables and Secrets** (Production, and Preview if you test there):
+   - `RESEND_API_KEY` — secret, a Resend key with *Sending access* for `anewstyle.cz`.
+   - `CONTACT_TO` — optional, who receives the inquiry (default `anewstyle.brno@gmail.com`).
+   - `CONTACT_FROM` — optional sender (default `ANEW STYLE <web@anewstyle.cz>`; the domain must be verified in Resend).
+4. Send one real inquiry. The visitor gets the code e-mail, `CONTACT_TO` gets the notification with the visitor in *Reply-To*, and the sheet row reads `RESEND` in both delivery columns. Check the mails in Resend → Emails.
+
+Every mail carries two tags, `site=anewstyle` and `type=customer|business`, so the Resend log can be filtered when several sites share one team (the API key filter works too). Each send uses an idempotency key built from the form submission ID, so a retried submission never sends a mail twice. If a Resend send fails, the inquiry is still recorded and the visitor still sees their code; the thank-you dialog then says the e-mail could not be sent.
+
 ## Local Pages Functions
 
 Astro's `bun run dev` does not execute Cloudflare Pages Functions. To test the function locally, build the site and run `wrangler pages dev dist` with a local `.dev.vars` containing the two variables above. Keep `.dev.vars` out of Git. A local test writes real personal data and sends real e-mails, so use a dedicated test address and remove the corresponding test data afterward.

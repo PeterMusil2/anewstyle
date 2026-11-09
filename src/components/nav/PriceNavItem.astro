@@ -25,11 +25,11 @@ const options = [
       ]}
     >
       <span>{t("nav.price")}</span>
-      <span aria-hidden="true" class="price-nav-item__chevron size-2 shrink-0 rotate-45 border-r border-b border-current transition-transform duration-200"></span>
+      <span aria-hidden="true" class="price-nav-item__chevron"></span>
     </summary>
     <div
       class:list={[
-        "price-nav-item__menu flex flex-col border border-line-strong bg-ink-900 p-2 shadow-xl",
+        "price-nav-item__menu flex flex-col gap-1.5 border border-line-strong bg-ink-900 p-2 shadow-xl",
         variant === "bar" && "absolute inset-inline-start-0 top-full z-50 min-w-72",
         variant === "panel" && "border-t-0 border-b border-x-0 border-line bg-ink-850 ps-3",
       ]}
@@ -41,7 +41,7 @@ const options = [
           data-price-nav-option
           class:list={[
             "flex items-center text-fg-soft no-underline transition-colors hover:bg-ink-800 hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold",
-            variant === "bar" && "min-h-12 px-4 text-sm",
+            variant === "bar" && "min-h-12 px-4 py-2 text-sm",
             variant === "panel" && "min-h-12 border-b border-line px-3 text-base last:border-b-0",
           ]}
         >
@@ -118,7 +118,23 @@ const options = [
     display: flex;
   }
 
+  /* One centred chevron (mask in currentColor): turns around its own middle. */
+  .price-nav-item__chevron {
+    flex: none;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    background: currentColor;
+    transition: rotate 180ms ease-out;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='square'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
   details[open] > summary .price-nav-item__chevron {
-    rotate: 225deg;
+    rotate: 180deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .price-nav-item__chevron {
+      transition: none;
+    }
   }
 </style>

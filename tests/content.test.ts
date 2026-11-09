@@ -654,11 +654,23 @@ describe("home section rhythm", () => {
     expect(styles).toContain("main > section.faq-standalone {");
   });
 
-  test("keeps the same tight top spacing on all requested shared sections", async () => {
+  test("comparison table header sticks directly under the main navigation on every screen size", async () => {
+    const table = await Bun.file("src/components/sections/HomeEquipmentComparison.astro").text();
     const styles = await Bun.file("src/styles/global.css").text();
 
+    // Both header cells (feature column + the three tiers) use the nav height as their sticky offset.
+    expect(table.match(/sticky top-\(--nav-height\) z-10/g)?.length).toBe(2);
+    // Same variable the navigation bar itself is sized with, so they can never drift apart.
+    expect(await Bun.file("src/components/nav/Nav.astro").text()).toContain("h-(--nav-height)");
+    expect(styles).toContain("--nav-height: 4.5rem;");
+    expect(styles).toContain("--nav-height: 5.5rem;");
+  });
+
+  test("gives the shared home sections their normal top spacing; only anchor jumps are tight", async () => {
+    const styles = await Bun.file("src/styles/global.css").text();
+
+    // Regular scrolling: no blanket override, so `home-section-y` padding applies.
     for (const selector of [
-      "main > section:has(#about)",
       "main > section#technologies",
       "main > section#features",
       "main > section#day-night",
@@ -667,8 +679,13 @@ describe("home section rhythm", () => {
       "main > section#products",
       "main > section#equipment-comparison",
     ]) {
-      expect(styles).toContain(selector);
+      expect(styles).not.toContain(`${selector},`);
     }
+    expect(styles).toContain("padding-block: 4.25rem;");
+    expect(styles).toContain("padding-block: 6.5rem;");
+    // Jumping to a section (#technologies, #contact, …) still lands close under the header.
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
+    expect(styles).toContain("main > section:has(#about:target)");
   });
 
   test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
@@ -696,7 +713,10 @@ describe("home section rhythm", () => {
     expect(styles).toContain("@utility home-section-y {");
     expect(styles).toContain("padding-block: 4.25rem;");
     expect(styles).toContain("padding-block: 6.5rem;");
-    expect(styles).toContain(".home-section-divider::before {");
+    // Sections have no top border and no gold line; only the alternating surfaces separate them.
+    expect(styles).not.toContain(".home-section-divider::before");
+    const divider = styles.slice(styles.indexOf("@utility home-section-divider {"));
+    expect(divider.slice(0, divider.indexOf("}"))).not.toContain("border");
 
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
@@ -754,6 +774,18 @@ describe("feature disclosures", () => {
     const palette = await Bun.file("src/components/palette/Palette.astro").text();
     expect(palette).toContain('<ul class="flex h-12 items-center gap-3"');
     expect(component).toContain("feature-disclosure-indicator");
+    // The whole card toggles (summary cover), and the +/− are Heroicons, not text glyphs.
+    expect(component).toContain(".feature-summary::after");
+    expect(component).toContain("inset: 0;");
+    expect(component).toContain('name="plus-outline"');
+    expect(component).toContain('name="minus-outline"');
+    expect(component).not.toContain('content: "+"');
+    expect(component).not.toContain('content: "−"');
+    const sprite = await Bun.file("src/components/icons/IconSet.astro").text();
+    expect(sprite).toContain('id="icon-plus-outline"');
+    expect(sprite).toContain('d="M12 4.5v15m7.5-7.5h-15"');
+    expect(sprite).toContain('id="icon-minus-outline"');
+    expect(sprite).toContain('d="M5 12h14"');
     expect(component).toContain('if (!feature?.matches("li[id]")) return;');
     expect(component).toContain("border-line-strong bg-ink-900");
     expect(component).toContain("border-gold/70 bg-gold/10");
@@ -767,7 +799,9 @@ describe("FAQ", () => {
     const faq = await Bun.file("src/components/sections/Faq.astro").text();
 
     expect(faq).toContain('layout="center" eyebrow={t("faq.title")}');
-    expect(faq).toContain("grid items-start gap-3 md:grid-cols-2 md:gap-4 lg:gap-5");
+    // One column at every width (readable line length), no two-column grid.
+    expect(faq).toContain("mx-auto grid w-full max-w-4xl items-start gap-3 md:gap-4");
+    expect(faq).not.toContain("md:grid-cols-2");
     expect(faq).toContain('name="faq"');
     expect(faq).not.toContain("open={index === 0}");
     expect(faq).toContain('standalone ? "section-y bg-ink faq-standalone" : "home-section-y home-section-divider bg-ink"');
@@ -990,24 +1024,86 @@ describe("i18n", () => {
     expect(comparison).toContain("odd:bg-ink-850/50 hover:bg-ink-900");
   });
 
-  test("contact form choices and submit action have clear high-contrast states", async () => {
+  test("contact form choices are custom selects and the submit action has clear states", async () => {
     const contact = await Bun.file("src/components/sections/Contact.astro").text();
+    const effects = await Bun.file("src/styles/effects.css").text();
 
-    expect(contact.match(/border-line-bold bg-ink-900 px-/g)?.length).toBe(3);
-    expect(contact.match(/has-checked:bg-gold has-checked:text-ink/g)?.length).toBe(3);
+    // Panel type, size and version: three selects sharing one control style.
+    expect(contact.match(/class="select-field__control"/g)?.length).toBe(3);
+    expect(contact.match(/<span class="select-field">/g)?.length).toBe(3);
+    // Each control keeps visible focus, hover and invalid states (high contrast).
+    const control = effects.slice(effects.indexOf(".select-field__control {"));
+    expect(control).toContain("&:hover");
+    expect(control).toContain("&:focus-visible");
+    expect(control).toContain("&:user-invalid");
     expect(contact).toContain('class="contact-form__submit self-start shadow-glow');
   });
 
-  test("contact form keeps mobile size and version choices compact with unknown centered below", async () => {
+  test("contact form order: full name, email, category across both columns, size and version side by side, message", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+    const at = (needle: string) => {
+      const index = contact.indexOf(needle);
+      expect(index).toBeGreaterThan(-1);
+      return index;
+    };
+
+    const order = [
+      'name="fullname"',
+      'name="email"',
+      'name="panel_category_choice"',
+      'name="size"',
+      'name="version"',
+      'name="message"',
+    ].map(at);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+
+    // One two-column grid; the category select spans both columns.
+    expect(contact).toContain('class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-5 sm:gap-y-5"');
+    expect(contact).toContain('class="col-span-2 flex min-w-0 flex-col');
+    expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
+    expect(contact).toContain('rows="2"');
+    // "Zatím nevím" is the empty first value of size and version, so nothing is required.
+    expect(contact).toContain('<option value="" selected>');
+    expect(contact).toContain('["", "SLIM", "BASIC", "DELUXE"]');
+  });
+
+  test("full name field autofills and is sent to the API as `name`", async () => {
+    const contact = await Bun.file("src/components/sections/Contact.astro").text();
+    const cs = JSON.parse(await Bun.file("src/i18n/cs.json").text());
+    const en = JSON.parse(await Bun.file("src/i18n/en.json").text());
+
+    expect(contact).toContain('autocomplete="name"');
+    expect(contact).toContain('id="contact-fullname"');
+    // The API contract (parseContactSubmission) still reads `name`.
+    expect(contact).toContain("payload.name = payload.fullname;");
+    expect(contact).toContain("delete payload.fullname;");
+    expect(cs["contact.formName"]).toBe("Celé jméno");
+    expect(cs["contact.formNamePlaceholder"]).toBe("Petr Novák");
+    expect(en["contact.formName"]).toBe("Full name");
+  });
+
+  test("category and size options carry real panel thumbnails that exist on disk", async () => {
     const contact = await Bun.file("src/components/sections/Contact.astro").text();
 
-    expect(contact).toContain('class="grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2"');
-    expect(contact).toContain('size === "" && "col-span-4 mx-auto w-fit min-w-36');
-    expect(contact).toContain('class="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2"');
-    expect(contact).toContain('version === "" && "col-span-3 mx-auto w-fit min-w-36');
-    expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
-    expect(contact).toContain('class="grid grid-cols-2 gap-2 sm:gap-5"');
-    expect(contact).toContain('rows="2"');
+    expect(contact).toContain('class="option-thumb"');
+    expect(contact).toContain("/images/priceList/thumb/");
+    // Sizes keep the price-list proportions: 2400 mm tall, 400/600/800/1200 mm wide.
+    expect(contact).toContain("const PANEL_HEIGHT = 2400;");
+    for (const [key, width] of [["l", 400], ["xl", 600], ["xxl", 800], ["xxxl", 1200]] as const) {
+      expect(contact).toContain(`{ key: "${key}", label: "${key.toUpperCase()}", width: ${width} }`);
+    }
+    // Every thumbnail the markup can ask for is generated and small.
+    for (const key of ["l", "xl", "xxl", "xxxl"]) {
+      for (const suffix of ["", "-art-stone"]) {
+        const file = Bun.file(`public/images/priceList/thumb/${key}${suffix}.webp`);
+        expect(await file.exists()).toBe(true);
+        expect(file.size).toBeLessThan(6_000);
+      }
+    }
+    // Open list shows the thumbnail and dimensions; the closed control shrinks them.
+    const css = await Bun.file("src/styles/effects.css").text();
+    expect(css).toContain(".option-thumb");
+    expect(css).toContain("& selectedcontent");
   });
 
   test("contact section moves its heading closer to the header when opened by an inquiry link", async () => {

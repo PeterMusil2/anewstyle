@@ -26,7 +26,7 @@ Target: Lighthouse Accessibility 100 **and** a manual pass – tools catch about
 
 **Images and media** – meaningful alt (cs + en) for content images, `alt=""` for decorative ones; the hero video has a pause control and no sound; 3D viewers have an `alt`.
 
-**Forms** (contact, Web3Forms) – visible labels, required marked and explained, inline errors tied with `aria-describedby`, status in a live region, `autocomplete` tokens.
+**Forms** (contact form with custom selects, Resend) – visible labels, required marked and explained, inline errors tied with `aria-describedby`, status in a live region, `autocomplete` tokens.
 
 **Motion** – `prefers-reduced-motion` disables reveals, fan transitions and smooth scrolling.
 

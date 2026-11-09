@@ -9,6 +9,13 @@ import {
   getDiscountExpiry,
   parseContactSubmission,
 } from "../src/lib/contact-automation";
+import {
+  buildBusinessMail,
+  buildCustomerMail,
+  DEFAULT_MAIL_FROM,
+  DEFAULT_MAIL_TO,
+  formatExpiry,
+} from "../src/lib/contact-emails";
 
 const validSubmission = () => ({
   submission_id: "123e4567-e89b-42d3-a456-426614174000",
@@ -41,7 +48,24 @@ describe("contact discount automation", () => {
     const component = await Bun.file("src/components/sections/Contact.astro").text();
     expect(component).toContain('["stone", "mineral", "unknown"]');
     expect(component).toContain('"contact.formUnknown"');
-    expect(component).toContain('checked={category === "unknown"}');
+    expect(component).toContain('selected={category === "unknown"}');
+  });
+
+  test("category, size and version are three custom selects that default to undecided", async () => {
+    const component = await Bun.file("src/components/sections/Contact.astro").text();
+    for (const name of ["panel_category_choice", "size", "version"]) {
+      expect(component).toContain(`<select name="${name}"`);
+    }
+    // No radio group is left for these fields.
+    expect(component).not.toContain('type="radio"');
+    expect(component).toContain('<option value="" selected>');
+    expect(component).toContain('selected={version === ""}');
+    // Customizable-select hook plus the styling it needs.
+    expect(component).toContain("<selectedcontent>");
+    const css = await Bun.file("src/styles/effects.css").text();
+    expect(css).toContain("appearance: base-select");
+    expect(css).toContain(".select-field__control");
+    expect(css).toContain("::picker-icon");
   });
 
   test("normalizes a valid inquiry and keeps advertising attribution", () => {
@@ -219,5 +243,142 @@ describe("contact discount automation", () => {
     expect(script).toMatch(/setValue\("ODESÍLÁ SE"\);\s*SpreadsheetApp\.flush\(\);\s*try\s*\{\s*sendBusinessEmail\(/);
     expect(script).toContain('emailState === "CHYBA – zkontrolovat"');
     expect(script).toContain('businessState === "CHYBA – zkontrolovat"');
+  });
+
+  test("sends the e-mails through Resend once a key is set, and tells Apps Script to stay quiet", async () => {
+    const originalFetch = globalThis.fetch;
+    const resendCalls: { headers: Record<string, string>; body: Record<string, unknown> }[] = [];
+    let backendPayload: Record<string, unknown> | null = null;
+    globalThis.fetch = (async (input, init) => {
+      const url = String(input);
+      if (url.startsWith("https://api.resend.com/")) {
+        resendCalls.push({
+          headers: init?.headers as Record<string, string>,
+          body: JSON.parse(String(init?.body)) as Record<string, unknown>,
+        });
+        return new Response('{"id":"x"}', { status: 200 });
+      }
+      backendPayload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response(JSON.stringify({
+        success: true,
+        recorded: true,
+        code: backendPayload.code,
+        expiresAt: backendPayload.expiresAt,
+        emailSent: false,
+        businessNotified: false,
+      }), { headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+
+    try {
+      const response = await onRequestPost({
+        request: createRequest(),
+        env: {
+          CONTACT_SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/test-deployment/exec",
+          CONTACT_SHEETS_SHARED_SECRET: "server-only-test-secret",
+          RESEND_API_KEY: "re_test_key",
+        },
+      });
+      const data = await response.json() as Record<string, unknown>;
+
+      expect(data.success).toBe(true);
+      expect(data.emailSent).toBe(true);
+      expect(data.businessNotified).toBe(true);
+      expect(backendPayload?.deliverMail).toBe(false);
+      expect(resendCalls).toHaveLength(2);
+
+      const customer = resendCalls.find((call) => (call.body.tags as { value: string }[])[1].value === "customer");
+      const business = resendCalls.find((call) => (call.body.tags as { value: string }[])[1].value === "business");
+      expect(customer?.body.to).toEqual(["eva@example.cz"]);
+      expect(String(customer?.body.text)).toContain(String(data.code));
+      expect(business?.body.to).toEqual(["anewstyle.brno@gmail.com"]);
+      expect(business?.body.reply_to).toContain("eva@example.cz");
+      expect(customer?.headers.Authorization).toBe("Bearer re_test_key");
+      expect(customer?.headers["Idempotency-Key"]).toBe(`anewstyle-customer-${validSubmission().submission_id}`);
+      expect(business?.headers["Idempotency-Key"]).toBe(`anewstyle-business-${validSubmission().submission_id}`);
+      // Every mail carries the site tag so the Resend log can be filtered.
+      for (const call of resendCalls) {
+        expect((call.body.tags as { name: string; value: string }[])[0]).toEqual({ name: "site", value: "anewstyle" });
+      }
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("keeps the Gmail path without a Resend key and survives a failed Resend send", async () => {
+    const originalFetch = globalThis.fetch;
+    const env = {
+      CONTACT_SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/test-deployment/exec",
+      CONTACT_SHEETS_SHARED_SECRET: "server-only-test-secret",
+    };
+    let resendCalled = false;
+    let deliverMail: unknown;
+    let resendStatus = 200;
+    globalThis.fetch = (async (input, init) => {
+      if (String(input).startsWith("https://api.resend.com/")) {
+        resendCalled = true;
+        return new Response("nope", { status: resendStatus });
+      }
+      const payload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      deliverMail = payload.deliverMail;
+      return new Response(JSON.stringify({
+        success: true,
+        recorded: true,
+        code: payload.code,
+        expiresAt: payload.expiresAt,
+        emailSent: true,
+        businessNotified: true,
+      }), { headers: { "Content-Type": "application/json" } });
+    }) as typeof fetch;
+
+    try {
+      const withoutKey = await (await onRequestPost({ request: createRequest(), env })).json() as Record<string, unknown>;
+      expect(deliverMail).toBe(true);
+      expect(resendCalled).toBe(false);
+      expect(withoutKey.emailSent).toBe(true);
+
+      resendStatus = 500;
+      const failed = await onRequestPost({ request: createRequest(), env: { ...env, RESEND_API_KEY: "re_test_key" } });
+      const failedData = await failed.json() as Record<string, unknown>;
+      // The inquiry is recorded, so the visitor still gets their code.
+      expect(failed.status).toBe(200);
+      expect(failedData.success).toBe(true);
+      expect(failedData.code).toMatch(/^ANEW-[A-Z2-9]{8}$/);
+      expect(failedData.emailSent).toBe(false);
+      expect(failedData.businessNotified).toBe(false);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("e-mail templates escape visitor input and keep subjects on one line", () => {
+    const parsed = parseContactSubmission({
+      ...validSubmission(),
+      name: 'Eva <script>alert(1)</script>\nBcc: x@y.cz',
+      message: '<img src=x onerror=alert(1)>',
+    });
+    expect(parsed).not.toBeNull();
+    const customer = buildCustomerMail(parsed!, "ANEW-AAAAAAAA", "2027-04-22", DEFAULT_MAIL_FROM);
+    const business = buildBusinessMail(parsed!, "ANEW-AAAAAAAA", "2026-10-24T10:00:00.000Z", "2027-04-22", DEFAULT_MAIL_FROM, DEFAULT_MAIL_TO);
+    expect(customer.html).not.toContain("<script>");
+    expect(business.html).not.toContain("<img");
+    expect(business.html).toContain("&#60;img");
+    expect(business.subject).not.toMatch(/[\r\n]/);
+    expect(customer.text).toContain("22.04.2027");
+    expect(formatExpiry("2027-04-22")).toBe("22.04.2027");
+  });
+
+  test("English visitors get the English code e-mail", () => {
+    const parsed = parseContactSubmission({ ...validSubmission(), locale: "en" })!;
+    const mail = buildCustomerMail(parsed, "ANEW-AAAAAAAA", "2027-04-22", DEFAULT_MAIL_FROM);
+    expect(mail.subject).toBe("Your personal ANEW STYLE discount code");
+    expect(mail.text).toContain("valid until 22.04.2027");
+  });
+
+  test("Apps Script skips its own mail when the function sends through Resend", async () => {
+    const script = await Bun.file("scripts/contact-automation/Code.gs").text();
+    expect(script).toContain("body.deliverMail === false");
+    expect(script).toContain('setValue("RESEND")');
+    // The skip comes before any Gmail send.
+    expect(script.indexOf("body.deliverMail === false")).toBeLessThan(script.indexOf("sendCustomerEmail(submission, body.code"));
   });
 });

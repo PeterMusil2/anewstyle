@@ -8,7 +8,7 @@ description: Hand changes or the whole site to the ANEW STYLE team – final ver
 ## 1. Final verification
 
 - The full validation process in `AGENTS.md` on the production domain (`performance-audit`, `accessibility-audit`, `seo-audit`).
-- Contact form: one real submission arrives (Web3Forms), the thank-you dialog shows.
+- Contact form: one real submission arrives (Resend e-mail to the team and the code e-mail to the visitor), the thank-you dialog shows.
 - CMS: an **editor** account (not only the owner) logs in, edits a text, uploads a gallery photo (watermark visible), publishes; the change appears on the site.
 
 ## 2. Editors

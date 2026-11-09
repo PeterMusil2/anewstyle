@@ -15,6 +15,20 @@ interface Props {
 const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
 
+// Panel preview thumbnails for the selects (scripts/contact-select-thumbs.mjs):
+// trimmed to the panel area, so their widths show the real L–XXXL proportions.
+const PANEL_HEIGHT = 2400;
+const sizeOptions = [
+  { key: "l", label: "L", width: 400 },
+  { key: "xl", label: "XL", width: 600 },
+  { key: "xxl", label: "XXL", width: 800 },
+  { key: "xxxl", label: "XXXL", width: 1200 },
+] as const;
+// On a category page the sizes show that category's material; otherwise stone.
+const previewCategory = panelCategory ?? "stone";
+const thumb = (size: string, category: string) =>
+  `/images/priceList/thumb/${size}${category === "mineral" ? "-art-stone" : ""}.webp`;
+
 // Where the bonus button sends the visitor, honouring the locale prefix.
 // ?filter=bonus makes the gallery open with the Bonus segment preselected.
 const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonus`;
@@ -81,52 +95,13 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           aria-hidden="true"
         />
 
-        {!panelCategory && (
-          <fieldset class="flex flex-col gap-1.5">
-            <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.panelCategoryLabel")}</legend>
-            <div class="grid gap-1.5 sm:grid-cols-3">
-              {(["stone", "mineral", "unknown"] as const).map((category) => (
-                <label class="flex min-h-11 cursor-pointer items-center gap-2 border border-line-bold bg-ink-900 px-3 text-sm font-semibold text-fg transition-colors hover:border-gold has-checked:border-gold has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
-                  <input type="radio" name="panel_category_choice" value={category} checked={category === "unknown"} required={category === "stone"} class="accent-gold" />
-                  {t(category === "stone" ? "price.categoryStone" : category === "mineral" ? "price.categoryMineral" : "contact.formUnknown")}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        )}
-
-        <p class="-mb-1 text-xs leading-snug text-fg-muted">{t("contact.formChoiceHint")}</p>
-
-        <fieldset class="flex flex-col gap-1.5">
-          <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.formSize")}</legend>
-          <div class="grid grid-cols-4 gap-1.5 sm:grid-cols-5 sm:gap-2">
-            {["L", "XL", "XXL", "XXXL", ""].map((size) => (
-              <label class:list={["flex min-h-11 cursor-pointer items-center justify-center border border-line-bold bg-ink-900 px-1 text-xs font-bold text-fg transition-colors hover:border-gold has-checked:border-gold has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-2 sm:text-sm", size === "" && "col-span-4 mx-auto w-fit min-w-36 px-4 sm:col-span-1 sm:mx-0 sm:w-full sm:min-w-0 sm:px-2"]}>
-                <input type="radio" name="size" value={size} checked={size === ""} class="sr-only" />
-                {size || t("contact.formUnknown")}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <fieldset class="flex flex-col gap-1.5">
-          <legend class="text-xs font-extrabold tracking-[0.16em] text-fg-muted uppercase">{t("contact.formVersion")}</legend>
-          <div class="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-2">
-            {["SLIM", "BASIC", "DELUXE", ""].map((version) => (
-              <label class:list={["flex min-h-11 cursor-pointer items-center justify-center border border-line-bold bg-ink-900 px-1 text-xs font-bold text-fg transition-colors hover:border-gold has-checked:border-gold has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:px-2 sm:text-sm", version === "" && "col-span-3 mx-auto w-fit min-w-36 px-4 sm:col-span-1 sm:mx-0 sm:w-full sm:min-w-0 sm:px-2"]}>
-                <input type="radio" name="version" value={version} checked={version === ""} class="sr-only" />
-                {version || t("contact.formUnknown")}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        <div class="grid grid-cols-2 gap-2 sm:gap-5">
+        <div class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-5 sm:gap-y-5">
           <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
             {t("contact.formName")}
             <input
               type="text"
-              name="name"
+              name="fullname"
+              id="contact-fullname"
               required
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
@@ -146,6 +121,56 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               toolparamdescription="E-mail address for the reply"
               class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-line-bold focus:border-gold focus:outline-none user-invalid:border-danger sm:min-h-13 sm:px-4"
             />
+          </label>
+
+          <p class="col-span-2 -mb-1 text-xs leading-snug text-fg-muted">{t("contact.formChoiceHint")}</p>
+
+          {!panelCategory && (
+            <label class="col-span-2 flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+              {t("contact.panelCategoryLabel")}
+              <span class="select-field">
+                <select name="panel_category_choice" required class="select-field__control">
+                  <button type="button"><selectedcontent></selectedcontent></button>
+                  {(["stone", "mineral", "unknown"] as const).map((category) => (
+                    <option value={category} selected={category === "unknown"}>
+                      {category !== "unknown" && (
+                        <span class="option-thumb-box"><img class="option-thumb" src={thumb("xxxl", category)} alt="" width="56" height="112" loading="lazy" decoding="async" /></span>
+                      )}
+                      <span class="option-label">{t(category === "stone" ? "price.categoryStone" : category === "mineral" ? "price.categoryMineral" : "contact.formUnknown")}</span>
+                    </option>
+                  ))}
+                </select>
+              </span>
+            </label>
+          )}
+
+          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+            {t("contact.formSize")}
+            <span class="select-field">
+              <select name="size" class="select-field__control">
+                <button type="button"><selectedcontent></selectedcontent></button>
+                <option value="" selected><span class="option-label">{t("contact.formUnknown")}</span></option>
+                {sizeOptions.map(({ key, label, width }) => (
+                  <option value={label}>
+                    <span class="option-thumb-box"><img class="option-thumb" src={thumb(key, previewCategory)} alt="" width={Math.round((width / PANEL_HEIGHT) * 112)} height="112" loading="lazy" decoding="async" /></span>
+                    <span class="option-label">{label}</span>
+                    <span class="option-meta">{PANEL_HEIGHT} × {width} mm</span>
+                  </option>
+                ))}
+              </select>
+            </span>
+          </label>
+
+          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+            {t("contact.formVersion")}
+            <span class="select-field">
+              <select name="version" class="select-field__control">
+                <button type="button"><selectedcontent></selectedcontent></button>
+                {["", "SLIM", "BASIC", "DELUXE"].map((version) => (
+                  <option value={version} selected={version === ""}><span class="option-label">{version || t("contact.formUnknown")}</span></option>
+                ))}
+              </select>
+            </span>
           </label>
         </div>
 
@@ -341,10 +366,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
     const requestedCategory = new URLSearchParams(window.location.search).get("panel");
-    const requestedChoice = requestedCategory === "mineral" || requestedCategory === "stone"
-      ? form.querySelector<HTMLInputElement>(`input[name="panel_category_choice"][value="${requestedCategory}"]`)
-      : null;
-    if (requestedChoice) requestedChoice.checked = true;
+    const categorySelect = form.querySelector<HTMLSelectElement>(
+      'select[name="panel_category_choice"]',
+    );
+    if (categorySelect && (requestedCategory === "mineral" || requestedCategory === "stone")) {
+      categorySelect.value = requestedCategory;
+    }
 
     const fillAttributionFields = (): void => {
       try {
@@ -399,9 +426,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       );
       let submittedPanelCategory = "stone";
       if (panelCategoryField) {
-        const selectedCategory = form.querySelector<HTMLInputElement>(
-          'input[name="panel_category_choice"]:checked',
-        )?.value;
+        const selectedCategory = categorySelect?.value;
         panelCategoryField.value =
           form.dataset.panelCategory ??
           selectedCategory ??
@@ -413,6 +438,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
+      // The field is called "fullname" so browsers autofill it; the API calls it "name".
+      payload.name = payload.fullname;
+      delete payload.fullname;
       const fingerprint = JSON.stringify(payload);
       if (
         !form.dataset.submissionId ||
@@ -441,10 +469,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         if (response.ok && data.success && data.code) {
           setStatus("success", successMessage);
           form.reset();
-          const categoryChoice = form.querySelector<HTMLInputElement>(
-            `input[name="panel_category_choice"][value="${submittedPanelCategory}"]`,
-          );
-          if (categoryChoice) categoryChoice.checked = true;
+          if (categorySelect) categorySelect.value = submittedPanelCategory;
           if (panelCategoryField) panelCategoryField.value = submittedPanelCategory;
           delete form.dataset.submissionId;
           delete form.dataset.submissionFingerprint;

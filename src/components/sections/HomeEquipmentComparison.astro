@@ -65,15 +65,16 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
       <p>{t("price.compareHint")}</p>
     </SectionHeader>
 
+    {/* The header row sticks right under the main navigation (--nav-height: 4.5rem on mobile, 5.5rem from lg). */}
     <table class="w-full table-fixed border-separate border-spacing-0 border border-line-strong text-left">
       <caption class="sr-only">{t("price.compareTitle")}</caption>
       <thead>
         <tr>
-          <th scope="col" class="w-[52%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-3 py-3 text-[0.6875rem] font-bold tracking-caps text-fg uppercase sm:px-5 sm:py-4 sm:text-xs">
+          <th scope="col" class="sticky top-(--nav-height) z-10 w-[52%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-3 py-3 text-[0.6875rem] font-bold tracking-caps text-fg uppercase sm:px-5 sm:py-4 sm:text-xs">
             {t("features.title")}
           </th>
           {tiers.map((tier) => (
-            <th scope="col" class="w-[16%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
+            <th scope="col" class="sticky top-(--nav-height) z-10 w-[16%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
               <span class="block text-[0.625rem] font-black tracking-[0.08em] text-gold uppercase sm:text-sm sm:tracking-[0.16em]">{tier.title}</span>
             </th>
           ))}

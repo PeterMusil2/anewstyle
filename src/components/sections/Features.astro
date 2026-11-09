@@ -1,4 +1,5 @@
 ---
+import Icon from "../icons/Icon.astro";
 import Palette from "../palette/Palette.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { inlineMarkdown } from "../../lib/inline-markdown";
@@ -72,11 +73,11 @@ const formattedDescription = (key: TranslationKey) =>
           <li
             id={feature.id}
             class:list={[
-              "reveal scroll-mt-[calc(var(--nav-height)+1.5rem)] border border-line-strong bg-ink-900 p-5 transition-colors duration-300 target:border-gold hover:border-gold/70 sm:p-7",
+              "reveal group/card relative scroll-mt-[calc(var(--nav-height)+1.5rem)] border border-line-strong bg-ink-900 p-5 transition-colors duration-300 target:border-gold hover:border-gold/70 sm:p-7",
             ]}
           >
             <details class="group/feature">
-              <summary class="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-sm text-fg transition-colors hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
+              <summary class="feature-summary flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-sm text-fg transition-colors group-hover/card:text-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
                 {feature.palette ? (
                   <span class="grid size-12 shrink-0 place-items-center border border-line text-sm font-bold tracking-caps text-gold" aria-hidden="true">RAL</span>
                 ) : feature.icon?.endsWith(".png") ? (
@@ -100,9 +101,12 @@ const formattedDescription = (key: TranslationKey) =>
                     <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
                   ) : label(feature.label)}
                 </h3>
-                <span class="feature-disclosure-indicator grid size-9 shrink-0 place-items-center border border-gold/70 bg-gold/10 text-xl leading-none text-gold transition-colors group-hover/feature:bg-gold group-hover/feature:text-ink" aria-hidden="true" />
+                <span class="feature-disclosure-indicator grid size-9 shrink-0 place-items-center border border-gold/70 bg-gold/10 text-gold transition-colors group-hover/card:bg-gold group-hover/card:text-ink" aria-hidden="true">
+                  <Icon name="plus-outline" class="feature-icon-plus block size-5 fill-none group-open/feature:hidden" />
+                  <Icon name="minus-outline" class="feature-icon-minus hidden size-5 fill-none group-open/feature:block" />
+                </span>
               </summary>
-              <div class="mt-5 border-t border-line pt-5 text-[0.9375rem] leading-relaxed text-fg-muted">
+              <div class="relative mt-5 border-t border-line pt-5 text-[0.9375rem] leading-relaxed text-fg-muted">
                 {feature.palette && <Palette lang={lang} />}
               {showBoth && feature.combinedDesc ? (
                 <span set:html={formattedDescription(feature.combinedDesc)} />
@@ -134,12 +138,16 @@ const formattedDescription = (key: TranslationKey) =>
 </section>
 
 <style>
-  .feature-disclosure-indicator::before {
-    content: "+";
-  }
-
-  details[open] > summary .feature-disclosure-indicator::before {
-    content: "−";
+  /*
+   * The whole card is the toggle, not just the header row: the summary's
+   * ::after covers the card (the <li> is the positioning context). The open
+   * description is `relative`, so it paints above the cover and stays
+   * selectable. Keyboard and screen readers still use the native <summary>.
+   */
+  .feature-summary::after {
+    position: absolute;
+    inset: 0;
+    content: "";
   }
 </style>
 

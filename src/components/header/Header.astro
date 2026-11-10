@@ -1,6 +1,8 @@
 ---
 import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
+import mineralHero from "../../data/mineral-hero.json";
+import stoneHero from "../../data/stone-hero.json";
 import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
 import {
   mineralArModelPath,
@@ -29,57 +31,52 @@ const headerMineralTexture = "/images/patterns/mineral-2.png";
 const headerModelPath = panelCategory === "mineral"
   ? mineralArModelPath(headerMineralTexture)
   : STONE_AR_MODEL_PATH;
+const panelHero = home || !panelCategory ? undefined : panelCategory === "mineral" ? mineralHero : stoneHero;
 ---
 
 <header class="scheme-dark-protected relative isolate flex min-h-svh text-fg items-end overflow-hidden bg-ink">
-  <!-- Poster: the LCP image. The video fades in over it once it plays. -->
-  {panelCategory === "mineral" ? (
-    <picture>
-      <source
-        media="(max-width: 560px)"
-        type="image/webp"
-        srcset="/images/hero/hero-poster-mineral-mobile.webp 540w"
-        sizes="100vw"
-      />
+  <div class="hero-media absolute inset-0 -z-20 isolate" aria-hidden="true">
+    <!-- Poster: the LCP image. The video fades in over it once it plays. -->
+    {panelHero ? (
       <img
-        src="/images/hero/hero-poster-mineral-desktop.webp"
+        src={panelHero.poster}
         alt=""
         width="1280"
         height="720"
         fetchpriority="high"
         decoding="async"
-        class="absolute inset-0 -z-30 size-full object-cover"
+        class="absolute inset-0 -z-10 size-full object-cover"
       />
-    </picture>
-  ) : (
-    <picture>
-      <source media="(max-width: 560px)" type="image/avif" srcset="/images/hero/hero-poster-mobile.avif" />
-      <source media="(max-width: 560px)" type="image/webp" srcset="/images/hero/hero-poster-mobile.webp" />
-      <source type="image/avif" srcset="/images/hero/hero-poster-1280.avif" />
-      <img
-        src="/images/hero/hero-poster-1280.webp"
-        alt=""
-        width="1280"
-        height="720"
-        fetchpriority="high"
-        decoding="async"
-        class="absolute inset-0 -z-30 size-full object-cover"
-      />
-    </picture>
-  )}
-  <video
-    class="hero-video pointer-events-none absolute inset-0 -z-20 size-full object-cover"
-    id="headerVideo"
-    data-panel-category={panelCategory ?? "stone"}
-    data-home={home ? "true" : "false"}
-    aria-hidden="true"
-    tabindex="-1"
-    preload="auto"
-    autoplay
-    loop
-    muted
-    playsinline
-    disablepictureinpicture></video>
+    ) : (
+      <picture>
+        <source type="image/avif" srcset="/images/hero/hero-poster-1280.avif" />
+        <img
+          src="/images/hero/hero-poster-1280.webp"
+          alt=""
+          width="1280"
+          height="720"
+          fetchpriority="high"
+          decoding="async"
+          class="absolute inset-0 -z-10 size-full object-cover"
+        />
+      </picture>
+    )}
+    <video
+      class="hero-video pointer-events-none absolute inset-0 size-full object-cover"
+      id="headerVideo"
+      data-panel-category={panelCategory ?? "stone"}
+      data-home={home ? "true" : "false"}
+      data-panel-video-mobile={panelHero?.videoMobile}
+      data-panel-video-desktop={panelHero?.videoDesktop}
+      aria-hidden="true"
+      tabindex="-1"
+      preload="auto"
+      autoplay
+      loop
+      muted
+      playsinline
+      disablepictureinpicture></video>
+  </div>
   <div
     class="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_75%_40%,rgb(163_140_82/0.18),transparent_70%),linear-gradient(to_top,var(--color-ink)_0%,rgb(0_0_0/0.40)_45%,rgb(0_0_0/0.15)_100%)]"
     aria-hidden="true"
@@ -229,6 +226,16 @@ const headerModelPath = panelCategory === "mineral"
   </div>
 </div>
 
+<style>
+  @media (max-width: 560px) {
+    .hero-media {
+      inset-block-end: auto;
+      block-size: 82svh;
+      mask-image: linear-gradient(to bottom, black 78%, transparent 100%);
+    }
+  }
+</style>
+
 <script>
   import {
     isAppleQuickLookDevice,
@@ -290,18 +297,9 @@ const headerModelPath = panelCategory === "mineral"
     video.autoplay = true;
     video.controls = false;
 
-    const isMineral = video.dataset.panelCategory === "mineral";
     const isHome = video.dataset.home === "true";
-    const videoMobile = isMineral
-      ? "/videos/hero-mineral-mobile.mp4"
-      : isHome
-        ? "/videos/hero-mobile.mp4"
-        : "/videos/hero-stone-bomma-v8-mobile.mp4";
-    const videoDesktop = isMineral
-      ? "/videos/mineral_before_after_intro_loop_16x9.mp4"
-      : isHome
-        ? "/videos/hero-1280.mp4"
-        : "/videos/hero-stone-bomma-v8.mp4";
+    const videoMobile = isHome ? "/videos/hero-mobile-wide-v2.mp4" : video.dataset.panelVideoMobile;
+    const videoDesktop = isHome ? "/videos/hero-1280.mp4" : video.dataset.panelVideoDesktop;
 
     let userPaused = false;
     let inView = true;
@@ -366,7 +364,9 @@ const headerModelPath = panelCategory === "mineral"
 
     // Do not wait for unrelated images, analytics or the window load event.
     const isMobile = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
-    video.src = isMobile ? videoMobile : videoDesktop;
+    const source = isMobile ? videoMobile : videoDesktop;
+    if (!source) return;
+    video.src = source;
     video.preload = "auto";
     video.addEventListener("canplay", () => { void play(); }, { once: true });
     video.load();

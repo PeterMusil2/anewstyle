@@ -7,6 +7,8 @@ import cms from "../src/data/gallery-cms.json";
 import materialOverview from "../src/data/material-overview.json";
 import prices from "../src/data/prices.json";
 import products from "../src/data/products.json";
+import stoneHero from "../src/data/stone-hero.json";
+import mineralHero from "../src/data/mineral-hero.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import {
@@ -50,19 +52,29 @@ const embeddedGlbImages = (path: string) => {
 };
 
 describe("hero video", () => {
-  test("home keeps the original loop while the stone branch uses the supplied loop", () => {
+  test("home keeps the original loop and panel branches use their own responsive loops", () => {
     const header = readFileSync("src/components/header/Header.astro", "utf8");
     expect(header).toContain('data-home={home ? "true" : "false"}');
-    expect(header).toMatch(/isHome\s*\?\s*"\/videos\/hero-mobile\.mp4"/);
+    expect(header).toMatch(/isHome\s*\?\s*"\/videos\/hero-mobile-wide-v2\.mp4"/);
     expect(header).toMatch(/isHome\s*\?\s*"\/videos\/hero-1280\.mp4"/);
-    expect(header).toContain('"/videos/hero-stone-bomma-v8-mobile.mp4"');
-    expect(header).toContain('"/videos/hero-stone-bomma-v8.mp4"');
-    expect(publicFile("/videos/hero-mobile.mp4")).toBe(true);
+    expect(publicFile("/videos/hero-mobile-wide-v2.mp4")).toBe(true);
     expect(publicFile("/videos/hero-1280.mp4")).toBe(true);
-    expect(publicFile("/videos/hero-stone-bomma-v8.mp4")).toBe(true);
-    expect(publicFile("/videos/hero-stone-bomma-v8-mobile.mp4")).toBe(true);
-    expect(header).toMatch(/isMineral\s*\?\s*"\/videos\/mineral_before_after_intro_loop_16x9\.mp4"/);
-    expect(header).toMatch(/isMineral\s*\?\s*"\/videos\/hero-mineral-mobile\.mp4"/);
+    expect(header).toContain('home || !panelCategory ? undefined : panelCategory === "mineral" ? mineralHero : stoneHero');
+    expect(header).toContain("data-panel-video-mobile={panelHero?.videoMobile}");
+    expect(header).toContain("data-panel-video-desktop={panelHero?.videoDesktop}");
+    expect(header).toContain("src={panelHero.poster}");
+    expect(header).toContain("const source = isMobile ? videoMobile : videoDesktop");
+    expect(stoneHero.videoDesktop).toBe("/videos/anewstyle-deluxe-day-night-v20-web.mp4");
+    expect(mineralHero.videoDesktop).toBe("/videos/anewstyle-mineral-deluxe-day-night-v20-v2-web.mp4");
+    expect(header).toMatch(/class="hero-media absolute inset-0[^"]*"[^>]*>[\s\S]+src=\{panelHero.poster\}[\s\S]+id="headerVideo"[^>]+><\/video>\s*<\/div>/);
+    expect(header).toMatch(/@media \(max-width: 560px\) \{\s*\.hero-media \{[^}]+block-size: 82svh/);
+    expect(header.match(/\.hero-media\s*\{/g)).toHaveLength(1);
+    expect(stoneHero.videoMobile.endsWith("-mobile-wide-v2.mp4")).toBe(true);
+    expect(mineralHero.videoMobile.endsWith("-mobile-wide-v3.mp4")).toBe(true);
+    for (const hero of [stoneHero, mineralHero]) {
+      expect(hero.videoMobile).not.toBe(hero.videoDesktop);
+      for (const asset of Object.values(hero)) expect(publicFile(asset)).toBe(true);
+    }
   });
 
   test("mineral mobile hero has the AR CTA and its default mineral texture", () => {

@@ -297,6 +297,38 @@ collections:
   editor:
     preview: false
   files:
+  - name: stone-hero
+    label: Úvodní video kamenných panelů
+    file: src/data/stone-hero.json
+    fields:
+    - name: videoDesktop
+      label: Video na šířku
+      widget: string
+      hint: Cesta k souboru MP4 nebo odkaz HTTPS na úvodní video kamenných panelů pro větší obrazovky.
+    - name: videoMobile
+      label: Video pro mobil
+      widget: string
+      hint: Cesta k souboru MP4 nebo odkaz HTTPS na úvodní video kamenných panelů pro mobily do šířky 560 px.
+    - name: poster
+      label: Úvodní snímek videa
+      widget: string
+      hint: Cesta k obrázku nebo odkaz HTTPS na snímek, který se zobrazí v úvodu kamenných panelů před přehráním videa.
+  - name: mineral-hero
+    label: Úvodní video minerálních panelů
+    file: src/data/mineral-hero.json
+    fields:
+    - name: videoDesktop
+      label: Video na šířku
+      widget: string
+      hint: Cesta k souboru MP4 nebo odkaz HTTPS na úvodní video minerálních panelů pro větší obrazovky.
+    - name: videoMobile
+      label: Video pro mobil
+      widget: string
+      hint: Cesta k souboru MP4 nebo odkaz HTTPS na úvodní video minerálních panelů pro mobily do šířky 560 px.
+    - name: poster
+      label: Úvodní snímek videa
+      widget: string
+      hint: Cesta k obrázku nebo odkaz HTTPS na snímek před přehráním úvodního videa minerálních panelů.
   - name: material-overview
     label: Přehled materiálů
     file: src/data/material-overview.json

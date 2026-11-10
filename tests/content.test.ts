@@ -4,6 +4,7 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import cms from "../src/data/gallery-cms.json";
+import imageManifest from "../src/data/image-manifest.json";
 import materialOverview from "../src/data/material-overview.json";
 import prices from "../src/data/prices.json";
 import products from "../src/data/products.json";
@@ -420,12 +421,19 @@ describe("home material overview", () => {
 
   test("renders one shared construction image and preserves the two alternative front layers and layers 2–6", async () => {
     const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-    const image = "/images/technologies/konstrukce_sviticiho_panelu.png";
+    const image = "/images/technologies/konstrukce_sviticiho_panelu-1a-1b.png";
 
-    expect(component.match(/<Picture src="\/images\/technologies\/konstrukce_sviticiho_panelu\.png"/g)).toHaveLength(1);
+    expect(component.match(/<Picture src="\/images\/technologies\/konstrukce_sviticiho_panelu-1a-1b\.png"/g)).toHaveLength(1);
     expect(component).not.toContain("konstrukce_sviticiho_panelu_matna2.png");
     expect(component).not.toContain("konstrukce_sviticiho_mineralniho_panelu.png");
     expect(publicFile(image)).toBe(true);
+    const shared = imageManifest[image];
+    const stoneOnly = imageManifest["/images/technologies/konstrukce_sviticiho_panelu.avif"];
+    const stoneOnlyPaths = new Set([...stoneOnly.avif, ...stoneOnly.webp].map(([url]) => url));
+    for (const [url] of [...shared.avif, ...shared.webp]) {
+      expect(stoneOnlyPaths.has(url)).toBe(false);
+      expect(publicFile(String(url))).toBe(true);
+    }
     expect(materialOverview.sharedConstruction.stoneLayer.cs).toBe("Transparentní kamenná dýha");
     expect(materialOverview.sharedConstruction.mineralLayer.cs).toBe("Transparentní minerální panel");
     for (const description of Object.values(materialOverview.sharedConstruction.description)) {
@@ -779,6 +787,13 @@ describe("home section rhythm", () => {
     expect(dayNight).toContain("has-checked:bg-gold has-checked:text-ink");
     expect(dayNight).toMatch(/<figure[^>]+lg:p-2/);
     expect(contact.match(/lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent/g)).toHaveLength(2);
+  });
+
+  test("starts the home day and night comparison at the midpoint", async () => {
+    const component = await Bun.file("src/components/sections/HomeDayNight.astro").text();
+    expect(component).toContain("const initialPosition = 50;");
+    expect(component).toMatch(/<input type="range" min="0" max="100" value=\{initialPosition\}/);
+    expect(component).toContain("--ba-position: ${initialPosition}%");
   });
 
   test("left-aligns the panel heroes without changing the sections below", async () => {

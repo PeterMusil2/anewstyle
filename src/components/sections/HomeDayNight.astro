@@ -10,6 +10,7 @@ interface Props {
 
 const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
+const initialPosition = 50;
 const scenes = [
   {
     category: "stone",
@@ -50,7 +51,7 @@ const scenes = [
       <figcaption class="mb-3 text-xs font-extrabold tracking-[0.12em] text-gold uppercase lg:mx-2 lg:my-2">
         {scenes.map((scene) => <span data-scene-label={scene.category}>{t(scene.title)}</span>)}
       </figcaption>
-      <div class="ba-slider relative aspect-[1440/809] w-full overflow-hidden border border-line select-none has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-gold">
+      <div style={`--ba-position: ${initialPosition}%`} class="ba-slider relative aspect-[1440/809] w-full overflow-hidden border border-line select-none has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-gold">
         {scenes.map((scene) => (
           <div data-scene-category={scene.category} class="home-day-night__scene absolute inset-0">
             <div class="absolute inset-0">
@@ -63,7 +64,7 @@ const scenes = [
             </div>
           </div>
         ))}
-        <input type="range" min="0" max="100" value="70" step="0.1" aria-label={`${t("home.dayNightTitle")} — ${t("slider.percentage")}`} class="absolute inset-0 z-20 size-full cursor-ew-resize opacity-0" />
+        <input type="range" min="0" max="100" value={initialPosition} step="0.1" aria-label={`${t("home.dayNightTitle")} — ${t("slider.percentage")}`} class="absolute inset-0 z-20 size-full cursor-ew-resize opacity-0" />
         <div class="ba-slider__handle pointer-events-none absolute inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-fg" aria-hidden="true">
           <span class="ba-slider__knob absolute top-1/2 left-1/2 grid size-10 -translate-1/2 place-items-center rounded-full bg-fg text-ink shadow-lg sm:size-12"><Icon name="move" class="size-5" /></span>
         </div>

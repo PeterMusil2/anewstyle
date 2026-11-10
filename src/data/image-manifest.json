@@ -1215,6 +1215,46 @@
    ]
   ]
  },
+ "/images/technologies/konstrukce_sviticiho_panelu-1a-1b.png": {
+  "width": 1053,
+  "height": 607,
+  "avif": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-400.avif",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-640.avif",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-960.avif",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-1053.avif",
+    1053
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-400.webp",
+    400
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-640.webp",
+    640
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-960.webp",
+    960
+   ],
+   [
+    "/_img/images/technologies/konstrukce_sviticiho_panelu-1a-1b-1053.webp",
+    1053
+   ]
+  ]
+ },
  "/images/technologies/konstrukce_sviticiho_panelu.avif": {
   "width": 2766,
   "height": 2403,
@@ -1252,46 +1292,6 @@
    [
     "/_img/images/technologies/konstrukce_sviticiho_panelu-1280.webp",
     1280
-   ]
-  ]
- },
- "/images/technologies/konstrukce_sviticiho_panelu.png": {
-  "width": 1053,
-  "height": 607,
-  "avif": [
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-400.avif",
-    400
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-640.avif",
-    640
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-960.avif",
-    960
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-1053.avif",
-    1053
-   ]
-  ],
-  "webp": [
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-400.webp",
-    400
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-640.webp",
-    640
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-960.webp",
-    960
-   ],
-   [
-    "/_img/images/technologies/konstrukce_sviticiho_panelu-1053.webp",
-    1053
    ]
   ]
  },

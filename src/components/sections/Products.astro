@@ -125,8 +125,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
     </div>}
 
     <div class:list={[
-      "flex flex-col items-start gap-4 border border-line bg-ink-900 p-4 md:p-6 lg:p-4",
-      category === "stone" && "md:flex-row md:items-center md:gap-8",
+      "flex flex-col items-start gap-4 border border-line bg-ink-900 p-4 md:flex-row md:items-center md:gap-8 md:p-6 lg:p-4",
       samplesNote ? "justify-between" : "justify-center",
     ]}>
       {samplesNote && <p class="max-w-3xl text-lg leading-relaxed text-fg-soft lg:text-base">{samplesNote}</p>}

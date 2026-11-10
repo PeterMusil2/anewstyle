@@ -24,7 +24,9 @@ const EXPECTED_ADDITIONAL_HEADERS = [
   "Stav oznámení firmy",
   "Velikost panelu",
   "Provedení",
+  "Telefon",
 ];
+const PHONE_COLUMN = 31;
 
 function doPost(event) {
   const lock = LockService.getScriptLock();
@@ -114,6 +116,7 @@ function doPost(event) {
         "Čeká",
         safeCell(submission.size),
         safeCell(submission.version),
+        submission.phone ? "'" + submission.phone : "",
       ];
       sheet.appendRow(record);
       const rowNumber = sheet.getLastRow();
@@ -149,6 +152,9 @@ function isValidRequest(body, submission) {
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(submission.submissionId || "")) &&
       /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(submission.email || "")) &&
       String(submission.name || "").length <= 120 &&
+      (!submission.phone || (typeof submission.phone === "string" &&
+        submission.phone.length <= 40 && /^\+?[\d .()\-]+$/.test(submission.phone) &&
+        /^\d{5,20}$/.test(submission.phone.replace(/\D/g, "")))) &&
       String(submission.message || "").length <= 4000 &&
       ["", "L", "XL", "XXL", "XXXL"].indexOf(String(submission.size || "")) >= 0 &&
       ["", "SLIM", "BASIC", "DELUXE"].indexOf(String(submission.version || "")) >= 0 &&
@@ -163,18 +169,21 @@ function isValidRequest(body, submission) {
 }
 
 function ensureHeaders(sheet) {
-  const legacyCount = EXPECTED_ADDITIONAL_HEADERS.length - 2;
+  const legacyCount = EXPECTED_ADDITIONAL_HEADERS.length - 3;
   const current = sheet.getRange(HEADER_ROW, 13, 1, legacyCount).getDisplayValues()[0];
   if (current.some(function (value, index) { return value !== EXPECTED_ADDITIONAL_HEADERS[index]; })) {
     throw new Error("The discount sheet columns do not match the automation schema.");
   }
-  if (sheet.getMaxColumns() < 30) sheet.insertColumnsAfter(sheet.getMaxColumns(), 30 - sheet.getMaxColumns());
+  if (sheet.getMaxColumns() < PHONE_COLUMN) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), PHONE_COLUMN - sheet.getMaxColumns());
+  }
   const newHeaders = EXPECTED_ADDITIONAL_HEADERS.slice(legacyCount);
   const added = sheet.getRange(HEADER_ROW, 29, 1, newHeaders.length).getDisplayValues()[0];
-  if (added.every(function (value) { return value === ""; })) {
+  if (added.some(function (value, index) { return value !== "" && value !== newHeaders[index]; })) {
+    throw new Error("The panel size, version or phone column does not match the automation schema.");
+  }
+  if (added.some(function (value) { return value === ""; })) {
     sheet.getRange(HEADER_ROW, 29, 1, newHeaders.length).setValues([newHeaders]);
-  } else if (added.some(function (value, index) { return value !== newHeaders[index]; })) {
-    throw new Error("The new panel size/version columns do not match the automation schema.");
   }
 }
 
@@ -263,6 +272,7 @@ function sendBusinessEmail(submission, code, issuedAt, expiresAt, discountPolicy
     "Nová poptávka z webu ANEW STYLE",
     "Jméno: " + submission.name,
     "E-mail: " + submission.email,
+    "Telefon: " + (submission.phone || "Neuveden"),
     "Kategorie: " + panelCategoryLabel(submission.panelCategory),
     "Velikost panelu: " + (submission.size || "Neuvedena"),
     "Provedení: " + (submission.version || "Neuvedeno"),

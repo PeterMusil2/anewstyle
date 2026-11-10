@@ -18,10 +18,11 @@ const options = [
   <details class="group">
     <summary
       data-price-nav-trigger
+      data-nav-level="primary"
       class:list={[
-        "price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-fg-soft uppercase transition-colors hover:text-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold [&::-webkit-details-marker]:hidden",
-        variant === "bar" && "min-h-11 whitespace-nowrap text-[0.8125rem] tracking-[0.12em]",
-        variant === "panel" && "min-h-14 border-b border-line text-[0.8125rem] tracking-[0.12em]",
+        "price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 text-fg-soft transition-colors hover:text-gold-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold [&::-webkit-details-marker]:hidden",
+        variant === "bar" && "min-h-11 whitespace-nowrap",
+        variant === "panel" && "min-h-14 border-b border-line",
       ]}
     >
       <span>{t("nav.price")}</span>
@@ -39,10 +40,11 @@ const options = [
           href={href}
           data-nav-link
           data-price-nav-option
+          data-nav-level="secondary"
           class:list={[
             "flex items-center text-fg-soft no-underline transition-colors hover:bg-ink-800 hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gold",
-            variant === "bar" && "min-h-12 px-4 py-2 text-sm",
-            variant === "panel" && "min-h-12 border-b border-line px-3 text-base last:border-b-0",
+            variant === "bar" && "min-h-12 px-4",
+            variant === "panel" && "min-h-12 border-b border-line px-3 last:border-b-0",
           ]}
         >
           {label}

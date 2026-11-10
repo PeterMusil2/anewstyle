@@ -61,7 +61,7 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
 
 <section id="equipment-comparison" aria-labelledby="equipment-comparison-title" class="home-section-y home-section-divider bg-ink-800">
   <div class="container-page flex flex-col gap-8 lg:gap-10">
-    <SectionHeader id="equipment-comparison-title" layout="center" eyebrow={t("home.chapterComparison")} title={t("price.compareTitle")}>
+    <SectionHeader id="equipment-comparison-title" layout="left" eyebrow={t("home.chapterComparison")} title={t("price.compareTitle")}>
       <p>{t("price.compareHint")}</p>
     </SectionHeader>
 
@@ -74,8 +74,8 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
             {t("features.title")}
           </th>
           {tiers.map((tier) => (
-            <th scope="col" class="sticky top-(--nav-height) z-10 w-[16%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-1 py-3 text-center sm:px-3 sm:py-4">
-              <span class="block text-[0.625rem] font-black tracking-[0.08em] text-gold uppercase sm:text-sm sm:tracking-[0.16em]">{tier.title}</span>
+            <th scope="col" class="sticky top-(--nav-height) z-10 w-[16%] border-t border-b border-t-gold border-b-line-strong bg-ink-900 px-0.5 py-3 text-center sm:px-3 sm:py-4">
+              <span class="block text-[0.6875rem] font-black tracking-normal text-gold uppercase sm:text-base sm:tracking-[0.12em]">{tier.title}</span>
             </th>
           ))}
         </tr>
@@ -91,7 +91,7 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
             const meta = featureMeta[key];
             const hasMaterialVariants = MINERAL_FEATURE_KEYS.has(key);
             return (
-              <tr class="transition-colors odd:bg-ink-850/50 hover:bg-ink-900">
+              <tr data-feature-row class="cursor-pointer transition-colors odd:bg-ink-850/50 hover:bg-ink-900 focus-within:bg-ink-900">
                 <th scope="row" class="border-b border-line px-3 py-3 font-normal sm:px-5 sm:py-3.5">
                   {hasMaterialVariants ? (
                     <div class="grid gap-2 text-[0.8125rem] leading-snug sm:text-sm">
@@ -130,3 +130,24 @@ const thicknessValueLabel = (key: string, category: "stone" | "mineral") =>
     </table>
   </div>
 </section>
+
+<script>
+  const table = document.querySelector("#equipment-comparison table");
+  table?.addEventListener("click", (event) => {
+    if (!(event instanceof MouseEvent) || !(event.target instanceof Element)) return;
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+
+    const row = event.target.closest("tr[data-feature-row]");
+    const link = row?.querySelector<HTMLAnchorElement>("a[href^='#']");
+    if (!link) return;
+    if (!event.target.closest("a")) {
+      if (!window.getSelection()?.toString()) link.click();
+      return;
+    }
+
+    // A click on the current fragment must reopen the card even without a hashchange.
+    const card = document.getElementById(link.hash.slice(1));
+    const disclosure = card?.querySelector("details");
+    if (disclosure) disclosure.open = true;
+  });
+</script>

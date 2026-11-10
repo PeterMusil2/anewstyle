@@ -5,6 +5,8 @@ export type PanelVersion = "" | "SLIM" | "BASIC" | "DELUXE";
 
 export const DISCOUNT_POLICY = "SLIM 5 %; BASIC a DELUXE 7 %";
 export const DISCOUNT_VALIDITY_DAYS = 180;
+export const CONTACT_PHONE_PATTERN = String.raw`\+?(?:[ .\(\)\-]*[0-9]){5,20}[ .\(\)\-]*`;
+const contactPhoneRegex = new RegExp(`^${CONTACT_PHONE_PATTERN}$`);
 
 /** Return a numeric spreadsheet percentage for the selected panel version. */
 export function getDiscountRate(version: PanelVersion): number | null {
@@ -30,6 +32,7 @@ export type ContactSubmission = {
   submissionId: string;
   name: string;
   email: string;
+  phone: string;
   message: string;
   size: PanelSize;
   version: PanelVersion;
@@ -62,6 +65,7 @@ export function parseContactSubmission(input: unknown): ContactSubmission | null
   const submissionId = boundedText(body.submission_id, 36);
   const name = boundedText(body.name, 120);
   const email = boundedText(body.email, 254)?.toLowerCase() ?? null;
+  const phone = boundedText(body.phone ?? "", 40);
   const message = boundedText(body.message ?? "", 4_000);
   const size = boundedText(body.size ?? "", 4);
   const version = boundedText(body.version ?? "", 6);
@@ -69,8 +73,9 @@ export function parseContactSubmission(input: unknown): ContactSubmission | null
   const locale = body.locale;
 
   if (!submissionId || !SUBMISSION_ID_PATTERN.test(submissionId)) return null;
-  if (!name || !email || message === null || size === null || version === null) return null;
+  if (!name || !email || phone === null || message === null || size === null || version === null) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return null;
+  if (phone && !contactPhoneRegex.test(phone)) return null;
   if (name.length < 2) return null;
   if (size !== "" && !["L", "XL", "XXL", "XXXL"].includes(size)) return null;
   if (version !== "" && !["SLIM", "BASIC", "DELUXE"].includes(version)) return null;
@@ -85,7 +90,7 @@ export function parseContactSubmission(input: unknown): ContactSubmission | null
     attribution[field] = value;
   }
 
-  return { submissionId, name, email, message, size: size as PanelSize, version: version as PanelVersion, panelCategory, locale, attribution };
+  return { submissionId, name, email, phone, message, size: size as PanelSize, version: version as PanelVersion, panelCategory, locale, attribution };
 }
 
 /** Format eight random bytes as a short, branded code with 40 bits of entropy. */

@@ -1,6 +1,7 @@
 ---
 import Picture from "../ui/Picture.astro";
 import Icon from "../icons/Icon.astro";
+import Button from "../ui/Button.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 
@@ -39,85 +40,120 @@ const videos = [
 ---
 
 <section id="manual" aria-labelledby="manual-title" class="section-y bg-ink">
-  <div class="container-page flex flex-col gap-16">
-    <SectionHeader id="manual-title" as="h1" layout="center" eyebrow="Anew Style" title={t("manual.title")}>
+  <div class="container-page flex flex-col gap-16 lg:gap-10">
+    <SectionHeader id="manual-title" as="h1" layout="center" eyebrow="Anew Style" title={t("manual.title")} class="lg:mx-0 lg:items-start lg:text-left">
       <p>{t("manual.intro")}</p>
     </SectionHeader>
 
-    <div class="flex flex-col gap-6">
-      <h2 class="border-b border-line pb-4 text-sm font-extrabold tracking-[0.18em] uppercase">
-        {t("manual.videosTitle")}
-      </h2>
-      <ul class="grid gap-5 md:grid-cols-2">
-        {
-          videos.map((v) => (
-            <li class="reveal flex flex-col border border-line bg-ink-900">
-              <div class="aspect-video bg-ink-850">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${v.id}`}
-                  title={v.title}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allowfullscreen
-                  class="size-full border-0"
-                />
-              </div>
-              <strong class="border-t border-line px-6 py-5 text-sm font-extrabold tracking-[0.16em] uppercase">
-                {v.title}
-              </strong>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
+    <div class="grid gap-16 lg:grid-cols-3 lg:gap-5">
+      <div class="flex min-w-0 flex-col gap-6 lg:col-span-2">
+        <h2 class="border-b border-line pb-4 text-sm font-extrabold tracking-[0.18em] text-gold uppercase">
+          {t("manual.videosTitle")}
+        </h2>
+        <ul class="grid gap-5 md:grid-cols-2">
+          {
+            videos.map((v) => (
+              <li data-manual-video class="reveal flex min-w-0 flex-col border border-line bg-ink-900">
+                <div data-manual-player class="relative grid aspect-video place-items-center bg-ink-850">
+                  <span class="grid size-16 place-items-center rounded-full border border-line-strong text-gold" aria-hidden="true">
+                    <Icon name="play" class="size-8" />
+                  </span>
+                </div>
+                <template>
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1`}
+                    title={v.title}
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen
+                    class="absolute inset-0 size-full border-0"
+                  ></iframe>
+                </template>
+                <div class="flex flex-1 flex-col items-start gap-4 border-t border-line p-5 sm:p-6">
+                  <h3 class="text-base font-black tracking-[0.08em] uppercase">{v.title}</h3>
+                  <Button
+                    href={`https://www.youtube.com/watch?v=${v.id}`}
+                    variant="outline"
+                    size="sm"
+                    target="_blank"
+                    rel="noopener"
+                    data-manual-play
+                    class="mt-auto max-w-full whitespace-normal!"
+                  >
+                    <Icon name="play" class="size-4 shrink-0" />
+                    <span data-manual-play-label>{t("manual.playVideo")}</span>
+                    <span data-manual-youtube-label hidden>{t("manual.openYouTube")}</span>
+                    <span class="sr-only"> – {v.title}</span>
+                  </Button>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
 
-    <div class="flex flex-col gap-6">
-      <h2 class="border-b border-line pb-4 text-sm font-extrabold tracking-[0.18em] uppercase">
-        {t("manual.pdfTitle")}
-      </h2>
-      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          manuals.map((m) => (
-            <li class="reveal">
-              <a
-                href={m.href}
-                target="_blank"
-                rel="noopener"
-                title={m.aria}
-                class="group flex h-full flex-col border border-line bg-ink-900 text-fg no-underline transition-colors hover:border-gold/50"
-              >
-                <div class="relative aspect-[4/3] overflow-hidden bg-ink-850">
-                  <Picture
-                    src="/downloads/Manual_AnewStyle_Basic_Deluxe.jpg"
-                    alt=""
-                    sizes="(min-width: 64rem) 30vw, 90vw"
-                    class="size-full object-cover transition-transform duration-500 ease-out-soft group-hover:scale-105"
-                  />
-                  <span class="absolute top-4 left-4 bg-gold px-2.5 py-1 text-xs font-extrabold tracking-caps text-ink">
-                    {m.badge}
-                  </span>
-                  <Icon name="pdf" class="absolute right-4 bottom-4 size-10 text-fg" />
-                </div>
-                <div class="flex flex-col gap-3 p-6">
-                  <strong class="text-base font-black tracking-[0.08em] uppercase">{t("manual.cardTitle")}</strong>
-                  <span class="flex items-center gap-2 text-sm text-fg-muted">
-                    <span>{m.language}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>PDF</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{m.size}</span>
-                  </span>
-                  <span class="mt-2 inline-flex min-h-11 items-center gap-2.5 text-xs font-extrabold tracking-caps text-gold uppercase group-hover:text-gold-light">
-                    <Icon name="download" class="size-4" />
-                    {t("manual.cardCta")}
-                  </span>
-                </div>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="flex min-w-0 flex-col gap-6">
+        <h2 class="border-b border-line pb-4 text-sm font-extrabold tracking-[0.18em] text-gold uppercase">
+          {t("manual.pdfTitle")}
+        </h2>
+        <ul class="grid flex-1 gap-5 sm:grid-cols-2 lg:grid-cols-1">
+          {
+            manuals.map((m) => (
+              <li class="reveal flex min-w-0 flex-col border border-line bg-ink-900">
+                  <div class="relative aspect-[4/3] overflow-hidden bg-ink-850 lg:aspect-video">
+                    <Picture
+                      src="/downloads/Manual_AnewStyle_Basic_Deluxe.jpg"
+                      alt=""
+                      sizes="(min-width: 64rem) 30vw, 90vw"
+                      class="absolute inset-0 size-full object-cover lg:object-contain"
+                    />
+                    <span class="absolute top-4 left-4 bg-gold px-2.5 py-1 text-xs font-extrabold tracking-caps text-ink">
+                      {m.badge}
+                    </span>
+                    <Icon name="pdf" class="absolute right-4 bottom-4 size-10 text-fg" />
+                  </div>
+                  <div class="flex flex-1 flex-col items-start gap-3 border-t border-line p-5 sm:p-6">
+                    <h3 class="text-base font-black tracking-[0.08em] uppercase">{t("manual.cardTitle")}</h3>
+                    <span class="flex items-center gap-2 text-sm text-fg-muted">
+                      <span>{m.language}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>PDF</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{m.size}</span>
+                    </span>
+                    <Button href={m.href} variant="outline" size="sm" target="_blank" rel="noopener" title={m.aria} class="mt-auto max-w-full whitespace-normal!">
+                      <Icon name="pdf" class="size-4 shrink-0" />
+                      {t("manual.cardCta")}
+                    </Button>
+                  </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </div>
 </section>
+
+<script>
+  for (const card of document.querySelectorAll("[data-manual-video]")) {
+    const play = card.querySelector<HTMLAnchorElement>("[data-manual-play]");
+    const stage = card.querySelector("[data-manual-player]");
+    const template = card.querySelector("template");
+    const playLabel = play?.querySelector<HTMLElement>("[data-manual-play-label]");
+    const externalLabel = play?.querySelector<HTMLElement>("[data-manual-youtube-label]");
+    if (!play || !stage || !template || !playLabel || !externalLabel) continue;
+
+    play.addEventListener("click", (event) => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || stage.querySelector("iframe")) return;
+      const player = template.content.querySelector("iframe")?.cloneNode(true);
+      if (!(player instanceof HTMLIFrameElement)) return;
+
+      event.preventDefault();
+      stage.replaceChildren(player);
+      playLabel.hidden = true;
+      externalLabel.hidden = false;
+      player.focus();
+    });
+  }
+</script>

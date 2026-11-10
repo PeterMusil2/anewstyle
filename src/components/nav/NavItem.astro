@@ -13,11 +13,12 @@ const { href, text, accent = false, variant = "bar" } = Astro.props;
   <a
     href={href}
     data-nav-link
+    data-nav-level="primary"
     class:list={[
-      "flex items-center whitespace-nowrap text-[0.8125rem] font-bold tracking-[0.12em] uppercase no-underline transition-colors duration-200 hover:text-gold-light",
+      "flex items-center whitespace-nowrap no-underline transition-colors duration-200 hover:text-gold-light",
       variant === "bar" && "min-h-11",
       variant === "panel" &&
-        "min-h-14 border-b border-line text-base tracking-caps",
+        "min-h-14 border-b border-line",
       accent ? "text-gold" : "text-fg-soft",
     ]}
   >

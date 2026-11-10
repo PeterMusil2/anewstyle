@@ -1009,6 +1009,16 @@ html[data-panel-category="mineral"] [data-panel-type="stone"] {
   inset-inline-start: calc(var(--fan-from) + var(--fan-t, 0.5) * (100cqi - 2 * var(--fan-from)));
 }
 
+@media (width >= 64rem) {
+  .product-pattern-fan {
+    /* Reserve room for the section heading and for a raised 3:4 card. */
+    --fan-card: clamp(7rem, calc((100svh - 21rem) * 0.45), 13rem);
+    min-block-size: calc(var(--fan-card) * 1.67 + 1.5rem);
+    inline-size: min(100%, calc(var(--fan-card) * 5.5));
+    margin-inline: auto;
+  }
+}
+
 /* The card itself lifts, never the <li>: the hover target stays still, so the
    pointer cannot slip off a moving card (that was the hover flicker). */
 .product-pattern-fan > li > * {

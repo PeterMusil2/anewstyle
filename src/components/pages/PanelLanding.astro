@@ -3,6 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../header/Header.astro";
 import Products from "../sections/Products.astro";
 import PriceList from "../sections/PriceList.astro";
+import Picture from "../ui/Picture.astro";
+import SectionHeader from "../ui/SectionHeader.astro";
+import { materialComposition } from "../../data/material-overview.json";
 import {
   getLangFromUrl,
   getPanelPagePath,
@@ -27,6 +30,19 @@ const pagePath = getPanelPagePath(category, lang);
 const homePath = lang === "cs" ? "/" : "/en/";
 const basePath = lang === "cs" ? "" : "/en";
 const material = getMaterialOverview(lang)[category];
+const composition = category === "stone"
+  ? {
+      image: "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png",
+      alt: materialComposition.stoneAlt[lang],
+      title: t("tech.subtitle1"),
+      layers: [t("tech.stone1"), t("tech.stone2"), t("tech.stone3"), t("tech.stone4")],
+    }
+  : {
+      image: "/images/technologies/mineral-perspective.png",
+      alt: materialComposition.mineralAlt[lang],
+      title: t("home.mineralLayerTitle"),
+      layers: [],
+    };
 const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
 ---
 
@@ -49,19 +65,27 @@ const pageUrl = new URL(pagePath, Astro.site ?? Astro.url.origin).href;
     panelCategory={category}
   />
   <main id="main">
-    <section id="panel-material" aria-labelledby="panel-material-title" class="home-section-divider bg-ink">
-      <div class="container-page flex flex-col items-center gap-7 py-8 sm:py-10">
-        <div class="flex max-w-3xl flex-col items-center gap-3 text-center">
-          <h2 id="panel-material-title" class="text-center text-2xl font-black tracking-tight text-fg sm:text-3xl">
-            {t(category === "stone" ? "panelPage.stoneMaterialTitle" : "panelPage.mineralMaterialTitle")}
-          </h2>
-          <p class="text-sm leading-relaxed text-fg-soft">{material.technology}</p>
-          <nav aria-label={t("nav.features")} class="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-1 text-center text-sm font-bold">
+    <section id="panel-material" aria-labelledby="panel-material-title" class="home-section-y home-section-divider bg-ink">
+      <div class="container-page flex flex-col items-center gap-7 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-stretch lg:gap-x-5 lg:gap-y-4">
+        <SectionHeader id="panel-material-title" title={t(category === "stone" ? "panelPage.stoneMaterialTitle" : "panelPage.mineralMaterialTitle")} class="lg:mx-0 lg:items-start lg:self-start lg:text-left lg:col-span-2 lg:gap-2">
+          <nav aria-label={t("nav.features")} class="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-1 text-center text-sm font-bold lg:justify-start lg:text-left">
             <a href={`${homePath}#features`} class="text-gold underline-offset-4 hover:underline focus-visible:underline">{t("panelPage.sharedFeaturesLink")}</a>
             <a href={`${basePath}/faq/`} class="text-gold underline-offset-4 hover:underline focus-visible:underline">{t("panelPage.sharedFaqLink")}</a>
           </nav>
-        </div>
-        <dl class="grid w-full max-w-5xl gap-3 sm:grid-cols-2">
+        </SectionHeader>
+        <figure class="grid w-full max-w-5xl items-center gap-5 border border-line bg-ink-900 p-4 sm:p-6 md:grid-cols-2 md:gap-8 lg:content-center lg:grid-cols-1 lg:gap-3 lg:p-5">
+          <Picture src={composition.image} alt={composition.alt} sizes="(min-width: 64rem) 22rem, (min-width: 48rem) 45vw, 90vw" class="mx-auto block h-auto max-h-72 w-auto max-w-full object-contain lg:max-h-[clamp(7rem,calc(100svh-29rem),12rem)]" />
+          <figcaption class="flex min-w-0 flex-col gap-3 lg:gap-2">
+            <h3 class="text-base font-black tracking-caps text-gold uppercase">{composition.title}</h3>
+            <p class="text-base leading-relaxed text-fg-soft">{material.technology}</p>
+            {composition.layers.length > 0 && (
+              <ol class="list-decimal space-y-1.5 border-t border-line pt-3 ps-5 text-sm leading-relaxed text-fg-soft marker:font-bold marker:text-gold lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-1 lg:space-y-0 lg:pt-2">
+                {composition.layers.map((layer) => <li>{layer}</li>)}
+              </ol>
+            )}
+          </figcaption>
+        </figure>
+        <dl class="grid w-full max-w-5xl gap-3 sm:grid-cols-2 lg:gap-2.5 lg:[&>div]:grid lg:[&>div]:content-center lg:[&>div]:p-4">
           <div class="border border-line bg-ink-850 p-4 sm:p-5">
             <dt class="text-center text-xs font-extrabold tracking-caps text-fg-muted uppercase">{t("panelPage.materialLayer")}</dt>
             <dd class="mt-2 text-center text-sm leading-relaxed font-semibold text-fg">{material.frontLayer}</dd>

@@ -1,5 +1,4 @@
 ---
-import Icon from "../icons/Icon.astro";
 import Palette from "../palette/Palette.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { inlineMarkdown } from "../../lib/inline-markdown";
@@ -55,29 +54,32 @@ const features: Feature[] = [
 
 const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
 const formattedDescription = (key: TranslationKey) =>
-  inlineMarkdown(t(key)).replaceAll(
-    "<strong>",
-    '<strong class="font-semibold text-fg">',
-  );
+  inlineMarkdown(t(key))
+    .replaceAll("<strong>", '<strong class="font-semibold text-fg">')
+    .replace(/\b(SLIM|BASIC|DELUXE)\b/g, '<b class="font-extrabold text-gold">$1</b>');
+const formattedParts = (parts: Part[]) => parts.map(([key, strong]) => {
+  const content = formattedDescription(key);
+  return strong ? `<strong class="font-semibold text-fg">${content}</strong>` : content;
+}).join("");
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="home-section-y home-section-divider bg-ink">
-  <div class="container-page flex flex-col gap-14">
-      <SectionHeader id={`${id}-title`} eyebrow={t("home.chapterFeatures")} title={t("features.heading")}>
-      <p class="text-fg-muted">{t("features.intro")}</p>
+  <div class="container-page flex flex-col gap-8 lg:gap-10">
+      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterFeatures")} title={t("features.heading")}>
+      <p class="text-fg-muted" set:html={formattedDescription("features.intro")} />
     </SectionHeader>
 
-    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <ul class="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {
         features.map((feature) => (
           <li
             id={feature.id}
             class:list={[
-              "reveal group/card relative scroll-mt-[calc(var(--nav-height)+1.5rem)] border border-line-strong bg-ink-900 p-5 transition-colors duration-300 target:border-gold hover:border-gold/70 sm:p-7",
+              "reveal relative scroll-mt-4 border border-line-strong bg-ink-900 transition-colors duration-200 target:border-gold hover:border-gold/70 focus-within:border-gold",
             ]}
           >
             <details class="group/feature">
-              <summary class="feature-summary flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-sm text-fg transition-colors group-hover/card:text-gold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
+              <summary class="feature-summary flex min-h-24 cursor-pointer list-none items-center gap-3 p-4 text-fg transition-colors hover:bg-ink-850 group-open/feature:bg-ink-850 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-gold sm:p-5 [&::-webkit-details-marker]:hidden">
                 {feature.palette ? (
                   <span class="grid size-12 shrink-0 place-items-center border border-line text-sm font-bold tracking-caps text-gold" aria-hidden="true">RAL</span>
                 ) : feature.icon?.endsWith(".png") ? (
@@ -101,32 +103,27 @@ const formattedDescription = (key: TranslationKey) =>
                     <><span data-panel-type="stone">{label(feature.label)}</span><span data-panel-type="mineral">{label(feature.mineralLabel)}</span></>
                   ) : label(feature.label)}
                 </h3>
-                <span class="feature-disclosure-indicator grid size-9 shrink-0 place-items-center border border-gold/70 bg-gold/10 text-gold transition-colors group-hover/card:bg-gold group-hover/card:text-ink" aria-hidden="true">
-                  <Icon name="plus-outline" class="feature-icon-plus block size-5 fill-none group-open/feature:hidden" />
-                  <Icon name="minus-outline" class="feature-icon-minus hidden size-5 fill-none group-open/feature:block" />
-                </span>
+                <span class="feature-disclosure-indicator grid size-8 shrink-0 place-items-center border border-gold/70 bg-gold/10 text-gold transition-colors group-hover/feature:bg-gold group-hover/feature:text-ink" aria-hidden="true" />
               </summary>
-              <div class="relative mt-5 border-t border-line pt-5 text-[0.9375rem] leading-relaxed text-fg-muted">
+              <div class="section-copy relative border-t border-line p-4 text-[0.9375rem] leading-relaxed text-fg-muted sm:p-5">
                 {feature.palette && <Palette lang={lang} />}
               {showBoth && feature.combinedDesc ? (
                 <span set:html={formattedDescription(feature.combinedDesc)} />
               ) : showBoth && feature.mineralDesc ? (
                 <div class="grid gap-3">
-                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentStone")}</span>{feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}</p>
+                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentStone")}</span><span set:html={formattedParts(feature.desc)} /></p>
                   <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentMineral")}</span><span set:html={formattedDescription(feature.mineralDesc)} /></p>
                 </div>
               ) : panelCategory ? panelCategory === "mineral" && feature.mineralDesc ? (
                 <span set:html={formattedDescription(feature.mineralDesc)} />
               ) : (
-                feature.desc.map(([key, strong]) =>
-                  strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>,
-                )
+                <span set:html={formattedParts(feature.desc)} />
               ) : feature.mineralDesc ? (
                 <>
-                  <span data-panel-type="stone">{feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}</span>
+                  <span data-panel-type="stone" set:html={formattedParts(feature.desc)} />
                   <span data-panel-type="mineral" set:html={formattedDescription(feature.mineralDesc)} />
                 </>
-              ) : feature.desc.map(([key, strong]) => strong ? <strong class="font-semibold text-fg">{t(key)}</strong> : <span>{t(key)}</span>)}
+              ) : <span set:html={formattedParts(feature.desc)} />}
               {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type={showBoth ? undefined : "stone"} class="mt-2 block text-fg-subtle">{showBoth && <span class="font-semibold text-fg">{t("home.equipmentStone")}:</span>} {t(feature.note)}</em>}
               </div>
             </details>
@@ -138,16 +135,21 @@ const formattedDescription = (key: TranslationKey) =>
 </section>
 
 <style>
-  /*
-   * The whole card is the toggle, not just the header row: the summary's
-   * ::after covers the card (the <li> is the positioning context). The open
-   * description is `relative`, so it paints above the cover and stays
-   * selectable. Keyboard and screen readers still use the native <summary>.
-   */
-  .feature-summary::after {
-    position: absolute;
-    inset: 0;
+  .feature-summary::after { position: absolute; inset: 0; content: ""; }
+
+  .feature-disclosure-indicator::before {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
     content: "";
+    translate: 0 -0.125rem;
+    rotate: 45deg;
+  }
+
+  details[open] > summary .feature-disclosure-indicator::before {
+    translate: 0 0.125rem;
+    rotate: 225deg;
   }
 </style>
 

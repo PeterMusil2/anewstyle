@@ -5,6 +5,7 @@ import Button from "../ui/Button.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { useTranslations, type Lang } from "../../i18n/utils";
 import { contact } from "../../lib/site-data";
+import { CONTACT_PHONE_PATTERN } from "../../lib/contact-automation";
 
 interface Props {
   id: string;
@@ -14,7 +15,6 @@ interface Props {
 
 const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
-
 // Panel preview thumbnails for the selects (scripts/contact-select-thumbs.mjs):
 // trimmed to the panel area, so their widths show the real L–XXXL proportions.
 const PANEL_HEIGHT = 2400;
@@ -35,20 +35,20 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="contact-section home-section-y home-section-divider bg-ink-800">
-  <div class="container-page flex flex-col gap-12">
-      <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("home.chapterContact")} title={t("contact.title")}>
+  <div class="container-page flex flex-col gap-7 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-8 lg:gap-y-3">
+      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterContact")} title={t("contact.title")} class="lg:col-start-1 lg:row-start-1 lg:gap-2 lg:[&>div:first-child]:gap-2 lg:[&_.section-intro]:gap-2">
         <p>
           <span>{t("contact.descPart1")}</span>
           <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
         </p>
-        <div class="flex items-center justify-center gap-3 pt-2">
+        <div class="flex items-center gap-3 pt-2 lg:pt-0">
           <span class="text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("contact.followUs")}</span>
           <a
             href="https://www.facebook.com/profile.php?id=100088855596654"
             rel="external"
             aria-label={t("contact.gotoFacebook")}
             target="_blank"
-            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold lg:size-11"
           >
             <Icon name="facebook" class="size-5" />
           </a>
@@ -57,26 +57,26 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             rel="external"
             aria-label={t("contact.gotoInstagram")}
             target="_blank"
-            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold lg:size-11"
           >
             <Icon name="instagram" class="size-5" />
           </a>
         </div>
       </SectionHeader>
 
-    <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-6">
+    <div class="grid items-stretch gap-5 lg:contents">
       <form
-        class="contact-form flex h-full flex-col gap-3 sm:gap-5 sm:border sm:border-line sm:bg-ink-850 sm:p-10"
-        data-panel-category={panelCategory}
+        class="contact-form flex h-full min-w-0 flex-col gap-3 sm:gap-4 sm:border sm:border-line sm:bg-ink-850 sm:p-8 lg:col-start-1 lg:row-start-2 lg:h-auto lg:gap-1.5 lg:p-3"
         action="/api/contact"
         method="POST"
+        data-panel-category={panelCategory}
         data-err-fullname={t("contact.formErrName")}
         data-err-email={t("contact.formErrEmail")}
+        data-err-phone={t("contact.formErrPhone")}
         novalidate
         toolname="anewstyle_inquiry"
-        tooldescription={`Send an inquiry to ANEW STYLE (${panelCategory === "mineral" ? "illuminated mineral panels" : panelCategory === "stone" ? "illuminated stone panels" : "illuminated stone panels, illuminated mineral panels, or undecided"}): name, e-mail, optional panel size and version, and an optional message. The visitor confirms and submits it.`}
+        tooldescription="Send an inquiry to ANEW STYLE: full name, e-mail, optional phone, panel preferences, and optional message. The visitor confirms and submits it."
       >
-        <input type="hidden" name="panel_category" value={panelCategory ?? ""} />
         <input type="hidden" name="locale" value={lang} />
         <input type="hidden" name="gclid" data-attribution />
         <input type="hidden" name="fbclid" data-attribution />
@@ -97,25 +97,8 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           aria-hidden="true"
         />
 
-        <div class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-5 sm:gap-y-5">
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
-            <span>{t("contact.formName")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
-            <input
-              type="text"
-              name="fullname"
-              id="contact-fullname"
-              required
-              minlength="2"
-              maxlength="120"
-              aria-describedby="err-fullname"
-              autocomplete="name"
-              placeholder={t("contact.formNamePlaceholder")}
-              toolparamdescription="Full name of the person asking"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
-            />
-            <span id="err-fullname" data-error-for="fullname" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
-          </label>
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
+        <div class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-4 lg:gap-y-2 lg:grid-cols-6">
+          <label class="col-span-2 flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
             <span>{t("contact.formEmail")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
             <input
               type="email"
@@ -132,10 +115,40 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             <span id="err-email" data-error-for="email" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
           </label>
 
-          <p class="col-span-2 -mb-1 text-xs leading-snug text-fg-muted">{t("contact.formChoiceHint")}</p>
-
+          <label class="flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
+            <span>{t("contact.formName")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
+            <input
+              type="text"
+              name="fullname"
+              id="contact-fullname"
+              required
+              minlength="2"
+              maxlength="120"
+              aria-describedby="err-fullname"
+              autocomplete="name"
+              placeholder={t("contact.formNamePlaceholder")}
+              toolparamdescription="Full name of the person asking"
+              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
+            />
+            <span id="err-fullname" data-error-for="fullname" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
+          </label>
+          <label class="flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em]">
+            <span>{t("contact.formPhone")}</span>
+            <input
+              type="tel"
+              name="phone"
+              id="contact-phone"
+              maxlength="40"
+              pattern={CONTACT_PHONE_PATTERN}
+              aria-describedby="err-phone"
+              autocomplete="tel"
+              toolparamdescription="Optional phone number"
+              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
+            />
+            <span id="err-phone" data-error-for="phone" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
+          </label>
           {!panelCategory && (
-            <label class="col-span-2 flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+            <label class="col-span-2 flex lg:col-span-4 min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
               {t("contact.panelCategoryLabel")}
               <span class="select-field">
                 <select name="panel_category_choice" required class="select-field__control">
@@ -152,8 +165,18 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               </span>
             </label>
           )}
+          <div data-contact-preview="stone" class="hidden col-span-2 border border-line bg-ink-900 p-2 lg:shrink-0 lg:p-1">
+            <div class="relative mx-auto aspect-2/1 w-36 lg:w-24">
+              <Picture src="/images/showcase/rockfoil_pink_light.jpg" alt="" sizes="(min-width: 64rem) 6rem, 9rem" class="absolute inset-0 size-full object-fill" />
+            </div>
+          </div>
+          <div data-contact-preview="mineral" class="hidden col-span-2 border border-line bg-ink-900 p-2 lg:shrink-0 lg:p-1">
+            <div class="relative mx-auto aspect-2/1 w-36 lg:w-24">
+              <Picture src="/images/showcase/Mineral_on.png" alt="" sizes="(min-width: 64rem) 3rem, 4.5rem" class="absolute top-1/2 left-1/2 h-36 w-[4.5rem] -translate-1/2 rotate-90 object-fill lg:h-24 lg:w-12" />
+            </div>
+          </div>
 
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class="flex min-w-0 lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
             {t("contact.formSize")}
             <span class="select-field">
               <select name="size" class="select-field__control">
@@ -161,7 +184,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
                 <option value="" selected><span class="option-label">{t("contact.formUnknown")}</span></option>
                 {sizeOptions.map(({ key, label, width }) => (
                   <option value={label}>
-                    <span class="option-thumb-box"><img class="option-thumb" src={thumb(key, previewCategory)} alt="" width={Math.round((width / PANEL_HEIGHT) * 112)} height="112" loading="lazy" decoding="async" /></span>
+                    <span class="option-thumb-box"><img class="option-thumb" src={thumb(key, previewCategory)} data-size-thumbnail={key} alt="" width={Math.round((width / PANEL_HEIGHT) * 112)} height="112" loading="lazy" decoding="async" /></span>
                     <span class="option-label">{label}</span>
                     <span class="option-meta">{PANEL_HEIGHT} × {width} mm</span>
                   </option>
@@ -170,7 +193,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             </span>
           </label>
 
-          <label class="flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class="flex min-w-0 lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
             {t("contact.formVersion")}
             <span class="select-field">
               <select name="version" class="select-field__control">
@@ -183,18 +206,21 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           </label>
         </div>
 
-        <label class="flex flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
-          {t("contact.formMessage")}
+        <div class="contents lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-3 lg:has-[details[open]]:grid-cols-1">
+        <details>
+          <summary class="min-h-11 cursor-pointer py-2.5 text-sm font-bold text-gold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">{t("contact.formAddMessage")}</summary>
           <textarea
             name="message"
             rows="2"
+            maxlength="4000"
+            aria-label={t("contact.formMessage")}
             placeholder={t("contact.formMessagePlaceholder")}
             toolparamdescription="Optional question or additional request"
-            class="min-h-32 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
-        </label>
+            class="w-full min-h-32 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
+        </details>
 
-        <div class="flex flex-col gap-2 pt-0.5 sm:flex-row sm:items-center sm:gap-4 sm:pt-1">
-          <Button type="submit" size="sm" class="contact-form__submit self-start shadow-glow data-[loading=true]:cursor-wait data-[loading=true]:opacity-70 sm:min-h-13 sm:px-7 sm:text-sm">
+        <div class="flex flex-col gap-2 pt-0.5 sm:flex-row sm:items-center sm:gap-4 sm:pt-1 lg:flex-col lg:items-start lg:gap-1 lg:pt-0">
+          <Button type="submit" size="sm" class="contact-form__submit self-start shadow-glow data-[loading=true]:cursor-wait data-[loading=true]:opacity-70 sm:min-h-13 sm:px-7 sm:text-sm lg:min-h-11 lg:px-4">
             {t("contact.formSubmit")}
             <Icon name="email" class="size-4" />
           </Button>
@@ -207,20 +233,21 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           >
           </p>
         </div>
+        </div>
         <p class="max-w-prose text-xs leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
       </form>
 
-      <div class="flex flex-col gap-5">
-      <article class="flex grow flex-col border border-line bg-ink-850">
+      <div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">
+      <article class="flex min-w-0 grow flex-col border border-line bg-ink-850 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:[&>picture]:order-last">
         <Picture
           src="/images/backgrounds/showroom.webp"
           alt={t("contact.showroomTitle")}
-          sizes="(min-width: 64rem) 30vw, 100vw"
+          sizes="(min-width: 80rem) 20rem, (min-width: 64rem) 25vw, 100vw"
           class="aspect-[425/293] w-full object-cover"
         />
-        <div class="flex flex-col gap-4 p-7 sm:p-8">
+        <div class="flex flex-col gap-4 p-7 sm:p-8 lg:gap-3 lg:p-5">
           <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
-          <p class="text-[0.9375rem] leading-relaxed text-fg-muted">{t("contact.showroomDesc")}</p>
+          <p class="section-copy text-fg-muted">{t("contact.showroomDesc")}</p>
           <address class="flex flex-col gap-3 not-italic">
             <a
               href="https://www.google.cz/maps/place/Hybe%C5%A1ova+308%2F61,+602+00+Brno-st%C5%99ed/@49.1887768,16.5968647,17z/data=!3m1!4b1!4m5!3m4!1s0x471294529732ae65:0x75c148bfafac76!8m2!3d49.1887733!4d16.5990534"
@@ -243,14 +270,14 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         </div>
       </article>
 
-      <article class="flex flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8">
-        <h3 class="text-xs font-extrabold tracking-[0.18em] text-fg-muted uppercase">{t("contact.addressTitle")}</h3>
+      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8 lg:gap-3 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:p-5">
+        <h3 class="text-xs font-extrabold tracking-[0.18em] text-fg-muted uppercase lg:text-sm lg:text-gold">{t("contact.addressTitle")}</h3>
         <address class="flex flex-col gap-1 text-[0.9375rem] leading-relaxed text-fg-soft not-italic">
           <strong class="font-extrabold text-fg">OSM s.r.o.</strong>
           <span>Hudcova 86/54</span>
           <span>621 00 Brno, {t("contact.czechia")}</span>
         </address>
-        <dl class="flex gap-8 text-sm text-fg-muted">
+        <dl class="flex gap-8 text-sm text-fg-muted lg:flex-wrap lg:gap-x-4 lg:gap-y-2">
           <div class="flex gap-2"><dt><abbr title={t("contact.companyIdTitle")} class="no-underline">{t("contact.companyIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.companyId}</dd></div>
           <div class="flex gap-2"><dt><abbr title={t("contact.vatIdTitle")} class="no-underline">{t("contact.vatIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.vatId}</dd></div>
         </dl>
@@ -309,6 +336,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 </dialog>
 
 <script>
+  import { CONTACT_PHONE_PATTERN } from "../../lib/contact-automation";
   // Unlocks the gated bonus tiles in the gallery; read by Showroom.astro.
   const BONUS_KEY = "bonusContentUnlocked";
 
@@ -374,13 +402,27 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
+    const category = form.querySelector<HTMLSelectElement>('select[name="panel_category_choice"]');
+    const sizeThumbnails = form.querySelectorAll<HTMLImageElement>('select[name="size"] option img[data-size-thumbnail]');
+    const previews = form.querySelectorAll<HTMLElement>("[data-contact-preview]");
+    const updatePanelPreview = () => {
+      const selected = category?.value ?? form.dataset.panelCategory;
+      previews.forEach((preview) => {
+        preview.classList.toggle("hidden", preview.dataset.contactPreview !== selected);
+      });
+      const suffix = selected === "mineral" ? "-art-stone" : "";
+      sizeThumbnails.forEach((thumbnail) => {
+        thumbnail.src = `/images/priceList/thumb/${thumbnail.dataset.sizeThumbnail}${suffix}.webp`;
+      });
+    };
+
     const requestedCategory = new URLSearchParams(window.location.search).get("panel");
-    const categorySelect = form.querySelector<HTMLSelectElement>(
-      'select[name="panel_category_choice"]',
-    );
-    if (categorySelect && (requestedCategory === "mineral" || requestedCategory === "stone")) {
-      categorySelect.value = requestedCategory;
+    if (category && (requestedCategory === "mineral" || requestedCategory === "stone")) {
+      category.value = requestedCategory;
     }
+    category?.addEventListener("change", updatePanelPreview);
+    window.addEventListener("pageshow", updatePanelPreview);
+    updatePanelPreview();
 
     const fillAttributionFields = (): void => {
       try {
@@ -402,10 +444,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
      * typing, re-checked live while it shows an error (so the message clears the
      * moment it is fixed), and every field is checked on submit.
      */
-    type FieldName = "fullname" | "email";
+    const phonePattern = new RegExp(`^${CONTACT_PHONE_PATTERN}$`);
+    type FieldName = "fullname" | "email" | "phone";
     const rules: Record<FieldName, (value: string) => boolean> = {
       fullname: (value) => value.trim().length > 1,
       email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim()),
+      phone: (value) => !value.trim() || phonePattern.test(value.trim()),
     };
     const fieldNames = Object.keys(rules) as FieldName[];
     const getField = (name: FieldName) => form.querySelector<HTMLInputElement>(`[name="${name}"]`);
@@ -416,7 +460,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       const errorEl = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
       field.setAttribute("aria-invalid", valid ? "false" : "true");
       if (errorEl) {
-        errorEl.textContent = valid ? "" : form.dataset[name === "fullname" ? "errFullname" : "errEmail"] ?? "";
+        errorEl.textContent = valid ? "" : form.dataset[name === "fullname" ? "errFullname" : name === "phone" ? "errPhone" : "errEmail"] ?? "";
         errorEl.hidden = valid;
       }
       return valid;
@@ -472,25 +516,14 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         getField(invalid[0])?.focus();
         return;
       }
-      const panelCategoryField = form.querySelector<HTMLInputElement>(
-        'input[name="panel_category"]',
-      );
-      let submittedPanelCategory = "stone";
-      if (panelCategoryField) {
-        const selectedCategory = categorySelect?.value;
-        panelCategoryField.value =
-          form.dataset.panelCategory ??
-          selectedCategory ??
-          document.documentElement.dataset.panelCategory ??
-          panelCategoryField.value;
-        submittedPanelCategory = panelCategoryField.value;
-      }
       fillAttributionFields();
 
       const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
       // The field is called "fullname" so browsers autofill it; the API calls it "name".
       payload.name = payload.fullname;
+      payload.panel_category = category?.value ?? form.dataset.panelCategory ?? "unknown";
+      delete payload.panel_category_choice;
       delete payload.fullname;
       const fingerprint = JSON.stringify(payload);
       if (
@@ -526,8 +559,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             const errorEl = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
             if (errorEl) errorEl.hidden = true;
           }
-          if (categorySelect) categorySelect.value = submittedPanelCategory;
-          if (panelCategoryField) panelCategoryField.value = submittedPanelCategory;
+          form.querySelector("details")?.removeAttribute("open");
+          if (category && typeof payload.panel_category === "string") category.value = payload.panel_category;
+          updatePanelPreview();
           delete form.dataset.submissionId;
           delete form.dataset.submissionFingerprint;
           showThanks?.(unlockBonus(), data.code, data.emailSent === true);

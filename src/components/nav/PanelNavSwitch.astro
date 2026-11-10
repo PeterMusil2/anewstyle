@@ -26,6 +26,7 @@ const options = [
 <li class:list={["panel-nav-switch", `panel-nav-switch--${variant}`]}>
   <details>
     <summary
+      data-nav-level="primary"
       aria-label={t("nav.panelPages")}
       data-active={isHomePage || panelCategory ? "true" : undefined}
     >
@@ -35,7 +36,7 @@ const options = [
     <ul class="panel-nav-switch__menu">
       {options.map(({ href, label, active }) => (
         <li>
-          <a href={href} data-nav-link aria-current={active ? "page" : undefined}>
+          <a href={href} data-nav-link data-nav-level="secondary" aria-current={active ? "page" : undefined}>
             {label}
             {active && <span class="panel-nav-switch__current">{t("nav.currentPage")}</span>}
           </a>
@@ -54,12 +55,7 @@ const options = [
     gap: 0.65rem;
     color: var(--color-fg-soft);
     cursor: pointer;
-    font-size: 0.8125rem;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: 0.12em;
     list-style: none;
-    text-transform: uppercase;
     white-space: nowrap;
     transition: color 180ms ease-out;
   }
@@ -114,12 +110,7 @@ const options = [
     padding-block: 0.5rem;
     padding-inline: 1rem;
     color: var(--color-fg-soft);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    line-height: 1.35;
     text-decoration: none;
-    text-transform: uppercase;
     transition: background-color 180ms ease-out, color 180ms ease-out;
   }
 
@@ -159,12 +150,6 @@ const options = [
   .panel-nav-switch--panel summary {
     min-height: 3.5rem;
     justify-content: space-between;
-    font-size: 1rem;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: var(--tracking-caps);
-    line-height: inherit;
-    text-transform: uppercase;
   }
 
   .panel-nav-switch--panel .panel-nav-switch__menu {

@@ -12,6 +12,27 @@ function customizeArRenderer(code) {
   let transformed = code;
   const edits = [
     [
+      "this.threeRenderer.render(scene, scene.getCamera());",
+      `const renderer = this.threeRenderer;
+            if (!scene.element.hasAttribute('data-ar-dim-camera') ||
+                renderer.xr.getEnvironmentBlendMode() !== 'alpha-blend') {
+                renderer.render(scene, scene.getCamera());
+                continue;
+            }
+            // WebXR composites this transparent layer over the camera. Dim
+            // the background clear, then draw the panel normally on top.
+            const color = renderer.state.buffers.color;
+            const setClear = color.setClear;
+            color.setClear = (r, g, b, a, premultiplied) =>
+                setClear.call(color, r, g, b, a === 0 ? 0.5 : a, premultiplied);
+            try {
+                renderer.render(scene, scene.getCamera());
+            } finally {
+                color.setClear = setClear;
+                color.setClear(0, 0, 0, 0);
+            }`,
+    ],
+    [
       "import { Box3, BufferGeometry, EventDispatcher, Line, Matrix4, PerspectiveCamera, Quaternion, Vector3 } from 'three';",
       "import { Box3, BufferGeometry, EventDispatcher, Line, Matrix4, PerspectiveCamera, Quaternion, Vector2, Vector3 } from 'three';",
     ],

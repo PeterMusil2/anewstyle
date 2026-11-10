@@ -63,6 +63,40 @@ describe("model-viewer wall perspective control", () => {
     expect(renderer).toContain("if (this.isRevealingArControls) return");
   });
 
+  test("dims only the transparent WebXR background of a lit panel", () => {
+    const code = customizeModelViewerAr(rendererSource, rendererId)!.code;
+    const start = code.indexOf("const renderer = this.threeRenderer;");
+    const end = code.indexOf("\n        }\n    }", start);
+    const renderFrame = new Function("scene", "for (let view = 0; view < 1; view++) {" + code.slice(start, end) + "}");
+    let dim = true;
+    let blendMode = "alpha-blend";
+    const clears: number[] = [];
+    const setClear = (_r: number, _g: number, _b: number, alpha: number) => clears.push(alpha);
+    const color = { setClear };
+    const scene = {
+      element: { hasAttribute: (name: string) => dim && name === "data-ar-dim-camera" },
+      getCamera: () => ({}),
+    };
+    const renderer = {
+      xr: { getEnvironmentBlendMode: () => blendMode },
+      state: { buffers: { color } },
+      render: () => {
+        color.setClear(0, 0, 0, 0);
+        color.setClear(1, 1, 1, 1);
+      },
+    };
+    renderFrame.call({ threeRenderer: renderer }, scene);
+    expect(clears.splice(0)).toEqual([0.5, 1, 0]);
+    expect(color.setClear).toBe(setClear);
+    dim = false;
+    renderFrame.call({ threeRenderer: renderer }, scene);
+    expect(clears.splice(0)).toEqual([0, 1]);
+    dim = true;
+    blendMode = "additive";
+    renderFrame.call({ threeRenderer: renderer }, scene);
+    expect(clears).toEqual([0, 1]);
+  });
+
   test("is limited to model-viewer AR modules and fails loudly on drift", () => {
     expect(customizeModelViewerAr("export {};", "/src/app.js")).toBeNull();
     expect(modelViewerWallControlsPlugin().enforce).toBe("pre");

@@ -22,11 +22,6 @@ const normalizedPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isHomePage = normalizedPath === (lang === "cs" ? "/" : "/en");
 const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
-const homeLinks = [
-  { href: `${basePath}/#technologies`, text: t("nav.technologies") },
-  { href: `${basePath}/#features`, text: t("nav.features") },
-];
-
 const contactLink = {
   href: panelCategory ? `${basePath}/?panel=${panelCategory}#contact` : `${basePath}/#contact`,
   text: t("nav.contact"),
@@ -58,7 +53,6 @@ const contactLink = {
 
       <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />
-        {homeLinks.map((link) => <NavItem {...link} />)}
         <InfoNavItem lang={lang} />
         <PriceNavItem lang={lang} />
         <NavItem {...contactLink} />
@@ -93,12 +87,11 @@ const contactLink = {
   <div
     id="mobile-menu"
     popover
-    class="pop-panel fixed inset-x-0 top-(--nav-height) bottom-auto m-0 max-h-[calc(100dvh-var(--nav-height))] w-full overflow-y-auto border-b border-line-strong bg-ink-900 text-fg min-[1200px]:hidden"
+    class="pop-panel fixed inset-x-0 top-(--nav-height) bottom-auto m-0 max-h-[calc(100dvh-var(--nav-height))] w-full overflow-y-auto border-b border-line-strong bg-ink-900 text-fg [scrollbar-gutter:stable] min-[1200px]:hidden"
   >
     <div class="container-wide flex flex-col gap-8 pt-4 pb-8">
       <ul class="flex flex-col">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} variant="panel" />
-        {homeLinks.map((link) => <NavItem {...link} variant="panel" />)}
         <InfoNavItem lang={lang} variant="panel" />
         <PriceNavItem lang={lang} variant="panel" />
         <NavItem {...contactLink} variant="panel" />
@@ -175,6 +168,19 @@ const contactLink = {
     ".site-nav__bar .panel-nav-switch--bar details, .site-nav__bar .info-nav-item--bar details, .site-nav__bar .price-nav-item details",
   );
   const closeDesktopDropdowns = () => desktopDropdowns.forEach((details) => { details.open = false; });
+  const desktopSurfaces = document.querySelector<HTMLDetailsElement>(".site-nav__bar .info-nav-item__surface-switch");
+  const surfacesFlyout = desktopSurfaces?.querySelector<HTMLElement>(".info-nav-item__submenu");
+  const positionSurfacesFlyout = () => {
+    if (!desktopSurfaces?.open || !surfacesFlyout) return;
+    const { left, right } = desktopSurfaces.getBoundingClientRect();
+    const width = surfacesFlyout.offsetWidth;
+    desktopSurfaces.toggleAttribute(
+      "data-flyout-left",
+      right + width > document.documentElement.clientWidth && left >= width,
+    );
+  };
+  desktopSurfaces?.addEventListener("toggle", positionSurfacesFlyout);
+  window.addEventListener("resize", positionSurfacesFlyout);
 
   desktopDropdowns.forEach((details) => {
     const summary = details.querySelector("summary");
@@ -195,7 +201,8 @@ const contactLink = {
       if (!details.contains(event.relatedTarget as Node | null)) details.open = false;
     });
     details.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && details.open) {
+        event.stopPropagation();
         details.open = false;
         summary?.focus();
       }

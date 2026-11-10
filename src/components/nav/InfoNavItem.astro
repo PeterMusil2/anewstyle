@@ -9,6 +9,10 @@ interface Props {
 const { lang, variant = "bar" } = Astro.props;
 const t = useTranslations(lang);
 const basePath = lang === "cs" ? "" : "/en";
+const sectionLinks = [
+  { href: `${basePath}/#technologies`, label: t("nav.technologies") },
+  { href: `${basePath}/#features`, label: t("nav.features") },
+];
 const links = [
   { href: `${basePath}/gallery/`, label: t("nav.gallery") },
   { href: `${basePath}/#faq`, label: t("nav.faq") },
@@ -22,21 +26,24 @@ const surfaces = [
 
 <li class:list={["info-nav-item", `info-nav-item--${variant}`]}>
   <details>
-    <summary aria-label={t("nav.info")}>
+    <summary data-nav-level="primary" aria-label={t("nav.info")}>
       <span>{t("nav.info")}</span>
       <span aria-hidden="true" class="info-nav-item__chevron"></span>
     </summary>
     <ul class="info-nav-item__menu">
+      {sectionLinks.map(({ href, label }) => (
+        <li><a href={href} data-nav-link data-nav-level="secondary">{label}</a></li>
+      ))}
       <li class="info-nav-item__surface-item">
         <details class="info-nav-item__surface-switch">
-          <summary>
+          <summary data-nav-level="secondary">
             <span>{t("nav.products")}</span>
             <span aria-hidden="true" class="info-nav-item__chevron"></span>
           </summary>
           <ul class="info-nav-item__submenu">
             {surfaces.map(({ href, label }) => (
               <li>
-                <a href={href} data-nav-link>{label}</a>
+                <a href={href} data-nav-link data-nav-level="secondary">{label}</a>
               </li>
             ))}
           </ul>
@@ -44,7 +51,7 @@ const surfaces = [
       </li>
       {links.map(({ href, label }) => (
         <li>
-          <a href={href} data-nav-link>{label}</a>
+          <a href={href} data-nav-link data-nav-level="secondary">{label}</a>
         </li>
       ))}
     </ul>
@@ -61,12 +68,7 @@ const surfaces = [
     gap: 0.65rem;
     color: var(--color-fg-soft);
     cursor: pointer;
-    font-size: 0.8125rem;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: 0.12em;
     list-style: none;
-    text-transform: uppercase;
     white-space: nowrap;
     transition: color 180ms ease-out;
   }
@@ -86,6 +88,7 @@ const surfaces = [
     inline-size: 0.75rem;
     block-size: 0.75rem;
     background: currentColor;
+    pointer-events: none;
     transition: rotate 180ms ease-out;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='square'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") center / contain no-repeat;
   }
@@ -106,11 +109,7 @@ const surfaces = [
     padding-block: 0.5rem;
     padding-inline: 1rem;
     color: var(--color-fg-soft);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
     text-decoration: none;
-    text-transform: uppercase;
     transition: background-color 180ms ease-out, color 180ms ease-out;
   }
   .info-nav-item__menu a:hover,
@@ -126,8 +125,6 @@ const surfaces = [
     justify-content: space-between;
     padding-block: 0.5rem;
     padding-inline: 1rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
   }
   .info-nav-item__surface-switch > summary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
   .info-nav-item__submenu {
@@ -138,7 +135,6 @@ const surfaces = [
     padding: 0;
   }
   .info-nav-item__surface-switch[open] > .info-nav-item__submenu { display: flex; }
-  .info-nav-item__surface-switch[open] > summary .info-nav-item__chevron { rotate: 180deg; }
   .info-nav-item--bar .info-nav-item__menu {
     position: absolute;
     inset-block-start: 100%;
@@ -146,30 +142,28 @@ const surfaces = [
     min-inline-size: 12rem;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
   }
-  /* The submenu opens to the left. Its top edge lines up with the parent panel's
-     (not with the row), and it sits beside the panel with a small gap. The
-     chevron then points the way it opens. */
-  .info-nav-item--bar .info-nav-item__surface-switch[open] > summary .info-nav-item__chevron { rotate: 90deg; }
   .info-nav-item--bar .info-nav-item__submenu {
     position: absolute;
-    inset-block-start: calc(-0.5rem - 1px);
-    inset-inline-end: calc(100% + 0.5rem + 1px + 0.25rem);
+    inset-block-start: 0;
+    inset-inline-start: 100%;
     min-inline-size: 12rem;
     border: 1px solid var(--color-line-strong);
     background: var(--color-ink-900);
     padding: 0.5rem;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 0.3);
   }
+  .info-nav-item--bar .info-nav-item__surface-switch > summary > .info-nav-item__chevron { rotate: -90deg; }
+  .info-nav-item--bar .info-nav-item__surface-switch[data-flyout-left] > .info-nav-item__submenu {
+    inset-inline-start: auto;
+    inset-inline-end: 100%;
+  }
+  .info-nav-item--bar .info-nav-item__surface-switch[data-flyout-left] > summary > .info-nav-item__chevron {
+    rotate: 90deg;
+  }
   .info-nav-item--panel { border-block-end: 1px solid var(--color-line); }
   .info-nav-item--panel summary {
     min-height: 3.5rem;
     justify-content: space-between;
-    font-size: 1rem;
-    font-family: var(--font-sans);
-    font-weight: 700;
-    letter-spacing: var(--tracking-caps);
-    line-height: inherit;
-    text-transform: uppercase;
   }
   .info-nav-item--panel .info-nav-item__menu {
     border: 0;
@@ -179,7 +173,6 @@ const surfaces = [
   .info-nav-item--panel .info-nav-item__surface-switch > summary {
     min-height: 3rem;
     padding-inline: 0.75rem 0;
-    font-size: 0.875rem;
   }
   .info-nav-item--panel .info-nav-item__submenu {
     position: static;

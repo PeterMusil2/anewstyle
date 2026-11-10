@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { runInNewContext } from "node:vm";
 import { onRequestPost } from "../functions/api/contact";
 import {
   DISCOUNT_CODE_PATTERN,
@@ -86,6 +87,40 @@ describe("contact discount automation", () => {
     expect(parseContactSubmission({ ...validSubmission(), submission_id: "not-a-uuid" })).toBeNull();
   });
 
+  test("validates an optional phone without losing its international prefix", () => {
+    expect(parseContactSubmission(validSubmission())?.phone).toBe("");
+    expect(parseContactSubmission({ ...validSubmission(), phone: " +420 601 221 551 " })?.phone)
+      .toBe("+420 601 221 551");
+    for (const phone of ["=1+2", "123", "601\n221551", 601221551]) {
+      expect(parseContactSubmission({ ...validSubmission(), phone })).toBeNull();
+    }
+  });
+
+  test("adds the phone column to an existing sheet without shifting lead data", async () => {
+    const script = await Bun.file("scripts/contact-automation/Code.gs").text();
+    const columns = ["Jméno zákazníka", "Text poptávky", "Kategorie panelu", "GCLID", "FBCLID", "Zdroj",
+      "UTM source", "UTM medium", "UTM campaign", "UTM content", "UTM term", "Vstupní stránka", "Referrer",
+      "ID odeslání formuláře", "Stav e-mailu zákazníkovi", "Stav oznámení firmy", "Velikost panelu", "Provedení"];
+    let columnCount = 30;
+    const sheet = {
+      getMaxColumns: () => columnCount,
+      insertColumnsAfter: (column: number, count: number) => {
+        expect(column).toBe(30);
+        columnCount += count;
+      },
+      getRange: (row: number, column: number, height: number, width: number) => {
+        expect([row, height]).toEqual([3, 1]);
+        return {
+          getDisplayValues: () => [Array.from({ length: width }, (_, i) => columns[column - 13 + i] ?? "")],
+          setValues: ([values]: string[][]) => { columns.splice(column - 13, width, ...values!); },
+        };
+      },
+    };
+    runInNewContext(script + "\nensureHeaders(sheet); ensureHeaders(sheet);", { sheet });
+    expect(columnCount).toBe(31);
+    expect(columns.slice(-3)).toEqual(["Velikost panelu", "Provedení", "Telefon"]);
+  });
+
   test("creates readable codes from secure random bytes", () => {
     const code = formatDiscountCode(new Uint8Array(8).fill(0));
     expect(code).toBe("ANEW-AAAAAAAA");
@@ -129,7 +164,7 @@ describe("contact discount automation", () => {
 
     try {
       const response = await onRequestPost({
-        request: createRequest(),
+        request: createRequest({ ...validSubmission(), phone: "+420 601 221 551" }),
         env: {
           CONTACT_SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/test-deployment/exec",
           CONTACT_SHEETS_SHARED_SECRET: "server-only-test-secret",
@@ -142,6 +177,7 @@ describe("contact discount automation", () => {
       expect(data.code).toMatch(/^ANEW-[A-Z2-9]{8}$/);
       expect(data.emailSent).toBe(true);
       expect(backendPayload?.secret).toBe("server-only-test-secret");
+      expect(backendPayload?.submission).toMatchObject({ phone: "+420 601 221 551" });
       expect(JSON.stringify(validSubmission())).not.toContain("server-only-test-secret");
     } finally {
       globalThis.fetch = originalFetch;
@@ -271,7 +307,7 @@ describe("contact discount automation", () => {
 
     try {
       const response = await onRequestPost({
-        request: createRequest(),
+        request: createRequest({ ...validSubmission(), phone: "+420 601 221 551" }),
         env: {
           CONTACT_SHEETS_WEB_APP_URL: "https://script.google.com/macros/s/test-deployment/exec",
           CONTACT_SHEETS_SHARED_SECRET: "server-only-test-secret",
@@ -291,6 +327,7 @@ describe("contact discount automation", () => {
       expect(customer?.body.to).toEqual(["eva@example.cz"]);
       expect(String(customer?.body.text)).toContain(String(data.code));
       expect(business?.body.to).toEqual(["anewstyle.brno@gmail.com"]);
+      expect(String(business?.body.text)).toContain("+420 601 221 551");
       expect(business?.body.reply_to).toContain("eva@example.cz");
       expect(customer?.headers.Authorization).toBe("Bearer re_test_key");
       expect(customer?.headers["Idempotency-Key"]).toBe(`anewstyle-customer-${validSubmission().submission_id}`);
@@ -411,7 +448,7 @@ describe("contact discount automation", () => {
     expect(component).toContain("fieldNames.filter((name) => !validateField(name))");
 
     // Visual states: gold hover, red invalid (label too), green valid.
-    expect(component.match(/hover:border-gold focus:border-gold/g)?.length).toBe(3);
+    expect(component.match(/hover:border-gold focus:border-gold/g)?.length).toBe(4);
     expect(component).toContain("aria-invalid:border-danger");
     expect(component).toContain("not-placeholder-shown:user-valid:border-success");
     expect(component).toContain("has-[[aria-invalid=true]]:text-danger");
@@ -419,7 +456,7 @@ describe("contact discount automation", () => {
     expect(control).toMatch(/&:hover \{\s*border-color: var\(--color-gold\);/);
 
     for (const lang of [cs, en]) {
-      for (const key of ["contact.formRequired", "contact.formErrName", "contact.formErrEmail"]) {
+      for (const key of ["contact.formRequired", "contact.formErrName", "contact.formErrEmail", "contact.formErrPhone"]) {
         expect(String(lang[key]).length).toBeGreaterThan(3);
       }
     }

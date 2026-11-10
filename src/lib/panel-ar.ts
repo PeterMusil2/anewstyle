@@ -2,6 +2,19 @@
 export const PANEL_AR_PLACEMENT = "wall";
 export const STONE_AR_MODEL_PATH = "/3d/products/Rockfoil_DARKGOLD_AR_vertical_unlit.glb";
 
+export function heroArTextures(category?: "stone" | "mineral") {
+  return category === "mineral"
+    ? { off: "/images/showcase/Mineral_off.png", on: "/images/showcase/Mineral_on.png" }
+    : {
+        off: "/images/products/Rockfoil_DARKGOLD_dark_frame.webp",
+        on: "/images/products/Rockfoil_DARKGOLD_light_frame.webp",
+      };
+}
+
+export function isAndroidArDevice(userAgent: string): boolean {
+  return /Android/i.test(userAgent);
+}
+
 /**
  * Quick Look can leave a wall-anchored object invisible while it searches for
  * a sufficiently textured vertical plane. A horizontal anchor is more
@@ -37,7 +50,7 @@ const handoffTarget = (search: string) => new URLSearchParams(search).get("ar-br
 
 export function shouldOpenArInSamsungInternet(userAgent: string, search: string): boolean {
   const directFallback = new URLSearchParams(search).get("ar-direct") === "1";
-  return /Android/i.test(userAgent) && !/SamsungBrowser/i.test(userAgent) && !directFallback;
+  return isAndroidArDevice(userAgent) && !/SamsungBrowser/i.test(userAgent) && !directFallback;
 }
 
 /** Chrome and the Google app on iOS cannot launch model-viewer Quick Look. */

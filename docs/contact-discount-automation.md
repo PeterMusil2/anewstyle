@@ -47,3 +47,5 @@ Astro's `bun run dev` does not execute Cloudflare Pages Functions. To test the f
 ## Sheet fields
 
 The existing columns A–L remain available for the code, discount, status and later manual redemption. Column E (`Sleva (%)`) stores a numeric percentage for the selected version: 5% for SLIM and 7% for BASIC or DELUXE. If the visitor leaves the version undecided, the percentage stays blank until the team confirms the version. The added columns M–AB store the customer's name and message, panel category, advertising attribution, form submission ID and e-mail delivery states. Columns AC and AD store the selected panel size and version; the updated Apps Script adds these headers to an existing sheet the first time it receives a valid inquiry. The spreadsheet time zone is set to `Europe/Prague` for issue and expiry dates.
+
+The optional phone is included in the internal Resend notification. To record it in the private sheet as well, deploy the matching `scripts/contact-automation/Code.gs` as a new version of the existing Apps Script web app. The first recorded inquiry adds the `Telefon` header in column AE if the column is empty.

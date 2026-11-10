@@ -91,18 +91,18 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
   category === "mineral" ? tier.mineralPrice : tier.price;
 ---
 
-<section id={id} aria-labelledby={`${id}-title`} class="pricing home-section-divider bg-ink">
+<section id={id} aria-labelledby={`${id}-title`} class="pricing home-section-y home-section-divider bg-ink">
   <div class="price-catalog">
     <div class="container-page flex flex-col gap-4 py-5 lg:gap-5 lg:py-7">
-    <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2">
-      <div class="flex flex-col items-center gap-3 text-center sm:gap-4 short:gap-2.5">
+    <header class="reveal flex flex-col items-center gap-3 text-center short:gap-2 lg:items-start lg:text-left">
+      <div class="flex flex-col items-center gap-3 sm:gap-4 short:gap-2.5 lg:items-start">
         <p class="eyebrow">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.eyebrow")}</p>
         <!-- Same title style as every SectionHeader on the site. -->
-        <h2 id={`${id}-title`} class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]">
+        <h2 id={`${id}-title`} class="section-title font-display font-black tracking-display uppercase">
           {t("price.title")}
         </h2>
       </div>
-      <div class="flex flex-col items-center gap-1 text-center lg:max-w-2xl tiny:hidden">
+      <div class="flex flex-col items-center gap-1 lg:max-w-2xl lg:items-start tiny:hidden">
         <p class="text-[0.9375rem] text-fg-soft lg:text-base">{panelCategory ? panelCategory === "mineral" ? t("price.categoryMineral") : t("price.categoryStone") : t("price.desc1")}</p>
       </div>
     </header>
@@ -126,9 +126,11 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
         the size picker and all three versions are visible together.
       -->
       <div class="container-page flex min-h-[min(calc(100svh-var(--nav-height)),56rem)] flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4">
-        {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="hidden text-sm text-fg-muted sm:block short:hidden">
-          <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{category === "mineral" ? t("price.desc4Mineral") : t("price.desc4")}</span>
-        </p>)}
+        <div class="hidden min-h-10 text-sm text-fg-muted sm:block short:hidden">
+          {previewCategories.includes("stone") && <p data-price-type="stone">
+            <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
+          </p>}
+        </div>
     <!-- Step 1: size -->
     <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1`}>
       <div class="flex items-center justify-between gap-4">
@@ -163,7 +165,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                   <span class="hidden sm:inline">{dims(size.width)}</span>
                 </span>
                 <span class="hidden truncate text-xs leading-tight font-bold text-gold group-has-checked:text-gold-light lg:block">
-                  {previewCategories.map((category) => <span data-price-type={category} data-price-display="inline">{t("price.from")} {cheapest(size.key, category)} {t("price.currency")}</span>)}
+                  {previewCategories.map((category) => <span data-price-type={category}>{t("price.from")} {cheapest(size.key, category)} {t("price.currency")}</span>)}
                 </span>
               </span>
             </label>
@@ -204,7 +206,6 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                 alt={`${t("price.previewAlt")} ${size.label}`}
                 data-size={size.key}
                 data-price-type={category}
-                data-price-display="block"
                 data-size-preview
                 class="absolute inset-0 size-full -scale-x-100 object-contain object-bottom"
               />
@@ -235,7 +236,6 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                   alt={`${t("price.previewAlt")} ${size.label}`}
                   data-size={size.key}
                   data-price-type={category}
-                  data-price-display="block"
                   data-size-preview
                   class="absolute inset-0 size-full -scale-x-100 object-contain object-bottom"
                 />
@@ -268,13 +268,13 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                 )}
                 <div class="flex flex-col gap-1.5">
                   <h4 class="text-[0.9375rem] font-black tracking-[0.22em] text-gold">{tier.title}</h4>
-                  {previewCategories.map((category) => <p data-price-type={category} data-price-display="block" class="line-clamp-2 hidden text-sm leading-snug text-fg-soft sm:block short:hidden">{category === "mineral" ? tier.taglineMineral : tier.tagline}</p>)}
+                  {previewCategories.map((category) => <p data-price-type={category} class="hidden text-sm leading-snug text-fg-soft sm:line-clamp-2 sm:min-h-10 short:hidden">{category === "mineral" ? tier.taglineMineral : tier.tagline}</p>)}
                 </div>
 
                 <div class="border-y border-line py-2.5 lg:py-3">
                   {sizes.map((size) => (
                     <>
-                      {previewCategories.map((category) => <div data-size={size.key} data-price-type={category} data-price-display="flex" class="flex flex-col gap-1">
+                      {previewCategories.map((category) => <div data-size={size.key} data-price-type={category} class="flex flex-col gap-1">
                         <p class="flex flex-wrap items-baseline gap-x-1.5">
                           <span class="text-4xl leading-none font-extrabold tracking-tight tabular-nums lg:text-[2.5rem] short:text-[2rem] tiny:text-[1.875rem]">
                             {getTierPrice(tier, category)[size.key].net}
@@ -301,7 +301,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                     <li class="flex items-start gap-2">
                       <Icon name="check" class="mt-px size-4 text-gold" />
                       {previewCategories.map((category) => (
-                        <span data-price-type={category} data-price-display="inline">
+                        <span data-price-type={category}>
                           {categoryFeatureLabel(key, category)}
                         </span>
                       ))}
@@ -375,30 +375,8 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
 </section>
 
 <style>
-  .price-catalog [data-price-type="mineral"] {
-    display: none;
-  }
-
+  :global(html:not([data-panel-category="mineral"])) .price-catalog [data-price-type="mineral"],
   :global(html[data-panel-category="mineral"]) .price-catalog [data-price-type="stone"] {
-    display: none;
-  }
-
-  :global(html[data-panel-category="mineral"]) .price-catalog [data-price-type="mineral"][data-price-display="inline"] {
-    display: inline;
-  }
-
-  :global(html[data-panel-category="mineral"]) .price-catalog [data-price-type="mineral"][data-price-display="block"] {
-    display: block;
-  }
-
-  :global(html[data-panel-category="mineral"]) .price-catalog [data-price-type="mineral"][data-price-display="flex"] {
-    display: flex;
-  }
-
-  :global(html[data-panel-category="mineral"]) .price-catalog:has(input[name="size"][value="l"]:checked) [data-price-type="mineral"][data-size]:not([data-size="l"]),
-  :global(html[data-panel-category="mineral"]) .price-catalog:has(input[name="size"][value="xl"]:checked) [data-price-type="mineral"][data-size]:not([data-size="xl"]),
-  :global(html[data-panel-category="mineral"]) .price-catalog:has(input[name="size"][value="xxl"]:checked) [data-price-type="mineral"][data-size]:not([data-size="xxl"]),
-  :global(html[data-panel-category="mineral"]) .price-catalog:has(input[name="size"][value="xxxl"]:checked) [data-price-type="mineral"][data-size]:not([data-size="xxxl"]) {
     display: none;
   }
 </style>

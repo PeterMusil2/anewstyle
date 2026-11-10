@@ -3,8 +3,8 @@ import Icon from "../icons/Icon.astro";
 import Button from "../ui/Button.astro";
 import mineralHero from "../../data/mineral-hero.json";
 import stoneHero from "../../data/stone-hero.json";
-import PanelCategorySwitch from "../ui/PanelCategorySwitch.astro";
 import {
+  heroArTextures,
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
   panelArModes,
@@ -31,6 +31,7 @@ const headerMineralTexture = "/images/patterns/mineral-2.png";
 const headerModelPath = panelCategory === "mineral"
   ? mineralArModelPath(headerMineralTexture)
   : STONE_AR_MODEL_PATH;
+const headerArTextures = heroArTextures(panelCategory);
 const panelHero = home || !panelCategory ? undefined : panelCategory === "mineral" ? mineralHero : stoneHero;
 ---
 
@@ -107,17 +108,24 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
     </a>
   )}
 
-  <div class="container-wide flex flex-col items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center lg:pb-28">
+  <div class:list={[
+    "container-page flex flex-col gap-4 pt-[calc(var(--nav-height)+3rem)] pb-20 sm:gap-6 lg:pb-28",
+    home ? "items-center text-center lg:items-start lg:text-left" : "items-start text-left",
+  ]}>
     <h1 class:list={[
       "hero-title max-w-4xl font-display leading-[0.92] font-black tracking-[0.08em] uppercase",
-      pageTitle ? "text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl" : "text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]",
+      pageTitle ? "max-w-full wrap-anywhere text-[clamp(1.75rem,8vw,3rem)] sm:max-w-4xl sm:text-6xl lg:text-7xl" : "text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]",
     ]}>
       <span class:list={["hero-title__label", { "hero-title__label--home": home }]}>{pageTitle ?? "ANEW STYLE"}</span>
     </h1>
-    <p class="hero-subtitle max-w-xl text-center text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
+    <p class="hero-subtitle max-w-xl text-xl font-light tracking-wide text-fg-soft lg:text-2xl">
       {pageDescription ?? t('header.title')}
     </p>
-    <PanelCategorySwitch lang={lang} activeCategory={panelCategory} />
+    {(home || panelCategory) && (
+      <Button href={home ? "#about" : "#panel-material"} size="sm" class="w-full max-w-64 sm:min-h-13 sm:text-sm">
+        {t(home ? "home.chapterLight" : "header.btnMore")}
+      </Button>
+    )}
     <Button
       href="https://www.anewstyle-eshop.cz"
       variant="ghost"
@@ -130,12 +138,14 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
       <Icon name="eshop" class="size-4" />
     </Button>
     {(home || panelCategory) && (
-      <div class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!">
+      <div class:list={["absolute bottom-4 z-10 flex lg:hidden!", home ? "left-1/2 -translate-x-1/2" : "left-5 md:left-10"]}>
         <Button
           variant="outline"
           size="sm"
           id="headerArButton"
           data-model-path={headerModelPath}
+          data-ar-texture-off={headerArTextures.off}
+          data-ar-texture-on={headerArTextures.on}
           data-ar-modes={panelArModes()}
           data-ar-placement={PANEL_AR_PLACEMENT}
           data-loading="true"
@@ -168,16 +178,18 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
   </div>
 </header>
 
-<div
+<dialog
   id="arHandoffOverlay"
-  role="dialog"
-  aria-modal="true"
   aria-labelledby="arHandoffTitle"
-  hidden
-  class="scheme-dark-protected fixed inset-0 z-[2147483646] flex items-center justify-center bg-ink px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-fg [&[hidden]]:hidden!"
+  class="scheme-dark-protected fixed inset-0 h-full max-h-none w-full max-w-none overflow-y-auto bg-ink px-6 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-fg open:grid open:place-items-center"
 >
-  <div class="flex w-full max-w-sm flex-col items-center gap-6 text-center">
-    <Icon name="ar" class="size-12 text-gold" />
+  <div class="flex w-full max-w-sm flex-col items-center gap-5 text-center">
+    <div class="grid w-full grid-cols-[1fr_auto_1fr] items-center">
+      <Icon name="ar" class="col-start-2 size-12 text-gold" />
+      <button id="arHandoffClose" type="button" aria-label={t("products.arClose")} class="col-start-3 grid size-12 cursor-pointer place-items-center justify-self-end border border-line text-fg hover:text-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">
+        <Icon name="close" class="size-5" />
+      </button>
+    </div>
     <div class="space-y-3">
       <h2 id="arHandoffTitle" class="font-display text-3xl font-black tracking-wide uppercase">
         {t("header.arHandoffTitle")}
@@ -186,6 +198,7 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         id="arHandoffStatus"
         role="status"
         aria-live="polite"
+        data-android={t("header.arAndroidHint")}
         data-samsung={t("header.arHandoffSamsungHint")}
         data-safari={t("header.arHandoffSafariHint")}
         class="text-base leading-relaxed text-fg-soft"
@@ -214,6 +227,19 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         </label>
       </div>
     </fieldset>
+    <fieldset id="arLightingOptions" hidden class="w-full space-y-3 [&[hidden]]:hidden!">
+      <legend class="text-sm font-extrabold tracking-caps text-gold uppercase">
+        {t("showcase.stateLabel")}
+      </legend>
+      <div class="grid grid-cols-2 gap-3">
+        {(["off", "on"] as const).map((state) => (
+          <label class="flex min-h-12 cursor-pointer items-center justify-center gap-2 border border-line bg-ink-900 px-2 py-2 text-sm font-bold text-fg-soft transition-colors has-checked:border-gold has-checked:bg-gold/12 has-checked:text-gold-light has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+            <input type="radio" name="arLighting" value={state} checked={state === "off"} class="size-5 shrink-0 accent-gold" />
+            {t(state === "off" ? "showcase.btn1" : "showcase.btn3")}
+          </label>
+        ))}
+      </div>
+    </fieldset>
     <Button
       id="arHandoffButton"
       disabled
@@ -224,7 +250,7 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
       <Icon name="ar" class="size-5" />
     </Button>
   </div>
-</div>
+</dialog>
 
 <style>
   @media (max-width: 560px) {
@@ -237,7 +263,9 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
 </style>
 
 <script>
+  import type { ModelViewerElement } from "@google/model-viewer";
   import {
+    isAndroidArDevice,
     isAppleQuickLookDevice,
     panelArModes,
     panelArModelPath,
@@ -252,14 +280,7 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
     waitForArAvailability,
   } from "../../lib/panel-ar";
 
-  type ARViewer = HTMLElement & {
-    activateAR: () => Promise<void>;
-    canActivateAR: boolean;
-    createTexture: (source: string) => Promise<any>;
-    loaded: boolean;
-    model?: { materials: any[] };
-    updateComplete?: Promise<boolean>;
-  };
+  type ARViewer = ModelViewerElement;
 
   const waitForModel = (viewer: ARViewer): Promise<void> => {
     if (viewer.loaded) return Promise.resolve();
@@ -378,9 +399,13 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
 
     const arButton = document.querySelector<HTMLButtonElement>("#headerArButton");
     const arStatus = document.querySelector<HTMLElement>("#headerArStatus");
-    const handoffOverlay = document.querySelector<HTMLElement>("#arHandoffOverlay");
+    const handoffOverlay = document.querySelector<HTMLDialogElement>("#arHandoffOverlay");
     const handoffButton = document.querySelector<HTMLButtonElement>("#arHandoffButton");
     const handoffStatus = document.querySelector<HTMLElement>("#arHandoffStatus");
+    const lightingOptions = document.querySelector<HTMLFieldSetElement>("#arLightingOptions");
+    const lightingInputs = Array.from(
+      document.querySelectorAll<HTMLInputElement>('input[name="arLighting"]'),
+    );
     const orientationInputs = Array.from(
       document.querySelectorAll<HTMLInputElement>('input[name="arOrientation"]'),
     );
@@ -389,7 +414,9 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
     const query = new URLSearchParams(window.location.search);
     const handoffRequested = query.get("ar-handoff") === "1";
     const requestedBrowser = query.get("ar-browser");
-    const isSamsungInternet = /SamsungBrowser/i.test(window.navigator.userAgent);
+    const android = isAndroidArDevice(window.navigator.userAgent);
+    const directAndroid = android && query.get("ar-direct") === "1";
+    if (lightingOptions) lightingOptions.hidden = !android;
     const openInSamsungInternet = shouldOpenArInSamsungInternet(
       window.navigator.userAgent,
       window.location.search,
@@ -409,21 +436,33 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         ? handoffStatus.dataset.safari
         : requestedBrowser === "samsung"
           ? handoffStatus.dataset.samsung
-          : undefined;
+          : android ? handoffStatus.dataset.android : undefined;
       if (hint) handoffStatus.textContent = hint;
     }
+    const initialHint = handoffStatus?.textContent ?? "";
 
     let arViewer: ARViewer | null = null;
     let arInitialized = false;
-    let useOrientationStep = handoffRequested;
+    let useOrientationStep = handoffRequested || directAndroid;
     const selectedLandscape = () => orientationInputs.find((input) => input.checked)?.value === "90";
+    const selectedLit = () => lightingInputs.find((input) => input.checked)?.value === "on";
     let loadSelectedModel: (() => Promise<void>) | null = null;
     const setHandoffVisible = (visible: boolean) => {
       if (!useOrientationStep || !handoffOverlay) return;
-      handoffOverlay.hidden = !visible;
+      if (visible && !handoffOverlay.open) handoffOverlay.showModal();
+      if (!visible && handoffOverlay.open) handoffOverlay.close();
       document.documentElement.style.overflow = visible ? "hidden" : "";
-      if (visible && handoffButton && !handoffButton.disabled) handoffButton.focus();
     };
+    const dismissHandoff = () => {
+      setHandoffVisible(false);
+      useOrientationStep = false;
+      arButton.focus();
+    };
+    document.querySelector("#arHandoffClose")?.addEventListener("click", dismissHandoff);
+    handoffOverlay?.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      dismissHandoff();
+    });
     setHandoffVisible(true);
     const setStatus = (message = "") => {
       if (!arStatus) return;
@@ -439,11 +478,13 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         handoffButton.setAttribute("aria-busy", loading ? "true" : "false");
       }
       orientationInputs.forEach((input) => { input.disabled = loading; });
+      if (lightingOptions) lightingOptions.disabled = loading;
     };
-    const showArError = (kind: "unavailable" | "failed") => {
+    const showArError = (kind: "unavailable" | "failed", canRetry = false) => {
       if (arViewer) arViewer.style.cssText = panelArViewerStyle(false);
       setLoading(false);
       arButton.disabled = !arViewer?.canActivateAR;
+      if (handoffButton) handoffButton.disabled = !canRetry || !arViewer?.canActivateAR;
       arButton.setAttribute("data-error", "true");
       setStatus(arStatus?.dataset[kind] ?? "");
       if (handoffStatus) handoffStatus.textContent = arStatus?.dataset[kind] ?? "";
@@ -458,7 +499,6 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         await import("@google/model-viewer");
         await customElements.whenDefined("model-viewer");
         const viewer = document.createElement("model-viewer") as ARViewer;
-        const texturePath = arButton.dataset.texturePath;
         const portraitModelPath = arButton.dataset.modelPath ?? STONE_AR_MODEL_PATH;
         viewer.setAttribute("src", panelArModelPath(portraitModelPath, selectedLandscape()));
         if (appleQuickLook) {
@@ -480,17 +520,23 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         await viewer.updateComplete;
         await waitForModel(viewer);
 
+        const textures = new Map<string, Awaited<ReturnType<ARViewer["createTexture"]>>>();
         const applyTexture = async () => {
-          if (!texturePath) return;
-          const texture = await viewer.createTexture(texturePath);
-          if (!texture) throw new Error("Panel texture could not be loaded");
-          const materials = viewer.model?.materials.filter(
-            (material) => material.pbrMetallicRoughness.baseColorTexture,
-          ) ?? [];
-          if (!materials.length) throw new Error("The model does not expose a textured panel material");
-          materials.forEach((material) => {
-            material.pbrMetallicRoughness.baseColorTexture.setTexture(texture);
-          });
+          if (!android) return;
+          const lit = selectedLit();
+          const path = lit ? arButton.dataset.arTextureOn : arButton.dataset.arTextureOff;
+          // Both baked models inherit this material name from the DARKGOLD
+          // template. The other textured material is a panel edge.
+          const face = viewer.model?.materials.find((material) => material.name === "DARKGOLD");
+          const slot = face?.pbrMetallicRoughness.baseColorTexture;
+          if (!path || !slot) throw new Error("Missing AR panel face texture");
+          let texture = textures.get(path);
+          if (!texture) {
+            texture = await viewer.createTexture(path, path.endsWith(".webp") ? "image/webp" : "image/png");
+            textures.set(path, texture);
+          }
+          slot.setTexture(texture);
+          viewer.toggleAttribute("data-ar-dim-camera", lit);
         };
         await applyTexture();
 
@@ -499,16 +545,17 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
           if (appleQuickLook) {
             viewer.setAttribute("ios-src", panelArQuickLookModelPath(portraitModelPath, selectedLandscape()));
           }
-          if (viewer.getAttribute("src") === nextPath && viewer.loaded) return;
           setLoading(true);
           try {
-            const loaded = new Promise<void>((resolve, reject) => {
-              viewer.addEventListener("load", () => resolve(), { once: true });
-              viewer.addEventListener("error", () => reject(new Error("Model could not be loaded")), { once: true });
-            });
-            viewer.setAttribute("src", nextPath);
-            await loaded;
+            if (viewer.getAttribute("src") !== nextPath) {
+              viewer.setAttribute("src", nextPath);
+              await viewer.updateComplete;
+            }
+            await waitForModel(viewer);
             await applyTexture();
+            arButton.setAttribute("data-error", "false");
+            setStatus();
+            if (handoffStatus) handoffStatus.textContent = initialHint;
             setLoading(false);
           } catch (error) {
             console.error("Could not change AR orientation:", error);
@@ -518,7 +565,7 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
 
         viewer.addEventListener("ar-status", (event: Event) => {
           const status = (event as CustomEvent<{ status: string }>).detail.status;
-          if (status === "failed") showArError("failed");
+          if (status === "failed") showArError("failed", true);
           if (status === "session-started") {
             arButton.setAttribute("data-error", "false");
             setStatus();
@@ -541,7 +588,6 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         arButton.setAttribute("data-error", "false");
         setStatus();
         setLoading(false);
-        if (handoffRequested) window.requestAnimationFrame(() => handoffButton?.focus());
       } catch (error) {
         console.error("Could not prepare AR:", error);
         showArError("failed");
@@ -563,7 +609,7 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
       void arViewer.activateAR()
         .catch((error) => {
           console.error("AR activation failed:", error);
-          showArError("failed");
+          showArError("failed", true);
         })
         .finally(() => {
           if (arViewer?.canActivateAR && arButton.dataset.error !== "true") setLoading(false);
@@ -581,23 +627,27 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
         window.location.href = samsungInternetArIntent(window.location.href);
         return;
       }
-      if (isSamsungInternet) {
+      if (android) {
         useOrientationStep = true;
         setHandoffVisible(true);
+        void prepareAR();
         return;
       }
       activatePreparedAR();
     });
     handoffButton?.addEventListener("click", activatePreparedAR);
     orientationInputs.forEach((input) => input.addEventListener("change", () => { void loadSelectedModel?.(); }));
+    lightingInputs.forEach((input) => input.addEventListener("change", () => { void loadSelectedModel?.(); }));
 
     const mobileAR = window.matchMedia("(max-width: 1023px)");
-    if (mobileAR.matches) {
-      if (needsBrowserHandoff) setLoading(false);
+    if (mobileAR.matches || useOrientationStep) {
+      if (needsBrowserHandoff || (android && !useOrientationStep)) setLoading(false);
       else void prepareAR();
     }
     mobileAR.addEventListener("change", (event) => {
-      if (event.matches && !needsBrowserHandoff) void prepareAR();
+      if (!event.matches) return;
+      if (needsBrowserHandoff || (android && !useOrientationStep)) setLoading(false);
+      else void prepareAR();
     });
   }
 

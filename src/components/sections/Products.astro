@@ -27,7 +27,7 @@ const contactPath = panelCategory
   ? `${basePath}/?panel=${panelCategory}#contact`
   : `${basePath}/#contact`;
 const category = panelCategory ?? "stone";
-const samplesNote = productsData.notes[category][lang];
+const samplesNote = productsData.notes[category]?.[lang]?.trim() ?? "";
 
 // Stone and mineral patterns in the order set in the CMS (drag & drop).
 const products = productsData.items;
@@ -47,27 +47,19 @@ const mineralStepper = fanStepper(mineralPatterns.length);
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="home-section-y home-section-divider overflow-x-clip bg-ink-800">
-  <div class="container-page flex flex-col gap-14">
+  <div class="container-page flex flex-col gap-8 lg:gap-4">
     <SectionHeader
       id={`${id}-title`}
       eyebrow={t("products.title")}
       title={t(panelCategory === "mineral" ? "products.headingMineral" : "products.heading")}
+      class="lg:mx-0 lg:items-start lg:text-left lg:gap-2 lg:[&>div:first-child]:gap-2"
     >
-      {(!panelCategory || panelCategory === "stone") && <p data-panel-type="stone">
-        <span>{t("products.descPart2")}</span><strong class="font-bold text-gold">{t("products.descPart3")}</strong><span>{t("products.descPart4")}</span>
-      </p>}
-      {(!panelCategory || panelCategory === "stone") && <p data-panel-type="stone" class="text-fg-muted">
-        <span>{t("products.descPart5")}</span><strong class="font-bold text-fg">{t("products.descPart6")}</strong><span>{t("products.descPart7")}</span>
-      </p>}
-      {(!panelCategory || panelCategory === "mineral") && <p data-panel-type="mineral">{t("products.mineralIntro")}</p>}
+      <p class="text-lg leading-relaxed text-fg-soft sm:text-xl lg:text-base">{t("products.patternPreviewHint")}</p>
     </SectionHeader>
 
-    {(!panelCategory || panelCategory === "stone") && <div data-panel-type="stone" class="flex flex-col gap-6">
-      <div class="flex flex-col gap-2 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.fanCaption")}</h3>
-          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-fg-muted">{t("products.stoneFanHint")}</p>
-        </div>
+    {(!panelCategory || panelCategory === "stone") && <div data-panel-type="stone" class="flex flex-col gap-6 lg:gap-3">
+      <div class="flex flex-col gap-2 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between lg:pb-2">
+        <h3 class="text-base font-extrabold tracking-[0.12em] uppercase">{t("products.fanCaption")}</h3>
         <p class="text-xs font-bold tracking-caps text-gold uppercase">{t("products.patternsArBadge")}</p>
       </div>
       <ul class="product-list product-pattern-fan" aria-label={t("products.fanAlt")}>
@@ -93,12 +85,9 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       <PatternStepper id={`${id}-stone-stepper`} titles={products.map((product) => product.title)} label={t("products.stepperLabel")} />
     </div>}
 
-    {(!panelCategory || panelCategory === "mineral") && <div data-panel-type="mineral" class="flex flex-col gap-6">
-      <div class="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h3 class="text-sm font-extrabold tracking-[0.18em] uppercase">{t("products.mineralPatternsTitle")}</h3>
-          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-fg-muted">{t("products.mineralArHint")}</p>
-        </div>
+    {(!panelCategory || panelCategory === "mineral") && <div data-panel-type="mineral" class="flex flex-col gap-6 lg:gap-3">
+      <div class="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between lg:pb-2">
+        <h3 class="text-base font-extrabold tracking-[0.12em] uppercase">{t("products.mineralPatternsTitle")}</h3>
         <p class="text-xs font-bold tracking-caps text-gold uppercase">{t("products.patternsArBadge")}</p>
       </div>
       <ul class="product-pattern-fan product-pattern-fan--mineral" aria-label={t("products.mineralPatternsTitle")}>
@@ -135,10 +124,8 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.label)} label={t("products.stepperLabel")} />
     </div>}
 
-    <div class="flex flex-col items-start justify-between gap-6 border border-line bg-ink-900 p-7 md:flex-row md:items-center md:gap-10 md:p-8">
-      <p class="max-w-3xl text-base leading-relaxed text-fg-soft">
-        {samplesNote}
-      </p>
+    <div class:list={["flex flex-col items-start gap-4 border border-line bg-ink-900 p-4 md:flex-row md:items-center md:gap-8 md:p-6 lg:p-4", samplesNote ? "justify-between" : "justify-center"]}>
+      {samplesNote && <p class="max-w-3xl text-lg leading-relaxed text-fg-soft lg:text-base">{samplesNote}</p>}
       <Button href={contactPath} variant="outline" class="w-full max-w-full min-w-0 shrink-0 whitespace-normal! px-3 text-center sm:w-auto sm:px-5">
         {t("products.samplesCta")}
       </Button>

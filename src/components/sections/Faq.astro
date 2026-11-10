@@ -46,15 +46,15 @@ const questions = faqItems(lang)
     standalone ? "section-y bg-ink faq-standalone" : "home-section-y home-section-divider bg-ink",
   ]}
 >
-  <div class="container-page flex flex-col gap-8 lg:gap-10">
-    <SectionHeader id={`${id}-title`} layout="center" eyebrow={t("faq.title")} title={t("faq.heading")}>
+  <div class:list={["container-page grid items-start gap-6 lg:gap-10", !standalone && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.618fr)]"]}>
+    <SectionHeader id={`${id}-title`} layout={standalone ? "center" : "left"} eyebrow={t("faq.title")} title={t("faq.heading")}>
       <p class="text-fg-muted">{t("faq.desc" as TranslationKey)}</p>
-      <Button href={`${pagePath}#contact`} variant="outline" class="mx-auto">
+      <Button href={`${pagePath}#contact`} variant="outline" class={standalone ? "mx-auto" : "self-start"}>
         {t("contact.title")}
       </Button>
     </SectionHeader>
 
-    <div class="mx-auto grid w-full max-w-4xl items-start gap-3 md:gap-4">
+    <div class:list={["grid min-w-0 items-start gap-3", standalone && "md:grid-cols-2 md:gap-4 lg:gap-5"]}>
       {
         questions.map((item) => (
           <details
@@ -71,7 +71,7 @@ const questions = faqItems(lang)
               </span>
             </summary>
             <div class="faq-answer">
-              <div class="prose-inline pb-5 text-base leading-relaxed text-fg-soft">
+              <div class="section-copy prose-inline pb-5 text-base leading-relaxed text-fg-soft">
                 {panelCategory ? (
                   <span set:html={panelCategory === "mineral" ? item.mineralAnswer : item.answer} />
                 ) : item.answer !== item.mineralAnswer ? (

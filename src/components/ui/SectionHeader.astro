@@ -32,14 +32,14 @@ const hasIntro = Astro.slots.has("default");
     {eyebrow && <p class="eyebrow">{eyebrow}</p>}
     <Tag
       id={id}
-      class="font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]"
+      class="section-title font-display text-[2.125rem] leading-[1.05] font-black tracking-display uppercase sm:text-5xl lg:text-[3.25rem]"
     >
       {title}
     </Tag>
   </div>
   {
     hasIntro && (
-      <div class="flex flex-col gap-4 text-base leading-relaxed text-fg-soft lg:text-[1.0625rem]">
+      <div class="section-intro flex flex-col gap-4 text-base leading-relaxed text-fg-soft lg:text-[1.0625rem]">
         <slot />
       </div>
     )

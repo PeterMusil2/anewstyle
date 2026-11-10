@@ -2,6 +2,7 @@
 import Picture from "../ui/Picture.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import materialOverview from "../../data/material-overview.json";
+import { inlineMarkdown } from "../../lib/inline-markdown";
 import { useTranslations, type Lang, type TranslationKey } from "../../i18n/utils";
 
 interface Props {
@@ -11,27 +12,8 @@ interface Props {
 const { lang = "cs" } = Astro.props;
 const t = useTranslations(lang);
 const localized = (value: Record<Lang, string>, fallbackKey: TranslationKey) => value[lang]?.trim() || t(fallbackKey);
-const materials: { title: TranslationKey; material: string; surface: string; layers: TranslationKey[] }[] = [
-  {
-    title: "tech.subtitle1",
-    material: localized(materialOverview.stone.technology, "home.stoneTechnology"),
-    surface: localized(materialOverview.stone.surfaceShort, "home.stoneSurfaceShort"),
-    layers: ["tech.stone1", "tech.stone2", "tech.stone3", "tech.stone4"],
-  },
-  {
-    title: "home.mineralLayerTitle",
-    material: localized(materialOverview.mineral.technology, "home.mineralTechnology"),
-    surface: localized(materialOverview.mineral.surfaceShort, "home.mineralSurfaceShort"),
-    layers: ["tech.mineralTransparent", "tech.mineralRigid", "tech.mineralThickness"],
-  },
-];
 const sharedConstruction = materialOverview.sharedConstruction;
-const compositionMarkers = [
-  { number: "1", x: 37.3, y: 4.5 },
-  { number: "2", x: 41.5, y: 6.7 },
-  { number: "3", x: 45.2, y: 12.5 },
-  { number: "4", x: 47.5, y: 22.8 },
-] as const;
+const description = sharedConstruction.description[lang]?.trim() || sharedConstruction.description[lang === "cs" ? "en" : "cs"];
 const constructionMarkers = [
   { number: "1A", x: 43, y: 18 },
   { number: "1B", x: 55, y: 18 },
@@ -54,44 +36,11 @@ const constructionLayers: { number: string; label: string | TranslationKey; tran
 
 <section id="technologies" aria-labelledby="technologies-title" class="home-section-y home-section-divider bg-ink-800">
   <div class="container-page flex flex-col gap-10 lg:gap-14">
-    <SectionHeader id="technologies-title" eyebrow={t("home.chapterTechnology")} title={t("home.technologyTitle")}>
-      <p>{t("home.technologyIntro")}</p>
-    </SectionHeader>
+    <SectionHeader id="technologies-title" layout="left" eyebrow={t("home.chapterTechnology")} title={localized(sharedConstruction.imageHeading, "home.sharedConstructionTitle")} />
 
-    <figure class="mx-auto flex w-full max-w-5xl flex-col gap-5 border border-line bg-ink-900 p-4 sm:gap-6 sm:p-6">
-      <div class="relative w-full">
-        <Picture src="/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png" alt={localized(materialOverview.materialComposition.imageAlt, "home.stoneImageAlt")} sizes="(min-width: 64rem) 70vw, 100vw" class="mx-auto h-auto max-h-[38rem] w-full object-contain" />
-        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
-          {compositionMarkers.map((marker) => (
-            <span class="absolute z-10 grid size-[clamp(0.875rem,3.2vw,2rem)] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-sm border border-gold bg-ink-900 text-[clamp(0.5rem,1.1vw,0.75rem)] font-black text-gold shadow-lg" style={`left: ${marker.x}%; top: ${marker.y}%;`}>
-              {marker.number}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div class="grid gap-5 md:grid-cols-2 lg:gap-7">
-        {materials.map((item) => (
-          <article class="flex min-w-0 flex-col gap-4 border border-line p-4 sm:p-6">
-            <h3 class="text-center text-sm font-black tracking-[0.12em] text-gold uppercase">{t(item.title)}</h3>
-            <p class="text-center text-base leading-relaxed text-fg-soft">{item.material}</p>
-            <ol class="flex flex-col gap-2 border-t border-line pt-4">
-              {item.layers.map((layer, index) => (
-                <li class="grid grid-cols-[1.75rem_minmax(0,1fr)] items-start gap-3 text-sm leading-relaxed text-fg-muted">
-                  <span class="inline-grid size-6 place-items-center border border-gold text-[0.6875rem] font-extrabold text-gold">{index + 1}</span>
-                  <span>{t(layer)}</span>
-                </li>
-              ))}
-            </ol>
-            <p class="border-l-2 border-gold pl-4 text-center text-sm leading-relaxed text-fg-muted">{item.surface}</p>
-          </article>
-        ))}
-      </div>
-    </figure>
-
-    <figure class="mx-auto flex w-full max-w-5xl flex-col gap-5 border border-line bg-ink-900 p-4 sm:gap-6 sm:p-6">
-      <div class="relative w-full">
-        <Picture src="/images/technologies/konstrukce_sviticiho_panelu.png" alt={localized(sharedConstruction.imageAlt, "home.stoneConstructionAlt")} sizes="(min-width: 64rem) 70vw, 100vw" class="mx-auto h-auto max-h-[38rem] w-full object-contain" />
-        <h3 class="absolute inset-x-2 top-[-5%] whitespace-nowrap text-center text-[0.625rem] font-black tracking-[0.08em] text-gold uppercase sm:inset-x-4 sm:top-[-1%] sm:text-base sm:tracking-[0.12em]">{localized(sharedConstruction.imageHeading, "home.sharedConstructionTitle")}</h3>
+    <figure class="mx-auto flex w-full max-w-5xl flex-col gap-5 border border-line bg-ink-900 p-4 sm:gap-6 sm:p-6 lg:grid lg:max-w-none lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-center lg:gap-10 lg:p-8">
+      <div class="relative w-full lg:col-start-2 lg:row-start-1">
+        <Picture src="/images/technologies/konstrukce_sviticiho_panelu.png" alt={localized(sharedConstruction.imageAlt, "home.stoneConstructionAlt")} sizes="(min-width: 80rem) 41rem, (min-width: 64rem) 55vw, 100vw" class="mx-auto h-auto max-h-[38rem] w-full object-contain" />
         <div class="pointer-events-none absolute inset-0" aria-hidden="true">
           {constructionMarkers.map((marker) => (
             <span class="absolute z-10 grid size-[clamp(1.25rem,3vw,2rem)] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-sm border border-gold bg-ink-950/90 text-[clamp(0.5625rem,1.1vw,0.75rem)] font-black text-gold shadow-lg" style={`left: ${marker.x}%; top: ${marker.y}%;`}>
@@ -100,17 +49,19 @@ const constructionLayers: { number: string; label: string | TranslationKey; tran
           ))}
         </div>
       </div>
-      <p class="text-center text-sm leading-relaxed text-fg-soft sm:text-base">{localized(sharedConstruction.description, "tech.desc")}</p>
-      <ol class="grid gap-2 border-t border-line pt-4 sm:grid-cols-2 sm:gap-x-8">
+      <figcaption class="flex min-w-0 flex-col gap-5 lg:col-start-1 lg:row-start-1">
+        <p class="section-copy max-w-2xl text-fg-soft [&_strong]:font-extrabold [&_strong]:text-fg" set:html={inlineMarkdown(description)} />
+        <ol class="grid gap-2 border-t border-line pt-4 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-1 lg:gap-0 lg:divide-y lg:divide-line lg:pt-2">
         {constructionLayers.map((layer) => (
-          <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-3 text-sm leading-relaxed text-fg-muted">
+          <li class="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-3 text-sm leading-relaxed text-fg-muted lg:grid-cols-[1.75rem_minmax(0,1fr)] lg:items-center lg:py-1.5">
             <span class="inline-grid size-7 place-items-center border border-gold text-[0.6875rem] font-extrabold text-gold">
               {layer.number}
             </span>
             <span>{layer.translated ? t(layer.label as TranslationKey) : layer.label}</span>
           </li>
         ))}
-      </ol>
+        </ol>
+      </figcaption>
     </figure>
   </div>
 </section>

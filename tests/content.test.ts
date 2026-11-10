@@ -12,6 +12,8 @@ import mineralHero from "../src/data/mineral-hero.json";
 import { faqItems } from "../src/lib/faq";
 import { getGalleryItems } from "../src/lib/gallery";
 import {
+  heroArTextures,
+  isAndroidArDevice,
   isAppleQuickLookDevice,
   mineralArModelPath,
   PANEL_AR_PLACEMENT,
@@ -82,9 +84,26 @@ describe("hero video", () => {
     expect(header).toContain('id="headerArButton"');
     expect(header).toContain("{t('header.btnAr')}");
     expect(header).toContain('mineralArModelPath(headerMineralTexture)');
-    expect(header).toContain('text-[clamp(1.75rem,8vw,3rem)] sm:text-6xl lg:text-7xl');
+    expect(header).toContain('wrap-anywhere text-[clamp(1.75rem,8vw,3rem)] sm:max-w-4xl sm:text-6xl lg:text-7xl');
     expect(publicFile(STONE_AR_MODEL_PATH)).toBe(true);
     expect(publicFile("/images/patterns/mineral-2.png")).toBe(true);
+  });
+
+  test("Android hero uses matching ON and OFF photos for both panel materials", () => {
+    const header = readFileSync("src/components/header/Header.astro", "utf8");
+    expect(heroArTextures()).toEqual(heroArTextures("stone"));
+    for (const category of ["stone", "mineral"] as const) {
+      const textures = heroArTextures(category);
+      expect(textures.off).not.toBe(textures.on);
+      expect(publicFile(textures.off)).toBe(true);
+      expect(publicFile(textures.on)).toBe(true);
+    }
+    expect(isAndroidArDevice("Mozilla/5.0 (Linux; Android 16) SamsungBrowser/28.0")).toBe(true);
+    expect(isAndroidArDevice("Mozilla/5.0 (iPhone) CriOS/138.0")).toBe(false);
+    expect(header).toContain('id="arLightingOptions" hidden');
+    expect(header).toContain("if (lightingOptions) lightingOptions.hidden = !android");
+    expect(header).toContain('viewer.toggleAttribute("data-ar-dim-camera", lit)');
+    expect(header).toContain("let useOrientationStep = handoffRequested || directAndroid");
   });
 
   test("panel AR uses wall anchoring and Android-compatible baked models", async () => {
@@ -337,17 +356,19 @@ describe("panel patterns", () => {
     expect(component).toContain('t(panelCategory === "mineral" ? "products.headingMineral" : "products.heading")');
   });
 
-  test("stone pattern hint explains click-to-preview and AR placement", async () => {
+  test("both surface pages share a translated 3D and AR hint", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
 
-    expect(cs["products.stoneFanHint"]).toBe("Kliknutím na vybraný vzor kamene otevřete jeho 3D náhled a na kompatibilním telefonu také jeho umístění do Vašeho interiéru.");
-    expect(en["products.stoneFanHint"]).toContain("place it in your interior using AR");
+    const component = await Bun.file("src/components/sections/Products.astro").text();
+    expect(component.match(/t\("products\.patternPreviewHint"\)/g)).toHaveLength(1);
+    expect(cs["products.patternPreviewHint"]).toMatch(/3D.*AR.*kompatibilním telefonu/);
+    expect(en["products.patternPreviewHint"]).toMatch(/3D.*AR.*compatible phone/);
   });
 
-  test("stone pattern note explains that individual stock pieces cannot yet be shown in AR", () => {
-    expect(products.notes.stone.cs).toContain("jednotlivé aktuálně skladové kusy zatím v AR zobrazit neumíme");
-    expect(products.notes.stone.en).toContain("for now, we cannot show every individual in-stock piece in AR");
+  test("stone pattern note tells visitors how to see available stone patterns", () => {
+    expect(products.notes.stone.cs).toContain("v bonusové galerii po odeslání kontaktního formuláře");
+    expect(products.notes.stone.en).toContain("in the bonus gallery after submitting the contact form");
   });
 
   test("stone patterns have a title and a photo", () => {
@@ -368,18 +389,25 @@ describe("panel patterns", () => {
 });
 
 describe("home material overview", () => {
-  test("uses one bilingual composition image for the stone veneer and mineral panel", async () => {
+  test("shows the individual composition diagrams on their respective panel pages", async () => {
     const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
+    const landing = await Bun.file("src/components/pages/PanelLanding.astro").text();
     const cs = "Transparentní, litý designový panel s vysokým podílem minerálů a hladkým povrchem, o tloušťce 6 mm.";
-    const image = "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png";
+    const stone = "/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png";
+    const mineral = "/images/technologies/mineral-perspective.png";
 
     expect(materialOverview.mineral.technology.cs).toBe(cs);
     expect(materialOverview.mineral.technology.en).toContain("cast design panel");
-    expect(component.match(/<Picture src="\/images\/technologies\/konstrukce_sviticiho_panelu_kamenna_dyha-mineral\.png"/g)).toHaveLength(1);
-    expect(component).not.toContain("/images/technologies/konstrukce_sviticiho_panelu_kamenna_dyha2.png");
-    expect(component).not.toContain("/images/technologies/mineral-perspective.png");
-    expect(publicFile(image)).toBe(true);
-    expect(materialOverview.materialComposition.imageAlt.cs).toContain("kamenné dýhy");
+    expect(component).not.toContain("konstrukce_sviticiho_panelu_kamenna_dyha-mineral.png");
+    for (const image of [stone, mineral]) {
+      expect(publicFile(image)).toBe(true);
+      expect(landing).toContain(image);
+      expect(component).not.toContain(image);
+    }
+    expect(landing).toContain("t(\"tech.stone4\")");
+    for (const alt of Object.values(materialOverview.materialComposition)) {
+      for (const text of Object.values(alt)) expect(text.trim()).not.toBe("");
+    }
   });
 
   test("renders one shared construction image and preserves the two alternative front layers and layers 2–6", async () => {
@@ -392,23 +420,16 @@ describe("home material overview", () => {
     expect(publicFile(image)).toBe(true);
     expect(materialOverview.sharedConstruction.stoneLayer.cs).toBe("Transparentní kamenná dýha");
     expect(materialOverview.sharedConstruction.mineralLayer.cs).toBe("Transparentní minerální panel");
-    expect(materialOverview.sharedConstruction.description.cs).toBe("Svítící kamenné panely AnewStyle jsou kombinací zajímavých technologií. Spojení tenké vrstvy přírodního kamene nebo transparentní, minerální desky s bočním nasvícením světlovodivé desky s rovnoměrným celoplošným rozptylem světla. Tento způsob nasvícení umožňuje v případě potřeby snadnou výměnu zdroje světla.");
+    for (const description of Object.values(materialOverview.sharedConstruction.description)) {
+      expect(description.match(/\*\*[^*]+\*\*/g)).toHaveLength(2);
+    }
+    expect(component).toContain("inlineMarkdown(description)");
     expect(component).toContain('{ number: "1A", label: localized(sharedConstruction.stoneLayer');
     expect(component).toContain('{ number: "1B", label: localized(sharedConstruction.mineralLayer');
     for (const number of ["2", "3", "4", "5", "6"]) expect(component).toContain(`number: "${number}"`);
     expect(materialOverview.sharedConstruction.imageHeading.cs).toBe("Konstrukce svítícího panelu Anew Style");
   });
 
-  test("overlays the four composition callouts in the supplied diagram positions", async () => {
-    const component = await Bun.file("src/components/sections/MaterialOverview.astro").text();
-    expect(component).toContain("compositionMarkers.map((marker)");
-    for (const marker of [
-      '{ number: "1", x: 37.3, y: 4.5 }',
-      '{ number: "2", x: 41.5, y: 6.7 }',
-      '{ number: "3", x: 45.2, y: 12.5 }',
-      '{ number: "4", x: 47.5, y: 22.8 }',
-    ]) expect(component).toContain(marker);
-  });
 });
 
 describe("panel landing material cards", () => {
@@ -439,7 +460,6 @@ describe("price navigation", () => {
 
     expect(nav).toContain("<PriceNavItem lang={lang} />");
     expect(nav).toContain('<PriceNavItem lang={lang} variant="panel" />');
-    expect(normalizedNav.match(/\{homeLinks\.map\(\(link\) => <NavItem \{\.\.\.link\}(?: variant="panel")? \/>\)\}/g)).toHaveLength(2);
     expect(normalizedNav).not.toContain("comparisonLink");
     expect(normalizedNav).not.toContain('t("nav.products")');
     expect(nav).toContain('<InfoNavItem lang={lang} />');
@@ -456,7 +476,7 @@ describe("price navigation", () => {
     expect(en["nav.priceStone"]).toBe("Illuminated stone panels");
     expect(en["nav.priceMineral"]).toBe("Illuminated mineral panels");
     expect(priceNav).toContain("data-nav-link");
-    expect(priceNav).toContain('"price-nav-item__trigger flex cursor-pointer list-none items-center justify-between gap-2 font-bold tracking-caps text-fg-soft uppercase');
+    expect(priceNav).toContain('data-nav-level="primary"');
     expect(priceNav).toContain('trigger.setAttribute("aria-current", "location")');
     expect(priceNav).toContain('.price-nav-item__trigger[data-active="true"]');
     expect(priceNav).toContain("data-price-nav-option");
@@ -465,8 +485,7 @@ describe("price navigation", () => {
     expect(priceNav).toContain('.price-nav-item__menu a[data-active="true"]:is(:hover, :focus-visible)');
     expect(priceNav).toContain('.price-nav-item__trigger[data-active="true"]:is(:hover, :focus-visible)');
     expect(priceNav).toContain('hover:text-gold-light');
-    expect(priceNav).toContain('variant === "panel" && "min-h-14 border-b border-line text-[0.8125rem] tracking-[0.12em]"');
-    expect(priceNav).toContain('variant === "panel" && "min-h-12 border-b border-line px-3 text-base last:border-b-0"');
+    expect(priceNav).toContain('data-nav-level="secondary"');
   });
 
   test("keeps the active navigation destination gold while retaining hover styling", async () => {
@@ -486,11 +505,27 @@ describe("price navigation", () => {
 
     expect(nav).toContain('class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8"');
     expect(nav).toContain('hover:text-gold min-[1200px]:hidden"');
-    expect(nav).toContain('text-fg min-[1200px]:hidden"');
+    expect(nav).toMatch(/id="mobile-menu"[\s\S]*?class="[^"]+min-\[1200px\]:hidden"/);
   });
 });
 
 describe("price list category labels", () => {
+  test("renders the format introduction only for stone pricing", async () => {
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(priceList).toMatch(/previewCategories\.includes\("stone"\) && <p data-price-type="stone">\s*<span>\{t\("price\.desc2"\)\}/);
+    expect(priceList).not.toContain("price.desc4Mineral");
+  });
+
+  test("uses the same responsive price card layout for stone and mineral pricing", async () => {
+    const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
+
+    expect(priceList).toContain('class="hidden min-h-10 text-sm text-fg-muted sm:block short:hidden"');
+    expect(priceList).toContain("sm:line-clamp-2 sm:min-h-10 short:hidden");
+    expect(priceList).not.toContain("data-price-display");
+    expect(priceList).toContain('html:not([data-panel-category="mineral"])');
+  });
+
   test("shows the specific panel category in each branch instead of the generic label", async () => {
     const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
 
@@ -511,15 +546,12 @@ describe("price list category labels", () => {
 describe("homepage navigation", () => {
   test("keeps core links visible and groups supporting pages under Information", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
-    const homeLinks = nav.slice(nav.indexOf("const homeLinks = ["), nav.indexOf("const contactLink ="));
     const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
 
-    expect(homeLinks).not.toContain('href: "#about"');
-    expect(homeLinks).not.toContain('t("nav.faq")');
-    expect(homeLinks).toContain('t("nav.technologies")');
-    expect(homeLinks).toContain('t("nav.features")');
-    expect(homeLinks).toContain('href: `${basePath}/#technologies`');
-    expect(homeLinks).toContain('href: `${basePath}/#features`');
+    expect(nav).not.toContain('t("nav.technologies")');
+    expect(nav).not.toContain('t("nav.features")');
+    expect(infoNav).toMatch(/const sectionLinks = \[[\s\S]*?#technologies[\s\S]*?#features[\s\S]*?\];/);
+    expect(infoNav.indexOf("sectionLinks.map")).toBeLessThan(infoNav.indexOf('class="info-nav-item__surface-item"'));
     expect(nav).toContain('text: t("nav.contact")');
     expect(infoNav).toContain('t("nav.gallery")');
     expect(infoNav).toContain('t("nav.faq")');
@@ -545,16 +577,16 @@ describe("homepage navigation", () => {
     const infoNav = await Bun.file("src/components/nav/InfoNavItem.astro").text();
     const priceNav = await Bun.file("src/components/nav/PriceNavItem.astro").text();
 
-    for (const component of [panelSwitch, infoNav]) {
-      expect(component).toContain("font-family: var(--font-sans);");
-      expect(component).toContain("font-size: 1rem;");
-      expect(component).toContain("font-weight: 700;");
-      expect(component).toContain("letter-spacing: var(--tracking-caps);");
+    for (const component of [panelSwitch, infoNav, priceNav]) {
+      expect(component).toContain('data-nav-level="primary"');
+      expect(component).toContain('data-nav-level="secondary"');
     }
     expect(nav).toContain('(min-width: 1200px) and (hover: hover) and (pointer: fine)');
     expect(nav).toContain('menu?.querySelectorAll<HTMLDetailsElement>("details")');
     expect(nav).toContain('const mobileHover = window.matchMedia("(max-width: 1199px) and (hover: hover) and (pointer: fine)")');
     expect(nav).toContain('const closeMobileDropdownTree = (root: HTMLDetailsElement)');
+    expect(nav).toContain("[scrollbar-gutter:stable]");
+    expect(infoNav).toMatch(/\.info-nav-item__chevron \{[^}]+pointer-events: none/);
     expect(nav).toContain('details.addEventListener("pointerleave", (event) =>');
     expect(nav).toContain('if (mobileHover.matches && event.pointerType === "mouse") closeMobileDropdownTree(details);');
     expect(nav).toContain('menu?.addEventListener("click"');
@@ -570,6 +602,9 @@ describe("homepage navigation", () => {
     expect(nav).toContain('window.addEventListener("scroll"');
     expect(nav).toContain('details.addEventListener("focusout"');
     expect(nav).toContain('event.key === "Escape"');
+    expect(infoNav).toMatch(/\.info-nav-item--bar \.info-nav-item__submenu \{[^}]+inset-inline-start: 100%/);
+    expect(infoNav).toMatch(/\[data-flyout-left\] > \.info-nav-item__submenu \{[^}]+inset-inline-end: 100%/);
+    expect(nav).toContain("right + width > document.documentElement.clientWidth && left >= width");
     expect(priceNav).not.toContain('"absolute inset-inline-start-0 top-full z-50 mt-2');
   });
 
@@ -582,7 +617,6 @@ describe("homepage navigation", () => {
 
     for (const menu of [desktop, mobile]) {
       expect(menu).toContain("<PanelNavSwitch");
-      expect(menu).toContain("{homeLinks.map((link) => <NavItem");
       expect(menu).toContain("<PriceNavItem");
       expect(menu).toContain("<NavItem {...contactLink}");
       expect(menu).toContain("<InfoNavItem");
@@ -594,7 +628,7 @@ describe("homepage navigation", () => {
 });
 
 describe("home lighting comparison", () => {
-  test("keeps the shared state control directly above both panels without the redundant hint", async () => {
+  test("keeps shared controls above both panels on mobile and beside them on desktop", async () => {
     const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
@@ -603,7 +637,11 @@ describe("home lighting comparison", () => {
 
     expect(controlsAt).toBeGreaterThan(-1);
     expect(panelsAt).toBeGreaterThan(controlsAt);
-    expect(component).toContain("home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-4");
+    expect(component).toContain("home-showcase-comparison mx-auto flex w-full max-w-6xl flex-col gap-2 sm:gap-3 lg:contents");
+    expect(component).toMatch(/<fieldset[^>]+lg:col-start-1 lg:row-start-2/);
+    expect(component).toContain("lg:col-start-2 lg:row-span-2 lg:row-start-1");
+    expect(component).toContain("--stage-width: clamp(8rem, calc((100svh - 15rem) / 1.36), 19rem)");
+    expect(component).toContain("margin-block-end: min(38%, calc(var(--stage-width) * 0.38))");
     expect(component).not.toContain("home.showcaseStateHint");
     expect(cs["home.showcaseStateHint"]).toBeUndefined();
     expect(en["home.showcaseStateHint"]).toBeUndefined();
@@ -611,7 +649,6 @@ describe("home lighting comparison", () => {
 
   test("places each panel link and material caption below its image", async () => {
     const component = await Bun.file("src/components/sections/HomeShowcase.astro").text();
-    const mobileButtonStyles = "whitespace-normal! leading-tight max-sm:text-[0.625rem]!";
     const stoneButtonAt = component.indexOf('<Button href={stoneHref}');
     const mineralButtonAt = component.indexOf('<Button href={mineralHref}');
     const controlsAt = component.indexOf('name="home-showcase-state"');
@@ -622,7 +659,8 @@ describe("home lighting comparison", () => {
     expect(controlsAt).toBeLessThan(panelsAt);
     expect(panelsAt).toBeLessThan(stoneButtonAt);
     expect(stoneButtonAt).toBeLessThan(mineralButtonAt);
-    expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain(mobileButtonStyles);
+    expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain('href={stoneHref} size="sm"');
+    expect(component.slice(mineralButtonAt)).toContain('href={mineralHref} size="sm"');
     expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain("home.openStone");
     expect(component.slice(stoneButtonAt, mineralButtonAt)).toContain("header.stoneMaterial");
     expect(component.slice(mineralButtonAt)).toContain("home.openMineral");
@@ -656,8 +694,7 @@ describe("home section rhythm", () => {
   test("reduces top spacing for anchored sections on home and both panel routes", async () => {
     const styles = await Bun.file("src/styles/global.css").text();
 
-    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
-    expect(styles).toContain("main > section:has(#about:target)");
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target {");
     expect(styles).toContain("padding-block-start: 1rem;");
     expect(styles).toContain("main > section#panel-material:target > .container-page");
     expect(styles).toContain("main > section.pricing:target > .price-catalog > .container-page:first-child");
@@ -678,11 +715,11 @@ describe("home section rhythm", () => {
     expect(styles).toContain("--nav-height: 5.5rem;");
   });
 
-  test("gives the shared home sections their normal top spacing; only anchor jumps are tight", async () => {
+  test("uses shared section spacing and keeps anchor jumps tight", async () => {
     const styles = await Bun.file("src/styles/global.css").text();
 
-    // Regular scrolling: no blanket override, so `home-section-y` padding applies.
     for (const selector of [
+      "main > section#about",
       "main > section#technologies",
       "main > section#features",
       "main > section#day-night",
@@ -690,14 +727,16 @@ describe("home section rhythm", () => {
       "main > section#contact",
       "main > section#products",
       "main > section#equipment-comparison",
+      "main > section#panel-material",
+      "main > section.pricing",
     ]) {
-      expect(styles).not.toContain(`${selector},`);
+      expect(styles).toContain(selector);
     }
-    expect(styles).toContain("padding-block: 4.25rem;");
-    expect(styles).toContain("padding-block: 6.5rem;");
+    expect(styles).toContain("padding-block: 5rem;");
+    expect(styles).toContain("padding-block: 7.5rem;");
     // Jumping to a section (#technologies, #contact, …) still lands close under the header.
-    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
-    expect(styles).toContain("main > section:has(#about:target)");
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target {");
+    expect(styles).toContain("padding-block-start: 1rem;");
   });
 
   test("sizes the desktop showcase to keep panels, reflections, and controls in view", async () => {
@@ -707,7 +746,68 @@ describe("home section rhythm", () => {
     expect(component).toContain("lg:aspect-auto lg:h-[min(55svh,38rem)]");
   });
 
-  test("uses slightly tighter spacing and alternating brand surfaces on the shared home page", async () => {
+  test("constrains homepage illustrations and puts contact cards side by side on desktop", async () => {
+    const [technology, dayNight, contact] = await Promise.all([
+      Bun.file("src/components/sections/MaterialOverview.astro").text(),
+      Bun.file("src/components/sections/HomeDayNight.astro").text(),
+      Bun.file("src/components/sections/Contact.astro").text(),
+    ]);
+
+    expect(technology).toMatch(/<figure[^>]+lg:grid-cols-\[minmax\(0,2fr\)_minmax\(0,3fr\)\]/);
+    expect(technology).toMatch(/<div class="relative w-full lg:col-start-2 lg:row-start-1">\s*<Picture[\s\S]*?<div class="pointer-events-none absolute inset-0"/);
+    expect(technology).toMatch(/<figcaption[^>]+lg:col-start-1 lg:row-start-1/);
+    expect(dayNight).toContain("lg:grid-cols-[minmax(0,3fr)_minmax(0,7fr)]");
+    expect(dayNight).toMatch(/<fieldset[^>]+lg:col-start-1 lg:row-start-2 lg:grid-cols-1"/);
+    expect(dayNight).toMatch(/<figure[^>]+lg:col-start-2 lg:row-span-2 lg:row-start-1/);
+    expect(dayNight).toContain('<input type="range"');
+    expect(contact).toMatch(/<SectionHeader[^>]+lg:col-start-1 lg:row-start-1/);
+    expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-1 lg:row-start-2 lg:h-auto lg:gap-1\.5 lg:p-3"/);
+    expect(contact).toContain("lg:grid-cols-6");
+    expect(contact.match(/data-contact-preview="(?:stone|mineral)"/g)).toHaveLength(2);
+    expect(contact).toContain("lg:has-[details[open]]:grid-cols-1");
+    expect(contact).toMatch(/<div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
+    expect(technology).toContain("lg:divide-y lg:divide-line");
+    expect(dayNight).toContain("has-checked:bg-gold has-checked:text-ink");
+    expect(dayNight).toMatch(/<figure[^>]+lg:p-2/);
+    expect(contact.match(/lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent/g)).toHaveLength(2);
+  });
+
+  test("left-aligns the panel heroes without changing the sections below", async () => {
+    const [header, pricing, products, landing, gallery] = await Promise.all([
+      Bun.file("src/components/header/Header.astro").text(),
+      Bun.file("src/components/sections/PriceList.astro").text(),
+      Bun.file("src/components/sections/Products.astro").text(),
+      Bun.file("src/components/pages/PanelLanding.astro").text(),
+      Bun.file("src/components/sections/Showroom.astro").text(),
+    ]);
+    expect(header).toContain('home ? "items-center text-center lg:items-start lg:text-left" : "items-start text-left"');
+    expect(pricing).toMatch(/<header[^>]+text-center[^>]+lg:items-start lg:text-left/);
+    expect(products).toMatch(/<SectionHeader[^>]+class="lg:mx-0 lg:items-start lg:text-left\b/);
+    expect(landing).toMatch(/<SectionHeader id="panel-material-title"[^>]+class="lg:mx-0 lg:items-start lg:self-start lg:text-left lg:col-span-2/);
+    expect(gallery).toMatch(/<SectionHeader[^>]+layout="center"[^>]+class="lg:mx-0 lg:items-start lg:self-start lg:text-left"/);
+  });
+
+  test("scales the desktop fan with the available viewport height", async () => {
+    const [products, effects] = await Promise.all([
+      Bun.file("src/components/sections/Products.astro").text(),
+      Bun.file("src/styles/effects.css").text(),
+    ]);
+    expect(products).toContain("container-page flex flex-col gap-8 lg:gap-4");
+    expect(effects).toMatch(/@media \(width >= 64rem\) \{\s*\.product-pattern-fan \{[^}]+--fan-card: clamp\(7rem, calc\(\(100svh - 21rem\) \* 0\.45\), 13rem\)/);
+    expect(effects).toContain("min-block-size: calc(var(--fan-card) * 1.67 + 1.5rem)");
+    expect(effects).toContain("--fan-card: clamp(5.5rem, 22vw, 8rem)");
+  });
+
+  test("manual video cards defer the player and offer a separate PDF link", async () => {
+    const manuals = await Bun.file("src/components/sections/Manuals.astro").text();
+    expect(manuals).toMatch(/<SectionHeader[^>]+layout="center"[^>]+lg:items-start lg:text-left/);
+    expect(manuals).toMatch(/<template>\s*<iframe[\s\S]+autoplay=1[\s\S]+<\/iframe>\s*<\/template>/);
+    expect(manuals).toContain('stage.replaceChildren(player)');
+    expect(manuals).toContain('t("manual.playVideo")');
+    expect(manuals).toMatch(/<Button href=\{m\.href\}[^>]+target="_blank"[\s\S]+t\("manual\.cardCta"\)/);
+  });
+
+  test("uses shared section spacing and alternating brand surfaces on the homepage", async () => {
     const files = [
       ["src/components/sections/HomeShowcase.astro", "home-section-y home-section-divider relative isolate overflow-hidden bg-ink"],
       ["src/components/sections/MaterialOverview.astro", "home-section-y home-section-divider bg-ink-800"],
@@ -723,8 +823,8 @@ describe("home section rhythm", () => {
 
     const styles = await Bun.file("src/styles/global.css").text();
     expect(styles).toContain("@utility home-section-y {");
-    expect(styles).toContain("padding-block: 4.25rem;");
-    expect(styles).toContain("padding-block: 6.5rem;");
+    expect(styles).toContain("padding-block: 5rem;");
+    expect(styles).toContain("padding-block: 7.5rem;");
     // Sections have no top border and no gold line; only the alternating surfaces separate them.
     expect(styles).not.toContain(".home-section-divider::before");
     const divider = styles.slice(styles.indexOf("@utility home-section-divider {"));
@@ -757,17 +857,19 @@ describe("panel landing visual rhythm", () => {
     const products = await Bun.file("src/components/sections/Products.astro").text();
     const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
 
-    expect(landing).toContain('id="panel-material" aria-labelledby="panel-material-title" class="home-section-divider bg-ink"');
+    expect(landing).toContain('id="panel-material" aria-labelledby="panel-material-title" class="home-section-y home-section-divider bg-ink"');
     expect(products).toContain('class="home-section-y home-section-divider overflow-x-clip bg-ink-800"');
-    expect(priceList).toContain('class="pricing home-section-divider bg-ink"');
+    expect(priceList).toContain('class="pricing home-section-y home-section-divider bg-ink"');
   });
 
-  test("centers the material overview and all six property cards in both panel branches", async () => {
+  test("fits the overview and six centered facts beside each other on desktop", async () => {
     const landing = await Bun.file("src/components/pages/PanelLanding.astro").text();
 
-    expect(landing).toContain('class="container-page flex flex-col items-center gap-7 py-8 sm:py-10"');
-    expect(landing).toContain('class="flex max-w-3xl flex-col items-center gap-3 text-center"');
-    expect(landing).toContain('class="grid w-full max-w-5xl gap-3 sm:grid-cols-2"');
+    expect(landing).toContain('<SectionHeader id="panel-material-title"');
+    expect(landing).toMatch(/container-page flex flex-col items-center gap-7 lg:grid lg:grid-cols-\[minmax\(0,2fr\)_minmax\(0,3fr\)\]/);
+    expect(landing).toMatch(/<figure[^>]+md:grid-cols-2[^>]+lg:grid-cols-1/);
+    expect(landing).toContain("object-contain lg:max-h-[clamp(7rem,calc(100svh-29rem),12rem)]");
+    expect(landing).toContain('class="grid w-full max-w-5xl gap-3 sm:grid-cols-2 lg:gap-2.5');
     expect(landing.match(/<dt class="text-center /g)).toHaveLength(6);
     expect(landing.match(/<dd class="mt-2 text-center /g)).toHaveLength(6);
   });
@@ -780,24 +882,16 @@ describe("feature disclosures", () => {
     expect(component).toContain("features.map((feature)");
     expect(component).toContain('<details class="group/feature">');
     expect(component).toContain('<h3 class="min-w-0 flex-1 text-sm leading-snug font-black tracking-[0.06em] uppercase">');
-    expect(component).toContain('items-center gap-3 rounded-sm text-fg');
+    expect(component).toMatch(/<summary[^>]*cursor-pointer[^>]*p-4[^>]*>/);
     expect(component).not.toContain("<details open=");
     expect(component).not.toContain("feature-color-palette");
     const palette = await Bun.file("src/components/palette/Palette.astro").text();
     expect(palette).toContain('<ul class="flex h-12 items-center gap-3"');
     expect(component).toContain("feature-disclosure-indicator");
-    // The whole card toggles (summary cover), and the +/− are Heroicons, not text glyphs.
     expect(component).toContain(".feature-summary::after");
     expect(component).toContain("inset: 0;");
-    expect(component).toContain('name="plus-outline"');
-    expect(component).toContain('name="minus-outline"');
-    expect(component).not.toContain('content: "+"');
-    expect(component).not.toContain('content: "−"');
-    const sprite = await Bun.file("src/components/icons/IconSet.astro").text();
-    expect(sprite).toContain('id="icon-plus-outline"');
-    expect(sprite).toContain('d="M12 4.5v15m7.5-7.5h-15"');
-    expect(sprite).toContain('id="icon-minus-outline"');
-    expect(sprite).toContain('d="M5 12h14"');
+    expect(component).toContain(".feature-disclosure-indicator::before");
+    expect(component).toContain("rotate: 225deg");
     expect(component).toContain('if (!feature?.matches("li[id]")) return;');
     expect(component).toContain("border-line-strong bg-ink-900");
     expect(component).toContain("border-gold/70 bg-gold/10");
@@ -807,13 +901,11 @@ describe("feature disclosures", () => {
 });
 
 describe("FAQ", () => {
-  test("uses a centered heading and a compact, responsive native accordion grid", async () => {
+  test("places homepage questions in the wider right column and retains the native accordion", async () => {
     const faq = await Bun.file("src/components/sections/Faq.astro").text();
 
-    expect(faq).toContain('layout="center" eyebrow={t("faq.title")}');
-    // One column at every width (readable line length), no two-column grid.
-    expect(faq).toContain("mx-auto grid w-full max-w-4xl items-start gap-3 md:gap-4");
-    expect(faq).not.toContain("md:grid-cols-2");
+    expect(faq).toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.618fr)]');
+    expect(faq).toContain('layout={standalone ? "center" : "left"}');
     expect(faq).toContain('name="faq"');
     expect(faq).not.toContain("open={index === 0}");
     expect(faq).toContain('standalone ? "section-y bg-ink faq-standalone" : "home-section-y home-section-divider bg-ink"');
@@ -866,57 +958,27 @@ describe("i18n", () => {
     }
   });
 
-  test("panel page switch shows all three destinations and marks the current page", async () => {
+  test("hero sends home visitors to the showcase and panel visitors to the panel overview", async () => {
     const cs = await Bun.file("src/i18n/cs.json").json();
     const en = await Bun.file("src/i18n/en.json").json();
     const header = await Bun.file("src/components/header/Header.astro").text();
-    const switcher = await Bun.file("src/components/ui/PanelCategorySwitch.astro").text();
-
-    expect(cs["nav.allPanels"]).toBe("Vše o panelech Anew Style");
-    expect(en["nav.allPanels"]).toBe("All about Anew Style panels");
-    expect(header).toContain('<PanelCategorySwitch lang={lang} activeCategory={panelCategory} />');
-    expect(switcher).toContain('getPanelPagePath("stone", lang)');
-    expect(switcher).toContain('getPanelPagePath("mineral", lang)');
-    expect(switcher).toContain('label: t("nav.allPanels")');
-    expect(switcher).toContain('active: !activeCategory');
-    expect(switcher).toContain('"panel-switch__label",');
-    expect(switcher).toContain("white-space: normal;");
-    expect(switcher).toContain("display: block;");
-    expect(switcher).toContain("text-wrap: balance;");
-    expect(switcher).toContain('font-size: clamp(0.9rem, 1.1vw, 1rem)');
-    expect(switcher).toContain('const learnMoreHref = "#panel-material"');
-    expect(switcher).toContain('activeCategory === "stone" ? learnMoreHref : getPanelPagePath("stone", lang)');
-    expect(switcher).toContain('activeCategory === "mineral" ? learnMoreHref : getPanelPagePath("mineral", lang)');
-    expect(switcher).toContain('const allPanelsHref = activeCategory ? homePath : `${homePath}#about`');
-    expect(switcher).toContain('const allPanelsOption = { href: allPanelsHref, label: t("nav.allPanels"), active: !activeCategory }');
-    expect(switcher).toMatch(/const options = \[allPanelsOption, \.\.\.panelOptions\]/);
-    expect(switcher).toContain('active: activeCategory === "stone"');
-    expect(switcher).toContain('active: activeCategory === "mineral"');
-    expect(switcher).toContain('variant={active ? "primary" : "outline"}');
-    expect(switcher).toContain('min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-4 py-2');
-    expect(switcher).toContain('sm:min-h-[5.25rem]');
-    expect(switcher).toContain('{active && <span class="panel-switch__cta font-bold leading-none text-ink normal-case tracking-normal">{t("header.btnMore")}</span>}');
-    expect(switcher).toContain('font-size: clamp(0.8125rem, 1vw, 0.9375rem)');
+    expect(header).toContain('href={home ? "#about" : "#panel-material"}');
+    expect(header).toContain('t(home ? "home.chapterLight" : "header.btnMore")');
+    expect(cs["home.chapterLight"]).toBe("Rozsviť mě");
+    expect(en["home.chapterLight"]).toBe("Light it up");
     expect(cs["header.btnMore"]).toBe("Chci vědět víc");
     expect(en["header.btnMore"]).toBe("Learn more");
-    expect(switcher).toContain('variant={active ? "primary" : "outline"}');
-    expect(switcher).toContain('aria-current={active ? "page" : undefined}');
-    expect(switcher).toContain('max-w-6xl grid-cols-1 gap-3 sm:grid-cols-3');
-    expect(switcher).toContain('min-h-[4.5rem] w-full flex-col gap-1 whitespace-normal px-4 py-2');
-    expect(switcher).toContain('sm:min-h-[5.25rem]');
     expect(header).toContain('"text-[clamp(2.25rem,11.5vw,4.5rem)] sm:text-7xl lg:text-[7.5rem]"');
     expect(header).toContain('"hero-title__label--home": home');
-    expect(header).toContain("items-center gap-6 pt-[calc(var(--nav-height)+4rem)] pb-20 text-center");
-    expect(header).toContain('<PanelCategorySwitch lang={lang} activeCategory={panelCategory} />');
     expect(header).toContain('class="w-64 justify-center max-md:hidden!"');
-    expect(header).toContain('class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 lg:hidden!"');
+    expect(header).toContain('home ? "left-1/2 -translate-x-1/2" : "left-5 md:left-10"');
     const sectionHeader = await Bun.file("src/components/ui/SectionHeader.astro").text();
     expect(sectionHeader).toContain('layout = "center"');
     expect(sectionHeader).toContain('layout === "center" && "mx-auto flex max-w-3xl flex-col items-center gap-5 text-center"');
     const priceList = await Bun.file("src/components/sections/PriceList.astro").text();
-    expect(priceList).toContain('class="reveal flex flex-col items-center gap-3 text-center short:gap-2"');
+    expect(priceList).toContain('class="reveal flex flex-col items-center gap-3 text-center short:gap-2 lg:items-start lg:text-left"');
     const panelLanding = await Bun.file("src/components/pages/PanelLanding.astro").text();
-    expect(panelLanding).toContain('class="flex max-w-3xl flex-col items-center gap-3 text-center"');
+    expect(panelLanding).toContain('<SectionHeader id="panel-material-title"');
     const effects = await Bun.file("src/styles/effects.css").text();
     expect(effects).toContain(".hero-title__label {");
     expect(effects).toContain(".hero-title__label--home {");
@@ -952,7 +1014,7 @@ describe("i18n", () => {
     expect(nav).not.toContain("!panelCategory &&");
   });
 
-  test("desktop and mobile navigation use the requested panel, sections, info, price, contact order", async () => {
+  test("desktop and mobile navigation order the panel, information, prices and contact items", async () => {
     const nav = await Bun.file("src/components/nav/Nav.astro").text();
     const menus = [
       nav.match(/<ul class="hidden items-center gap-3 min-\[1200px\]:flex 2xl:gap-8">([\s\S]*?)<\/ul>/)?.[1],
@@ -963,7 +1025,6 @@ describe("i18n", () => {
       expect(menu).toBeDefined();
       const positions = [
         menu!.indexOf("<PanelNavSwitch"),
-        menu!.indexOf("{homeLinks.map"),
         menu!.indexOf("<InfoNavItem"),
         menu!.indexOf("<PriceNavItem"),
         menu!.indexOf("<NavItem {...contactLink"),
@@ -1051,7 +1112,7 @@ describe("i18n", () => {
     expect(contact).toContain('class="contact-form__submit self-start shadow-glow');
   });
 
-  test("contact form order: full name, email, category across both columns, size and version side by side, message", async () => {
+  test("contact form order: email, full name, optional phone, category, size, version and optional message", async () => {
     const contact = await Bun.file("src/components/sections/Contact.astro").text();
     const at = (needle: string) => {
       const index = contact.indexOf(needle);
@@ -1060,8 +1121,9 @@ describe("i18n", () => {
     };
 
     const order = [
-      'name="fullname"',
       'name="email"',
+      'name="fullname"',
+      'name="phone"',
       'name="panel_category_choice"',
       'name="size"',
       'name="version"',
@@ -1070,12 +1132,13 @@ describe("i18n", () => {
     expect(order).toEqual([...order].sort((a, b) => a - b));
 
     // One two-column grid; the category select spans both columns.
-    expect(contact).toContain('class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-5 sm:gap-y-5"');
-    expect(contact).toContain('class="col-span-2 flex min-w-0 flex-col');
-    expect(contact).toContain('class="contact-form flex h-full flex-col gap-3 sm:gap-5');
+    expect(contact).toContain("lg:grid-cols-6");
+    expect(contact).toContain('class="col-span-2 flex lg:col-span-4 min-w-0 flex-col');
+    expect(contact).toContain('class="contact-form flex h-full min-w-0 flex-col gap-3');
     expect(contact).toContain('rows="2"');
+    expect(contact).toMatch(/<details>\s*<summary[^>]*>\{t\("contact\.formAddMessage"\)\}/);
     // The message box is twice as tall on mobile (min-h-32 ≈ 128 px instead of ~64 px); from `sm` up it is unchanged.
-    expect(contact).toContain('class="min-h-32 resize-y border border-field');
+    expect(contact).toContain('class="w-full min-h-32 resize-y border border-field');
     expect(contact).toContain("sm:min-h-13 sm:px-4 sm:py-3.5");
     // "Zatím nevím" is the empty first value of size and version, so nothing is required.
     expect(contact).toContain('<option value="" selected>');
@@ -1092,8 +1155,8 @@ describe("i18n", () => {
     // The API contract (parseContactSubmission) still reads `name`.
     expect(contact).toContain("payload.name = payload.fullname;");
     expect(contact).toContain("delete payload.fullname;");
-    expect(cs["contact.formName"]).toBe("Celé jméno");
-    expect(cs["contact.formNamePlaceholder"]).toBe("Petr Novák");
+    expect(cs["contact.formName"]).toBe("Jméno a příjmení");
+    expect(cs["contact.formNamePlaceholder"]).toBe("Vaše celé jméno");
     expect(en["contact.formName"]).toBe("Full name");
   });
 
@@ -1126,7 +1189,7 @@ describe("i18n", () => {
     const styles = await Bun.file("src/styles/global.css").text();
 
     expect(contact).toContain('class="contact-section home-section-y home-section-divider bg-ink-800"');
-    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target,");
+    expect(styles).toContain("main > section[id]:not(#panel-material):not(.pricing):target {");
     expect(styles).toContain("padding-block-start: 1rem;");
   });
 

@@ -86,6 +86,7 @@ export function buildBusinessMail(
   const rows: [string, string][] = [
     ["Jméno", name],
     ["E-mail", submission.email],
+    ["Telefon", submission.phone || "Neuveden"],
     ["Kategorie", panelCategoryLabel(submission.panelCategory)],
     ["Velikost panelu", submission.size || "Neuvedena"],
     ["Provedení", submission.version || "Neuvedeno"],

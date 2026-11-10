@@ -168,8 +168,8 @@ collections:
         label: Minerální panely
         widget: object
         fields:
-        - { name: cs, label: Česky, widget: text }
-        - { name: en, label: English, widget: text }
+        - { name: cs, label: Česky, widget: text, required: false }
+        - { name: en, label: English, widget: text, required: false }
 - name: prices
   label: Ceník
   description: Ceníky na samostatných stránkách kamenných a minerálních panelů – ceny podle velikosti,
@@ -337,10 +337,17 @@ collections:
       label: Skladba materiálů panelů
       widget: object
       fields:
-      - name: imageAlt
-        label: Alternativní text obrázku
+      - name: stoneAlt
+        label: Alternativní text kamenné dýhy
         widget: object
-        hint: Popis společného obrázku kamenné dýhy a minerálního panelu v sekci Technologie na úvodní stránce.
+        hint: Popis obrázku skladby dýhy v sekci „Svítící kamenný panel v kostce“.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
+      - name: mineralAlt
+        label: Alternativní text minerálního panelu
+        widget: object
+        hint: Popis obrázku minerální desky v sekci „Svítící minerální panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: text }
         - { name: en, label: English, widget: text }
@@ -349,16 +356,16 @@ collections:
       widget: object
       fields:
       - name: imageHeading
-        label: Nadpis obrázku
+        label: Nadpis konstrukce
         widget: object
-        hint: Nadpis překrytý přes obrázek společné konstrukce v sekci Technologie na úvodní stránce.
+        hint: Nadpis nad obrázkem společné konstrukce v sekci Technologie na úvodní stránce.
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }
       - name: description
         label: Společný popis konstrukce
         widget: object
-        hint: Text pod společným obrázkem konstrukce v sekci Technologie na úvodní stránce.
+        hint: Text pod společným obrázkem konstrukce v sekci Technologie na úvodní stránce. Pro tučné zvýraznění obalte slova dvojicí hvězdiček.
         fields:
         - { name: cs, label: Česky, widget: text }
         - { name: en, label: English, widget: text }
@@ -390,14 +397,14 @@ collections:
       - name: technology
         label: Technologie
         widget: object
-        hint: Text vedle obrázku kamenného panelu na úvodní stránce v sekci Technologie.
+        hint: Text vedle obrázku kamenné dýhy na podstránce kamenných panelů v sekci „Panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: text }
         - { name: en, label: English, widget: text }
       - name: surfaceShort
         label: Krátký popis povrchu
         widget: object
-        hint: Krátký řádek pod technologií kamenného panelu na úvodní stránce.
+        hint: Text v kartě Povrch na podstránce kamenných panelů v sekci „Panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }
@@ -450,14 +457,14 @@ collections:
       - name: technology
         label: Technologie
         widget: object
-        hint: Text vedle obrázku minerálního panelu na úvodní stránce v sekci Technologie.
+        hint: Text vedle obrázku na podstránce minerálních panelů v sekci „Panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: text }
         - { name: en, label: English, widget: text }
       - name: surfaceShort
         label: Krátký popis povrchu
         widget: object
-        hint: Krátký řádek pod technologií minerálního panelu na úvodní stránce.
+        hint: Text v kartě Povrch na podstránce minerálních panelů v sekci „Panel v kostce“.
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }

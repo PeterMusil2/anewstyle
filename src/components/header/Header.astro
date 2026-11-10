@@ -412,10 +412,11 @@ const panelHero = home || !panelCategory ? undefined : panelCategory === "minera
     if (!arButton) return;
 
     const query = new URLSearchParams(window.location.search);
-    const handoffRequested = query.get("ar-handoff") === "1";
+    const patternHandoff = query.has("ar-pattern");
+    const handoffRequested = !patternHandoff && query.get("ar-handoff") === "1";
     const requestedBrowser = query.get("ar-browser");
     const android = isAndroidArDevice(window.navigator.userAgent);
-    const directAndroid = android && query.get("ar-direct") === "1";
+    const directAndroid = !patternHandoff && android && query.get("ar-direct") === "1";
     if (lightingOptions) lightingOptions.hidden = !android;
     const openInSamsungInternet = shouldOpenArInSamsungInternet(
       window.navigator.userAgent,

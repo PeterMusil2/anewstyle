@@ -124,7 +124,11 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       <PatternStepper id={`${id}-mineral-stepper`} titles={mineralPatterns.map((pattern) => pattern.label)} label={t("products.stepperLabel")} />
     </div>}
 
-    <div class:list={["flex flex-col items-start gap-4 border border-line bg-ink-900 p-4 md:flex-row md:items-center md:gap-8 md:p-6 lg:p-4", samplesNote ? "justify-between" : "justify-center"]}>
+    <div class:list={[
+      "flex flex-col items-start gap-4 border border-line bg-ink-900 p-4 md:p-6 lg:p-4",
+      category === "stone" && "md:flex-row md:items-center md:gap-8",
+      samplesNote ? "justify-between" : "justify-center",
+    ]}>
       {samplesNote && <p class="max-w-3xl text-lg leading-relaxed text-fg-soft lg:text-base">{samplesNote}</p>}
       <Button href={contactPath} variant="outline" class="w-full max-w-full min-w-0 shrink-0 whitespace-normal! px-3 text-center sm:w-auto sm:px-5">
         {t("products.samplesCta")}
@@ -133,7 +137,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   </div>
 </section>
 
-{(!panelCategory || panelCategory === "mineral") && <dialog id="mineral-ar-dialog" class="mineral-ar-dialog m-auto w-[min(96vw,74rem)] max-w-none border border-line-strong bg-ink-900 p-0 text-fg backdrop:bg-black/80">
+{(!panelCategory || panelCategory === "mineral") && <dialog id="mineral-ar-dialog" aria-labelledby="mineral-ar-title" class="mineral-ar-dialog m-auto w-[min(96vw,74rem)] max-w-none border border-line-strong bg-ink-900 p-0 text-fg backdrop:bg-black/80">
   <div class="flex items-center justify-between gap-4 border-b border-line px-4 py-3 sm:px-6">
     <h2 id="mineral-ar-title" class="text-sm font-black tracking-[0.14em] uppercase sm:text-base"></h2>
     <button type="button" data-mineral-dialog-close class="grid size-11 shrink-0 cursor-pointer place-items-center border border-line-strong text-fg transition-colors hover:border-gold hover:text-gold" aria-label={t("products.arClose")}>
@@ -161,7 +165,7 @@ const mineralStepper = fanStepper(mineralPatterns.length);
       class="product-3d mineral-ar-viewer"
     >
       <span slot="progress-bar" class="product-3d__progress"></span>
-      <button slot="ar-button" type="button" class="product-3d__ar">{t("header.btnAr")}</button>
+      <span slot="ar-button" hidden></span>
     </model-viewer>
     <div class="flex flex-col justify-between gap-4 border border-line bg-ink-850 p-4 sm:p-5">
       <div>
@@ -173,14 +177,29 @@ const mineralStepper = fanStepper(mineralPatterns.length);
           data-loading={t("products.arLoading")}
           data-ready={t("products.arReady")}
           data-error={t("products.arError")}
+          data-unavailable={t("products.arUnavailable")}
         >{t("products.arLoading")}</p>
       </div>
+      <Button id="mineral-ar-launch" size="sm" hidden class="whitespace-normal! [&[hidden]]:hidden">
+        {t("header.btnAr")}
+      </Button>
       <p class="text-xs leading-relaxed text-fg-subtle">{t("products.arHint")}</p>
     </div>
   </div>
 </dialog>}
 
 <script>
+  import type { ModelViewerElement } from "@google/model-viewer";
+  import {
+    panelArPlacementForDevice,
+    panelArQuickLookModelPath,
+    safariArUrl,
+    samsungInternetArIntent,
+    shouldOpenArInSafari,
+    shouldOpenArInSamsungInternet,
+    waitForArAvailability,
+  } from "../../lib/panel-ar";
+
   // The 3D viewer is bundled locally and fetched on the first card click only.
   const ensureModelViewerLoaded = (): void => {
     void import("@google/model-viewer");
@@ -213,9 +232,15 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   });
 
   const mineralDialog = document.querySelector<HTMLDialogElement>("#mineral-ar-dialog");
-  const mineralViewer = document.querySelector<HTMLElement & Record<string, any>>("#mineral-ar-viewer");
+  const mineralViewer = document.querySelector<ModelViewerElement>("#mineral-ar-viewer");
   const mineralTitle = document.querySelector<HTMLElement>("#mineral-ar-title");
   const mineralStatus = document.querySelector<HTMLElement>("#mineral-ar-status");
+  const mineralLaunch = document.querySelector<HTMLButtonElement>("#mineral-ar-launch");
+  const mineralCards = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-mineral-pattern]"));
+  const { userAgent, maxTouchPoints } = navigator;
+  const useSafari = shouldOpenArInSafari(userAgent, location.search);
+  const useSamsung = shouldOpenArInSamsungInternet(userAgent, location.search);
+  let selectedCard: HTMLButtonElement | undefined;
   let textureRequest = 0;
 
   const waitForMineralModel = (): Promise<void> => {
@@ -237,11 +262,13 @@ const mineralStepper = fanStepper(mineralPatterns.length);
   };
 
   const openMineralPattern = async (button: HTMLButtonElement) => {
-    if (!mineralDialog || !mineralViewer || !mineralTitle || !mineralStatus) return;
+    if (!mineralDialog || !mineralViewer || !mineralTitle || !mineralStatus || !mineralLaunch) return;
     const request = ++textureRequest;
     const arModel = button.dataset.arModel;
     if (!arModel) return;
 
+    selectedCard = button;
+    mineralLaunch.hidden = true;
     mineralTitle.textContent = button.dataset.patternTitle ?? "";
     mineralStatus.textContent = mineralStatus.dataset.loading ?? mineralStatus.textContent ?? "";
     if (!mineralDialog.open) mineralDialog.showModal();
@@ -249,10 +276,18 @@ const mineralStepper = fanStepper(mineralPatterns.length);
     try {
       await import("@google/model-viewer");
       await customElements.whenDefined("model-viewer");
+      if (request !== textureRequest || !mineralDialog.open) return;
+      const placement = panelArPlacementForDevice(userAgent, maxTouchPoints);
+      mineralViewer.setAttribute("ar-placement", placement);
+      if (placement === "floor") {
+        mineralViewer.setAttribute("ios-src", panelArQuickLookModelPath(arModel, false));
+      }
       if (mineralViewer.getAttribute("src") !== arModel) mineralViewer.src = arModel;
       await waitForMineralModel();
       if (request !== textureRequest) return;
       mineralStatus.textContent = mineralStatus.dataset.ready ?? "";
+      const available = useSafari || useSamsung || await waitForArAvailability(() => mineralViewer.canActivateAR);
+      if (request === textureRequest && mineralDialog.open) mineralLaunch.hidden = !available;
     } catch (error) {
       console.error("Could not prepare the mineral AR preview:", error);
       if (request === textureRequest) {
@@ -261,9 +296,30 @@ const mineralStepper = fanStepper(mineralPatterns.length);
     }
   };
 
-  document.querySelectorAll<HTMLButtonElement>("[data-mineral-pattern]").forEach((button) => {
+  mineralCards.forEach((button) => {
     button.addEventListener("click", () => void openMineralPattern(button));
   });
+  mineralLaunch?.addEventListener("click", () => {
+    const model = selectedCard?.dataset.arModel;
+    if (!model || !mineralViewer || !mineralStatus) return;
+    if (!useSafari && mineralViewer.canActivateAR) {
+      void mineralViewer.activateAR().catch(() => {
+        mineralStatus.textContent = mineralStatus.dataset.unavailable ?? "";
+      });
+    } else if (useSafari || useSamsung) {
+      const destination = new URL(location.href);
+      destination.searchParams.set("ar-pattern", model);
+      location.href = useSafari ? safariArUrl(destination.href) : samsungInternetArIntent(destination.href);
+    }
+  });
+  mineralViewer?.addEventListener("ar-status", (event) => {
+    if ((event as CustomEvent<{ status: string }>).detail.status === "failed" && mineralStatus) {
+      mineralStatus.textContent = mineralStatus.dataset.unavailable ?? "";
+    }
+  });
+  const requestedModel = new URLSearchParams(location.search).get("ar-pattern");
+  const requestedCard = mineralCards.find((card) => card.dataset.arModel === requestedModel);
+  if (requestedCard) void openMineralPattern(requestedCard);
   document.querySelector<HTMLButtonElement>("[data-mineral-dialog-close]")?.addEventListener("click", () => {
     mineralDialog?.close();
   });

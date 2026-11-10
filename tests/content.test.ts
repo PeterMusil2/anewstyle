@@ -143,6 +143,10 @@ describe("hero video", () => {
     expect(cardComponent).toContain('ar-modes={panelArModes()}');
     expect(cardComponent).not.toContain("scene-viewer");
     expect(productsComponent).toContain('data-ar-model={pattern.arModel}');
+    expect(productsComponent).toContain('id="mineral-ar-launch"');
+    expect(productsComponent).toContain('mineralViewer.setAttribute("ios-src", panelArQuickLookModelPath(arModel, false))');
+    expect(productsComponent).toContain('card.dataset.arModel === requestedModel');
+    expect(header).toContain('const handoffRequested = !patternHandoff');
     const sourceModel = readGlb("public/3d/products/Rockfoil_DARKGOLD_3D_vertical.glb");
     const stoneArModel = readGlb(`public${STONE_AR_MODEL_PATH}`);
     expect(stoneArModel.json.extensionsUsed).toContain("KHR_materials_unlit");
@@ -155,6 +159,8 @@ describe("hero video", () => {
     for (const pattern of products.mineral) {
       const modelPath = `public${mineralArModelPath(pattern.image)}`;
       expect(existsSync(modelPath), pattern.image).toBe(true);
+      const quickLook = readFileSync(`public${panelArQuickLookModelPath(mineralArModelPath(pattern.image), false)}`);
+      expect(quickLook.readUInt32LE(0), pattern.image).toBe(0x04034b50);
       const images = embeddedGlbImages(modelPath);
       expect(images.length).toBeGreaterThan(0);
       for (const image of images) {
@@ -369,6 +375,8 @@ describe("panel patterns", () => {
   test("stone pattern note tells visitors how to see available stone patterns", () => {
     expect(products.notes.stone.cs).toContain("v bonusové galerii po odeslání kontaktního formuláře");
     expect(products.notes.stone.en).toContain("in the bonus gallery after submitting the contact form");
+    expect(products.notes.mineral.cs).toContain("koncem listopadu 2026");
+    expect(products.notes.mineral.en).toContain("at the end of November 2026");
   });
 
   test("stone patterns have a title and a photo", () => {
@@ -553,7 +561,8 @@ describe("homepage navigation", () => {
     expect(infoNav).toMatch(/const sectionLinks = \[[\s\S]*?#technologies[\s\S]*?#features[\s\S]*?\];/);
     expect(infoNav.indexOf("sectionLinks.map")).toBeLessThan(infoNav.indexOf('class="info-nav-item__surface-item"'));
     expect(nav).toContain('text: t("nav.contact")');
-    expect(infoNav).toContain('t("nav.gallery")');
+    expect(infoNav).not.toContain('t("nav.gallery")');
+    expect(nav).toContain('text: t("nav.gallery")');
     expect(infoNav).toContain('t("nav.faq")');
     expect(infoNav).toContain('t("nav.manual")');
     expect(infoNav).toContain('href: `${basePath}/#faq`');
@@ -1026,6 +1035,7 @@ describe("i18n", () => {
       const positions = [
         menu!.indexOf("<PanelNavSwitch"),
         menu!.indexOf("<InfoNavItem"),
+        menu!.indexOf("<NavItem {...galleryLink"),
         menu!.indexOf("<PriceNavItem"),
         menu!.indexOf("<NavItem {...contactLink"),
       ];

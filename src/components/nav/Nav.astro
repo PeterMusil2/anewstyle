@@ -22,6 +22,7 @@ const normalizedPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isHomePage = normalizedPath === (lang === "cs" ? "/" : "/en");
 const eshopUrl = "https://www.anewstyle-eshop.cz/";
 
+const galleryLink = { href: `${basePath}/gallery/`, text: t("nav.gallery") };
 const contactLink = {
   href: panelCategory ? `${basePath}/?panel=${panelCategory}#contact` : `${basePath}/#contact`,
   text: t("nav.contact"),
@@ -54,6 +55,7 @@ const contactLink = {
       <ul class="hidden items-center gap-3 min-[1200px]:flex 2xl:gap-8">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} />
         <InfoNavItem lang={lang} />
+        <NavItem {...galleryLink} />
         <PriceNavItem lang={lang} />
         <NavItem {...contactLink} />
       </ul>
@@ -93,6 +95,7 @@ const contactLink = {
       <ul class="flex flex-col">
         <PanelNavSwitch lang={lang} panelCategory={panelCategory} isHomePage={isHomePage} variant="panel" />
         <InfoNavItem lang={lang} variant="panel" />
+        <NavItem {...galleryLink} variant="panel" />
         <PriceNavItem lang={lang} variant="panel" />
         <NavItem {...contactLink} variant="panel" />
       </ul>

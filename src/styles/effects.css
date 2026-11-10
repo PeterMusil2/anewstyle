@@ -730,14 +730,21 @@
   }
 
   .select-field__panel-preview {
+    --panel-preview-length: 5rem;
+    --panel-preview-depth: calc(var(--panel-preview-length) * var(--contact-panel-ratio, 0.5));
+
     display: none;
     pointer-events: none;
     position: absolute;
     inset-inline-end: 3rem;
     inset-block-start: 50%;
     translate: 0 -50%;
-    inline-size: 5rem;
-    aspect-ratio: 2 / 1;
+    inline-size: var(--panel-preview-length);
+    block-size: var(--panel-preview-depth);
+  }
+
+  .select-field--panel selectedcontent .option-thumb {
+    inline-size: calc(var(--thumb-block) * var(--contact-panel-ratio, 0.5));
   }
 
   @media (width >= 40rem) {

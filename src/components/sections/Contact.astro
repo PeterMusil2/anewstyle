@@ -160,10 +160,10 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
                   ))}
                 </select>
                 <span data-contact-preview="stone" class="hidden select-field__panel-preview" aria-hidden="true">
-                  <Picture src="/images/showcase/rockfoil_pink_light.jpg" alt="" sizes="5rem" class="absolute inset-0 size-full object-fill" />
+                  <Picture src="/images/showcase/rockfoil_pink_light.jpg" alt="" sizes="5rem" class="absolute inset-0 size-full object-cover" />
                 </span>
                 <span data-contact-preview="mineral" class="hidden select-field__panel-preview" aria-hidden="true">
-                  <Picture src="/images/showcase/Mineral_on.png" alt="" sizes="2.5rem" class="absolute top-1/2 left-1/2 h-20 w-10 -translate-1/2 rotate-90 object-fill" />
+                  <Picture src="/images/showcase/Mineral_on.png" alt="" sizes="2.5rem" class="absolute top-1/2 left-1/2 h-[var(--panel-preview-length)] w-[var(--panel-preview-depth)] -translate-1/2 rotate-90 object-cover" />
                 </span>
               </span>
             </label>
@@ -176,7 +176,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
                 <button type="button"><selectedcontent></selectedcontent></button>
                 <option value="" selected><span class="option-label">{t("contact.formUnknown")}</span></option>
                 {sizeOptions.map(({ label, width }) => (
-                  <option value={label}>
+                  <option value={label} data-panel-ratio={width / PANEL_HEIGHT}>
                     <span class="option-thumb-box" aria-hidden="true"><span class="option-size-icon" style={`aspect-ratio: ${width} / ${PANEL_HEIGHT}`}></span></span>
                     <span class="option-label">{label}</span>
                     <span class="option-meta">{PANEL_HEIGHT} × {width} mm</span>
@@ -396,9 +396,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
     const category = form.querySelector<HTMLSelectElement>('select[name="panel_category_choice"]');
+    const size = form.querySelector<HTMLSelectElement>('select[name="size"]');
     const previews = form.querySelectorAll<HTMLElement>("[data-contact-preview]");
     const updatePanelPreview = () => {
       const selected = category?.value ?? form.dataset.panelCategory;
+      const ratio = size?.selectedOptions[0]?.dataset.panelRatio;
+      form.style.setProperty("--contact-panel-ratio", ratio ?? "");
       previews.forEach((preview) => {
         preview.classList.toggle("hidden", preview.dataset.contactPreview !== selected);
       });
@@ -409,6 +412,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       category.value = requestedCategory;
     }
     category?.addEventListener("change", updatePanelPreview);
+    size?.addEventListener("change", updatePanelPreview);
     window.addEventListener("pageshow", updatePanelPreview);
     updatePanelPreview();
 

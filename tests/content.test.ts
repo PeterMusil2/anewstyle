@@ -1133,7 +1133,7 @@ describe("i18n", () => {
 
     // One two-column grid; the category select spans both columns.
     expect(contact).toContain("lg:grid-cols-6");
-    expect(contact).toContain('class="col-span-2 flex lg:col-span-4 min-w-0 flex-col');
+    expect(contact).toContain('class="col-span-2 flex lg:col-span-3 min-w-0 flex-col');
     expect(contact).toContain('class="contact-form flex h-full min-w-0 flex-col gap-3');
     expect(contact).toContain('rows="2"');
     expect(contact).toMatch(/<details>\s*<summary[^>]*>\{t\("contact\.formAddMessage"\)\}/);

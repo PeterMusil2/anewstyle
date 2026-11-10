@@ -1202,6 +1202,8 @@ describe("i18n", () => {
     expect(priceList).toContain('href={`mailto:${contact.email}`}');
     expect(priceList).toContain("{contact.email} →");
     expect(priceList).not.toContain('href="tel:+420601221551"');
+    expect(priceList).toContain('class="container-page grid grid-cols-1 gap-4');
+    expect(priceList).toMatch(/href=\{`mailto:\$\{contact\.email\}`\}[^>]+max-w-full[^>]+whitespace-normal![^>]+wrap-anywhere/);
   });
 
   test("contact confirmation explains the tracked discount code terms", async () => {

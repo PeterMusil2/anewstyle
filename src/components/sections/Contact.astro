@@ -15,19 +15,14 @@ interface Props {
 
 const { id, lang = "cs", panelCategory } = Astro.props;
 const t = useTranslations(lang);
-// Panel preview thumbnails for the selects (scripts/contact-select-thumbs.mjs):
-// trimmed to the panel area, so their widths show the real L–XXXL proportions.
+// Standard panel sizes, in millimetres.
 const PANEL_HEIGHT = 2400;
 const sizeOptions = [
-  { key: "l", label: "L", width: 400 },
-  { key: "xl", label: "XL", width: 600 },
-  { key: "xxl", label: "XXL", width: 800 },
-  { key: "xxxl", label: "XXXL", width: 1200 },
+  { label: "L", width: 400 },
+  { label: "XL", width: 600 },
+  { label: "XXL", width: 800 },
+  { label: "XXXL", width: 1200 },
 ] as const;
-// On a category page the sizes show that category's material; otherwise stone.
-const previewCategory = panelCategory ?? "stone";
-const thumb = (size: string, category: string) =>
-  `/images/priceList/thumb/${size}${category === "mineral" ? "-art-stone" : ""}.webp`;
 
 // Where the bonus button sends the visitor, honouring the locale prefix.
 // ?filter=bonus makes the gallery open with the Bonus segment preselected.
@@ -66,7 +61,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
     <div class="grid items-stretch gap-5 lg:contents">
       <form
-        class="contact-form flex h-full min-w-0 flex-col gap-3 sm:gap-4 sm:border sm:border-line sm:bg-ink-850 sm:p-8 lg:col-start-1 lg:row-start-2 lg:h-auto lg:gap-1.5 lg:p-3"
+        class="contact-form flex h-full min-w-0 flex-col gap-3 sm:gap-4 sm:border sm:border-line sm:bg-ink-850 sm:p-8 lg:col-start-1 lg:row-start-2 lg:h-auto lg:self-stretch lg:gap-1.5 lg:p-3"
         action="/api/contact"
         method="POST"
         data-panel-category={panelCategory}
@@ -150,43 +145,39 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             <span id="err-phone" data-error-for="phone" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
           </label>
           {!panelCategory && (
-            <label class="col-span-2 flex lg:col-span-3 min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+            <label class="col-span-full flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
               {t("contact.panelCategoryLabel")}
-              <span class="select-field">
+              <span class="select-field select-field--panel">
                 <select name="panel_category_choice" required class="select-field__control">
                   <button type="button"><selectedcontent></selectedcontent></button>
                   {(["stone", "mineral", "unknown"] as const).map((category) => (
                     <option value={category} selected={category === "unknown"}>
                       {category !== "unknown" && (
-                        <span class="option-thumb-box"><img class="option-thumb" src={thumb("xxxl", category)} alt="" width="56" height="112" loading="lazy" decoding="async" /></span>
+                        <span class="option-thumb-box"><img class="option-thumb" src={`/images/priceList/thumb/xxxl${category === "mineral" ? "-art-stone" : ""}.webp`} alt="" width="56" height="112" loading="lazy" decoding="async" /></span>
                       )}
                       <span class="option-label">{t(category === "stone" ? "price.categoryStone" : category === "mineral" ? "price.categoryMineral" : "contact.formUnknown")}</span>
                     </option>
                   ))}
                 </select>
+                <span data-contact-preview="stone" class="hidden select-field__panel-preview" aria-hidden="true">
+                  <Picture src="/images/showcase/rockfoil_pink_light.jpg" alt="" sizes="5rem" class="absolute inset-0 size-full object-fill" />
+                </span>
+                <span data-contact-preview="mineral" class="hidden select-field__panel-preview" aria-hidden="true">
+                  <Picture src="/images/showcase/Mineral_on.png" alt="" sizes="2.5rem" class="absolute top-1/2 left-1/2 h-20 w-10 -translate-1/2 rotate-90 object-fill" />
+                </span>
               </span>
             </label>
           )}
-          <div data-contact-preview="stone" class="hidden col-span-2 border border-line bg-ink-900 p-2 lg:col-span-3 lg:h-13 lg:self-end lg:p-px">
-            <div class="relative mx-auto aspect-2/1 w-36 lg:w-24">
-              <Picture src="/images/showcase/rockfoil_pink_light.jpg" alt="" sizes="(min-width: 64rem) 6rem, 9rem" class="absolute inset-0 size-full object-fill" />
-            </div>
-          </div>
-          <div data-contact-preview="mineral" class="hidden col-span-2 border border-line bg-ink-900 p-2 lg:col-span-3 lg:h-13 lg:self-end lg:p-px">
-            <div class="relative mx-auto aspect-2/1 w-36 lg:w-24">
-              <Picture src="/images/showcase/Mineral_on.png" alt="" sizes="(min-width: 64rem) 3rem, 4.5rem" class="absolute top-1/2 left-1/2 h-36 w-[4.5rem] -translate-1/2 rotate-90 object-fill lg:h-24 lg:w-12" />
-            </div>
-          </div>
 
-          <label class="flex min-w-0 lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class="flex min-w-0 self-end lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
             {t("contact.formSize")}
             <span class="select-field">
               <select name="size" class="select-field__control">
                 <button type="button"><selectedcontent></selectedcontent></button>
                 <option value="" selected><span class="option-label">{t("contact.formUnknown")}</span></option>
-                {sizeOptions.map(({ key, label, width }) => (
+                {sizeOptions.map(({ label, width }) => (
                   <option value={label}>
-                    <span class="option-thumb-box"><img class="option-thumb" src={thumb(key, previewCategory)} data-size-thumbnail={key} alt="" width={Math.round((width / PANEL_HEIGHT) * 112)} height="112" loading="lazy" decoding="async" /></span>
+                    <span class="option-thumb-box" aria-hidden="true"><span class="option-size-icon" style={`aspect-ratio: ${width} / ${PANEL_HEIGHT}`}></span></span>
                     <span class="option-label">{label}</span>
                     <span class="option-meta">{PANEL_HEIGHT} × {width} mm</span>
                   </option>
@@ -195,7 +186,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             </span>
           </label>
 
-          <label class="flex min-w-0 lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class="flex min-w-0 self-end lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
             {t("contact.formVersion")}
             <span class="select-field">
               <select name="version" class="select-field__control">
@@ -239,13 +230,13 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         <p class="max-w-prose text-xs leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
       </form>
 
-      <div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">
+      <div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:self-end lg:gap-4">
       <article class="flex min-w-0 grow flex-col border border-line bg-ink-850 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:[&>picture]:order-last">
         <Picture
           src="/images/backgrounds/showroom.webp"
           alt={t("contact.showroomTitle")}
           sizes="(min-width: 80rem) 20rem, (min-width: 64rem) 25vw, 100vw"
-          class="aspect-[425/293] w-full object-cover"
+          class="aspect-[425/293] w-full object-cover lg:h-auto lg:aspect-auto lg:object-contain"
         />
         <div class="flex flex-col gap-4 p-7 sm:p-8 lg:gap-3 lg:p-5">
           <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
@@ -272,7 +263,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         </div>
       </article>
 
-      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8 lg:gap-3 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:p-5">
+      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8 lg:gap-3 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:self-start lg:p-5">
         <h3 class="text-xs font-extrabold tracking-[0.18em] text-fg-muted uppercase lg:text-sm lg:text-gold">{t("contact.addressTitle")}</h3>
         <address class="flex flex-col gap-1 text-[0.9375rem] leading-relaxed text-fg-soft not-italic">
           <strong class="font-extrabold text-fg">OSM s.r.o.</strong>
@@ -405,16 +396,11 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   const form = document.querySelector<HTMLFormElement>(".contact-form");
   if (form) {
     const category = form.querySelector<HTMLSelectElement>('select[name="panel_category_choice"]');
-    const sizeThumbnails = form.querySelectorAll<HTMLImageElement>('select[name="size"] option img[data-size-thumbnail]');
     const previews = form.querySelectorAll<HTMLElement>("[data-contact-preview]");
     const updatePanelPreview = () => {
       const selected = category?.value ?? form.dataset.panelCategory;
       previews.forEach((preview) => {
         preview.classList.toggle("hidden", preview.dataset.contactPreview !== selected);
-      });
-      const suffix = selected === "mineral" ? "-art-stone" : "";
-      sizeThumbnails.forEach((thumbnail) => {
-        thumbnail.src = `/images/priceList/thumb/${thumbnail.dataset.sizeThumbnail}${suffix}.webp`;
       });
     };
 

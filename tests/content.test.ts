@@ -778,11 +778,11 @@ describe("home section rhythm", () => {
     expect(dayNight).toMatch(/<figure[^>]+lg:col-start-2 lg:row-span-2 lg:row-start-1/);
     expect(dayNight).toContain('<input type="range"');
     expect(contact).toMatch(/<SectionHeader[^>]+lg:col-start-1 lg:row-start-1/);
-    expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-1 lg:row-start-2 lg:h-auto lg:gap-1\.5 lg:p-3"/);
+    expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-1 lg:row-start-2 lg:h-auto lg:self-stretch lg:gap-1\.5 lg:p-3"/);
     expect(contact).toContain("lg:grid-cols-6");
     expect(contact.match(/data-contact-preview="(?:stone|mineral)"/g)).toHaveLength(2);
     expect(contact).toContain("lg:has-[details[open]]:grid-cols-1");
-    expect(contact).toMatch(/<div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
+    expect(contact).toMatch(/<div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:self-end lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
     expect(technology).toContain("lg:divide-y lg:divide-line");
     expect(dayNight).toContain("has-checked:bg-gold has-checked:text-ink");
     expect(dayNight).toMatch(/<figure[^>]+lg:p-2/);
@@ -1128,7 +1128,7 @@ describe("i18n", () => {
 
     // Panel type, size and version: three selects sharing one control style.
     expect(contact.match(/class="select-field__control"/g)?.length).toBe(3);
-    expect(contact.match(/<span class="select-field">/g)?.length).toBe(3);
+    expect(contact.match(/<span class="select-field(?: select-field--panel)?">/g)?.length).toBe(3);
     // Each control keeps visible focus, hover and invalid states (high contrast).
     const control = effects.slice(effects.indexOf(".select-field__control {"));
     expect(control).toContain("&:hover");
@@ -1158,7 +1158,7 @@ describe("i18n", () => {
 
     // One two-column grid; the category select spans both columns.
     expect(contact).toContain("lg:grid-cols-6");
-    expect(contact).toContain('class="col-span-2 flex lg:col-span-3 min-w-0 flex-col');
+    expect(contact).toContain('class="col-span-full flex min-w-0 flex-col');
     expect(contact).toContain('class="contact-form flex h-full min-w-0 flex-col gap-3');
     expect(contact).toContain('rows="2"');
     expect(contact).toMatch(/<details>\s*<summary[^>]*>\{t\("contact\.formAddMessage"\)\}/);
@@ -1185,28 +1185,23 @@ describe("i18n", () => {
     expect(en["contact.formName"]).toBe("Full name");
   });
 
-  test("category and size options carry real panel thumbnails that exist on disk", async () => {
+  test("contact options use material thumbnails for category and proportionate icons for size", async () => {
     const contact = await Bun.file("src/components/sections/Contact.astro").text();
 
     expect(contact).toContain('class="option-thumb"');
-    expect(contact).toContain("/images/priceList/thumb/");
-    // Sizes keep the price-list proportions: 2400 mm tall, 400/600/800/1200 mm wide.
+    for (const suffix of ["", "-art-stone"]) {
+      const file = Bun.file(`public/images/priceList/thumb/xxxl${suffix}.webp`);
+      expect(await file.exists()).toBe(true);
+      expect(file.size).toBeLessThan(6_000);
+    }
+
     expect(contact).toContain("const PANEL_HEIGHT = 2400;");
-    for (const [key, width] of [["l", 400], ["xl", 600], ["xxl", 800], ["xxxl", 1200]] as const) {
-      expect(contact).toContain(`{ key: "${key}", label: "${key.toUpperCase()}", width: ${width} }`);
+    for (const [label, width] of [["L", 400], ["XL", 600], ["XXL", 800], ["XXXL", 1200]]) {
+      expect(contact).toContain(`{ label: "${label}", width: ${width} }`);
     }
-    // Every thumbnail the markup can ask for is generated and small.
-    for (const key of ["l", "xl", "xxl", "xxxl"]) {
-      for (const suffix of ["", "-art-stone"]) {
-        const file = Bun.file(`public/images/priceList/thumb/${key}${suffix}.webp`);
-        expect(await file.exists()).toBe(true);
-        expect(file.size).toBeLessThan(6_000);
-      }
-    }
-    // Open list shows the thumbnail and dimensions; the closed control shrinks them.
-    const css = await Bun.file("src/styles/effects.css").text();
-    expect(css).toContain(".option-thumb");
-    expect(css).toContain("& selectedcontent");
+    expect(contact).toContain('class="option-size-icon"');
+    expect(contact).toContain('aspect-ratio: ${width} / ${PANEL_HEIGHT}');
+    expect(contact).not.toContain("data-size-thumbnail");
   });
 
   test("contact section moves its heading closer to the header when opened by an inquiry link", async () => {

@@ -11,7 +11,7 @@ import materialOverviewData from "../data/material-overview.json";
 import type { PricesData, Price } from "../components/sections/PriceList.types";
 import { faqItems } from "./faq";
 import { mineralPatternCode } from "./pattern-fan";
-import { MINERAL_FEATURE_KEYS, mineralSurcharge, priceFor, type PanelCategory } from "./prices";
+import { getStonePanelSets, MINERAL_FEATURE_KEYS, mineralSurcharge, priceFor, type PanelCategory } from "./prices";
 import cs from "../i18n/cs.json";
 import en from "../i18n/en.json";
 
@@ -191,6 +191,7 @@ export function getSiteData(lang: Lang) {
     materials: getMaterialOverview(lang),
     versions: getVersions(lang),
     mineralVersions: getVersions(lang, "mineral"),
+    stoneSets: getStonePanelSets(lang),
     mineralSurcharge: getMineralSurcharge(),
     patterns: getPatterns(),
     patternsNote: productsData.notes.stone[lang],

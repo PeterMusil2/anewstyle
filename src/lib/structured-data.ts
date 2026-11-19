@@ -10,7 +10,8 @@ import {
   sizes,
   type Lang,
 } from "./site-data";
-import type { PanelCategory } from "./prices";
+import { getStonePanelSets, type PanelCategory } from "./prices";
+import { useTranslations } from "../i18n/utils";
 
 export function panelPageStructuredData(
   lang: Lang,
@@ -89,6 +90,30 @@ export function panelPageStructuredData(
   };
 
   const products = panelCategory ? productsFor(panelCategory) : [];
+  const setLabel = useTranslations(lang)("price.set");
+  const sets = panelCategory === "stone"
+    ? getStonePanelSets(lang).flatMap((set) => set.prices.map((price) => ({
+        "@type": "Product",
+        "@id": `${pageUrl}#set-${set.id}-${price.version.toLowerCase()}`,
+        name: `${setLabel} ${set.label} – ${price.version}`,
+        brand,
+        material: categories.stone.material,
+        ...(price.note ? { description: price.note } : {}),
+        offers: {
+          "@type": "Offer",
+          url: `${pageUrl}#price-list`,
+          price: price.priceExclVat,
+          priceCurrency: CURRENCY,
+          priceSpecification: {
+            "@type": "UnitPriceSpecification",
+            price: price.priceExclVat,
+            priceCurrency: CURRENCY,
+            valueAddedTaxIncluded: false,
+          },
+          seller: { "@id": organizationId },
+        },
+      })))
+    : [];
 
   const patterns = {
     "@type": "ItemList",
@@ -143,6 +168,7 @@ export function panelPageStructuredData(
 
   return [
     ...products,
+    ...sets,
     ...(panelCategory === "stone" ? [patterns] : []),
     ...(panelCategory === "mineral" ? [mineralPatterns] : []),
     ...(showroom ? [showroom] : []),

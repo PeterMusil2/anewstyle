@@ -2,6 +2,10 @@
   "products": [
     {
       "title": "SLIM",
+      "setPriceNote": {
+        "cs": "Montážní sada se účtuje zvlášť.",
+        "en": "The mounting kit is charged separately."
+      },
       "tagline": {
         "cs": "Elegantní nejtenčí provedení 16 mm v základní výbavě.",
         "en": "The slimmest 16 mm version with the essential features."
@@ -95,6 +99,20 @@
         "12": true,
         "13": true
       }
+    }
+  ],
+  "stoneSets": [
+    {
+      "panels": ["l", "l", "l"],
+      "prices": { "SLIM": 54300, "BASIC": 75700, "DELUXE": 86400 }
+    },
+    {
+      "panels": ["xl", "xl"],
+      "prices": { "SLIM": 52400, "BASIC": 73900, "DELUXE": 82600 }
+    },
+    {
+      "panels": ["l", "xxl"],
+      "prices": { "SLIM": 52400, "BASIC": 74200, "DELUXE": 82700 }
     }
   ],
   "mineralSurcharge": {

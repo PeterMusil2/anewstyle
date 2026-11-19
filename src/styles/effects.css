@@ -1493,10 +1493,10 @@ model-viewer.product-3d.mineral-ar-viewer {
   }
 }
 
-.pricing:has(input[name="size"][value="l"]:checked) [data-size]:not([data-size="l"]),
-.pricing:has(input[name="size"][value="xl"]:checked) [data-size]:not([data-size="xl"]),
-.pricing:has(input[name="size"][value="xxl"]:checked) [data-size]:not([data-size="xxl"]),
-.pricing:has(input[name="size"][value="xxxl"]:checked) [data-size]:not([data-size="xxxl"]) {
+.price-catalog__body:has(input[name="size"][value="l"]:checked) [data-size]:not([data-size="l"]),
+.price-catalog__body:has(input[name="size"][value="xl"]:checked) [data-size]:not([data-size="xl"]),
+.price-catalog__body:has(input[name="size"][value="xxl"]:checked) [data-size]:not([data-size="xxl"]),
+.price-catalog__body:has(input[name="size"][value="xxxl"]:checked) [data-size]:not([data-size="xxxl"]) {
   display: none;
 }
 

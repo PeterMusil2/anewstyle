@@ -4,6 +4,7 @@
  */
 import type { APIRoute } from "astro";
 import { getSiteData, SITE_URL, type Lang, type SiteData } from "../lib/site-data";
+import { useTranslations } from "../i18n/utils";
 
 const czk = (value: number) => `${value.toLocaleString("cs-CZ")} Kč`;
 
@@ -18,6 +19,9 @@ const section = (data: SiteData, lang: Lang): string => {
         `| ${version.name} | ${price.size} (${price.dimensionsMm} mm) | ${czk(price.priceExclVat)} | ${czk(price.priceInclVat)} |`,
     ),
   );
+  const setRows = data.stoneSets.flatMap((set) => set.prices.map((price) =>
+    `| ${price.version} | ${set.label} | ${czk(price.priceExclVat)} | ${czk(price.priceInclVat)} |`,
+  ));
 
   const mineralRows = data.versions.flatMap((version) =>
     version.prices.map(
@@ -55,6 +59,17 @@ const section = (data: SiteData, lang: Lang): string => {
     `| --- | ${data.versions.map(() => ":---:").join(" | ")} |`,
     ...featureRows,
     "",
+    ...(setRows.length ? [
+      `## ${useTranslations(lang)("price.set")} – ${data.panelCategories[0].name}`,
+      "",
+      `| ${h.version} | ${useTranslations(lang)("price.set")} | ${h.excl} | ${h.incl} |`,
+      "| --- | --- | ---: | ---: |",
+      ...setRows,
+      "",
+      ...new Set(data.stoneSets.flatMap((set) => set.prices
+        .flatMap((price) => price.note ? [`- ${price.version} – ${price.note}`] : []))),
+      "",
+    ] : []),
     `## ${h.mineralPrices}`,
     "",
     `${h.surcharge}: ${data.mineralSurcharge.map((s) => `${s.size} +${czk(s.surchargeExclVat)}`).join(", ")}.`,

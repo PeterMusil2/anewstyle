@@ -19,6 +19,7 @@ interface Context {
 type Lang = "cs" | "en";
 type SiteData = Record<string, unknown> & {
   versions: { name: string; prices: { size: string }[] }[];
+  stoneSets?: unknown[];
   faq: { question: string; answer: string; answerMineral?: string }[];
   patterns: unknown[];
   mineralPatterns: unknown[];
@@ -127,6 +128,7 @@ async function callTool(context: Context, name: string, args: Record<string, unk
         note: data.priceNote,
         customSize: data.customSizeNote,
         panelCategories: data.panelCategories,
+        stoneSets: data.stoneSets ?? [],
         mineralSurcharge: size ? data.mineralSurcharge.filter((item) => item.size === size) : data.mineralSurcharge,
         versions: data.versions.map((version) => ({
           ...version,

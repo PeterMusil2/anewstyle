@@ -1,0 +1,22 @@
+---
+import { stoneSetSeams, type SizeKey } from "../../lib/prices";
+
+const { panels } = Astro.props as { panels: SizeKey[] };
+---
+
+<img
+  src="/images/priceList/xxxl.avif"
+  alt=""
+  width="280"
+  height="560"
+  loading="lazy"
+  decoding="async"
+  class="absolute inset-0 size-full -scale-x-100 object-contain object-bottom"
+/>
+{stoneSetSeams(panels).map((position) => (
+  <span
+    class="absolute inset-y-0 w-px -translate-x-1/2 bg-ink shadow-[1px_0_0_var(--color-line-strong)] lg:w-0.5"
+    style={`left: ${position}%`}
+    data-panel-seam
+  />
+))}

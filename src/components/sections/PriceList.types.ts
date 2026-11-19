@@ -12,12 +12,17 @@ interface Product {
   /** Material-specific pitch for mineral panels, per language. */
   taglineMineral?: Record<"cs" | "en", string>;
   prices: Price;
+  setPriceNote?: Record<"cs" | "en", string>;
   price?: string; // Optional property to hold the selected price
   features: Record<string, boolean>;
 }
 
 export interface PricesData {
   products: Product[];
+  stoneSets?: {
+    panels: (keyof Price)[];
+    prices: Record<string, number>;
+  }[];
   /** Added to every version's price for mineral panels, per size (Kč without VAT). */
   mineralSurcharge?: Price;
 }

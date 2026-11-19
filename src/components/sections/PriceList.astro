@@ -6,10 +6,11 @@
  */
 import prices from "../../data/prices.json";
 import type { PricesData } from "./PriceList.types";
-import { MINERAL_FEATURE_KEYS, priceFor, type PanelCategory, type SizeKey } from "../../lib/prices";
+import { getStonePanelSets, MINERAL_FEATURE_KEYS, PANEL_WIDTH_MM, priceFor, type PanelCategory, type SizeKey } from "../../lib/prices";
 import Button from "../ui/Button.astro";
 import ScaleFigure from "../ui/ScaleFigure.astro";
 import Icon from "../icons/Icon.astro";
+import StoneSetPreview from "./StoneSetPreview.astro";
 import { contact } from "../../lib/site-data";
 import {
   useTranslations,
@@ -89,6 +90,23 @@ const cheapest = (key: SizeKey, category: PanelCategory) =>
   format(Math.min(...products.map((product) => priceFor(product, key, category))));
 const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
   category === "mineral" ? tier.mineralPrice : tier.price;
+
+const sets = panelCategory === "stone" ? getStonePanelSets(lang) : [];
+const catalogChoices = [
+  sizes.map((size) => ({ ...size, set: undefined, caption: dims(size.width) })),
+  sets.map((set, index) => ({
+    key: `set-${index}` as const,
+    label: set.label,
+    width: 0,
+    aria: "price.set" as const,
+    set,
+    caption: `${PANEL_HEIGHT} × (${set.panels.map((size) => PANEL_WIDTH_MM[size]).join(" + ")}) mm`,
+  })),
+];
+const activeSetRules = sets.map((_, index) =>
+  `.price-catalog__body--sets:has(input[name="stone-set"][value="set-${index}"]:checked) [data-size]:not([data-size="set-${index}"]) { display: none; }`,
+).join("\n");
+
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="pricing home-section-y home-section-divider bg-ink">
@@ -118,54 +136,67 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
         {t("price.categoryMineral")}
       </label>
     </fieldset>}
+    {sets.length > 0 && <fieldset class="grid w-full max-w-md grid-cols-2 gap-2 sm:gap-3">
+      <legend class="sr-only">{t("price.formatLabel")}</legend>
+      {(["single", "set"] as const).map((mode) => (
+        <label class="flex min-h-11 cursor-pointer items-center justify-center border border-line bg-ink-900 px-3 py-2 text-center text-sm font-extrabold transition-colors hover:border-line-strong has-checked:border-gold has-checked:bg-gold has-checked:text-ink has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold">
+          <input type="radio" name="price-format" value={mode} checked={mode === "single"} class="sr-only" />
+          {t(`price.${mode}`)}
+        </label>
+      ))}
+    </fieldset>}
     </div>
 
-    <div class="price-catalog__body">
+    {catalogChoices.filter((choices) => choices.length > 0).map((choices, mode) => (
+    <div class:list={["price-catalog__body", mode === 1 && "price-catalog__body--sets"]}>
       <!--
         The pricing panel is sized to the viewport (minus the fixed nav), so
         the size picker and all three versions are visible together.
       -->
-      <div class="container-page flex min-h-[min(calc(100svh-var(--nav-height)),56rem)] flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4">
-        <div class="hidden min-h-10 text-sm text-fg-muted sm:block short:hidden">
+      <div class:list={["container-page flex flex-col justify-center gap-4 py-5 lg:gap-5 lg:py-7 short:gap-3 short:py-4", mode === 0 && "min-h-[min(calc(100svh-var(--nav-height)),56rem)]"]}>
+        {mode === 0 && <div class="hidden min-h-10 text-sm text-fg-muted sm:block short:hidden">
           {previewCategories.includes("stone") && <p data-price-type="stone">
             <span>{t("price.desc2")}</span>{" "}<strong class="font-bold text-gold">{t("price.desc3")}</strong>{" "}<span>{t("price.desc4")}</span>
           </p>}
-        </div>
+        </div>}
     <!-- Step 1: size -->
-    <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1`}>
+    <fieldset class="flex flex-col gap-2.5" aria-labelledby={`${id}-step1-${mode}`}>
       <div class="flex items-center justify-between gap-4">
         <h3 class="flex items-center gap-3">
           <span class="grid size-7 shrink-0 place-items-center border border-gold text-xs font-extrabold text-gold">1</span>
-          <span id={`${id}-step1`} class="text-xs font-extrabold tracking-[0.14em] uppercase sm:text-[0.8125rem]">{t("price.step1")}</span>
+          <span id={`${id}-step1-${mode}`} class="text-xs font-extrabold tracking-[0.14em] uppercase sm:text-[0.8125rem]">{t(mode === 1 ? "price.setStep" : "price.step1")}</span>
         </h3>
-        <p class="hidden text-xs text-fg-muted lg:block">{t("price.underText")}</p>
+        {mode === 0 && <p class="hidden text-xs text-fg-muted lg:block">{t("price.underText")}</p>}
       </div>
-      <div class="grid grid-cols-4 gap-2 lg:gap-3">
+      <div class:list={["grid gap-2 lg:gap-3", mode === 1 ? "grid-cols-3" : "grid-cols-4"]}>
         {
-          sizes.map((size, index) => (
+          choices.map((size, index) => (
             <label class="group relative flex min-h-14 min-w-0 cursor-pointer items-center justify-center gap-3 border border-line bg-ink-900 px-2 py-2.5 short:py-2 transition-colors duration-200 hover:border-line-strong has-checked:border-gold has-checked:bg-gold/12 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-gold sm:justify-start sm:px-4 lg:gap-4">
               <input
                 type="radio"
-                name="size"
+                name={size.set ? "stone-set" : "size"}
                 value={size.key}
                 checked={index === 0}
-                aria-label={t(size.aria)}
+                aria-label={size.set ? size.label : t(size.aria)}
                 class="sr-only"
               />
-              <span class="hidden h-11 w-6 shrink-0 items-end justify-center sm:flex short:h-9" aria-hidden="true">
-                <span
-                  class="block h-full bg-ink-700 shadow-[inset_0_0_0_1px_var(--color-line-strong)] transition-colors group-has-checked:bg-gold"
-                  style={`width: ${(size.width / PANEL_HEIGHT) * 100 * 1.9}%`}
-                />
+              <span class="hidden h-11 w-6 shrink-0 items-end justify-center gap-px sm:flex short:h-9" aria-hidden="true">
+                {(size.set?.panels.map((panel) => PANEL_WIDTH_MM[panel]) ?? [size.width]).map((width) => (
+                  <span
+                    class="block h-full bg-ink-700 shadow-[inset_0_0_0_1px_var(--color-line-strong)] transition-colors group-has-checked:bg-gold"
+                    style={`width: ${width / PANEL_HEIGHT * 190}%`}
+                  />
+                ))}
               </span>
               <span class="flex min-w-0 flex-col items-center gap-1 sm:items-start">
-                <span class="text-lg leading-none font-black tracking-[0.04em] lg:text-xl">{size.label}</span>
-                <span class="truncate text-[0.625rem] leading-tight text-fg-muted sm:text-xs">
-                  <span class="sm:hidden">{size.width} mm</span>
-                  <span class="hidden sm:inline">{dims(size.width)}</span>
-                </span>
+                <span class:list={["leading-none font-black", size.set ? "whitespace-nowrap text-xs sm:text-base" : "text-lg tracking-[0.04em] lg:text-xl"]}>{size.label}</span>
+                {!size.set && <span class="truncate text-[0.625rem] leading-tight text-fg-muted sm:text-xs">
+                  <span class="sm:hidden">{size.width} mm</span><span class="hidden sm:inline">{size.caption}</span>
+                </span>}
                 <span class="hidden truncate text-xs leading-tight font-bold text-gold group-has-checked:text-gold-light lg:block">
-                  {previewCategories.map((category) => <span data-price-type={category}>{t("price.from")} {cheapest(size.key, category)} {t("price.currency")}</span>)}
+                  {size.set
+                    ? <span>{t("price.from")} {format(Math.min(...size.set.prices.map((price) => price.priceExclVat)))} {t("price.currency")}</span>
+                    : previewCategories.map((category) => <span data-price-type={category}>{t("price.from")} {cheapest(size.key, category)} {t("price.currency")}</span>)}
                 </span>
               </span>
             </label>
@@ -182,7 +213,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
           <span class="text-xs font-extrabold tracking-[0.14em] uppercase sm:text-[0.8125rem]">
             {t("price.step2")}{" "}
             <span class="text-fg-subtle">·</span>{" "}
-            {sizes.map((size) => <span data-size={size.key}>{size.label}</span>)}
+            {choices.map((size) => <span data-size={size.key}>{size.label}</span>)}
           </span>
         </h3>
         <div class="flex items-center gap-5">
@@ -196,7 +227,9 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
       <div class="flex items-center gap-4 border border-line bg-ink-900 px-4 py-3 xl:hidden">
         <div class="relative h-28 w-14 shrink-0">
           {
-            sizes.flatMap((size) => previewCategories.map((category) => (
+            choices.flatMap((size) => size.set ? [
+              <div class="absolute inset-0" data-size={size.key} data-size-preview aria-hidden="true"><StoneSetPreview panels={size.set.panels} /></div>,
+            ] : previewCategories.map((category) => (
               <img
                 src={previewImage(size.key, category)}
                 width="280"
@@ -216,7 +249,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
         <div class="flex min-w-0 flex-col gap-1.5">
           <p class="text-[0.6875rem] font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
           <p class="text-sm font-semibold text-fg-soft">
-            {sizes.map((size) => <span data-size={size.key}>{size.label} · {dims(size.width)}</span>)}
+            {choices.map((size) => <span data-size={size.key}>{size.label} · {size.caption}</span>)}
           </p>
         </div>
       </div>
@@ -226,7 +259,9 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
           <p class="text-[0.6875rem] font-bold tracking-[0.2em] text-fg-muted uppercase">{t("price.previewAlt")}</p>
           <div class="relative aspect-[280/560] w-full max-w-36 short:max-w-28 tiny:max-w-22">
             {
-              sizes.flatMap((size) => previewCategories.map((category) => (
+              choices.flatMap((size) => size.set ? [
+              <div class="absolute inset-0" data-size={size.key} data-size-preview aria-hidden="true"><StoneSetPreview panels={size.set.panels} /></div>,
+            ] : previewCategories.map((category) => (
                 <img
                   src={previewImage(size.key, category)}
                   width="280"
@@ -245,7 +280,7 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
             <ScaleFigure class="absolute bottom-0 left-0 z-10 aspect-[1.4/5.6] w-[33%]" />
           </div>
           <p class="text-center text-xs text-fg-soft">
-            {sizes.map((size) => <span data-size={size.key}>{dims(size.width)}</span>)}
+            {choices.map((size) => <span data-size={size.key}>{size.caption}</span>)}
           </p>
         </div>
 
@@ -272,22 +307,28 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                 </div>
 
                 <div class="border-y border-line py-2.5 lg:py-3">
-                  {sizes.map((size) => (
-                    <>
-                      {previewCategories.map((category) => <div data-size={size.key} data-price-type={category} class="flex flex-col gap-1">
+                  {choices.flatMap((size) => previewCategories.map((category) => {
+                    const setPrice = size.set?.prices.find((price) => price.version === tier.title);
+                    if (size.set && !setPrice) return null;
+                    const price = setPrice
+                      ? { net: format(setPrice.priceExclVat), gross: format(setPrice.priceInclVat) }
+                      : !size.set && getTierPrice(tier, category)[size.key];
+                    if (!price) return null;
+                    return <div data-size={size.key} data-price-type={category} class="flex flex-col gap-1">
                         <p class="flex flex-wrap items-baseline gap-x-1.5">
                           <span class="text-4xl leading-none font-extrabold tracking-tight tabular-nums lg:text-[2.5rem] short:text-[2rem] tiny:text-[1.875rem]">
-                            {getTierPrice(tier, category)[size.key].net}
+                            {price.net}
                           </span>
                           <span class="text-base font-bold">{t("price.currency")}</span>
                           <span class="text-xs text-fg-muted">{t("price.withoutVat")}</span>
                         </p>
                         <p class="text-xs text-fg-muted tabular-nums">
-                          {getTierPrice(tier, category)[size.key].gross} {t("price.currency")} {t("price.withVat")}
+                          {price.gross} {t("price.currency")} {t("price.withVat")}
                         </p>
-                      </div>)}
-                    </>
-                  ))}
+                        {setPrice && <p class="text-xs text-fg-muted">{t("price.setTotal")}</p>}
+                        {setPrice?.note && <p class="text-xs text-fg-muted">{setPrice.note}</p>}
+                      </div>;
+                  }))}
                 </div>
 
                 <ul class="flex grow flex-col gap-1 text-sm leading-snug">
@@ -310,14 +351,24 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
                 </ul>
 
                 <div class="flex items-center gap-3">
-                  <Button
+                  {mode === 1 ? choices.map(({ key, set }) => {
+                    if (!set?.prices.some((price) => price.version === tier.title)) return null;
+                    const query = new URLSearchParams({ panel: "stone", set: set.id, version: tier.title });
+                    return <Button
+                      data-size={key}
+                      href={`${basePath}/?${query}#contact`}
+                      size="sm"
+                      variant={tier.featured ? "primary" : "outline"}
+                      class="flex-1 px-3!"
+                    >{t("price.inquire")}</Button>;
+                  }) : <Button
                     href={contactPath}
                     size="sm"
                     variant={tier.featured ? "primary" : "outline"}
                     class="flex-1 px-3!"
                   >
                     {t("price.inquire")}
-                  </Button>
+                  </Button>}
                   <a
                     href="https://www.anewstyle-eshop.cz/"
                     rel="external"
@@ -343,9 +394,11 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
       </a>
     </div>
   </div>
+  </div>
+  ))}
 
   <!-- Offer: contact form unlocks current stone decors and a discount -->
-  <div class="container-page pt-10 lg:pt-14">
+  <div class="price-catalog__single-offer container-page pt-10 lg:pt-14">
     <div class="flex flex-col items-start gap-5 border border-gold/60 bg-ink-900 p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
       <p class="max-w-3xl text-base leading-relaxed text-fg-soft md:text-lg">
         {panelCategory ? (panelCategory === "mineral" ? t("price.offerPromptBeforeMineral") : t("price.offerPromptBefore")) : <><span data-panel-type="stone">{t("price.offerPromptBefore")}</span><span data-panel-type="mineral">{t("price.offerPromptBeforeMineral")}</span></>}{" "}
@@ -371,10 +424,16 @@ const getTierPrice = (tier: (typeof tiers)[number], category: PanelCategory) =>
       </div>
   </div>
   </div>
-  </div>
 </section>
 
+{sets.length > 0 && <style is:inline set:html={activeSetRules}></style>}
+
 <style>
+  .price-catalog:not(:has(input[name="price-format"][value="set"]:checked)) .price-catalog__body--sets,
+  .price-catalog:has(input[name="price-format"][value="set"]:checked) :is(.price-catalog__body:not(.price-catalog__body--sets), .price-catalog__single-offer) {
+    display: none;
+  }
+
   :global(html:not([data-panel-category="mineral"])) .price-catalog [data-price-type="mineral"],
   :global(html[data-panel-category="mineral"]) .price-catalog [data-price-type="stone"] {
     display: none;

@@ -73,6 +73,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       action="/api/contact"
       method="POST"
       data-panel-category={panelCategory}
+      data-panel-set-label={t("price.set")}
       data-err-fullname={t("contact.formErrName")}
       data-err-email={t("contact.formErrEmail")}
       data-err-phone={t("contact.formErrPhone")}
@@ -344,6 +345,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
 <script>
   import { CONTACT_PHONE_PATTERN } from "../../lib/contact-automation";
+  import { getStonePanelSets } from "../../lib/prices";
   // Unlocks the gated bonus tiles in the gallery; read by Showroom.astro.
   const BONUS_KEY = "bonusContentUnlocked";
 
@@ -421,9 +423,21 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
       });
     };
 
-    const requestedCategory = new URLSearchParams(window.location.search).get("panel");
+    const inquiry = new URLSearchParams(window.location.search);
+    const requestedCategory = inquiry.get("panel");
     if (category && (requestedCategory === "mineral" || requestedCategory === "stone")) {
       category.value = requestedCategory;
+    }
+    if (requestedCategory === "stone" && inquiry.has("set")) {
+      const set = getStonePanelSets(document.documentElement.lang === "en" ? "en" : "cs")
+        .find((candidate) => candidate.id === inquiry.get("set"));
+      const version = set?.prices.find((price) => price.version === inquiry.get("version"));
+      const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+      const versionField = form.querySelector<HTMLSelectElement>('select[name="version"]');
+      if (set && version && message && !message.value) {
+        message.value = `${form.dataset.panelSetLabel} ${set.label} – ${version.version}`;
+        if (versionField && !versionField.value) versionField.value = version.version;
+      }
     }
     category?.addEventListener("change", updatePanelPreview);
     size?.addEventListener("change", updatePanelPreview);

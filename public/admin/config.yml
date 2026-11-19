@@ -273,6 +273,32 @@ collections:
         - name: '13'
           label: Barva rámu RAL
           widget: boolean
+      - name: setPriceNote
+        label: Poznámka k ceně setu
+        hint: Zobrazuje se pod cenou tohoto provedení v ceníku setů kamenných panelů.
+        widget: object
+        required: false
+        fields:
+        - { name: cs, label: Česky, widget: string, required: false }
+        - { name: en, label: English, widget: string, required: false }
+    - name: stoneSets
+      label: Sety kamenných panelů
+      hint: Kombinace a ceny za celý set bez DPH na stránce Svítící kamenné panely.
+      widget: list
+      fields:
+      - name: panels
+        label: Panely v setu
+        hint: Přidejte jednu položku za každý panel, ve stejném pořadí jako v náhledu.
+        widget: list
+        min: 2
+        field: { name: size, label: Velikost, widget: select, options: [{ label: L, value: l }, { label: XL, value: xl }, { label: XXL, value: xxl }, { label: XXXL, value: xxxl }] }
+      - name: prices
+        label: Cena za celý set v Kč bez DPH
+        widget: object
+        fields:
+        - { name: SLIM, label: SLIM, widget: number, value_type: int, min: 1 }
+        - { name: BASIC, label: BASIC, widget: number, value_type: int, min: 1 }
+        - { name: DELUXE, label: DELUXE, widget: number, value_type: int, min: 1 }
     - name: mineralSurcharge
       label: Příplatek za minerální panel
       widget: object

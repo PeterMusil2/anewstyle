@@ -781,8 +781,8 @@ describe("home section rhythm", () => {
     expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-1 lg:row-start-2 lg:h-auto lg:self-stretch lg:gap-1\.5 lg:p-3"/);
     expect(contact).toContain("lg:grid-cols-6");
     expect(contact.match(/data-contact-preview="(?:stone|mineral)"/g)).toHaveLength(2);
-    expect(contact).toContain("lg:has-[details[open]]:grid-cols-1");
-    expect(contact).toMatch(/<div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:self-end lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
+    expect(contact).not.toContain("<details>");
+    expect(contact).toMatch(/<div class="contact-section__info flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
     expect(technology).toContain("lg:divide-y lg:divide-line");
     expect(dayNight).toContain("has-checked:bg-gold has-checked:text-ink");
     expect(dayNight).toMatch(/<figure[^>]+lg:p-2/);
@@ -1161,7 +1161,7 @@ describe("i18n", () => {
     expect(contact).toContain('class="col-span-full flex min-w-0 flex-col');
     expect(contact).toContain('class="contact-form flex h-full min-w-0 flex-col gap-3');
     expect(contact).toContain('rows="2"');
-    expect(contact).toMatch(/<details>\s*<summary[^>]*>\{t\("contact\.formAddMessage"\)\}/);
+    expect(contact).toMatch(/<label[^>]*>\s*<span[^>]*>\{t\("contact\.formAddMessage"\)\}<\/span>\s*<textarea/);
     // The message box is twice as tall on mobile (min-h-32 ≈ 128 px instead of ~64 px); from `sm` up it is unchanged.
     expect(contact).toContain('class="w-full min-h-32 resize-y border border-field');
     expect(contact).toContain("sm:min-h-13 sm:px-4 sm:py-3.5");

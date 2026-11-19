@@ -31,7 +31,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
 
 <section id={id} aria-labelledby={`${id}-title`} class="contact-section home-section-y home-section-divider bg-ink-800">
   <div class="container-page flex flex-col gap-7 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-8 lg:gap-y-3">
-      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterContact")} title={t("contact.title")} class="lg:col-start-1 lg:row-start-1 lg:gap-2 lg:[&>div:first-child]:gap-2 lg:[&_.section-intro]:gap-2">
+      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterContact")} title={t("contact.title")} class="contact-section__heading lg:col-start-1 lg:row-start-1 lg:gap-2 lg:[&>div:first-child]:gap-2 lg:[&_.section-intro]:gap-2">
         <p>
           <span>{t("contact.descPart1")}</span>
           <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
@@ -129,7 +129,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           </label>
           <label class="flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-1.5">
             <span>
-              {t("contact.formPhone")}{ " " }<span class="lg:text-[0.625rem] lg:tracking-normal">{t("contact.formPhoneOptional")}</span>
+              {t("contact.formPhone")}{ " " }<span class="whitespace-nowrap text-[0.5rem] tracking-normal sm:text-[0.625rem]">{t("contact.formPhoneOptional")}</span>
             </span>
             <input
               type="tel"
@@ -199,9 +199,9 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
           </label>
         </div>
 
-        <div class="contents lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start lg:gap-3 lg:has-[details[open]]:grid-cols-1">
-        <details>
-          <summary class="min-h-11 cursor-pointer py-2.5 text-sm font-bold text-gold underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">{t("contact.formAddMessage")}</summary>
+        <div class="contact-form__message-actions flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-3">
+        <label class="flex min-w-0 flex-col gap-1.5">
+          <span class="text-sm font-bold text-gold">{t("contact.formAddMessage")}</span>
           <textarea
             name="message"
             rows="2"
@@ -210,7 +210,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             placeholder={t("contact.formMessagePlaceholder")}
             toolparamdescription="Optional question or additional request"
             class="w-full min-h-32 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
-        </details>
+        </label>
 
         <div class="flex flex-col gap-2 pt-0.5 sm:flex-row sm:items-center sm:gap-4 sm:pt-1 lg:flex-col lg:items-start lg:gap-1 lg:pt-0">
           <Button type="submit" size="sm" class="contact-form__submit self-start shadow-glow data-[loading=true]:cursor-wait data-[loading=true]:opacity-70 sm:min-h-13 sm:px-7 sm:text-sm lg:min-h-11 lg:px-4">
@@ -230,7 +230,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         <p class="max-w-prose text-xs leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
       </form>
 
-      <div class="flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:self-end lg:gap-4">
+      <div class="contact-section__info flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">
       <article class="flex min-w-0 grow flex-col border border-line bg-ink-850 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:[&>picture]:order-last">
         <Picture
           src="/images/backgrounds/showroom.webp"
@@ -551,7 +551,6 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             const errorEl = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
             if (errorEl) errorEl.hidden = true;
           }
-          form.querySelector("details")?.removeAttribute("open");
           if (category && typeof payload.panel_category === "string") category.value = payload.panel_category;
           updatePanelPreview();
           delete form.dataset.submissionId;
@@ -568,3 +567,67 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
     });
   }
 </script>
+
+<style>
+  .contact-form label:has(input) {
+    align-self: end;
+  }
+
+  @media (width >= 64rem) {
+    .contact-section__info {
+      padding-block-start: calc(var(--text-eyebrow) * 1.4 + 0.5rem + 2px);
+    }
+
+    .contact-section__info article {
+      border-block-start: 0;
+    }
+
+    .contact-section__info article > div,
+    .contact-section__info article:nth-child(2) {
+      padding-block-start: 0;
+    }
+
+    .contact-form :is(input:not([type="hidden"]), .select-field__control) {
+      min-block-size: 2.75rem;
+    }
+
+    .contact-form textarea {
+      min-block-size: 3.5rem;
+      padding-block: 0.5rem;
+    }
+
+    .contact-form__message-actions {
+      row-gap: 0.375rem;
+    }
+
+    .contact-form__message-actions > label {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 2;
+    }
+
+    .contact-form__message-actions > div {
+      display: contents;
+    }
+
+    .contact-form__submit {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: stretch;
+      block-size: 100%;
+      min-block-size: 2.75rem;
+    }
+
+    .contact-form__status {
+      grid-column: 1 / -1;
+
+      &:empty {
+        display: none;
+      }
+    }
+
+    .contact-form > div:first-of-type {
+      row-gap: 0.25rem;
+    }
+  }
+</style>

@@ -24,76 +24,88 @@ const sizeOptions = [
   { label: "XXXL", width: 1200 },
 ] as const;
 
+// One look for every field: sentence-case labels (easier to read than tracked
+// capitals), 52 px controls, a visible focus ring, and inline errors in body size.
+const legendClass = "text-sm font-extrabold tracking-[0.16em] text-gold uppercase";
+const labelClass = "flex min-w-0 flex-col gap-2 text-[0.9375rem] font-bold text-fg has-[[aria-invalid=true]]:text-danger";
+const fieldClass =
+  "min-h-13 w-full min-w-0 border border-field bg-ink-900 px-4 text-base font-normal text-fg transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success";
+const errorClass = "text-sm font-semibold text-danger";
+
 // Where the bonus button sends the visitor, honouring the locale prefix.
 // ?filter=bonus makes the gallery open with the Bonus segment preselected.
 const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonus`;
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="contact-section home-section-y home-section-divider bg-ink-800">
-  <div class="container-page flex flex-col gap-7 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-8 lg:gap-y-3">
-      <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterContact")} title={t("contact.title")} class="contact-section__heading lg:col-start-1 lg:row-start-1 lg:gap-2 lg:[&>div:first-child]:gap-2 lg:[&_.section-intro]:gap-2">
-        <p>
-          <span>{t("contact.descPart1")}</span>
-          <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
-        </p>
-        <div class="flex items-center gap-3 pt-2 lg:pt-0">
-          <span class="text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("contact.followUs")}</span>
-          <a
-            href="https://www.facebook.com/profile.php?id=100088855596654"
-            rel="external"
-            aria-label={t("contact.gotoFacebook")}
-            target="_blank"
-            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold lg:size-11"
-          >
-            <Icon name="facebook" class="size-5" />
-          </a>
-          <a
-            href="https://www.instagram.com/anewstyle.cz/"
-            rel="external"
-            aria-label={t("contact.gotoInstagram")}
-            target="_blank"
-            class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold lg:size-11"
-          >
-            <Icon name="instagram" class="size-5" />
-          </a>
-        </div>
-      </SectionHeader>
+  <!-- Same grid as the FAQ above, so both sections share one column line. -->
+  <div class="container-page grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.618fr)] lg:gap-x-10 lg:gap-y-10">
+    <SectionHeader id={`${id}-title`} layout="left" eyebrow={t("home.chapterContact")} title={t("contact.title")} class="contact-section__heading lg:col-start-1 lg:row-start-1">
+      <p>
+        <span>{t("contact.descPart1")}</span>
+        <a href="mailto:info@anewstyle.cz" class="font-bold text-gold underline-offset-4 hover:text-gold-light hover:underline">info@anewstyle.cz</a><span>{t("contact.descPart2")}</span>
+      </p>
+      <div class="flex items-center gap-3 pt-2">
+        <span class="text-xs font-bold tracking-eyebrow text-fg-muted uppercase">{t("contact.followUs")}</span>
+        <a
+          href="https://www.facebook.com/profile.php?id=100088855596654"
+          rel="external"
+          aria-label={t("contact.gotoFacebook")}
+          target="_blank"
+          class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+        >
+          <Icon name="facebook" class="size-5" />
+        </a>
+        <a
+          href="https://www.instagram.com/anewstyle.cz/"
+          rel="external"
+          aria-label={t("contact.gotoInstagram")}
+          target="_blank"
+          class="grid size-12 place-items-center border border-line-strong text-fg-soft transition-colors hover:border-gold hover:text-gold"
+        >
+          <Icon name="instagram" class="size-5" />
+        </a>
+      </div>
+    </SectionHeader>
 
-    <div class="grid items-stretch gap-5 lg:contents">
-      <form
-        class="contact-form flex h-full min-w-0 flex-col gap-3 sm:gap-4 sm:border sm:border-line sm:bg-ink-850 sm:p-8 lg:col-start-1 lg:row-start-2 lg:h-auto lg:self-stretch lg:gap-1.5 lg:p-3"
-        action="/api/contact"
-        method="POST"
-        data-panel-category={panelCategory}
-        data-err-fullname={t("contact.formErrName")}
-        data-err-email={t("contact.formErrEmail")}
-        data-err-phone={t("contact.formErrPhone")}
-        novalidate
-        toolname="anewstyle_inquiry"
-        tooldescription="Send an inquiry to ANEW STYLE: full name, e-mail, optional phone, panel preferences, and optional message. The visitor confirms and submits it."
-      >
-        <input type="hidden" name="locale" value={lang} />
-        <input type="hidden" name="gclid" data-attribution />
-        <input type="hidden" name="fbclid" data-attribution />
-        <input type="hidden" name="source" data-attribution />
-        <input type="hidden" name="utm_source" data-attribution />
-        <input type="hidden" name="utm_medium" data-attribution />
-        <input type="hidden" name="utm_campaign" data-attribution />
-        <input type="hidden" name="utm_content" data-attribution />
-        <input type="hidden" name="utm_term" data-attribution />
-        <input type="hidden" name="landing_page" data-attribution />
-        <input type="hidden" name="referrer" data-attribution />
-        <input
-          type="checkbox"
-          name="botcheck"
-          class="hidden"
-          tabindex="-1"
-          autocomplete="off"
-          aria-hidden="true"
-        />
+    <form
+      class="contact-form flex min-w-0 flex-col gap-10 sm:border sm:border-line sm:bg-ink-850 sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:p-10"
+      action="/api/contact"
+      method="POST"
+      data-panel-category={panelCategory}
+      data-err-fullname={t("contact.formErrName")}
+      data-err-email={t("contact.formErrEmail")}
+      data-err-phone={t("contact.formErrPhone")}
+      novalidate
+      toolname="anewstyle_inquiry"
+      tooldescription="Send an inquiry to ANEW STYLE: full name, e-mail, optional phone, panel preferences, and optional message. The visitor confirms and submits it."
+    >
+      <input type="hidden" name="locale" value={lang} />
+      <input type="hidden" name="gclid" data-attribution />
+      <input type="hidden" name="fbclid" data-attribution />
+      <input type="hidden" name="source" data-attribution />
+      <input type="hidden" name="utm_source" data-attribution />
+      <input type="hidden" name="utm_medium" data-attribution />
+      <input type="hidden" name="utm_campaign" data-attribution />
+      <input type="hidden" name="utm_content" data-attribution />
+      <input type="hidden" name="utm_term" data-attribution />
+      <input type="hidden" name="landing_page" data-attribution />
+      <input type="hidden" name="referrer" data-attribution />
+      <input
+        type="checkbox"
+        name="botcheck"
+        class="hidden"
+        tabindex="-1"
+        autocomplete="off"
+        aria-hidden="true"
+      />
 
-        <div class="grid grid-cols-2 gap-x-2 gap-y-3 sm:gap-x-4 lg:gap-y-1.5 lg:grid-cols-6">
-          <label class="col-span-2 flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-1.5">
+      <p class="text-sm text-fg-muted"><span class="font-bold text-gold" aria-hidden="true">*</span> {t("contact.formRequiredNote")}</p>
+
+      <fieldset class="contact-form__group min-w-0">
+        <legend class={legendClass}>{t("contact.formContactLegend")}</legend>
+        <div class="mt-5 grid gap-x-5 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
+          <label class:list={[labelClass, "sm:col-span-full xl:col-span-1"]}>
             <span>{t("contact.formEmail")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
             <input
               type="email"
@@ -105,12 +117,12 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               inputmode="email"
               placeholder={t("contact.formEmailPlaceholder")}
               toolparamdescription="E-mail address for the reply"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
+              class={fieldClass}
             />
-            <span id="err-email" data-error-for="email" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
+            <span id="err-email" data-error-for="email" hidden class={errorClass}></span>
           </label>
 
-          <label class="flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-1.5">
+          <label class={labelClass}>
             <span>{t("contact.formName")} <span class="text-gold" aria-hidden="true">*</span><span class="sr-only"> ({t("contact.formRequired")})</span></span>
             <input
               type="text"
@@ -123,14 +135,13 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               autocomplete="name"
               placeholder={t("contact.formNamePlaceholder")}
               toolparamdescription="Full name of the person asking"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
+              class={fieldClass}
             />
-            <span id="err-fullname" data-error-for="fullname" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
+            <span id="err-fullname" data-error-for="fullname" hidden class={errorClass}></span>
           </label>
-          <label class="flex min-w-0 lg:col-span-2 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase has-[[aria-invalid=true]]:text-danger sm:gap-2 sm:tracking-[0.16em] lg:row-span-3 lg:grid lg:grid-rows-subgrid lg:gap-y-1.5">
-            <span>
-              {t("contact.formPhone")}{ " " }<span class="whitespace-nowrap text-[0.5rem] tracking-normal sm:text-[0.625rem]">{t("contact.formPhoneOptional")}</span>
-            </span>
+
+          <label class={labelClass}>
+            <span>{t("contact.formPhone")} <span class="font-normal text-fg-muted">{t("contact.formPhoneOptional")}</span></span>
             <input
               type="tel"
               name="phone"
@@ -140,12 +151,18 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
               aria-describedby="err-phone"
               autocomplete="tel"
               toolparamdescription="Optional phone number"
-              class="min-h-11 min-w-0 border border-field bg-ink-900 px-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4"
+              class={fieldClass}
             />
-            <span id="err-phone" data-error-for="phone" hidden class="text-xs font-semibold tracking-normal text-danger normal-case"></span>
+            <span id="err-phone" data-error-for="phone" hidden class={errorClass}></span>
           </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="contact-form__group min-w-0">
+        <legend class={legendClass}>{t("contact.formPanelLegend")}</legend>
+        <div class="mt-5 grid gap-x-5 gap-y-6 sm:grid-cols-2">
           {!panelCategory && (
-            <label class="col-span-full flex min-w-0 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+            <label class:list={[labelClass, "sm:col-span-full"]}>
               {t("contact.panelCategoryLabel")}
               <span class="select-field select-field--panel">
                 <select name="panel_category_choice" required class="select-field__control">
@@ -169,7 +186,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             </label>
           )}
 
-          <label class="flex min-w-0 self-end lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class={labelClass}>
             {t("contact.formSize")}
             <span class="select-field">
               <select name="size" class="select-field__control">
@@ -186,7 +203,7 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             </span>
           </label>
 
-          <label class="flex min-w-0 self-end lg:col-span-3 flex-col gap-1.5 text-xs font-extrabold tracking-[0.12em] text-fg-muted uppercase sm:gap-2 sm:tracking-[0.16em]">
+          <label class={labelClass}>
             {t("contact.formVersion")}
             <span class="select-field">
               <select name="version" class="select-field__control">
@@ -198,47 +215,45 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
             </span>
           </label>
         </div>
+      </fieldset>
 
-        <div class="contact-form__message-actions flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-3">
-        <label class="flex min-w-0 flex-col gap-1.5">
-          <span class="text-sm font-bold text-gold">{t("contact.formAddMessage")}</span>
-          <textarea
-            name="message"
-            rows="2"
-            maxlength="4000"
-            aria-label={t("contact.formMessage")}
-            placeholder={t("contact.formMessagePlaceholder")}
-            toolparamdescription="Optional question or additional request"
-            class="w-full min-h-32 resize-y border border-field bg-ink-900 px-3 py-2 text-base font-normal tracking-normal text-fg normal-case transition-colors placeholder:text-fg-subtle hover:border-gold focus:border-gold focus:outline-none aria-invalid:border-danger user-invalid:border-danger not-placeholder-shown:user-valid:border-success sm:min-h-13 sm:px-4 sm:py-3.5"></textarea>
-        </label>
+      <label class={labelClass}>
+        <span class={legendClass}>{t("contact.formMessage")}</span>
+        <textarea
+          name="message"
+          rows="5"
+          maxlength="4000"
+          placeholder={t("contact.formMessagePlaceholder")}
+          toolparamdescription="Optional question or additional request"
+          class={`${fieldClass} mt-3 min-h-36 resize-y py-3`}></textarea>
+      </label>
 
-        <div class="flex flex-col gap-2 pt-0.5 sm:flex-row sm:items-center sm:gap-4 sm:pt-1 lg:flex-col lg:items-start lg:gap-1 lg:pt-0">
-          <Button type="submit" size="sm" class="contact-form__submit self-start shadow-glow data-[loading=true]:cursor-wait data-[loading=true]:opacity-70 sm:min-h-13 sm:px-7 sm:text-sm lg:min-h-11 lg:px-4">
-            {t("contact.formSubmit")}
-            <Icon name="email" class="size-4" />
-          </Button>
-          <p
-            class="contact-form__status text-sm font-semibold data-[state=error]:text-danger data-[state=success]:text-success"
-            role="status"
-            aria-live="polite"
-            data-status-success={t("contact.formSuccess")}
-            data-status-error={t("contact.formError")}
-          >
-          </p>
-        </div>
-        </div>
-        <p class="max-w-prose text-xs leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
-      </form>
+      <div class="flex flex-col gap-4">
+        <Button type="submit" class="contact-form__submit w-full min-h-15 text-[0.9375rem] shadow-glow data-[loading=true]:cursor-wait data-[loading=true]:opacity-70">
+          {t("contact.formSubmit")}
+          <Icon name="email" class="size-5" />
+        </Button>
+        <p
+          class="contact-form__status text-base font-semibold empty:hidden data-[state=error]:text-danger data-[state=success]:text-success"
+          role="status"
+          aria-live="polite"
+          data-status-success={t("contact.formSuccess")}
+          data-status-error={t("contact.formError")}
+        >
+        </p>
+        <p class="max-w-prose text-sm leading-relaxed text-fg-muted">{t("contact.dataUseNotice")}</p>
+      </div>
+    </form>
 
-      <div class="contact-section__info flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">
-      <article class="flex min-w-0 grow flex-col border border-line bg-ink-850 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:[&>picture]:order-last">
+    <div class="contact-section__info grid gap-5 sm:grid-cols-2 lg:col-start-1 lg:row-start-2 lg:grid-cols-1 lg:gap-8">
+      <article class="flex min-w-0 flex-col border border-line bg-ink-850 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:[&>picture]:order-last">
         <Picture
           src="/images/backgrounds/showroom.webp"
           alt={t("contact.showroomTitle")}
-          sizes="(min-width: 80rem) 20rem, (min-width: 64rem) 25vw, 100vw"
-          class="aspect-[425/293] w-full object-cover lg:h-auto lg:aspect-auto lg:object-contain"
+          sizes="(min-width: 80rem) 28rem, (min-width: 64rem) 36vw, (min-width: 40rem) 50vw, 100vw"
+          class="aspect-[425/293] w-full object-cover lg:mt-2"
         />
-        <div class="flex flex-col gap-4 p-7 sm:p-8 lg:gap-3 lg:p-5">
+        <div class="flex flex-col gap-4 p-7 sm:p-8 lg:px-0 lg:pt-6 lg:pb-4">
           <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.showroomTitle")}</h3>
           <p class="section-copy text-fg-muted">{t("contact.showroomDesc")}</p>
           <address class="flex flex-col gap-3 not-italic">
@@ -263,19 +278,18 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
         </div>
       </article>
 
-      <article class="flex min-w-0 flex-col gap-4 border border-line bg-ink-900 p-7 sm:p-8 lg:gap-3 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:self-start lg:p-5">
-        <h3 class="text-xs font-extrabold tracking-[0.18em] text-fg-muted uppercase lg:text-sm lg:text-gold">{t("contact.addressTitle")}</h3>
+      <article class="flex min-w-0 flex-col gap-4 self-start border border-line bg-ink-900 p-7 sm:p-8 lg:border-x-0 lg:border-b-0 lg:border-t-line-strong lg:bg-transparent lg:px-0 lg:pt-6 lg:pb-0">
+        <h3 class="text-sm font-extrabold tracking-[0.18em] text-gold uppercase">{t("contact.addressTitle")}</h3>
         <address class="flex flex-col gap-1 text-[0.9375rem] leading-relaxed text-fg-soft not-italic">
           <strong class="font-extrabold text-fg">OSM s.r.o.</strong>
           <span>Hudcova 86/54</span>
           <span>621 00 Brno, {t("contact.czechia")}</span>
         </address>
-        <dl class="flex gap-8 text-sm text-fg-muted lg:flex-wrap lg:gap-x-4 lg:gap-y-2">
+        <dl class="flex flex-wrap gap-x-8 gap-y-2 text-sm text-fg-muted">
           <div class="flex gap-2"><dt><abbr title={t("contact.companyIdTitle")} class="no-underline">{t("contact.companyIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.companyId}</dd></div>
           <div class="flex gap-2"><dt><abbr title={t("contact.vatIdTitle")} class="no-underline">{t("contact.vatIdLabel")}</abbr></dt><dd class="font-bold text-fg">{contact.vatId}</dd></div>
         </dl>
       </article>
-      </div>
     </div>
   </div>
 </section>
@@ -568,66 +582,3 @@ const galleryPath = `${lang === "en" ? "/en/gallery/" : "/gallery/"}?filter=bonu
   }
 </script>
 
-<style>
-  .contact-form label:has(input) {
-    align-self: end;
-  }
-
-  @media (width >= 64rem) {
-    .contact-section__info {
-      padding-block-start: calc(var(--text-eyebrow) * 1.4 + 0.5rem + 2px);
-    }
-
-    .contact-section__info article {
-      border-block-start: 0;
-    }
-
-    .contact-section__info article > div,
-    .contact-section__info article:nth-child(2) {
-      padding-block-start: 0;
-    }
-
-    .contact-form :is(input:not([type="hidden"]), .select-field__control) {
-      min-block-size: 2.75rem;
-    }
-
-    .contact-form textarea {
-      min-block-size: 3.5rem;
-      padding-block: 0.5rem;
-    }
-
-    .contact-form__message-actions {
-      row-gap: 0.375rem;
-    }
-
-    .contact-form__message-actions > label {
-      display: grid;
-      grid-template-rows: subgrid;
-      grid-row: span 2;
-    }
-
-    .contact-form__message-actions > div {
-      display: contents;
-    }
-
-    .contact-form__submit {
-      grid-column: 2;
-      grid-row: 2;
-      align-self: stretch;
-      block-size: 100%;
-      min-block-size: 2.75rem;
-    }
-
-    .contact-form__status {
-      grid-column: 1 / -1;
-
-      &:empty {
-        display: none;
-      }
-    }
-
-    .contact-form > div:first-of-type {
-      row-gap: 0.25rem;
-    }
-  }
-</style>

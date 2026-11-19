@@ -777,12 +777,14 @@ describe("home section rhythm", () => {
     expect(dayNight).toMatch(/<fieldset[^>]+lg:col-start-1 lg:row-start-2 lg:grid-cols-1"/);
     expect(dayNight).toMatch(/<figure[^>]+lg:col-start-2 lg:row-span-2 lg:row-start-1/);
     expect(dayNight).toContain('<input type="range"');
+    // Contact shares the FAQ grid (golden-ratio columns of container-page): heading and
+    // showroom on the left, the roomy form spanning both rows on the right.
+    expect(contact).toContain('class="container-page grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.618fr)]');
     expect(contact).toMatch(/<SectionHeader[^>]+lg:col-start-1 lg:row-start-1/);
-    expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-1 lg:row-start-2 lg:h-auto lg:self-stretch lg:gap-1\.5 lg:p-3"/);
-    expect(contact).toContain("lg:grid-cols-6");
+    expect(contact).toMatch(/<form\s+class="contact-form[^"]+lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:p-10"/);
     expect(contact.match(/data-contact-preview="(?:stone|mineral)"/g)).toHaveLength(2);
     expect(contact).not.toContain("<details>");
-    expect(contact).toMatch(/<div class="contact-section__info flex flex-col gap-5 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
+    expect(contact).toMatch(/<div class="contact-section__info grid gap-5 sm:grid-cols-2 lg:col-start-1 lg:row-start-2 lg:grid-cols-1 lg:gap-8">[\s\S]*?contact.showroomTitle[\s\S]*?contact.addressTitle/);
     expect(technology).toContain("lg:divide-y lg:divide-line");
     expect(dayNight).toContain("has-checked:bg-gold has-checked:text-ink");
     expect(dayNight).toMatch(/<figure[^>]+lg:p-2/);
@@ -1134,7 +1136,9 @@ describe("i18n", () => {
     expect(control).toContain("&:hover");
     expect(control).toContain("&:focus-visible");
     expect(control).toContain("&:user-invalid");
-    expect(contact).toContain('class="contact-form__submit self-start shadow-glow');
+    // Submit sits under the whole form, full width and taller than a regular button.
+    expect(contact).toContain('class="contact-form__submit w-full min-h-15');
+    expect(contact.indexOf("contact-form__submit")).toBeGreaterThan(contact.indexOf('name="message"'));
   });
 
   test("contact form order: email, full name, optional phone, category, size, version and optional message", async () => {
@@ -1156,15 +1160,18 @@ describe("i18n", () => {
     ].map(at);
     expect(order).toEqual([...order].sort((a, b) => a - b));
 
-    // One two-column grid; the category select spans both columns.
-    expect(contact).toContain("lg:grid-cols-6");
-    expect(contact).toContain('class="col-span-full flex min-w-0 flex-col');
-    expect(contact).toContain('class="contact-form flex h-full min-w-0 flex-col gap-3');
-    expect(contact).toContain('rows="2"');
-    expect(contact).toMatch(/<label[^>]*>\s*<span[^>]*>\{t\("contact\.formAddMessage"\)\}<\/span>\s*<textarea/);
-    // The message box is twice as tall on mobile (min-h-32 ≈ 128 px instead of ~64 px); from `sm` up it is unchanged.
-    expect(contact).toContain('class="w-full min-h-32 resize-y border border-field');
-    expect(contact).toContain("sm:min-h-13 sm:px-4 sm:py-3.5");
+    // Two labelled groups (contact details, panel) with generous gaps; the category select spans the row.
+    expect(contact.match(/<fieldset class="contact-form__group min-w-0">/g)).toHaveLength(2);
+    expect(contact).toContain('{t("contact.formContactLegend")}');
+    expect(contact).toContain('{t("contact.formPanelLegend")}');
+    expect(contact.match(/grid gap-x-5 gap-y-6 sm:grid-cols-2/g)).toHaveLength(2);
+    expect(contact).toContain('<label class:list={[labelClass, "sm:col-span-full"]}>');
+    expect(contact).toContain('class="contact-form flex min-w-0 flex-col gap-10');
+    // The message label is visible and is the accessible name (no differing aria-label).
+    expect(contact).toContain('rows="5"');
+    expect(contact).toMatch(/<label class=\{labelClass\}>\s*<span class=\{legendClass\}>\{t\("contact\.formMessage"\)\}<\/span>\s*<textarea/);
+    expect(contact).not.toContain("aria-label={t(\"contact.formMessage\")}");
+    expect(contact).toContain("mt-3 min-h-36 resize-y py-3");
     // "Zatím nevím" is the empty first value of size and version, so nothing is required.
     expect(contact).toContain('<option value="" selected>');
     expect(contact).toContain('["", "SLIM", "BASIC", "DELUXE"]');

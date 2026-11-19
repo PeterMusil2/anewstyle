@@ -448,7 +448,11 @@ describe("contact discount automation", () => {
     expect(component).toContain("fieldNames.filter((name) => !validateField(name))");
 
     // Visual states: gold hover, red invalid (label too), green valid.
-    expect(component.match(/hover:border-gold focus:border-gold/g)?.length).toBe(4);
+    // One shared field class carries the states; all four text fields use it.
+    expect(component.match(/hover:border-gold focus:border-gold focus-visible:outline-2/g)?.length).toBe(1);
+    expect(component.match(/class=\{fieldClass\}/g)?.length).toBe(3);
+    expect(component).toContain("class={`${fieldClass} mt-3");
+    expect(component).toContain('{t("contact.formRequiredNote")}');
     expect(component).toContain("aria-invalid:border-danger");
     expect(component).toContain("not-placeholder-shown:user-valid:border-success");
     expect(component).toContain("has-[[aria-invalid=true]]:text-danger");

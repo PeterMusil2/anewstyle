@@ -1,5 +1,6 @@
 ---
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
+import { illustrateAdvice } from "../lib/advice-illustrations";
 import Layout from "../layouts/Layout.astro";
 import AdviceCards from "../components/sections/AdviceCards.astro";
 import Picture from "../components/ui/Picture.astro";
@@ -10,6 +11,7 @@ export const getStaticPaths = () => articles.map((article) => ({ params: { advic
 const { article } = Astro.props;
 const processor = await createSatteriMarkdownProcessor({ syntaxHighlight: false, gfm: true });
 const { code } = await processor.render(article.body);
+const illustratedBody = illustrateAdvice(code);
 const path = articlePath(article.slug);
 const site = Astro.site ?? Astro.url;
 const url = new URL(path, site).href;
@@ -28,17 +30,19 @@ const actions = {
 <Layout title={article.title} description={article.description} metaImageUrl={article.image} pageType="WebPage"
   breadcrumbs={[{ name: "Domů", url: "/" }, { name: "Návody/Tipy", url: advicePath }, { name: article.title, url: path }]}
   additionalStructuredData={[{ "@type": "Article", "@id": url + "#article", headline: article.title, description: article.description, mainEntityOfPage: url, image: new URL(article.image, site).href, inLanguage: "cs", author: { "@type": "Organization", name: "ANEW STYLE" } }, ...(video ? [video] : [])]}>
-  <main id="main" class="container-page grid gap-8 pt-[calc(var(--nav-height)+2rem)] pb-16">
+  <main id="main" class="container-wide grid gap-8 pt-[calc(var(--nav-height)+2rem)] pb-16">
     <nav aria-label="Drobečková navigace"><a href="/" class="text-gold">Domů</a> / <a href={advicePath} class="text-gold">Návody/Tipy</a></nav>
-    <header class="grid max-w-4xl gap-4">
+    <div class="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center xl:gap-16">
+    <header class="grid min-w-0 max-w-4xl gap-4">
       <p class="eyebrow text-gold">{article.topic}</p>
       <h1 class="text-3xl leading-tight font-black sm:text-5xl">{article.title}</h1>
       <p class="text-lg text-fg-soft">{article.intro}</p>
       <p class="text-sm text-fg-muted">Odborná redakce Anew Style</p>
     </header>
-    <Picture src={article.image} alt={article.topic} sizes="(min-width: 1024px) 880px, 92vw" class="block h-auto w-full max-w-4xl" />
+    <Picture src={article.image} alt={article.topic} sizes="(min-width: 1024px) 384px, 92vw" class="block h-auto w-full max-w-4xl lg:max-h-72 lg:object-contain lg:object-right" />
+    </div>
     {video && <video controls playsinline preload="none" poster={video.thumbnailUrl.replace(site.origin, "")} src="/videos/montaz-panelu.mp4" aria-label={video.name} class="aspect-[9/16] w-full max-w-80 bg-ink" />}
-    <article class="guide-body max-w-[76ch] min-w-0 leading-relaxed" set:html={code} />
+    <article class="guide-body min-w-0 leading-relaxed" set:html={illustratedBody} />
     <div class="flex flex-wrap gap-3">
       {(actions[article.slug] ?? []).map(([label, href], index) => <Button href={href} variant={index === 0 ? "primary" : "outline"}>{label}</Button>)}
     </div>
@@ -50,20 +54,46 @@ const actions = {
 </Layout>
 <style>
   .guide-body > :global(*) { margin-block: 0 1rem; }
+  .guide-body :global(.guide-figure) { display: grid; gap: 1rem; align-items: center; }
+  .guide-body :global(.guide-figure img) { width: 100%; max-width: 34rem; height: auto; }
+  .guide-body :global(.guide-figure-full img) { display: block; width: 100%; height: auto; }
+  .guide-body :global(.guide-annotated) { position: relative; width: 100%; max-width: 34rem; }
+  .guide-body :global(.guide-annotated img) { display: block; }
+  .guide-body :global(.guide-annotated span) {
+    position: absolute;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    inline-size: 1.8rem;
+    aspect-ratio: 1;
+    background: var(--color-ink-900);
+    color: var(--color-gold);
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-weight: 800;
+  }
+  .guide-body :global(.guide-figure figcaption) {
+    border-inline-start: 1px solid var(--color-gold);
+    padding-inline-start: 1rem;
+    color: var(--color-fg-soft);
+  }
+  @media (min-width: 64rem) {
+    .guide-body :global(.guide-figure) { grid-template-columns: minmax(0, 34rem) minmax(0, 1fr); gap: 2rem; }
+  }
   .guide-body :global(h2) { margin-top: 2rem; font-size: 1.5rem; font-weight: 800; }
   .guide-body :global(h3) { font-weight: 750; }
   .guide-body :global(ul), .guide-body :global(ol) { padding-inline-start: 1.5rem; list-style: revert; }
   .guide-body :global(a) { color: var(--color-gold); text-decoration: underline; }
   .guide-body :global(table) { width: 100%; table-layout: fixed; overflow-wrap: anywhere; }
   .guide-body :global(td), .guide-body :global(th) { padding: .35rem; border: 1px solid var(--color-line); }
-  .guide-body :global(p:has(> img[src$="anewstyle-lgp-princip.webp"]) + ol) {
+  .guide-body :global(.guide-figure figcaption ol) {
     display: grid;
     gap: .65rem;
     border-inline-start: 1px solid var(--color-gold);
     padding: 1rem 1rem 1rem 2.5rem;
     background: var(--color-ink-900);
   }
-  .guide-body :global(p:has(> img[src$="anewstyle-lgp-princip.webp"]) + ol > li::marker) {
+  .guide-body :global(.guide-figure figcaption ol > li::marker) {
     color: var(--color-gold);
     font-weight: 750;
   }

@@ -1,4 +1,5 @@
 ---
+import AdviceLinks from "../sections/AdviceLinks.astro";
 import Layout from "../../layouts/Layout.astro";
 import Header from "../header/Header.astro";
 import HomeShowcase from "../sections/HomeShowcase.astro";
@@ -28,10 +29,13 @@ const t = useTranslations(lang);
     <Header lang={lang} home />
     <HomeShowcase lang={lang} />
     <MaterialOverview lang={lang} />
+    {lang === "cs" && <AdviceLinks placement="technology" />}
     <Features id="features" lang={lang} showBoth />
     <HomeEquipmentComparison lang={lang} />
+    {lang === "cs" && <AdviceLinks placement="comparison" />}
     <HomeDayNight lang={lang} />
     <Faq id="faq" lang={lang} />
+    {lang === "cs" && <AdviceLinks placement="installation" />}
     <Contact id="contact" lang={lang} />
   </main>
 </Layout>

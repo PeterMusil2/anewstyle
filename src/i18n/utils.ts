@@ -1,3 +1,4 @@
+import { isAdvicePath } from "../lib/advice";
 import {
   ui,
   defaultLang,
@@ -83,6 +84,7 @@ export function getLanguageSwitchPath(
   targetLang: Lang
 ): string {
   const pathname = currentUrl.pathname;
+  if (isAdvicePath(pathname) && targetLang === "en") return "/en/";
 
   const productRoute = panelPageLanguages[pathname];
   if (productRoute) {
@@ -112,6 +114,7 @@ export function getAlternateLinks(
 ): { lang: Lang; href: string }[] {
   const baseUrl = currentUrl.origin;
   const pathname = normalizePagePath(currentUrl.pathname);
+  if (isAdvicePath(pathname)) return [{ lang: "cs", href: currentUrl.origin + pathname }];
 
   const productRoute = panelPageLanguages[pathname];
   if (productRoute) {

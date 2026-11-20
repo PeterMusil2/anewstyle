@@ -1,3 +1,4 @@
+import { articles, articlePath } from "../lib/advice";
 /**
  * /llms.txt – a plain-Markdown summary of the site for LLMs and AI agents
  * (https://llmstxt.org). Generated from the same data as the pages.
@@ -130,6 +131,8 @@ export const GET: APIRoute = () => {
     "",
     "## Stránky / Pages",
     "",
+    "- [Návody/Tipy](https://anewstyle.cz/poradna/)",
+    ...articles.map((a) => `- [${a.title}](https://anewstyle.cz${articlePath(a.slug)}) — ${a.description}`),
     `- [Domů / Home (cs)](${cs.pages.home}) · [en](${en.pages.home})`,
     `- [Svítící kamenné panely / Illuminated stone panels (cs)](${cs.pages.stonePanels}) · [en](${en.pages.stonePanels})`,
     `- [Svítící minerální panely / Illuminated mineral panels (cs)](${cs.pages.mineralPanels}) · [en](${en.pages.mineralPanels})`,

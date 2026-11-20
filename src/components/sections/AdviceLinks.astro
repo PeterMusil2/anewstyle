@@ -1,0 +1,17 @@
+---
+import { articles, articlePath } from "../../lib/advice";
+const { placement } = Astro.props;
+const slugs: Record<string, string[]> = {
+  product: ["slim-basic-deluxe", "montaz-sviticiho-kamenneho-panelu"],
+  technology: ["jak-funguje-svitici-panel"],
+  comparison: ["slim-basic-deluxe"],
+  installation: ["montaz-sviticiho-kamenneho-panelu"],
+};
+const items = articles.filter(({ slug }) => slugs[placement]?.includes(slug));
+---
+<aside class="container-page py-5">
+  <h2 class="font-bold">{placement === "product" ? "Potřebujete poradit s výběrem?" : "Návody/Tipy"}</h2>
+  <ul class="flex flex-wrap gap-x-5">
+    {items.map((item) => <li><a class="inline-flex min-h-11 items-center text-gold underline underline-offset-4" href={articlePath(item.slug)}>{item.title}</a></li>)}
+  </ul>
+</aside>

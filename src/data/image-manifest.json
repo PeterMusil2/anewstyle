@@ -1,4 +1,708 @@
 {
+ "/images/poradna/01_konstrukce_materialu_panelu_1280_1200.webp": {
+  "width": 1200,
+  "height": 430,
+  "avif": [
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/01_konstrukce_materialu_panelu_1280_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200.webp": {
+  "width": 1200,
+  "height": 760,
+  "avif": [
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/01_srovnani_SLIM_BASIC_DELUXE_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200.webp": {
+  "width": 1200,
+  "height": 1042,
+  "avif": [
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/02_konstrukce_sviticiho_panelu_1280_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/02_rezim_ovladani_DELUXE_1200.webp": {
+  "width": 1200,
+  "height": 676,
+  "avif": [
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/02_rezim_ovladani_DELUXE_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/03_odstupy_montaz_DELUXE_1200.webp": {
+  "width": 1200,
+  "height": 676,
+  "avif": [
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/03_odstupy_montaz_DELUXE_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/03_princip_lite_PMMA_LGP_1200.webp": {
+  "width": 1200,
+  "height": 676,
+  "avif": [
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/03_princip_lite_PMMA_LGP_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/04_luminance_kamen_mineral_1200.webp": {
+  "width": 1200,
+  "height": 676,
+  "avif": [
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/04_luminance_kamen_mineral_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/04_schema_montaze_SLIM_1200.webp": {
+  "width": 1200,
+  "height": 676,
+  "avif": [
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/04_schema_montaze_SLIM_1200-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/anewstyle-lgp-princip.webp": {
+  "width": 1254,
+  "height": 1254,
+  "avif": [
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-1254.avif",
+    1254
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-lgp-princip-1254.webp",
+    1254
+   ]
+  ]
+ },
+ "/images/poradna/anewstyle-montaz-slim.webp": {
+  "width": 2000,
+  "height": 1250,
+  "avif": [
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-1280.avif",
+    1280
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-slim-1280.webp",
+    1280
+   ]
+  ]
+ },
+ "/images/poradna/anewstyle-montaz.webp": {
+  "width": 1200,
+  "height": 800,
+  "avif": [
+   [
+    "/_img/images/poradna/anewstyle-montaz-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/anewstyle-montaz-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-montaz-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/anewstyle-nasvetleni.webp": {
+  "width": 1200,
+  "height": 1200,
+  "avif": [
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-nasvetleni-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/anewstyle-ovladani.webp": {
+  "width": 1200,
+  "height": 800,
+  "avif": [
+   [
+    "/_img/images/poradna/anewstyle-ovladani-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/anewstyle-ovladani-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/anewstyle-ovladani-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200.webp": {
+  "width": 1024,
+  "height": 768,
+  "avif": [
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_01_1200-1024.webp",
+    1024
+   ]
+  ]
+ },
+ "/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200.webp": {
+  "width": 1024,
+  "height": 768,
+  "avif": [
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-1024.avif",
+    1024
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/AnewStyle_montazni_sada_SLIM_02_1200-1024.webp",
+    1024
+   ]
+  ]
+ },
+ "/images/poradna/deluxe-noc-58c.webp": {
+  "width": 1200,
+  "height": 800,
+  "avif": [
+   [
+    "/_img/images/poradna/deluxe-noc-58c-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/deluxe-noc-58c-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/deluxe-noc-58c-1200.webp",
+    1200
+   ]
+  ]
+ },
+ "/images/poradna/montaz-video-frame.webp": {
+  "width": 480,
+  "height": 853,
+  "avif": [
+   [
+    "/_img/images/poradna/montaz-video-frame-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/montaz-video-frame-480.avif",
+    480
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/montaz-video-frame-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/montaz-video-frame-480.webp",
+    480
+   ]
+  ]
+ },
+ "/images/poradna/montazni-sada-antracit.webp": {
+  "width": 1200,
+  "height": 900,
+  "avif": [
+   [
+    "/_img/images/poradna/montazni-sada-antracit-400.avif",
+    400
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-640.avif",
+    640
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-960.avif",
+    960
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-1200.avif",
+    1200
+   ]
+  ],
+  "webp": [
+   [
+    "/_img/images/poradna/montazni-sada-antracit-400.webp",
+    400
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-640.webp",
+    640
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-960.webp",
+    960
+   ],
+   [
+    "/_img/images/poradna/montazni-sada-antracit-1200.webp",
+    1200
+   ]
+  ]
+ },
  "/images/products/Rockfoil_BRIGHTGREY_light_frame.webp": {
   "width": 1024,
   "height": 524,

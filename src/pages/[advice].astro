@@ -1,0 +1,70 @@
+---
+import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
+import Layout from "../layouts/Layout.astro";
+import AdviceCards from "../components/sections/AdviceCards.astro";
+import Picture from "../components/ui/Picture.astro";
+import Button from "../components/ui/Button.astro";
+import { advicePath, articles, articlePath } from "../lib/advice";
+
+export const getStaticPaths = () => articles.map((article) => ({ params: { advice: article.slug }, props: { article } }));
+const { article } = Astro.props;
+const processor = await createSatteriMarkdownProcessor({ syntaxHighlight: false, gfm: true });
+const { code } = await processor.render(article.body);
+const path = articlePath(article.slug);
+const site = Astro.site ?? Astro.url;
+const url = new URL(path, site).href;
+const video = article.slug === "montaz-sviticiho-kamenneho-panelu"
+  ? { "@type": "VideoObject", name: "Montáž svítícího panelu Anew Style",
+      description: "Ukázka instalace svítícího kamenného panelu.",
+      thumbnailUrl: new URL("/images/poradna/montaz-video-frame.webp", site).href,
+      contentUrl: new URL("/videos/montaz-panelu.mp4", site).href }
+  : undefined;
+const actions = {
+  "jak-funguje-svitici-panel": [["Kamenné panely", "/svitici-kamenne-panely/"], ["Minerální panely", "/svitici-mineralni-panely/"]],
+  "slim-basic-deluxe": [["Ceník kamenných panelů", "/svitici-kamenne-panely/#price-list"], ["Ceník minerálních panelů", "/svitici-mineralni-panely/#price-list"]],
+  "montaz-sviticiho-kamenneho-panelu": [["Montážní návody", "/manual/"], ["Montážní sada SLIM", "https://www.anewstyle-eshop.cz/montazni-sada-slim/"]],
+} as Record<string, string[][]>;
+---
+<Layout title={article.title} description={article.description} metaImageUrl={article.image} pageType="WebPage"
+  breadcrumbs={[{ name: "Domů", url: "/" }, { name: "Návody/Tipy", url: advicePath }, { name: article.title, url: path }]}
+  additionalStructuredData={[{ "@type": "Article", "@id": url + "#article", headline: article.title, description: article.description, mainEntityOfPage: url, image: new URL(article.image, site).href, inLanguage: "cs", author: { "@type": "Organization", name: "ANEW STYLE" } }, ...(video ? [video] : [])]}>
+  <main id="main" class="container-page grid gap-8 pt-[calc(var(--nav-height)+2rem)] pb-16">
+    <nav aria-label="Drobečková navigace"><a href="/" class="text-gold">Domů</a> / <a href={advicePath} class="text-gold">Návody/Tipy</a></nav>
+    <header class="grid max-w-4xl gap-4">
+      <p class="eyebrow text-gold">{article.topic}</p>
+      <h1 class="text-3xl leading-tight font-black sm:text-5xl">{article.title}</h1>
+      <p class="text-lg text-fg-soft">{article.intro}</p>
+      <p class="text-sm text-fg-muted">Odborná redakce Anew Style</p>
+    </header>
+    <Picture src={article.image} alt={article.topic} sizes="(min-width: 1024px) 880px, 92vw" class="block h-auto w-full max-w-4xl" />
+    {video && <video controls playsinline preload="none" poster={video.thumbnailUrl.replace(site.origin, "")} src="/videos/montaz-panelu.mp4" aria-label={video.name} class="aspect-[9/16] w-full max-w-80 bg-ink" />}
+    <article class="guide-body max-w-[76ch] min-w-0 leading-relaxed" set:html={code} />
+    <div class="flex flex-wrap gap-3">
+      {(actions[article.slug] ?? []).map(([label, href], index) => <Button href={href} variant={index === 0 ? "primary" : "outline"}>{label}</Button>)}
+    </div>
+    <section class="grid gap-4 border-t border-line pt-6">
+      <h2 class="text-xl font-bold">Související články</h2>
+      <AdviceCards items={articles.filter((item) => item.slug !== article.slug)} />
+    </section>
+  </main>
+</Layout>
+<style>
+  .guide-body > :global(*) { margin-block: 0 1rem; }
+  .guide-body :global(h2) { margin-top: 2rem; font-size: 1.5rem; font-weight: 800; }
+  .guide-body :global(h3) { font-weight: 750; }
+  .guide-body :global(ul), .guide-body :global(ol) { padding-inline-start: 1.5rem; list-style: revert; }
+  .guide-body :global(a) { color: var(--color-gold); text-decoration: underline; }
+  .guide-body :global(table) { width: 100%; table-layout: fixed; overflow-wrap: anywhere; }
+  .guide-body :global(td), .guide-body :global(th) { padding: .35rem; border: 1px solid var(--color-line); }
+  .guide-body :global(p:has(> img[src$="anewstyle-lgp-princip.webp"]) + ol) {
+    display: grid;
+    gap: .65rem;
+    border-inline-start: 1px solid var(--color-gold);
+    padding: 1rem 1rem 1rem 2.5rem;
+    background: var(--color-ink-900);
+  }
+  .guide-body :global(p:has(> img[src$="anewstyle-lgp-princip.webp"]) + ol > li::marker) {
+    color: var(--color-gold);
+    font-weight: 750;
+  }
+</style>

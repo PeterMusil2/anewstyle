@@ -1,4 +1,5 @@
 ---
+import AdviceLinks from "../components/sections/AdviceLinks.astro";
 import Layout from "../layouts/Layout.astro";
 import Manuals from "../components/sections/Manuals.astro";
 import { getLangFromUrl, useTranslations } from "../i18n/utils";
@@ -36,5 +37,6 @@ const manualUrl = new URL(
 >
   <main id="main" class="pt-(--nav-height)">
     <Manuals lang={lang} />
+    <AdviceLinks placement="installation" />
   </main>
 </Layout>

@@ -244,7 +244,7 @@ const ENABLE_GTM = true;
     <meta property="og:image" content={resolvedMetaImageUrl} />
     <meta property="og:image:alt" content={title} />
     <meta property="og:locale" content={ogLocale} />
-    <meta property="og:locale:alternate" content={ogLocaleAlternate} />
+    {alternateLinks.length > 1 && <meta property="og:locale:alternate" content={ogLocaleAlternate} />}
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary_large_image" />

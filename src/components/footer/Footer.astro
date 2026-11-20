@@ -23,6 +23,7 @@ const links = panelCategory
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/faq/`, text: t("nav.faq") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
+      ...(lang === "cs" ? [{ href: "/poradna/", text: t("nav.advice") }] : []),
       { href: `${basePath}/?panel=${panelCategory}#contact`, text: t("nav.contact") },
     ]
   : [
@@ -32,6 +33,7 @@ const links = panelCategory
       { href: `${basePath}/gallery/`, text: t("nav.gallery") },
       { href: `${basePath}/faq/`, text: t("nav.faq") },
       { href: `${basePath}/manual/`, text: t("nav.manual") },
+      ...(lang === "cs" ? [{ href: "/poradna/", text: t("nav.advice") }] : []),
     ];
 const currentYear = new Date().getFullYear();
 ---

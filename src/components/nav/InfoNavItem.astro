@@ -15,7 +15,7 @@ const sectionLinks = [
 ];
 const links = [
   { href: `${basePath}/#faq`, label: t("nav.faq") },
-  { href: `${basePath}/manual/`, label: t("nav.manual") },
+  lang === "cs" ? { href: "/poradna/", label: t("nav.advice") } : { href: "/en/manual/", label: t("nav.manual") },
 ];
 const surfaces = [
   { href: `${getPanelPagePath("stone", lang)}#products`, label: t("nav.surfaceStone") },

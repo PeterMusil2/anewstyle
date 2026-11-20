@@ -1,0 +1,19 @@
+---
+import Layout from "../layouts/Layout.astro";
+import AdviceCards from "../components/sections/AdviceCards.astro";
+import SectionHeader from "../components/ui/SectionHeader.astro";
+import Button from "../components/ui/Button.astro";
+---
+<Layout title="Návody/Tipy" description="Jak fungují svítící panely, které provedení vybrat a co připravit před montáží." pageType="CollectionPage" breadcrumbs={[{ name: "Domů", url: "/" }, { name: "Návody/Tipy", url: "/poradna/" }]}>
+  <main id="main" class="container-page grid gap-8 pt-[calc(var(--nav-height)+2rem)] pb-16">
+    <nav aria-label="Drobečková navigace"><a href="/" class="text-gold">Domů</a> / <span aria-current="page">Návody/Tipy</span></nav>
+    <SectionHeader as="h1" layout="left" title="Návody/Tipy">
+      <p>Jak panely svítí, které provedení vybrat a co připravit pro montáž.</p>
+    </SectionHeader>
+    <AdviceCards />
+    <section class="grid justify-items-start gap-4 border-t border-line pt-6">
+      <h2 class="text-xl font-bold">Montážní návody a technické podklady</h2>
+      <Button href="/manual/" variant="outline">Otevřít návody</Button>
+    </section>
+  </main>
+</Layout>

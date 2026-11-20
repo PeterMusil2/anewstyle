@@ -44,6 +44,26 @@ public_folder: /images/uploads
 
 # Collections follow the website: Galerie, Vzory panelů, Ceník, Materiály panelů, Časté dotazy.
 collections:
+- name: advice
+  label: Návody/Tipy
+  files:
+    - name: articles
+      label: Články sekce Návody/Tipy
+      file: src/data/advice.json
+      fields:
+        - name: articles
+          label: Články
+          widget: list
+          fields:
+            - { name: slug, label: Adresa, hint: "Část URL článku. Po zveřejnění ji neměňte.", widget: string }
+            - { name: topic, label: Téma, hint: "Štítek v sekci Návody/Tipy a na začátku článku.", widget: string }
+            - { name: title, label: Nadpis, hint: "Nadpis článku i jeho karty.", widget: string }
+            - { name: description, label: Popis pro vyhledávač, hint: "Zobrazuje se v metadatech článku.", widget: text }
+            - { name: intro, label: Perex, hint: "Úvod na kartě a pod nadpisem článku.", widget: text }
+            - { name: image, label: Hlavní obrázek, hint: "Na kartě a v záhlaví článku.", widget: image }
+            - { name: cardImage, label: Obrázek karty, hint: "Náhled článku v sekci Návody/Tipy na mobilu i desktopu.", widget: image, required: false }
+            - { name: body, label: Text článku, hint: "Hlavní obsah článku v Markdownu.", widget: markdown }
+
 - name: gallery
   label: Galerie
   description: Stránka Galerie (anewstyle.cz/gallery) – fotky, videa a 360° prohlídky. Bonusový obsah

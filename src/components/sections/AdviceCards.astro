@@ -1,0 +1,60 @@
+---
+import Picture from "../ui/Picture.astro";
+import { articles, articlePath } from "../../lib/advice";
+const { items = articles } = Astro.props;
+const mobileCards: Record<string, { title: string; icon: string; description: string }> = {
+  "jak-funguje-svitici-panel": {
+    title: "Jak panel svítí", icon: "LED.svg",
+    description: "Jak se světlo rozvádí po celé ploše.",
+  },
+  "slim-basic-deluxe": {
+    title: "SLIM, BASIC, nebo DELUXE?", icon: "MobileControl.svg",
+    description: "Rozdíly v montáži, ovládání a světelných efektech.",
+  },
+  "montaz-sviticiho-kamenneho-panelu": {
+    title: "Jak panel namontovat", icon: "Mounting.svg",
+    description: "Co připravit na stěně a kam umístit napájení.",
+  },
+};
+---
+<ul class="grid gap-5 md:grid-cols-3">
+  {items.map((item: (typeof articles)[number]) => {
+    const mobile = mobileCards[item.slug];
+    return (
+    <li class="min-w-0">
+      <a href={articlePath(item.slug)} class="grid h-full grid-cols-[minmax(0,1fr)_minmax(0,2.5fr)] items-center gap-3 border border-line bg-ink-900 p-3 text-fg no-underline hover:border-gold focus-visible:outline-gold md:block md:p-0">
+        <div class="aspect-[4/3] overflow-hidden bg-ink-850">
+          <Picture src={item.cardImage ?? item.image} alt="" sizes="(min-width: 768px) 32vw, 26vw" class="size-full object-cover" />
+        </div>
+        <div class="grid min-w-0 gap-1.5 md:gap-3 md:p-5">
+          <p class="eyebrow hidden text-gold md:block">{item.topic}</p>
+          <h2 class="flex items-center gap-2 text-base leading-tight font-bold md:text-xl">
+            {mobile && (
+              <span aria-hidden="true" class="grid size-10 shrink-0 place-items-center border border-gold bg-ink-850 md:size-12">
+                <span class="advice-pictogram" style={`--advice-icon: url("/images/symbols/${mobile.icon}")`}></span>
+              </span>
+            )}
+            <span class="md:hidden">{mobile?.title ?? item.title}</span>
+            <span class="hidden md:inline">{item.title}</span>
+            <span aria-hidden="true" class="ml-auto text-gold md:hidden">→</span>
+          </h2>
+          <p class="text-sm text-fg-soft md:hidden">{mobile?.description ?? item.intro}</p>
+          <p class="hidden text-fg-soft md:block">{item.intro}</p>
+          <span class="hidden font-bold text-gold md:block">Číst článek →</span>
+        </div>
+      </a>
+    </li>
+    );
+  })}
+</ul>
+
+<style>
+  .advice-pictogram {
+    display: block;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    background-color: var(--color-gold);
+    -webkit-mask: var(--advice-icon) center / contain no-repeat;
+    mask: var(--advice-icon) center / contain no-repeat;
+  }
+</style>

@@ -21,6 +21,7 @@ export function panelPageStructuredData(
   const organizationId = `${SITE_URL}/#organization`;
   const brand = { "@type": "Brand", name: contact.brand };
   const sizeLabel = lang === "cs" ? "velikost" : "size";
+  const offerAvailability = "https://schema.org/InStock";
   const categories = {
     stone: {
       panelName: lang === "cs" ? "Svítící kamenný panel" : "Illuminated stone panel",
@@ -75,6 +76,8 @@ export function panelPageStructuredData(
             sku: `${meta.skuPrefix}${version.name}-${sizes[index]?.label ?? price.size}`,
             price: priceOf(price),
             priceCurrency: CURRENCY,
+            availability: offerAvailability,
+            itemCondition: "https://schema.org/NewCondition",
             url: `${pageUrl}#price-list`,
             priceSpecification: {
               "@type": "UnitPriceSpecification",
@@ -96,14 +99,20 @@ export function panelPageStructuredData(
         "@type": "Product",
         "@id": `${pageUrl}#set-${set.id}-${price.version.toLowerCase()}`,
         name: `${setLabel} ${set.label} – ${price.version}`,
+        description: price.note ?? `${setLabel} ${set.label} – ${price.version}`,
         brand,
+        manufacturer: { "@id": organizationId },
+        category: lang === "cs" ? "Designové interiérové osvětlení" : "Designer interior lighting",
         material: categories.stone.material,
-        ...(price.note ? { description: price.note } : {}),
+        image: categories.stone.image,
+        url: `${pageUrl}#price-list`,
         offers: {
           "@type": "Offer",
           url: `${pageUrl}#price-list`,
           price: price.priceExclVat,
           priceCurrency: CURRENCY,
+          availability: offerAvailability,
+          itemCondition: "https://schema.org/NewCondition",
           priceSpecification: {
             "@type": "UnitPriceSpecification",
             price: price.priceExclVat,

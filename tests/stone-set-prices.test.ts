@@ -34,4 +34,34 @@ describe("stone set prices", () => {
     expect(setOffers("stone")).toHaveLength(prices.stoneSets.length * prices.products.length);
     expect(setOffers("mineral")).toHaveLength(0);
   });
+
+  test("gives every product a crawlable image, description and available offer", () => {
+    const url = "https://anewstyle.cz/svitici-kamenne-panely/";
+    const productGraphs = [
+      panelPageStructuredData("cs", url, "stone"),
+      panelPageStructuredData("en", url, "stone"),
+      panelPageStructuredData("cs", url, "mineral"),
+      panelPageStructuredData("en", url, "mineral"),
+    ];
+
+    for (const graph of productGraphs) {
+      const products = graph.filter((item) => item["@type"] === "Product");
+      expect(products.length).toBeGreaterThan(0);
+
+      for (const product of products) {
+        expect(String(product.image)).toMatch(/^https:\/\/anewstyle\.cz\//);
+        expect(String(product.description).trim().length).toBeGreaterThan(0);
+
+        const offerContainer = product.offers as Record<string, unknown>;
+        const offers = Array.isArray(offerContainer.offers)
+          ? offerContainer.offers as Record<string, unknown>[]
+          : [offerContainer];
+        expect(offers.length).toBeGreaterThan(0);
+        for (const offer of offers) {
+          expect(offer.availability).toBe("https://schema.org/InStock");
+          expect(offer.itemCondition).toBe("https://schema.org/NewCondition");
+        }
+      }
+    }
+  });
 });

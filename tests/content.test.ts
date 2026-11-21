@@ -1136,6 +1136,11 @@ describe("i18n", () => {
     expect(control).toContain("&:hover");
     expect(control).toContain("&:focus-visible");
     expect(control).toContain("&:user-invalid");
+    // Selects match the text inputs (min-h-13 = 3.25rem) at every width, not only from `sm` up.
+    const controlRule = control.slice(0, control.indexOf("&:hover"));
+    expect(controlRule).toContain("min-block-size: 3.25rem;");
+    expect(controlRule).not.toContain("2.75rem;\n    padding-inline: 0.75rem");
+    expect(contact).toContain("min-h-13 w-full min-w-0 border border-field");
     // Submit sits under the whole form, full width and taller than a regular button.
     expect(contact).toContain('class="contact-form__submit w-full min-h-15');
     expect(contact.indexOf("contact-form__submit")).toBeGreaterThan(contact.indexOf('name="message"'));

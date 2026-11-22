@@ -17,7 +17,7 @@ describe("stone set prices", () => {
     for (const [index, set] of sets.entries()) {
       const source = prices.stoneSets[index];
       expect(set.panels.length).toBeGreaterThanOrEqual(2);
-      expect(set.label).toBe(source.panels.map((size) => size.toUpperCase()).join(" + "));
+      expect(set.label).toBe(source.panels.map((size) => size.toUpperCase()).join("/"));
       expect(set.prices.map((price) => price.version)).toEqual(prices.products.map((product) => product.title));
       for (const price of set.prices) {
         expect(price.priceExclVat).toBe(source.prices[price.version as keyof typeof source.prices]);

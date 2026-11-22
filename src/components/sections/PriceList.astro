@@ -97,7 +97,7 @@ const catalogChoices = [
   sets.map((set, index) => ({
     key: `set-${index}` as const,
     label: set.label,
-    width: 0,
+    width: set.panels.reduce((total, size) => total + PANEL_WIDTH_MM[size], 0),
     aria: "price.set" as const,
     set,
     caption: `${PANEL_HEIGHT} × (${set.panels.map((size) => PANEL_WIDTH_MM[size]).join(" + ")}) mm`,
@@ -189,10 +189,10 @@ const activeSetRules = sets.map((_, index) =>
                 ))}
               </span>
               <span class="flex min-w-0 flex-col items-center gap-1 sm:items-start">
-                <span class:list={["leading-none font-black", size.set ? "whitespace-nowrap text-xs sm:text-base" : "text-lg tracking-[0.04em] lg:text-xl"]}>{size.label}</span>
-                {!size.set && <span class="truncate text-[0.625rem] leading-tight text-fg-muted sm:text-xs">
+                <span class="whitespace-nowrap text-lg leading-none font-black tracking-[0.04em] lg:text-xl">{size.label}</span>
+                <span class="truncate text-[0.625rem] leading-tight text-fg-muted sm:text-xs">
                   <span class="sm:hidden">{size.width} mm</span><span class="hidden sm:inline">{size.caption}</span>
-                </span>}
+                </span>
                 <span class="hidden truncate text-xs leading-tight font-bold text-gold group-has-checked:text-gold-light lg:block">
                   {size.set
                     ? <span>{t("price.from")} {format(Math.min(...size.set.prices.map((price) => price.priceExclVat)))} {t("price.currency")}</span>

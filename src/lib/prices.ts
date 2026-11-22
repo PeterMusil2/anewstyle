@@ -32,7 +32,7 @@ export function stoneSetSeams(panels: readonly SizeKey[]): number[] {
 export function getStonePanelSets(lang: "cs" | "en") {
   return (pricesData.stoneSets ?? []).map(({ panels, prices: setPrices }) => ({
     id: panels.join("-"),
-    label: panels.map((size) => size.toUpperCase()).join(" + "),
+    label: panels.map((size) => size.toUpperCase()).join("/"),
     panels,
     prices: pricesData.products.flatMap((product) => {
       const net = setPrices[product.title];

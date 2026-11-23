@@ -52,6 +52,10 @@
       "cs": "Velikost L: od 15 kg (SLIM)",
       "en": "Size L: from 15 kg (SLIM)"
     },
+    "weightOverview": {
+      "cs": "Kamenný panel ve verzi SLIM váží ve velikosti L od **15 kg**, ve velikosti XXXL orientačně **45 kg**. Hmotnost konkrétního kusu se může lišit.",
+      "en": "The SLIM stone panel weighs from **15 kg** in size L and approximately **45 kg** in size XXXL. Actual weight may vary."
+    },
     "consumption": {
       "cs": "Od 74W u velikosti L.",
       "en": "From 74 W for size L."

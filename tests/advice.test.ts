@@ -2,6 +2,31 @@ import { illustrateAdvice } from "../src/lib/advice-illustrations";
 import { expect, test } from "bun:test";
 import { articles, articlePath, isAdvicePath } from "../src/lib/advice";
 import { getSiteData } from "../src/lib/site-data";
+import materialOverview from "../src/data/material-overview.json";
+
+test("homepage identifies 45 kg as the approximate weight of the XXXL stone SLIM panel", async () => {
+  for (const lang of ["cs", "en"] as const) {
+    const copy = materialOverview.stone.weightOverview[lang];
+    expect(copy).toContain("SLIM");
+    expect(copy).toContain("XXXL");
+    expect(copy).toMatch(/(?:orientačně|approximately) \*\*45 kg\*\*/);
+    expect(getSiteData(lang).materials.stone.weightOverview).toBe(copy);
+  }
+  const card = await Bun.file("src/components/sections/Features.astro").text();
+  const cms = await Bun.file("public/admin/config.yml").text();
+  expect(card).toContain("stone.weightOverview");
+  expect(cms).toContain("name: weightOverview");
+});
+
+test("mounting video uses the editable description without assigning a material", async () => {
+  const guide = getSiteData("cs").guides.find(({ slug }) => slug === "montaz-sviticiho-kamenneho-panelu");
+  const page = await Bun.file("src/pages/[advice].astro").text();
+  const cms = await Bun.file("public/admin/config.yml").text();
+  expect(guide?.videoDescription).toBe("Ukázka montáže svítícího panelu Anew Style.");
+  expect(page).toContain("description: article.videoDescription");
+  expect(page).not.toContain("Ukázka instalace svítícího kamenného panelu");
+  expect(cms).toContain("name: videoDescription");
+});
 
 test("the three Czech guides have independent routes and public editorial content", () => {
   expect(new Set(articles.map(({ slug }) => slug)).size).toBe(3);

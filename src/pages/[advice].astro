@@ -18,7 +18,7 @@ const url = new URL(path, site).href;
 const organizationId = new URL("/#organization", site).href;
 const video = article.slug === "montaz-sviticiho-kamenneho-panelu"
   ? { "@type": "VideoObject", name: "Montáž svítícího panelu Anew Style",
-      description: "Ukázka instalace svítícího kamenného panelu.",
+      description: article.videoDescription?.trim() || "Montáž svítícího panelu Anew Style",
       thumbnailUrl: new URL("/images/poradna/montaz-video-frame.webp", site).href,
       contentUrl: new URL("/videos/montaz-panelu.mp4", site).href,
       uploadDate: "2026-11-20",

@@ -2,6 +2,7 @@
 import Palette from "../palette/Palette.astro";
 import SectionHeader from "../ui/SectionHeader.astro";
 import { inlineMarkdown } from "../../lib/inline-markdown";
+import { stone } from "../../data/material-overview.json";
 import {
   useTranslations,
   type Lang,
@@ -34,7 +35,7 @@ interface Feature {
 }
 
 const features: Feature[] = [
-  { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [["features.item1Desc1"], ["features.item1Desc2", true], ["features.item1Desc3"], ["features.item1Desc4", true]], mineralDesc: "features.item1Mineral" },
+  { id: "lightweight", icon: "Ligthweight.svg", label: "features.iconLightweight", desc: [], mineralDesc: "features.item1Mineral" },
   { id: "quick-mounting", icon: "Mounting.svg", label: "features.iconMounting", desc: [["features.item2Desc1"], ["features.item2Desc2", true], ["features.item2Desc3"]] },
   { id: "backlight", icon: "Backlight.svg", label: "features.iconBacklight", desc: [["features.item3Desc1"], ["features.item3Desc2", true], ["features.item3Desc3"]] },
   { id: "rf-control", icon: "RF_control.svg", label: "features.iconRfWireless", desc: [["features.item4Desc1"], ["features.item4Desc2", true], ["features.item4Desc3"]] },
@@ -53,14 +54,18 @@ const features: Feature[] = [
 ];
 
 const label = (key: TranslationKey) => t(key).replaceAll("\n", " ");
-const formattedDescription = (key: TranslationKey) =>
-  inlineMarkdown(t(key))
+const formattedText = (source: string) =>
+  inlineMarkdown(source)
     .replaceAll("<strong>", '<strong class="font-semibold text-fg">')
     .replace(/\b(SLIM|BASIC|DELUXE)\b/g, '<b class="font-extrabold text-gold">$1</b>');
+const formattedDescription = (key: TranslationKey) => formattedText(t(key));
 const formattedParts = (parts: Part[]) => parts.map(([key, strong]) => {
   const content = formattedDescription(key);
   return strong ? `<strong class="font-semibold text-fg">${content}</strong>` : content;
 }).join("");
+const formattedStone = (feature: Feature) => feature.id === "lightweight"
+  ? formattedText(stone.weightOverview?.[lang]?.trim() || stone.weight[lang])
+  : formattedParts(feature.desc);
 ---
 
 <section id={id} aria-labelledby={`${id}-title`} class="home-section-y home-section-divider bg-ink">
@@ -111,19 +116,19 @@ const formattedParts = (parts: Part[]) => parts.map(([key, strong]) => {
                 <span set:html={formattedDescription(feature.combinedDesc)} />
               ) : showBoth && feature.mineralDesc ? (
                 <div class="grid gap-3">
-                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentStone")}</span><span set:html={formattedParts(feature.desc)} /></p>
+                  <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentStone")}</span><span set:html={formattedStone(feature)} /></p>
                   <p><span class="mb-1 block text-[0.625rem] font-bold tracking-caps text-gold uppercase">{t("home.equipmentMineral")}</span><span set:html={formattedDescription(feature.mineralDesc)} /></p>
                 </div>
               ) : panelCategory ? panelCategory === "mineral" && feature.mineralDesc ? (
                 <span set:html={formattedDescription(feature.mineralDesc)} />
               ) : (
-                <span set:html={formattedParts(feature.desc)} />
+                <span set:html={formattedStone(feature)} />
               ) : feature.mineralDesc ? (
                 <>
-                  <span data-panel-type="stone" set:html={formattedParts(feature.desc)} />
+                  <span data-panel-type="stone" set:html={formattedStone(feature)} />
                   <span data-panel-type="mineral" set:html={formattedDescription(feature.mineralDesc)} />
                 </>
-              ) : <span set:html={formattedParts(feature.desc)} />}
+              ) : <span set:html={formattedStone(feature)} />}
               {feature.note && (panelCategory ? panelCategory === "stone" : true) && <em data-panel-type={showBoth ? undefined : "stone"} class="mt-2 block text-fg-subtle">{showBoth && <span class="font-semibold text-fg">{t("home.equipmentStone")}:</span>} {t(feature.note)}</em>}
               </div>
             </details>

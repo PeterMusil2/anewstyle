@@ -67,6 +67,7 @@ collections:
             - { name: image, label: Hlavní obrázek, hint: "Na kartě a v záhlaví článku.", widget: image }
             - { name: imageAlt, label: Alternativní text hlavního obrázku, hint: "Věcný popis hlavního obrázku pro čtečky obrazovky a vyhledávače.", widget: text }
             - { name: cardImage, label: Obrázek karty, hint: "Náhled článku v sekci Návody/Tipy na mobilu i desktopu.", widget: image, required: false }
+            - { name: videoDescription, label: Popis montážního videa, hint: "Popis videa ve strukturovaných datech montážního článku. U ostatních článků ponechte prázdné.", widget: string, required: false }
             - { name: body, label: Text článku, hint: "Hlavní obsah článku v Markdownu.", widget: markdown }
 
 - name: gallery
@@ -480,6 +481,13 @@ collections:
         fields:
         - { name: cs, label: Česky, widget: string }
         - { name: en, label: English, widget: string }
+      - name: weightOverview
+        label: Hmotnost kamenných panelů
+        widget: object
+        hint: Text na kartě „Lehké“ na úvodní stránce. Orientační hmotnost XXXL platí pro verzi SLIM.
+        fields:
+        - { name: cs, label: Česky, widget: text }
+        - { name: en, label: English, widget: text }
       - name: consumption
         label: Spotřeba
         widget: object

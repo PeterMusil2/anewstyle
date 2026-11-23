@@ -204,6 +204,7 @@ export function getSiteData(lang: Lang) {
       title: article.title,
       seoTitle: article.seoTitle,
       description: article.description,
+      ...(article.videoDescription?.trim() ? { videoDescription: article.videoDescription.trim() } : {}),
       author: article.author,
       datePublished: article.datePublished,
       dateModified: article.dateModified,

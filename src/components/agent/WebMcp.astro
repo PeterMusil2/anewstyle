@@ -102,6 +102,23 @@
       },
     },
     {
+      name: "get_guides",
+      title: "Guides & tips",
+      description: "Canonical published Czech technical guides about panel construction, choosing SLIM/BASIC/DELUXE and installation, including their official visual URLs. Pass a query to filter the full Markdown articles.",
+      inputSchema: { type: "object", properties: { query: { type: "string" } } },
+      annotations: { readOnlyHint: true },
+      execute: async ({ query }) => {
+        const site = await data();
+        const needle = typeof query === "string" ? query.toLowerCase().trim() : "";
+        const items = needle
+          ? site.guides.filter((guide) =>
+              `${guide.title} ${guide.description} ${guide.bodyMarkdown}`.toLowerCase().includes(needle),
+            )
+          : site.guides;
+        return result(items.length ? items : site.guides);
+      },
+    },
+    {
       name: "search_faq",
       title: "FAQ",
       description: "Answers to common questions about installation, cables, humidity, repairs, remote control and weight; answerMineral where mineral panels differ, stoneOnly where a question applies to stone panels only. Pass a query to filter.",

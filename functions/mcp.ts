@@ -26,6 +26,14 @@ type SiteData = Record<string, unknown> & {
   mineralPatternsNote: string;
   mineralSurcharge: { size: string }[];
   panelCategories: unknown[];
+  guides: {
+    title: string;
+    description: string;
+    bodyMarkdown: string;
+    image: string;
+    imageAlt: string;
+    visuals: { role: string; url: string; alt: string }[];
+  }[];
   contact: unknown;
   currency: string;
   priceNote: string;
@@ -77,6 +85,13 @@ const TOOLS = [
     title: "Mineral decors",
     description: "Mineral panel decors with photos (viewable in 3D and AR on the website).",
     inputSchema: { type: "object", properties: { ...langProperty } },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  {
+    name: "get_guides",
+    title: "Guides & tips",
+    description: "Canonical published Czech technical guides about panel construction, SLIM/BASIC/DELUXE selection and installation, including their official visual URLs. Optionally filter the full Markdown articles by query.",
+    inputSchema: { type: "object", properties: { ...langProperty, query: { type: "string" } } },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
   {
@@ -143,6 +158,16 @@ async function callTool(context: Context, name: string, args: Record<string, unk
     case "list_mineral_patterns":
       payload = { note: data.mineralPatternsNote, patterns: data.mineralPatterns };
       break;
+    case "get_guides": {
+      const query = typeof args.query === "string" ? args.query.toLowerCase().trim() : "";
+      const hits = query
+        ? data.guides.filter((guide) =>
+            `${guide.title} ${guide.description} ${guide.bodyMarkdown}`.toLowerCase().includes(query),
+          )
+        : data.guides;
+      payload = hits.length ? hits : data.guides;
+      break;
+    }
     case "search_faq": {
       const query = typeof args.query === "string" ? args.query.toLowerCase().trim() : "";
       const hits = query
@@ -200,7 +225,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           capabilities: { tools: { listChanged: false } },
           serverInfo: { name: "anewstyle", title: "ANEW STYLE", version: "1.0.0" },
           instructions:
-            "Read-only facts about ANEW STYLE illuminated stone and mineral panels (Brno, CZ): prices, versions, sizes, stone patterns, mineral decors, FAQ and contact. Inquiries are sent by people via the contact form at https://anewstyle.cz/#contact.",
+            "Read-only facts about ANEW STYLE illuminated stone and mineral panels (Brno, CZ): prices, versions, sizes, technical guides, stone patterns, mineral decors, FAQ and contact. Inquiries are sent by people via the contact form at https://anewstyle.cz/#contact.",
         }),
       );
     }

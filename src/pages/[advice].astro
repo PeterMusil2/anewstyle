@@ -15,11 +15,17 @@ const illustratedBody = illustrateAdvice(code);
 const path = articlePath(article.slug);
 const site = Astro.site ?? Astro.url;
 const url = new URL(path, site).href;
+const organizationId = new URL("/#organization", site).href;
 const video = article.slug === "montaz-sviticiho-kamenneho-panelu"
   ? { "@type": "VideoObject", name: "Montáž svítícího panelu Anew Style",
       description: "Ukázka instalace svítícího kamenného panelu.",
       thumbnailUrl: new URL("/images/poradna/montaz-video-frame.webp", site).href,
-      contentUrl: new URL("/videos/montaz-panelu.mp4", site).href }
+      contentUrl: new URL("/videos/montaz-panelu.mp4", site).href,
+      uploadDate: "2026-11-20",
+      duration: "PT25.76S",
+      inLanguage: "cs",
+      publisher: { "@id": organizationId },
+      transcript: "Z prázdné stěny ke světlu. 1. Upevnit nosné prvky. 2. Zapojit světelný panel do zásuvky. 3. Zavěsit svítící panel na zeď. 4. Pak už stačí jen rozsvítit. Montáž zvládne i jeden člověk. U varianty XXXL doporučujeme pomoc při manipulaci. Rozměr ukázaného panelu: 2400 × 1200 mm. Objevte svítící panely na anewstyle.cz." }
   : undefined;
 const actions = {
   "jak-funguje-svitici-panel": [["Kamenné panely", "/svitici-kamenne-panely/"], ["Minerální panely", "/svitici-mineralni-panely/"]],
@@ -27,9 +33,9 @@ const actions = {
   "montaz-sviticiho-kamenneho-panelu": [["Montážní návody", "/manual/"], ["Montážní sada SLIM", "https://www.anewstyle-eshop.cz/montazni-sada-slim/"]],
 } as Record<string, string[][]>;
 ---
-<Layout title={article.title} description={article.description} metaImageUrl={article.image} pageType="WebPage"
+<Layout title={article.seoTitle} description={article.description} author={article.author} metaImageUrl={article.image} pageType="WebPage"
   breadcrumbs={[{ name: "Domů", url: "/" }, { name: "Návody/Tipy", url: advicePath }, { name: article.title, url: path }]}
-  additionalStructuredData={[{ "@type": "Article", "@id": url + "#article", headline: article.title, description: article.description, mainEntityOfPage: url, image: new URL(article.image, site).href, inLanguage: "cs", author: { "@type": "Organization", name: "ANEW STYLE" } }, ...(video ? [video] : [])]}>
+  additionalStructuredData={[{ "@type": "Article", "@id": url + "#article", headline: article.title, description: article.description, mainEntityOfPage: { "@id": url + "#webpage" }, image: new URL(article.image, site).href, inLanguage: "cs", datePublished: article.datePublished, dateModified: article.dateModified, author: { "@type": "Organization", name: article.author, url: new URL("/", site).href }, publisher: { "@id": organizationId } }, ...(video ? [video] : [])]}>
   <main id="main" class="container-wide grid gap-8 pt-[calc(var(--nav-height)+2rem)] pb-16">
     <nav aria-label="Drobečková navigace"><a href="/" class="text-gold">Domů</a> / <a href={advicePath} class="text-gold">Návody/Tipy</a></nav>
     <div class="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center xl:gap-16">
@@ -37,9 +43,9 @@ const actions = {
       <p class="eyebrow text-gold">{article.topic}</p>
       <h1 class="text-3xl leading-tight font-black sm:text-5xl">{article.title}</h1>
       <p class="text-lg text-fg-soft">{article.intro}</p>
-      <p class="text-sm text-fg-muted">Odborná redakce Anew Style</p>
+      <p class="text-sm text-fg-muted">{article.author}</p>
     </header>
-    <Picture src={article.image} alt={article.topic} sizes="(min-width: 1024px) 384px, 92vw" class="block h-auto w-full max-w-4xl lg:max-h-72 lg:object-contain lg:object-right" />
+    <Picture src={article.image} alt={article.imageAlt} sizes="(min-width: 1024px) 384px, 92vw" class="block h-auto w-full max-w-4xl lg:max-h-72 lg:object-contain lg:object-right" />
     </div>
     {video && <video controls playsinline preload="none" poster={video.thumbnailUrl.replace(site.origin, "")} src="/videos/montaz-panelu.mp4" aria-label={video.name} class="aspect-[9/16] w-full max-w-80 bg-ink" />}
     <article class="guide-body min-w-0 leading-relaxed" set:html={illustratedBody} />

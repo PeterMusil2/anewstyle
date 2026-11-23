@@ -58,9 +58,14 @@ collections:
             - { name: slug, label: Adresa, hint: "Část URL článku. Po zveřejnění ji neměňte.", widget: string }
             - { name: topic, label: Téma, hint: "Štítek v sekci Návody/Tipy a na začátku článku.", widget: string }
             - { name: title, label: Nadpis, hint: "Nadpis článku i jeho karty.", widget: string }
+            - { name: seoTitle, label: SEO titulek, hint: "Titulek stránky ve výsledcích vyhledávání; veřejný nadpis článku se nemění.", widget: string }
             - { name: description, label: Popis pro vyhledávač, hint: "Zobrazuje se v metadatech článku.", widget: text }
             - { name: intro, label: Perex, hint: "Úvod na kartě a pod nadpisem článku.", widget: text }
+            - { name: author, label: Autor, hint: "Autor zobrazený u článku a uvedený ve strukturovaných datech.", widget: string }
+            - { name: datePublished, label: Datum vydání, hint: "Datum prvního vydání článku ve formátu RRRR-MM-DD.", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+            - { name: dateModified, label: Datum poslední úpravy, hint: "Datum poslední odborné revize článku ve formátu RRRR-MM-DD.", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
             - { name: image, label: Hlavní obrázek, hint: "Na kartě a v záhlaví článku.", widget: image }
+            - { name: imageAlt, label: Alternativní text hlavního obrázku, hint: "Věcný popis hlavního obrázku pro čtečky obrazovky a vyhledávače.", widget: text }
             - { name: cardImage, label: Obrázek karty, hint: "Náhled článku v sekci Návody/Tipy na mobilu i desktopu.", widget: image, required: false }
             - { name: body, label: Text článku, hint: "Hlavní obsah článku v Markdownu.", widget: markdown }
 

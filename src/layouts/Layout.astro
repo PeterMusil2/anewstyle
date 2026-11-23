@@ -20,6 +20,7 @@ import {
 interface Props {
   title: string;
   description: string;
+  author?: string;
   panelCategory?: "stone" | "mineral";
   showNav?: boolean;
   metaImageUrl?: string;
@@ -38,6 +39,7 @@ interface Props {
 const {
   title,
   description,
+  author = "Lukáš Chylík",
   panelCategory,
   showNav = true,
   metaImageUrl,
@@ -179,7 +181,7 @@ const ENABLE_GTM = true;
     <link rel="canonical" href={canonicalUrl.href} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="author" content="Lukáš Chylík" />
+    <meta name="author" content={author} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link
       rel="apple-touch-icon"

@@ -14,6 +14,7 @@ import { mineralPatternCode } from "./pattern-fan";
 import { getStonePanelSets, MINERAL_FEATURE_KEYS, mineralSurcharge, priceFor, type PanelCategory } from "./prices";
 import cs from "../i18n/cs.json";
 import en from "../i18n/en.json";
+import { articles, articlePath } from "./advice";
 
 export type Lang = "cs" | "en";
 export type SizeKey = keyof Price;
@@ -197,6 +198,28 @@ export function getSiteData(lang: Lang) {
     patternsNote: productsData.notes.stone[lang],
     mineralPatterns: getMineralPatterns(lang),
     mineralPatternsNote: productsData.notes.mineral[lang],
+    guides: articles.map((article) => ({
+      language: "cs",
+      slug: article.slug,
+      title: article.title,
+      seoTitle: article.seoTitle,
+      description: article.description,
+      author: article.author,
+      datePublished: article.datePublished,
+      dateModified: article.dateModified,
+      url: `${SITE_URL}${articlePath(article.slug)}`,
+      image: `${SITE_URL}${article.image}`,
+      imageAlt: article.imageAlt,
+      visuals: [
+        { role: "hero", url: `${SITE_URL}${article.image}`, alt: article.imageAlt },
+        ...Array.from(article.body.matchAll(/!\[([^\]]+)\]\((\/images\/[^)]+)\)/g), ([, alt, path]) => ({
+          role: "content",
+          url: `${SITE_URL}${path}`,
+          alt,
+        })),
+      ],
+      bodyMarkdown: article.body,
+    })),
     faq: getFaq(lang),
     contact: {
       email: contact.email,

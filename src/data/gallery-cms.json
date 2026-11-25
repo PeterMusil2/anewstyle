@@ -870,7 +870,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false,
+      "hidden": true,
       "focus": {
         "x": 61,
         "y": 50
@@ -1174,7 +1174,7 @@
       },
       "bonus": true,
       "panorama": false,
-      "hidden": false,
+      "hidden": true,
       "focus": {
         "x": 48,
         "y": 50

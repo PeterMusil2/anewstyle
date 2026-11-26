@@ -1,4 +1,6 @@
 {
+  "error404.title": "Page not found",
+  "error404.description": "This address does not exist or the page has moved.",
   "nav.advice": "Guides/Tips",
   "nav.light": "Switch on the Light",
   "nav.home": "Home",

@@ -23,6 +23,7 @@ interface Props {
   author?: string;
   panelCategory?: "stone" | "mineral";
   showNav?: boolean;
+  noindex?: boolean;
   metaImageUrl?: string;
   pageType?:
     | "WebPage"
@@ -42,6 +43,7 @@ const {
   author = "Lukáš Chylík",
   panelCategory,
   showNav = true,
+  noindex = false,
   metaImageUrl,
   pageType,
   breadcrumbs,
@@ -182,7 +184,7 @@ const ENABLE_GTM = true;
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content={author} />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
     <link
       rel="apple-touch-icon"
       sizes="180x180"

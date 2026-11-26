@@ -74,6 +74,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      filter: (url) => !/^\/404(?:\.html|\/)?$/.test(new URL(url).pathname),
       customPages: Object.values(manualPdfUrls),
       i18n: {
         defaultLocale: "cs",

@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/ui/Button.astro";
+import { useTranslations } from "../i18n/utils";
+
+const cs = useTranslations("cs");
+const en = useTranslations("en");
+Astro.response.status = 404;
+---
+
+<Layout title={cs("error404.title")} description={cs("error404.description")} noindex>
+  <main id="main" class="container-page grid min-h-[65svh] content-center gap-6 pt-[calc(var(--nav-height)+2rem)] pb-16">
+    <p class="eyebrow text-gold">404</p>
+    <h1 class="text-3xl font-black sm:text-5xl">{cs("error404.title")}</h1>
+    <p class="text-lg text-fg-soft">{cs("error404.description")}</p>
+    <div class="flex flex-wrap gap-3">
+      <Button href="/">{cs("nav.home")}</Button>
+      <Button href="/poradna/" variant="outline">{cs("nav.advice")}</Button>
+    </div>
+    <div lang="en" class="mt-4 grid justify-items-start gap-3 border-t border-line pt-5">
+      <p class="text-fg-soft">{en("error404.title")}. {en("error404.description")}</p>
+      <Button href="/en/" variant="outline">{en("nav.home")}</Button>
+    </div>
+  </main>
+</Layout>

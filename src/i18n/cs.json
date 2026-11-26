@@ -1,4 +1,6 @@
 {
+  "error404.title": "Stránka nenalezena",
+  "error404.description": "Zadaná adresa neexistuje nebo se stránka přesunula.",
   "nav.advice": "Návody/Tipy",
   "nav.light": "Rozsviť mě",
   "nav.home": "Domů",

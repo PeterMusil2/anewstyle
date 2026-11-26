@@ -21,7 +21,8 @@ const video = article.slug === "montaz-sviticiho-kamenneho-panelu"
       description: article.videoDescription?.trim() || "Montáž svítícího panelu Anew Style",
       thumbnailUrl: new URL("/images/poradna/montaz-video-frame.webp", site).href,
       contentUrl: new URL("/videos/montaz-panelu.mp4", site).href,
-      uploadDate: "2026-11-20",
+      // First successful public deployment of this video: Cloudflare Pages check 136554751776.
+      uploadDate: "2026-11-20T21:38:36+01:00",
       duration: "PT25.76S",
       inLanguage: "cs",
       publisher: { "@id": organizationId },

@@ -79,7 +79,7 @@ test("article schema carries dates, publisher and complete video metadata", asyn
     expect(page).toContain(key);
   }
   expect(page).toContain('duration: "PT25.76S"');
-  expect(page).toContain('uploadDate: "2026-11-20"');
+  expect(page).toContain('uploadDate: "2026-11-20T21:38:36+01:00"');
   expect(page).toContain("article.seoTitle");
   expect(page).toContain("article.imageAlt");
   expect(layout).toContain('<meta name="author" content={author} />');
